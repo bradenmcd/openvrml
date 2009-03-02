@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2002, 2003, 2004, 2005, 2006, 2007, 2008  Braden McDaniel
+// Copyright 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -19,20 +19,17 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include "browser.h"
-# include "scope.h"
-# include <openvrml/local/node_metatype_registry_impl.h>
-# include <openvrml/local/uri.h>
-# include <openvrml/local/field_value_types.h>
-# include <boost/array.hpp>
-# include <boost/lexical_cast.hpp>
-# include <boost/mpl/for_each.hpp>
-# include <algorithm>
-# include <sstream>
-
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
+
+# include <algorithm>
+# include <sstream>
+# include <boost/array.hpp>
+# include <boost/lexical_cast.hpp>
+# include <boost/mpl/for_each.hpp>
+# include "private.h"
+# include "browser.h"
 
 /**
  * @file openvrml/node.h
@@ -544,14 +541,6 @@ std::istream & openvrml::operator>>(std::istream & in,
 
 
 /**
- * @typedef openvrml::node_type_decls
- *
- * @brief A map of node type identifiers to their corresponding
- *        @c node_interface_set%s.
- */
-
-
-/**
  * @class openvrml::node_metatype_id openvrml/node.h
  *
  * @brief Identifier for @c node_metatype%s.
@@ -601,8 +590,8 @@ namespace {
             typedef boost::spirit::rule<ScannerT> rule_type;
 
             rule_type node_metatype_id;
-            openvrml::local::absolute_uri_grammar<> absolute_uri;
-            openvrml::local::uric_grammar uric;
+            openvrml_::absolute_uri_grammar<> absolute_uri;
+            openvrml_::uric_grammar uric;
 
             definition(const node_metatype_id_grammar & self);
 
@@ -853,12 +842,12 @@ void openvrml::node_metatype::do_render(viewer &) const OPENVRML_NOTHROW
 /**
  * @brief Create a new @c node_type.
  *
- * @c node_type%s can be said to subset the master type provided by the
- * @c node_metatype.  Each @c node_metatype instance can support certain
- * @c node interfaces; the @c node_interface_set passed to @c #create_type
- * must be a subset of those supported interfaces.
+ * @c node_type%s can be said to subset the master type provided by the @c
+ * node_metatype.  Each @c node_metatype instance can support certain @c node
+ * interfaces; the @c node_interface_set passed to @c
+ * node_metatype::create_type must be a subset of those supported interfaces.
  *
- * This function delegates to @c #do_create_type.
+ * This function delegates to @c node_metatype::do_create_type.
  *
  * @param[in] id            the name for the new @c node_type.
  * @param[in] interfaces    a @c node_interface_set containing the
@@ -897,7 +886,7 @@ openvrml::node_metatype::create_type(const std::string & id,
  *                                  @p interfaces.
  * @exception std::bad_alloc        if memory allocation fails.
  *
- * @sa #create_type
+ * @sa node_metatype::create_type
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
@@ -1103,7 +1092,7 @@ bool openvrml::operator==(const node_type & lhs, const node_type & rhs)
 
     const std::vector<node_metatype_id> ids =
         rhs.metatype().browser()
-        .node_metatype_registry_->impl_->node_metatype_ids(rhs.metatype());
+        .node_metatype_map_.node_metatype_ids(rhs.metatype());
     const std::vector<node_metatype_id>::const_iterator pos =
         std::find(ids.begin(), ids.end(), lhs.metatype().id());
     return pos != ids.end();
@@ -1290,9 +1279,7 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @internal
- *
- * @var class openvrml::node::local::proto_node
+ * @var class openvrml::node::proto_node
  *
  * @brief A @c PROTO instance.
  */
@@ -1884,15 +1871,12 @@ openvrml::node::~node() OPENVRML_NOTHROW
 }
 
 /**
+ * @fn void openvrml::node::add_ref() const
+ *
  * @brief Increment the reference count.
  *
  * Add an owning reference.
  */
-void openvrml::node::add_ref() const OPENVRML_NOTHROW
-{
-    boost::mutex::scoped_lock lock(this->ref_count_mutex_);
-    ++this->ref_count_;
-}
 
 /**
  * @fn void openvrml::intrusive_ptr_add_ref(const node * n)
@@ -1920,18 +1904,11 @@ void openvrml::node::add_ref() const OPENVRML_NOTHROW
  */
 
 /**
+ * @fn void openvrml::node::release() const
+ *
  * @brief Decrement the reference count; destroy the instance if the count
  *        drops to zero.
  */
-void openvrml::node::release() const OPENVRML_NOTHROW
-{
-    bool delete_me;
-    {
-        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
-        delete_me = (--this->ref_count_ == 0);
-    }
-    if (delete_me) { delete this; }
-}
 
 /**
  * @fn void openvrml::intrusive_ptr_release(const node * n)
@@ -2019,34 +1996,6 @@ openvrml::scene * openvrml::node::scene() const OPENVRML_NOTHROW
     return this->scene_;
 }
 
-/**
- * @brief Get the implementation nodes of a @c PROTO instance.
- *
- * If the @c node is not a @c PROTO instance, the returned @c vector is empty.
- *
- * This function delegates to @c #do_impl_nodes.
- *
- * @return the implementation nodes.
- */
-const std::vector<boost::intrusive_ptr<openvrml::node> > &
-openvrml::node::impl_nodes() const OPENVRML_NOTHROW
-{
-    return this->do_impl_nodes();
-}
-
-/**
- * @brief Get the implementation nodes of a @c PROTO instance.
- *
- * This default implementation returns an empty @c vector.
- *
- * @return an empty @c vector.
- */
-const std::vector<boost::intrusive_ptr<openvrml::node> > &
-openvrml::node::do_impl_nodes() const OPENVRML_NOTHROW
-{
-    static const std::vector<boost::intrusive_ptr<openvrml::node> > empty_vec;
-    return empty_vec;
-}
 
 /**
  * @brief Initialize the node.
@@ -2618,16 +2567,6 @@ void openvrml::node::emit_event(openvrml::event_emitter & emitter,
     emitter.emit_event(timestamp);
 }
 
-/**
- * @brief The @c scene mutex.
- *
- * @return the @c scene mutex.
- */
-openvrml::read_write_mutex & openvrml::node::scene_mutex()
-{
-    return this->scene_mutex_;
-}
-
 namespace {
     struct OPENVRML_LOCAL field_printer_ {
         field_printer_(const openvrml::node & node,
@@ -2672,7 +2611,7 @@ namespace {
         {
             using namespace openvrml;
             using boost::mpl::for_each;
-            using openvrml::local::field_value_types;
+            using openvrml_::field_value_types;
             if (interface_.type == node_interface::exposedfield_id
                     || interface_.type == node_interface::field_id) {
                 this->out << std::string(this->indent + indent_increment_, ' ')
@@ -2786,20 +2725,6 @@ void openvrml::node::do_initialize(double)
 void openvrml::node::do_shutdown(double) OPENVRML_NOTHROW
 {}
 
-/**
- * @relatesalso openvrml::node
- *
- * @brief Check whether a @c node is a @c PROTO instance.
- *
- * @param[in] n a @c node.
- *
- * @return @c true if @p n is a @c PROTO instance; @c false otherwise.
- */
-bool openvrml::is_proto_instance(const node & n)
-{
-    return !n.impl_nodes().empty();
-}
-
 namespace {
     struct OPENVRML_LOCAL add_listener {
         add_listener(openvrml::event_emitter & emitter,
@@ -2865,7 +2790,7 @@ bool openvrml::add_route(node & from,
     bool added_route = false;
     try {
         using boost::mpl::for_each;
-        using openvrml::local::field_value_types;
+        using openvrml_::field_value_types;
         for_each<field_value_types>(add_listener(emitter,
                                                  listener,
                                                  added_route));
@@ -2931,7 +2856,7 @@ bool openvrml::delete_route(node & from,
     bool deleted_route = false;
     try {
         using boost::mpl::for_each;
-        using openvrml::local::field_value_types;
+        using openvrml_::field_value_types;
         for_each<field_value_types>(remove_listener(emitter,
                                                     listener,
                                                     deleted_route));
@@ -3166,7 +3091,6 @@ openvrml::appearance_node::~appearance_node() OPENVRML_NOTHROW
 void openvrml::appearance_node::render_appearance(viewer & v,
                                                   rendering_context context)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_appearance(v, context);
         this->modified(false);
@@ -3434,7 +3358,6 @@ void openvrml::child_node::relocate() OPENVRML_THROW1(std::bad_alloc)
 void openvrml::child_node::render_child(viewer & v,
                                         const rendering_context context)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_child(v, context);
         this->modified(false);
@@ -3797,7 +3720,6 @@ openvrml::viewer::object_t
 openvrml::geometry_node::render_geometry(viewer & v,
                                          rendering_context context)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         boost::mutex::scoped_lock lock(this->geometry_reference_mutex_);
 
@@ -4408,7 +4330,6 @@ openvrml::scoped_light_node::~scoped_light_node() OPENVRML_NOTHROW
  */
 void openvrml::scoped_light_node::render_scoped_light(viewer & v)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_scoped_light(v);
     }
@@ -4527,7 +4448,6 @@ openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
 openvrml::viewer::texture_object_t
 openvrml::texture_node::render_texture(viewer & v)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         boost::mutex::scoped_lock lock(this->texture_reference_mutex_);
 
@@ -4678,7 +4598,6 @@ openvrml::texture_transform_node::~texture_transform_node() OPENVRML_NOTHROW
  */
 void openvrml::texture_transform_node::render_texture_transform(viewer & v)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_texture_transform(v);
         this->modified(false);
@@ -5061,7 +4980,7 @@ void openvrml::node_traverser::halt_traversal() OPENVRML_NOTHROW
  *
  * @return @c true if the traversal has been halted; @c false otherwise.
  */
-bool openvrml::node_traverser::halted() const OPENVRML_NOTHROW
+bool openvrml::node_traverser::halted() OPENVRML_NOTHROW
 {
     return this->halt;
 }
@@ -5073,7 +4992,7 @@ bool openvrml::node_traverser::halted() const OPENVRML_NOTHROW
  *
  * @return @c true if @p n has been traversed; @c false otherwise.
  */
-bool openvrml::node_traverser::traversed(node & n) const OPENVRML_NOTHROW
+bool openvrml::node_traverser::traversed(node & n) OPENVRML_NOTHROW
 {
     return this->traversed_nodes.find(&n) != this->traversed_nodes.end();
 }

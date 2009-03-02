@@ -19,7 +19,7 @@
 //
 
 # include <limits>
-# include <openvrml/local/float.h>
+# include <private.h>
 # include "bounding_volume.h"
 # include "field_value.h"
 # include "frustum.h"
@@ -441,7 +441,7 @@ do_intersect_frustum(const openvrml::frustum & frustum) const
  */
 void openvrml::bounding_sphere::do_extend(const vec3f & p)
 {
-    using openvrml::local::fequal;
+    using openvrml_::fequal;
 
     if (this->maximized()) { return; }
 
@@ -509,7 +509,7 @@ openvrml::bounding_sphere::do_extend(const axis_aligned_bounding_box &)
  */
 void openvrml::bounding_sphere::do_extend(const bounding_sphere & b)
 {
-    using openvrml::local::fequal;
+    using openvrml_::fequal;
 
     if (this->maximized()) { return; }
 

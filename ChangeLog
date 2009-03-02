@@ -1,3 +1,18 @@
+2009-03-02 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.17.11 release.
+
+	* NEWS
+	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Updated to 8:8:0.
+
 2009-03-01 Braden McDaniel  <braden@endoframe.com>
 
 	Changed "model/x3d+vrml" to "model/x3d-vrml" in accordance with
@@ -5,7 +20,6 @@
 
 	* README
 	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/scene.cpp
 	* src/openvrml-player/filechooserdialog.cpp
 
 2009-03-01 Braden McDaniel  <braden@endoframe.com>
@@ -234,531 +248,6 @@
 	openvrml_xembed_browser_constructor.  Removed member
 	"initialized_".  Removed "get_url_result" member function.
 
-2009-02-27 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/script.cpp
-	(openvrml::script_factory_registry::impl::~impl()): Clear the maps
-	before unloading the modules so that we don't reference code
-	that's just been unloaded.
-
-2008-12-10 Braden McDaniel  <braden@endoframe.com>
-
-	* src/Makefile.am: Build libraries with -no-undefined.
-
-2008-11-24 Braden McDaniel  <braden@endoframe.com>
-
-	Provide access to a PROTO instance's implementation nodes.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::externproto_node): Override
-	openvrml::node::do_impl_nodes.
-	(openvrml::externproto_node::do_impl_nodes() const): If there is
-	an implementation, return the implementation's nodes.
-	* src/libopenvrml/openvrml/local/proto.cpp
-	(openvrml::local::proto_node): Override
-	openvrml::node::do_impl_nodes.
-	(openvrml::local::proto_node::do_impl_nodes() const): Return the
-	implementation nodes.
-	* src/libopenvrml/openvrml/node.cpp
-	(openvrml::node::impl_nodes() const): Delegate to
-	node::do_impl_nodes.
-	(openvrml::node::do_impl_nodes() const): Default implementation
-	returns an empty vector.
-	(openvrml::is_proto_instance(const node &)): Return true if a node
-	is a PROTO instance; false otherwise.
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::node): Added member functions impl_nodes and
-	do_impl_nodes.
-	(openvrml::is_proto_instance(const node &)): Added; detects if a
-	node instance is a PROTO instance.
-
-2008-11-23 Braden McDaniel  <braden@endoframe.com>
-
-	Use trailing underscore convention for private variables in
-	openvrml::local::proto_node.
-
-	* src/libopenvrml/openvrml/local/proto.cpp
-
-2008-11-23 Braden McDaniel  <braden@endoframe.com>
-
-	Use trailing underscore convention for private variables in
-	openvrml::local::proto_node_metatype.
-
-	* src/libopenvrml/openvrml/local/proto.cpp
-	* src/libopenvrml/openvrml/local/proto.h
-
-2008-11-22 Braden McDaniel  <braden@endoframe.com>
-
-	Made openvrml::node_traverser::halted and
-	openvrml::node_traverser::traversed const.
-
-	* src/libopenvrml/openvrml/node.cpp
-	(openvrml::node_traverser::halted() const): Made const.
-	(openvrml::node_traverser::traversed(node &) const): Made const.
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::node_traverser): Made the halted and traversed member
-	functions const.
-
-2008-11-21 Braden McDaniel  <braden@endoframe.com>
-
-	Moved node implementations to dynamically loaded libraries.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
-	Removed dependencies libpng, zlib, and FreeType; added
-	libopenvrml/openvrml/local/node_metatype_registry_impl.{cpp,h};
-	removed libopenvrml/openvrml/vrml97node.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_cad_geometry.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_core.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_dis.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_environmental_effects.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_event_utilities.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_geometry2d.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_geospatial.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_grouping.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_hanim.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_interpolation.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_key_device_sensor.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_networking.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_nurbs.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_rendering.{cpp,h}, removed
-	libopenvrml/openvrml/x3d_shape.{cpp,h} removed
-	libopenvrml/openvrml/x3d_texturing.{cpp,h}.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj:
-	Build as a DLL; added dependencies libpng, zlib, and FreeType;
-	added node/vrml97/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-cad-geometry/x3d-cad-geometry.vcproj:
-	Build as a DLL; added
-	node/x3d-cad-geometry/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj:
-	Build as a DLL; added node/x3d-core/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-dis/x3d-dis.vcproj:
-	Build as a DLL; added node/x3d-dis/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-environmental-effects/x3d-environmental-effects.vcproj:
-	Build as a DLL; added
-	node/x3d-environmental-effects/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-event-utilities/x3d-event-utilities.vcproj:
-	Build as a DLL; added
-	node/x3d-event-utilities/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj:
-	Build as a DLL; added
-	node/x3d-geometry2d/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj:
-	Build as a DLL; added
-	node/x3d-geospatial/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-grouping/x3d-grouping.vcproj:
-	Build as a DLL; added
-	node/x3d-grouping/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-h-anim/x3d-h-anim.vcproj:
-	Build as a DLL; added node/x3d-h-anim/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-interpolation/x3d-interpolation.vcproj:
-	Build as a DLL; added
-	node/x3d-interpolation/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj:
-	Build as a DLL; added
-	node/x3d-key-device-sensor/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-networking/x3d-networking.vcproj:
-	Build as a DLL; added
-	node/x3d-networking/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-nurbs/x3d-nurbs.vcproj:
-	Build as a DLL; added node/x3d-nurbs/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-rendering/x3d-rendering.vcproj:
-	Build as a DLL; added
-	node/x3d-rendering/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-shape/x3d-shape.vcproj:
-	Build as a DLL; added node/x3d-shape/register_node_metatypes.cpp.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-texturing/x3d-texturing.vcproj:
-	Build as a DLL; added
-	node/x3d-texturing/register_node_metatypes.cpp.
-	* src/Makefile.am
-	(noinst_LTLIBRARIES): Removed.
-	(openvrml_include_HEADERS): Removed
-	libopenvrml/openvrml/vrml97node.h,
-	libopenvrml/openvrml/x3d_core.h,
-	libopenvrml/openvrml/x3d_networking.h,
-	libopenvrml/openvrml/x3d_grouping.h,
-	libopenvrml/openvrml/x3d_rendering.h,
-	libopenvrml/openvrml/x3d_shape.h,
-	libopenvrml/openvrml/x3d_geometry2d.h,
-	libopenvrml/openvrml/x3d_texturing.h,
-	libopenvrml/openvrml/x3d_interpolation.h,
-	libopenvrml/openvrml/x3d_key_device_sensor.h,
-	libopenvrml/openvrml/x3d_event_utilities.h,
-	libopenvrml/openvrml/x3d_dis.h,
-	libopenvrml/openvrml/x3d_environmental_effects.h,
-	libopenvrml/openvrml/x3d_geospatial.h,
-	libopenvrml/openvrml/x3d_hanim.h,
-	libopenvrml/openvrml/x3d_nurbs.h,
-	libopenvrml/openvrml/x3d_cad_geometry.h
-	(libopenvrml_libopenvrml_la_SOURCES): Removed
-	libopenvrml/openvrml/vrml97node.cpp,
-	libopenvrml/openvrml/x3d_core.cpp,
-	libopenvrml/openvrml/x3d_networking.cpp,
-	libopenvrml/openvrml/x3d_grouping.cpp,
-	libopenvrml/openvrml/x3d_rendering.cpp,
-	libopenvrml/openvrml/x3d_shape.cpp,
-	libopenvrml/openvrml/x3d_geometry2d.cpp,
-	libopenvrml/openvrml/x3d_texturing.cpp,
-	libopenvrml/openvrml/x3d_interpolation.cpp,
-	libopenvrml/openvrml/x3d_key_device_sensor.cpp,
-	libopenvrml/openvrml/x3d_event_utilities.cpp,
-	libopenvrml/openvrml/x3d_dis.cpp,
-	libopenvrml/openvrml/x3d_environmental_effects.cpp,
-	libopenvrml/openvrml/x3d_geospatial.cpp,
-	libopenvrml/openvrml/x3d_hanim.cpp,
-	libopenvrml/openvrml/x3d_nurbs.cpp,
-	libopenvrml/openvrml/x3d_cad_geometry.cpp; added
-	libopenvrml/openvrml/local/node_metatype_registry_impl.{cpp,h}.
-	(libopenvrml_libopenvrml_la_LIBADD): Removed
-	node/vrml97/libvrml97.la, node/x3d-core/libx3d-core.la,
-	node/x3d-networking/libx3d-networking.la,
-	node/x3d-grouping/libx3d-grouping.la,
-	node/x3d-rendering/libx3d-rendering.la,
-	node/x3d-shape/libx3d-shape.la,
-	node/x3d-geometry2d/libx3d-geometry2d.la,
-	node/x3d-texturing/libx3d-texturing.la,
-	node/x3d-interpolation/libx3d-interpolation.la,
-	node/x3d-key-device-sensor/libx3d-key-device-sensor.la,
-	node/x3d-event-utilities/libx3d-event-utilities.la,
-	node/x3d-dis/libx3d-dis.la,
-	node/x3d-environmental-effects/libx3d-environmental-effects.la,
-	node/x3d-geospatial/libx3d-geospatial.la,
-	node/x3d-h-anim/libx3d-h-anim.la, node/x3d-nurbs/libx3d-nurbs.la,
-	node/x3d-cad-geometry/libx3d-cad-geometry.la.
-	(openvrmlnode_LTLIBRARIES): Added node/vrml97.la,
-	node/x3d-core.la, node/x3d-networking.la, node/x3d-grouping.la,
-	node/x3d-rendering.la, node/x3d-shape.la, node/x3d-geometry2d.la,
-	node/x3d-texturing.la, node/x3d-interpolation.la,
-	node/x3d-key-device-sensor.la, node/x3d-event-utilities.la,
-	node/x3d-dis.la, node/x3d-environmental-effects.la,
-	node/x3d-geospatial.la, node/x3d-h-anim.la, node/x3d-nurbs.la,
-	node/x3d-cad-geometry.la.
-	(node_vrml97_la_CPPFLAGS): Replaced
-	node_vrml97_libvrml97_la_CPPFLAGS.
-	(node_vrml97_la_CXXFLAGS): Replaced
-	node_vrml97_libvrml97_la_CXXFLAGS.
-	(node_vrml97_la_SOURCES): Replaced
-	node_vrml97_libvrml97_la_SOURCES; added
-	node/vrml97/register_node_metatypes.cpp.
-	(node_vrml97_la_LDFLAGS): Replaced
-	node_vrml97_libvrml97_la_LDFLAGS; added -module.
-	(node_x3d_core_la_CPPFLAGS): Replaced
-	node_x3d_core_libx3d_core_la_CPPFLAGS.
-	(node_x3d_core_la_CXXFLAGS): Replaced
-	node_x3d_core_libx3d_core_la_CXXFLAGS.
-	(node_x3d_core_la_SOURCES): Replaced
-	node_x3d_core_libx3d_core_la_SOURCES; added
-	node/x3d-core/register_node_metatypes.cpp.
-	(node_x3d_core_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_networking_la_CPPFLAGS): Replaced
-	node_x3d_networking_libx3d_networking_la_CPPFLAGS.
-	(node_x3d_networking_la_CXXFLAGS): Replaced
-	node_x3d_networking_libx3d_networking_la_CXXFLAGS.
-	(node_x3d_networking_la_SOURCES): Replaced
-	node_x3d_networking_libx3d_networking_la_SOURCES; added
-	node/x3d-networking/register_node_metatypes.cpp.
-	(node_x3d_networking_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_grouping_la_CPPFLAGS): Replaced
-	node_x3d_grouping_libx3d_grouping_la_CPPFLAGS.
-	(node_x3d_grouping_la_CXXFLAGS): Replaced
-	node_x3d_grouping_libx3d_grouping_la_CXXFLAGS.
-	(node_x3d_grouping_la_SOURCES): Replaced
-	node_x3d_grouping_libx3d_grouping_la_SOURCES; added
-	node/x3d-grouping/register_node_metatypes.cpp.
-	(node_x3d_grouping_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_rendering_la_CPPFLAGS): Replaced
-	node_x3d_rendering_libx3d_rendering_la_CPPFLAGS.
-	(node_x3d_rendering_la_CXXFLAGS): Replaced
-	node_x3d_rendering_libx3d_rendering_la_CXXFLAGS.
-	(node_x3d_rendering_la_SOURCES): Replaced
-	node_x3d_rendering_libx3d_rendering_la_SOURCES; added
-	node/x3d-rendering/register_node_metatypes.cpp.
-	(node_x3d_rendering_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_shape_la_CPPFLAGS): Replaced
-	node_x3d_shape_libx3d_shape_la_CPPFLAGS.
-	(node_x3d_shape_la_CXXFLAGS): Replaced
-	node_x3d_shape_libx3d_shape_la_CXXFLAGS.
-	(node_x3d_shape_la_SOURCES): Replaced
-	node_x3d_shape_libx3d_shape_la_SOURCES; added
-	node/x3d-shape/register_node_metatypes.cpp.
-	(node_x3d_shape_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_geometry2d_la_CPPFLAGS): Replaced
-	node_x3d_geometry2d_libx3d_geometry2d_la_CPPFLAGS.
-	(node_x3d_geometry2d_la_CXXFLAGS): Replaced
-	node_x3d_geometry2d_libx3d_geometry2d_la_CXXFLAGS.
-	(node_x3d_geometry2d_la_SOURCES): Replaced
-	node_x3d_geometry2d_libx3d_geometry2d_la_SOURCES; added
-	node/x3d-geometry2d/register_node_metatypes.cpp.
-	(node_x3d_geometry2d_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_texturing_la_CPPFLAGS): Replaced
-	node_x3d_texturing_libx3d_texturing_la_CPPFLAGS.
-	(node_x3d_texturing_la_CXXFLAGS): Replaced
-	node_x3d_texturing_libx3d_texturing_la_CXXFLAGS.
-	(node_x3d_texturing_la_SOURCES): Replaced
-	node_x3d_texturing_libx3d_texturing_la_SOURCES; added
-	node/x3d-texturing/register_node_metatypes.cpp.
-	(node_x3d_texturing_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_interpolation_la_CPPFLAGS): Replaced
-	node_x3d_interpolation_libx3d_interpolation_la_CPPFLAGS.
-	(node_x3d_interpolation_la_CXXFLAGS): Replaced
-	node_x3d_interpolation_libx3d_interpolation_la_CXXFLAGS.
-	(node_x3d_interpolation_la_SOURCES): Replaced
-	node_x3d_interpolation_libx3d_interpolation_la_SOURCES; added
-	node/x3d-interpolation/register_node_metatypes.cpp.
-	(node_x3d_interpolation_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_key_device_sensor_la_CPPFLAGS): Replaced
-	node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CPPFLAGS.
-	(node_x3d_key_device_sensor_la_CXXFLAGS): Replaced
-	node_x3d_key_device_sensor_libx3d_key_device_sensor_la_CXXFLAGS.
-	(node_x3d_key_device_sensor_la_SOURCES): Replaced
-	node_x3d_key_device_sensor_libx3d_key_device_sensor_la_SOURCES;
-	added node/x3d-key-device-sensor/register_node_metatypes.cpp.
-	(node_x3d_key_device_sensor_la_LDFLAGS): Added -module
-	-avoid-version.
-	(node_x3d_event_utilities_la_CPPFLAGS): Replaced
-	node_x3d_event_utilities_libx3d_event_utilities_la_CPPFLAGS.
-	(node_x3d_event_utilities_la_CXXFLAGS): Replaced
-	node_x3d_event_utilities_libx3d_event_utilities_la_CXXFLAGS.
-	(node_x3d_event_utilities_la_SOURCES): Replaced
-	node_x3d_event_utilities_libx3d_event_utilities_la_SOURCES; added
-	node/x3d-event-utilities/register_node_metatypes.cpp.
-	(node_x3d_event_utilities_la_LDFLAGS): Added -module
-	-avoid-version.
-	(node_x3d_dis_la_CPPFLAGS): Replaced
-	node_x3d_dis_libx3d_dis_la_CPPFLAGS.
-	(node_x3d_dis_la_CXXFLAGS): Replaced
-	node_x3d_dis_libx3d_dis_la_CXXFLAGS.
-	(node_x3d_dis_la_SOURCES): Replaced
-	node_x3d_dis_libx3d_dis_la_SOURCES; added
-	node/x3d-dis/register_node_metatypes.cpp.
-	(node_x3d_dis_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_environmental_effects_la_CPPFLAGS): Replaced
-	node_x3d_environmental_effects_libx3d_environmental_effects_la_CPPFLAGS.
-	(node_x3d_environmental_effects_la_CXXFLAGS): Replaced
-	node_x3d_environmental_effects_libx3d_environmental_effects_la_CXXFLAGS.
-	(node_x3d_environmental_effects_la_SOURCES): Replaced
-	node_x3d_environmental_effects_libx3d_environmental_effects_la_SOURCES;
-	added node/x3d-environmental-effects/register_node_metatypes.cpp.
-	(node_x3d_environmental_effects_la_LDFLAGS): Added -module
-	-avoid-version.
-	(node_x3d_geospatial_la_CPPFLAGS): Replaced
-	node_x3d_geospatial_libx3d_geospatial_la_CPPFLAGS.
-	(node_x3d_geospatial_la_CXXFLAGS): Replaced
-	node_x3d_geospatial_libx3d_geospatial_la_CXXFLAGS.
-	(node_x3d_geospatial_la_SOURCES): Replaced
-	node_x3d_geospatial_libx3d_geospatial_la_SOURCES; added
-	node/x3d-geospatial/register_node_metatypes.cpp.
-	(node_x3d_geospatial_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_h_anim_la_CPPFLAGS): Replaced
-	node_x3d_h_anim_libx3d_h_anim_la_CPPFLAGS.
-	(node_x3d_h_anim_la_CXXFLAGS): Replaced
-	node_x3d_h_anim_libx3d_h_anim_la_CXXFLAGS.
-	(node_x3d_h_anim_la_SOURCES): Replaced
-	node_x3d_h_anim_libx3d_h_anim_la_SOURCES; added
-	node/x3d-h-anim/register_node_metatypes.cpp.
-	(node_x3d_h_anim_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_nurbs_la_CPPFLAGS): Replaced
-	node_x3d_nurbs_libx3d_nurbs_la_CPPFLAGS.
-	(node_x3d_nurbs_la_CXXFLAGS): Replaced
-	node_x3d_nurbs_libx3d_nurbs_la_CXXFLAGS.
-	(node_x3d_nurbs_la_SOURCES): Replaced
-	node_x3d_nurbs_libx3d_nurbs_la_SOURCES; added
-	node/x3d-nurbs/register_node_metatypes.cpp.
-	(node_x3d_nurbs_la_LDFLAGS): Added -module -avoid-version.
-	(node_x3d_cad_geometry_la_CPPFLAGS): Replaced
-	node_x3d_cad_geometry_libx3d_cad_geometry_la_CPPFLAGS.
-	(node_x3d_cad_geometry_la_CXXFLAGS): Replaced
-	node_x3d_cad_geometry_libx3d_cad_geometry_la_CXXFLAGS.
-	(node_x3d_cad_geometry_la_SOURCES): Replaced
-	node_x3d_cad_geometry_libx3d_cad_geometry_la_SOURCES; added
-	node/x3d-cad-geometry/register_node_metatypes.cpp.
-	(node_x3d_cad_geometry_la_LDFLAGS): Added -module -avoid-version.
-	* src/node/vrml97/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/vrml97node.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_vrml97_node_metatypes.
-	* src/node/x3d-cad-geometry/register_node_metatypes.cpp: Moved
-	from libopenvrml/openvrml/x3d_cad_geometry.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_cad_geometry_node_metatypes.
-	* src/node/x3d-core/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/vrml97node.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_vrml97_node_metatypes.
-	* src/node/x3d-dis/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_dis.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_dis_node_metatypes.
-	* src/node/x3d-environmental-effects/register_node_metatypes.cpp:
-	Moved from libopenvrml/openvrml/x3d_environmental_effects.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_environmental_effects_node_metatypes.
-	* src/node/x3d-event-utilities/register_node_metatypes.cpp: Moved
-	from libopenvrml/openvrml/x3d_event_utilities.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_event_utilities_node_metatypes.
-	* src/node/x3d-geometry2d/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_geometry2d.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_geometry2d_node_metatypes.
-	* src/node/x3d-geospatial/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_geospatial.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_geospatial_node_metatypes.
-	* src/node/x3d-grouping/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_grouping.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_grouping_node_metatypes.
-	* src/node/x3d-h-anim/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_hanim.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_hanim_node_metatypes.
-	* src/node/x3d-interpolation/register_node_metatypes.cpp: Moved
-	from libopenvrml/openvrml/x3d_interpolation.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_interpolation_node_metatypes.
-	* src/node/x3d-key-device-sensor/register_node_metatypes.cpp:
-	Moved from libopenvrml/openvrml/x3d_key_device_sensor.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_key_device_sensor_node_metatypes.
-	* src/node/x3d-networking/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_networking.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_networking_node_metatypes.
-	* src/node/x3d-nurbs/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_nurbs.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_nurbs_node_metatypes.
-	* src/node/x3d-rendering/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_rendering.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_rendering_node_metatypes.
-	* src/node/x3d-shape/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_shape.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_shape_node_metatypes.
-	* src/node/x3d-texturing/register_node_metatypes.cpp: Moved from
-	libopenvrml/openvrml/x3d_texturing.cpp.
-	(openvrml_register_node_metatypes(openvrml::node_metatype_registry&)):
-	Replaced register_x3d_texturing_node_metatypes.
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::node_metatype_map::node_metatype_map()):
-	Removed.
-	(openvrml::browser::node_metatype_map::~node_metatype_map()):
-	Removed.
-	(openvrml::browser::node_metatype_map::operator=(const
-	node_metatype_map &)): Removed.
-	(openvrml::browser::node_metatype_map::init(viewpoint_node *,
-	double)): Removed; logic moved to
-	openvrml::local::node_metatype_registry_impl::init.
-	(openvrml::browser::node_metatype_map::insert(const std::string &,
-	const boost::shared_ptr<openvrml::node_metatype> &)): Removed;
-	replaced with
-	openvrml::node_metatype_registry::register_node_metatype.
-	(openvrml::browser::node_metatype_map::remove(const
-	std::string&)): Removed.
-	(openvrml::browser::node_metatype_map::find(const std::string &)):
-	Removed; logic moved to
-	openvrml::local::node_metatype_registry_impl::find.
-	(openvrml::browser::node_metatype_map::node_metatype_ids(const
-	node_metatype &)): Removed; logic moved to
-	openvrml::local::node_metatype_registry_impl::node_metatype_ids.
-	(openvrml::browser::node_metatype_map::render(viewer &)): Removed;
-	logic moved to
-	openvrml::local::node_metatype_registry_impl::render.
-	(openvrml::browser::node_metatype_map::shutdown(double)): Removed;
-	logic moved to
-	openvrml::local::node_metatype_registry_impl::shutdown.
-	(register_node_metatypes(openvrml::browser &)): Removed.
-	(openvrml::browser::browser(resource_fetcher &, std::ostream &,
-	std::ostream &)): Initialize node_metatype_registry_; removed call
-	to register_node_metatypes.
-	(openvrml::browser::~browser()): Shutdown node_metatype_registry_
-	instead of node_metatype_map_.
-	(openvrml::browser::add_node_metatype(const node_metatype_id &,
-	const boost::shared_ptr<node_metatype> &)): Delegate to
-	openvrml::local::node_metatype_registry_impl::register_node_metatype.
-	(openvrml::browser::node_metatype(const node_metatype_id &)
-	const): Delegate to
-	openvrml::local::node_metatype_registry_impl::find.
-	(openvrml::browser::set_world(resource_istream &)): Teardown/setup
-	node_metatype_registry_ instead of node_metatype_map_.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::node_metatype_registry): Added class definition.
-	(openvrml::browser): Removed node_metatype_map; this logic moved
-	to openvrml::node_metatype_registry and
-	openvrml::local::node_metatype_registry_impl.  Added
-	node_metatype_registry_ member.
-	* src/libopenvrml/openvrml/exposedfield.h
-	(openvrml::exposedfield): Removed OPENVRML_API; templates don't
-	need it.
-	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
-	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.h
-	(openvrml::local::node_metatype_registry_impl): Added; loads and
-	maintains the node_metatypes used by an openvrml::browser
-	instance.
-	* src/libopenvrml/openvrml/node.cpp
-	(openvrml::operator==(const node_type &, const node_type &)): Use
-	the node_metatype_registry_impl instead of the node_metatype_map.
-	* src/libopenvrml/openvrml/read_write_mutex.h
-	(openvrml::read_write_mutex::scoped_read_lock): Applied
-	OPENVRML_API.
-	(openvrml::read_write_mutex::scoped_write_lock): Applied
-	OPENVRML_API.
-	(openvrml::read_write_mutex::scoped_read_write_lock): Applied
-	OPENVRML_API.
-	* src/libopenvrml/openvrml/vrml97node.cpp: Moved to
-	src/node/vrml97/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/vrml97node.h: Removed.
-	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp: Moved to
-	src/node/x3d-cad-geometry/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_cad_geometry.h: Removed.
-	* src/libopenvrml/openvrml/x3d_core.cpp: Moved to
-	src/node/x3d-core/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_core.h: Removed.
-	* src/libopenvrml/openvrml/x3d_dis.cpp: Moved to
-	src/node/x3d-dis/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_dis.h: Removed.
-	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp: Moved to
-	src/node/x3d-environmental-effects/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_environmental_effects.h: Removed.
-	* src/libopenvrml/openvrml/x3d_event_utilities.cpp: Moved to
-	src/node/x3d-event-utilities/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_event_utilities.h: Removed.
-	* src/libopenvrml/openvrml/x3d_geometry2d.cpp: Moved to
-	src/node/x3d-geometry2d/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_geometry2d.h: Removed.
-	* src/libopenvrml/openvrml/x3d_geospatial.cpp: Moved to
-	src/node/x3d-geospatial/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_geospatial.h: Removed.
-	* src/libopenvrml/openvrml/x3d_grouping.cpp: Moved to
-	src/node/x3d-grouping/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_grouping.h: Removed.
-	* src/libopenvrml/openvrml/x3d_hanim.cpp: Moved to
-	src/node/x3d-h-anim/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_hanim.h: Removed.
-	* src/libopenvrml/openvrml/x3d_interpolation.cpp: Moved to
-	src/node/x3d-interpolation/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_interpolation.h: Removed.
-	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp: Moved to
-	src/node/x3d-key-device-sensor/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_key_device_sensor.h: Removed.
-	* src/libopenvrml/openvrml/x3d_networking.cpp: Moved to
-	src/node/x3d-networking/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_networking.h: Removed.
-	* src/libopenvrml/openvrml/x3d_nurbs.cpp: Moved to
-	src/node/x3d-nurbs/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_nurbs.h: Removed.
-	* src/libopenvrml/openvrml/x3d_rendering.cpp: Moved to
-	src/node/x3d-rendering/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_rendering.h: Removed.
-	* src/libopenvrml/openvrml/x3d_shape.cpp: Moved to
-	src/node/x3d-shape/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_shape.h: Removed.
-	* src/libopenvrml/openvrml/x3d_texturing.cpp: Moved to
-	src/node/x3d-texturing/register_node_metatypes.cpp.
-	* src/libopenvrml/openvrml/x3d_texturing.h: Removed.
-
 2008-11-10 Braden McDaniel  <braden@endoframe.com>
 
 	Updated to 20081110 release of Autoconf GL Macros.  This addresses
@@ -775,30 +264,6 @@
 	* m4/ax_check_gl.m4
 	* m4/ax_check_glu.m4
 	* m4/ax_lang_compiler_ms.m4
-
-2008-11-09 Braden McDaniel  <braden@endoframe.com>
-
-	Acquire a read lock on the scene pointer mutex when rendering a
-	node.
-
-	* src/libopenvrml/openvrml/node.cpp
-	(openvrml::node::scene_mutex()): Get the scene pointer mutex.
-	(openvrml::appearance_node::render_appearance(viewer &,
-	rendering_context)): Acquire a read lock on the scene pointer
-	mutex.
-	(openvrml::child_node::render_child(viewer &, rendering_context)):
-	Acquire a read lock on the scene pointer mutex.
-	(openvrml::geometry_node::render_geometry(viewer &,
-	rendering_context)): Acquire a read lock on the scene pointer
-	mutex.
-	(openvrml::scoped_light_node::render_scoped_light(viewer &)):
-	Acquire a read lock on the scene pointer mutex.
-	(openvrml::texture_node::render_texture(viewer &)): Acquire a read
-	lock on the scene pointer mutex.
-	(openvrml::texture_transform_node::render_texture_transform(viewer&)):
-	Acquire a read lock on the scene pointer mutex.
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::node): Added protected accessor for the scene mutex.
 
 2008-11-03 Braden McDaniel  <braden@endoframe.com>
 
@@ -818,13 +283,16 @@
 	scene pointer is nonnull.
 	(openvrml::texture_transform_node::render_texture_transform(viewer&)):
 	Check that the scene pointer is nonnull.
-	* src/node/vrml97/image_texture.cpp
+
+2008-11-03 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
 	(image_texture_node::update_texture()): Assert that the scene
 	pointer is nonnull (i.e., the node has been initialized).
 
 2008-11-03 Braden McDaniel  <braden@endoframe.com>
 
-	* src/libopenvrml/openvrml/local/proto.cpp
+	* src/libopenvrml/openvrml/browser.cpp
 	(proto_node::do_shutdown(double)): Doc-comment fix.
 
 2008-10-26 Braden McDaniel  <braden@endoframe.com>
@@ -833,6 +301,12 @@
 
 	* NEWS
 	* README
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
 
 2008-10-26 Braden McDaniel  <braden@endoframe.com>
 
@@ -926,130 +400,18 @@
 	guint64, GError **)): Proper factory object path is
 	"org/openvrml/BrowserFactory".
 
-2008-10-23 Braden McDaniel  <braden@endoframe.com>
-
-	Require Automake 1.10.1.
-
-	* configure.ac: Require Automake 1.10.1.
-	* src/Makefile.am: Removed hack to make distcheck work with
-	Automake 1.10.
-
-2008-10-16 Braden McDaniel  <braden@endoframe.com>
-
-	Moved floating point comparison functions from private.h to
-	openvrml/local/float.h.
-
-	* src/Makefile.am
-	(libopenvrml_libopenvrml_la_SOURCES): Added
-	libopenvrml/openvrml/local/float.h.
-	* src/libopenvrml/private.h: Moved floating point comparison
-	functions to openvrml/local/float.h.
-	* src/libopenvrml/openvrml/basetypes.cpp
-	* src/libopenvrml/openvrml/bounding_volume.cpp
-	* src/libopenvrml/openvrml/frustum.cpp
-	* src/libopenvrml/openvrml/local/float.h: Added file; moved
-	floating point comparison functions here.
-	* src/node/vrml97/cylinder_sensor.cpp
-	* src/node/vrml97/normal_interpolator.cpp
-	* src/node/vrml97/orientation_interpolator.cpp
-	* src/node/vrml97/proximity_sensor.cpp
-	* src/node/vrml97/texture_transform.cpp
-	* src/node/vrml97/time_sensor.cpp
-	* src/node/vrml97/visibility_sensor.cpp
-	* src/script/javascript.cpp
-
-2008-10-16 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Removed redundant AC_ARG_VAR for JAVA_HOME.
-
-2008-10-15 Braden McDaniel  <braden@endoframe.com>
-
-	* ide-projects/Makefile.am
-	(VISUALC9_0_FILES): Add project files for node component libraries
-	to the distribution.
-
-2008-10-14 Braden McDaniel  <braden@endoframe.com>
-
-	Define _SECURE_SCL=0 for Release configurations.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-vrml97/parse-vrml97.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-x3dvrml/parse-x3dvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/pretty-print/pretty-print.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-cad-geometry/x3d-cad-geometry.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-dis/x3d-dis.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-environmental-effects/x3d-environmental-effects.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-event-utilities/x3d-event-utilities.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-grouping/x3d-grouping.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-h-anim/x3d-h-anim.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-interpolation/x3d-interpolation.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-networking/x3d-networking.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-nurbs/x3d-nurbs.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-shape/x3d-shape.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-rendering/x3d-rendering.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-texturing/x3d-texturing.vcproj
-
-2008-10-14 Braden McDaniel  <braden@endoframe.com>
-
-	Moved the boost::mpl::vector of field value types to the
-	openvrml::local namespace.
-
-	* src/libopenvrml/private.h: Moved field_value_types to the
-	openvrml::local namespace;
-	* src/libopenvrml/openvrml/local/proto.cpp: Use
-	openvrml::local::field_value_types.
-	* src/libopenvrml/openvrml/local/field_value_types.h: Added file;
-	contains the declaration of openvrml::local::field_value_types.
-	* src/libopenvrml/openvrml/node.cpp: Use
-	openvrml::local::field_value_types.
-	* src/libopenvrml/openvrml/browser.cpp: Use
-	openvrml::local::field_value_types.
-	* src/libopenvrml/openvrml/script.cpp: Use
-	openvrml::local::field_value_types.
-	* src/libopenvrml/openvrml/field_value.cpp: Use
-	openvrml::local::field_value_types.
-	* src/Makefile.am
-	(libopenvrml_libopenvrml_la_SOURCES): Added
-	libopenvrml/openvrml/local/field_value_types.h.
-
-2008-10-13 Braden McDaniel  <braden@endoframe.com>
-
-	Use the implementation of ScopeGuard buried in Boost.MultiIndex
-	instead of providing our own.  (Yes, it's in a "detail" namespace;
-	but since Boost doesn't guarantee any API stability from one
-	release to the next, that has little practical meaning.)
-
-	* src/libopenvrml/private.h: Removed ScopeGuard implementation.
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::externproto_node_metatype::load_proto::operator()()
-	const): Use boost::multi_index::detail::scope_guard.
-	* src/libopenvrml/openvrml/script.cpp
-	(openvrml::script_node::script_node(script_node_metatype &, const
-	boost::shared_ptr<openvrml::scope> &, const node_interface_set &,
-	const initial_value_map &)): Use
-	boost::multi_index::detail::scope_guard.
-	* src/script/javascript.cpp
-	(script::activate(double, const std::string &, size_t, const
-	openvrml::field_value * const[])): Use
-	boost::multi_index::detail::scope_guard.
-
 2008-10-09 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.9 release.
 
 	* NEWS
 	* README
+	* configure.ac
 	* doc/Doxyfile
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* mozilla-plugin/configure.ac
 	* src/Makefile.am: Updated libopenvrml libtool library version to
 	8:7:0; updated libopenvrml-gl libtool library version to 7:3:0.
 
@@ -1065,10 +427,6 @@
 
 	* configure.ac: Fail if dbus-glib isn't found.
 
-2008-10-07 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Removed redundant AC_ARG_VAR for JAVA_HOME.
-
 2008-10-06 Braden McDaniel  <braden@endoframe.com>
 
 	Process org.openvrml.BrowserControl.service.in with sed (rather
@@ -1081,11 +439,6 @@
 	* src/Makefile.am: Added rules to create
 	org.openvrml.BrowserControl.service from
 	org.openvrml.BrowserControl.service.in.
-
-2008-10-06 Braden McDaniel  <braden@endoframe.com>
-
-	* doc/Makefile.am: install/distcheck fixes for javadoc
-	documentation.
 
 2008-10-06 Braden McDaniel  <braden@endoframe.com>
 
@@ -1114,6 +467,11 @@
 	guint64, GError **)): Use dbus_g_proxy_new_for_name to get the
 	org.openvrml.BrowserFactory proxy.
 
+2008-10-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/Makefile.am: Made contents of BUILT_SOURCES conditional
+	based on ENABLE_XEMBED and ENABLE_PLAYER.
+
 2008-10-04 Braden McDaniel  <braden@endoframe.com>
 
 	If we set the absolute path of session_bus_servicesdir, the
@@ -1131,16 +489,34 @@
 	(openvrml_player_openvrml_player_CPPFLAGS): Can't safely use
 	builddir for relative paths; and we don't need it anyway.
 
-2008-10-02 Braden McDaniel  <braden@endoframe.com>
+2008-10-03 Braden McDaniel  <braden@endoframe.com>
 
-	Use jlong in JNI function signatures to ensure consistency with
-	javah output.
+	Revert to using libglade rather than GtkBuilder in openvrml-player.
 
-	* src/script/java.cpp
-	(Java_vrml_field_SFString_createPeer(JNIEnv *, jclass, jstring)):
-	Use jlong for the return type.
-	(Java_vrml_field_SFTime_createPeer(JNIEnv *, jclass, jdouble)):
-	Use jlong for the return type.
+	* configure.ac: Don't require Gtk+ 2.12; check for libglade.
+	* src/Makefile.am
+	(openvrml_player_openvrml_player_CXXFLAGS): Added GLADE_CFLAGS.
+	(openvrml_player_openvrml_player_LDFLAGS): Added GLADE_LIBS.
+	(openvrml_player_gladedir): Glade XML installation directory;
+	replaces openvrml_player_uidir.
+	(dist_openvrml_player_glade_DATA): Glade XML; replaces
+	dist_openvrml_player_ui_DATA.
+	* src/openvrml-player/openvrml-player.glade: Added; Glade XML.
+	* src/openvrml-player/openvrml-player.ui: Removed.
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Use libglade instead of GtkBuilder.
+	(xml_new(GnomeProgram &)): Replaces builder_new; create the
+	GladeXML structure.
+	(openvrml_player_build_file_chooser_dialog(GladeXML *, GType,
+	GladeWidgetInfo *)): Create an OpenvrmlPlayerFileChooserDialog for
+	libglade.
+	(openvrml_player_build_curl_browser_host(GladeXML *, GType,
+	GladeWidgetInfo *)): Create an OpenvrmlPlayerCurlBrowserHost for
+	libglade.
+	(openvrml_player_connect_func(const gchar *, GObject *, const
+	gchar *, const gchar *, GObject *, gboolean, gpointer)):
+	Connection callback function passed to
+	glade_xml_signal_autoconnect_full.
 
 2008-10-02 Braden McDaniel  <braden@endoframe.com>
 
@@ -1204,741 +580,6 @@
 	Don't unref the browser_factory; this seems not to play well with
 	dbus_g_connection_register_g_object.
 
-2008-09-30 Braden McDaniel  <braden@endoframe.com>
-
-	In the spirit of not returning mutable instances by value, change
-	uri's std::string conversion operator to convert to a const
-	std::string.
-
-	* src/libopenvrml/openvrml/local/uri.cpp
-	* src/libopenvrml/openvrml/local/uri.h
-
-2008-09-30 Braden McDaniel  <braden@endoframe.com>
-
-	Moved openvrml::local::uri::resolve_against to
-	openvrml::local::resolve_against (i.e., made it a nonmember
-	function).
-
-	* src/libopenvrml/openvrml/local/uri.cpp
-	* src/libopenvrml/openvrml/local/uri.h
-	* src/libopenvrml/openvrml/scene.cpp
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/script.cpp
-
-2008-09-28 Braden McDaniel  <braden@endoframe.com>
-
-	Updated version to 0.17.99.
-
-	* configure.ac
-	* doc/Doxyfile
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
-	* mozilla-plugin/configure.ac
-
-2008-09-28 Braden McDaniel  <braden@endoframe.com>
-
-	More documentation improvements.
-
-	* src/libopenvrml/openvrml/viewer.cpp
-	* doc/Makefile.am
-	(CUSTOMIZED_IMAGES): Added x3d-white-on-black.png.
-
-2008-09-27 Braden McDaniel  <braden@endoframe.com>
-
-	Documentation improvements.  No longer use the Doxygen default
-	style sheet at all.  Also, added X3D link to the page footer.
-
-	* doc/Doxyfile
-	* doc/doxygen-footer
-	* doc/doxygen-header
-	* doc/manual/x3d-white-on-black.png
-	* src/libopenvrml/openvrml/local/proto.cpp
-	* src/libopenvrml/openvrml/local/proto.h
-	* src/libopenvrml/openvrml/node.cpp
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/script.cpp
-
-2008-09-27 Braden McDaniel  <braden@endoframe.com>
-
-	Fixes for the Visual C++ build.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* src/libopenvrml/openvrml/local/dl.cpp
-	* src/libopenvrml/openvrml/local/uri.cpp
-	* src/libopenvrml/openvrml/local/xml_reader.cpp
-
-2008-09-26 Braden McDaniel  <braden@endoframe.com>
-
-	Moved proto_node class from an inner class of
-	openvrml::local::proto_node_metatype to the openvrml::local
-	namespace.  proto_node needs access to the private parts of
-	openvrml::node; and gcc 4.0 requires us to grant friendship to
-	proto_node specifically (rather than granting friendship to
-	proto_node_metatype when proto_node is an inner class of it).  We
-	need to be able to forward-declare proto_node (the public header
-	node.h cannot include the private proto.h); and to accommodate
-	that, proto_node cannot be an inner class.
-
-	* src/libopenvrml/openvrml/local/proto.cpp
-	* src/libopenvrml/openvrml/local/proto.h
-	* src/libopenvrml/openvrml/node.h
-
-2008-09-26 Braden McDaniel  <braden@endoframe.com>
-
-	Moved PROTO implementation classes to the openvrml::local
-	namespace and out of browser.cpp.
-
-	* src/Makefile.am
-	(libopenvrml_libopenvrml_la_SOURCES): Added
-	libopenvrml/openvrml/local/proto.{cpp,h}.
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/local/proto.cpp
-	* src/libopenvrml/openvrml/local/proto.h
-	* src/libopenvrml/openvrml/node.h
-
-2008-09-24 Braden McDaniel  <braden@endoframe.com>
-
-	Moved dlopen/LoadLibrary wrapper functions, the XML parser
-	wrapper, and the uri class to the openvrml::local namespace.  This
-	facilitates breaking up browser.cpp a bit.  openvrml::scene has
-	been moved to its own header and implementation file and the
-	openvrml::script implementation has been moved back to its own
-	file.
-
-	* src/Makefile.am
-	(openvrml_include_HEADERS): Added libopenvrml/openvrml/bad_url.h
-	and libopenvrml/openvrml/scene.h.
-	(libopenvrml_libopenvrml_la_SOURCES): Added
-	libopenvrml/openvrml/bad_url.cpp, libopenvrml/openvrml/script.cpp,
-	libopenvrml/openvrml/scene.cpp,
-	libopenvrml/openvrml/local/dl.{cpp,h},
-	libopenvrml/openvrml/uri.{cpp,h}, and
-	libopenvrml/openvrml/local/xml_reader.{cpp,h}.
-	* src/libopenvrml/private.h: Moved URI grammar to
-	libopenvrml/openvrml/local/uri.h.
-	* src/libopenvrml/openvrml/bad_url.cpp: Implementation of
-	openvrml::bad_url and derived exceptions; moved from browser.cpp.
-	* src/libopenvrml/openvrml/bad_url.h: openvrml::bad_url and
-	derived exceptions; moved from browser.h.
-	* src/libopenvrml/openvrml/browser.cpp: Moved dlopen/LoadLibrary
-	wrapper functions to libopenvrml/openvrml/local/dl.cpp; moved uri
-	class implementation to libopenvrml/openvrml/local/uri.cpp; moved
-	xml_reader class implementation to
-	libopenvrml/openvrml/local/xml_reader.cpp; moved script_node
-	implementation to libopenvrml/openvrml/script.cpp.
-	* src/libopenvrml/openvrml/browser.h: Moved openvrml::script_node
-	definition to libopenvrml/openvrml/script.h; moved definition of
-	openvrml::bad_url and derived exceptions to
-	libopenvrml/openvrml/bad_url.h.
-	* src/libopenvrml/openvrml/local/dl.cpp: Added; dlopen/LoadLibrary
-	wrapper function definitions.
-	* src/libopenvrml/openvrml/local/dl.h: Added; dlopen/LoadLibrary
-	wrapper function declarations (moved from
-	libopenvrml/openvrml/browser.cpp).
-	* src/libopenvrml/openvrml/local/uri.cpp: Added; uri class
-	implementation (moved from libopenvrml/openvrml/browser.cpp).
-	* src/libopenvrml/openvrml/local/uri.h: Added; uri class
-	definition and grammar definitions (moved from
-	libopenvrml/openvrml/browser.cpp and libopenvrml/private.h).
-	* src/libopenvrml/openvrml/local/xml_reader.cpp: Added; xml_reader
-	implementation (moved from libopenvrml/openvrml/browser.cpp).
-	* src/libopenvrml/openvrml/local/xml_reader.h: Added; xml_reader
-	class definition (moved from libopenvrml/openvrml/browser.cpp).
-	* src/libopenvrml/openvrml/node.cpp: Include scope.h here rather
-	than in node.h.
-	* src/libopenvrml/openvrml/node.h: Declare openvrml::scope rather
-	than include scope.h here.
-	* src/libopenvrml/openvrml/scene.cpp: Added; openvrml::scene
-	implementation (moved from libopenvrml/openvrml/browser.cpp).
-	* src/libopenvrml/openvrml/scene.h: Added; openvrml::scene
-	definition (moved from libopenvrml/openvrml/browser.h).
-	* src/libopenvrml/openvrml/script.cpp: Added; openvrml::script and
-	openvrml::script_node implementations (moved from
-	libopenvrml/openvrml/browser.cpp).
-	* src/libopenvrml/openvrml/script.h: Moved openvrml::script_node
-	definition here (from libopenvrml/openvrml/browser.h).
-	* src/node/vrml97/movie_texture.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/audio_clip.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/anchor.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/inline.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/time_sensor.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/image_texture.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/spot_light.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/background.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/point_light.cpp: Include <openvrml/scene.h>.
-	* src/node/vrml97/viewpoint.cpp: Include <openvrml/scene.h>.
-	* src/script/java.cpp: Include <openvrml/scene.h>.
-	* src/script/javascript.cpp: Include <openvrml/scene.h>.
-
-2008-09-24 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D CAD Geometry node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-cad-geometry static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-cad-geometry/x3d-cad-geometry.
-	* src/Makefile.am: Added convenience library
-	node/x3d-cad-geometry/libx3d-cad-geometry.la.
-	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-cad-geometry/cad_face.cpp
-	* src/node/x3d-cad-geometry/cad_face.h
-	* src/node/x3d-cad-geometry/indexed_quad_set.cpp
-	* src/node/x3d-cad-geometry/indexed_quad_set.h
-
-2008-09-24 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D NURBS node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-nurbs static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-nurbs/x3d-nurbs.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-nurbs/libx3d-nurbs.la.
-	* src/libopenvrml/openvrml/x3d_nurbs.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-nurbs/contour2d.cpp
-	* src/node/x3d-nurbs/contour2d.h
-	* src/node/x3d-nurbs/contour_polyline2d.cpp
-	* src/node/x3d-nurbs/contour_polyline2d.h
-	* src/node/x3d-nurbs/coordinate_double.cpp
-	* src/node/x3d-nurbs/coordinate_double.h
-	* src/node/x3d-nurbs/nurbs_curve.cpp
-	* src/node/x3d-nurbs/nurbs_curve.h
-	* src/node/x3d-nurbs/nurbs_curve2d.cpp
-	* src/node/x3d-nurbs/nurbs_curve2d.h
-	* src/node/x3d-nurbs/nurbs_orientation_interpolator.cpp
-	* src/node/x3d-nurbs/nurbs_orientation_interpolator.h
-	* src/node/x3d-nurbs/nurbs_patch_surface.cpp
-	* src/node/x3d-nurbs/nurbs_patch_surface.h
-	* src/node/x3d-nurbs/nurbs_position_interpolator.cpp
-	* src/node/x3d-nurbs/nurbs_position_interpolator.h
-	* src/node/x3d-nurbs/nurbs_set.cpp
-	* src/node/x3d-nurbs/nurbs_set.h
-	* src/node/x3d-nurbs/nurbs_surface_interpolator.cpp
-	* src/node/x3d-nurbs/nurbs_surface_interpolator.h
-	* src/node/x3d-nurbs/nurbs_swept_surface.cpp
-	* src/node/x3d-nurbs/nurbs_swept_surface.h
-	* src/node/x3d-nurbs/nurbs_swung_surface.cpp
-	* src/node/x3d-nurbs/nurbs_swung_surface.h
-	* src/node/x3d-nurbs/nurbs_texture_coordinate.cpp
-	* src/node/x3d-nurbs/nurbs_texture_coordinate.h
-	* src/node/x3d-nurbs/nurbs_trimmed_surface.cpp
-	* src/node/x3d-nurbs/nurbs_trimmed_surface.h
-
-2008-09-23 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::vrml97_parse_actions::on_externproto_t::operator()(const
-	std::string &, const node_interface_set &, const
-	std::vector<std::string> &) const): Removed stray debugging
-	output.
-
-2008-09-22 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D H-Anim node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-h-anim static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-h-anim/x3d-h-anim.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-h-anim/libx3d-h-anim.la.
-	* src/libopenvrml/openvrml/x3d_hanim.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-h-anim/h_anim_displacer.cpp
-	* src/node/x3d-h-anim/h_anim_displacer.h
-	* src/node/x3d-h-anim/h_anim_humanoid.cpp
-	* src/node/x3d-h-anim/h_anim_humanoid.h
-	* src/node/x3d-h-anim/h_anim_joint.cpp
-	* src/node/x3d-h-anim/h_anim_joint.h
-	* src/node/x3d-h-anim/h_anim_segment.cpp
-	* src/node/x3d-h-anim/h_anim_segment.h
-	* src/node/x3d-h-anim/h_anim_site.cpp
-	* src/node/x3d-h-anim/h_anim_site.h
-
-2008-09-22 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Geospatial node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-geospatial static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-geospatial/libx3d-geospatial.la.
-	* src/libopenvrml/openvrml/x3d_geospatial.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-geospatial/geo_coordinate.cpp
-	* src/node/x3d-geospatial/geo_coordinate.h
-	* src/node/x3d-geospatial/geo_elevation_grid.cpp
-	* src/node/x3d-geospatial/geo_elevation_grid.h
-	* src/node/x3d-geospatial/geo_location.cpp
-	* src/node/x3d-geospatial/geo_location.h
-	* src/node/x3d-geospatial/geo_lod.cpp
-	* src/node/x3d-geospatial/geo_lod.h
-	* src/node/x3d-geospatial/geo_metadata.cpp
-	* src/node/x3d-geospatial/geo_metadata.h
-	* src/node/x3d-geospatial/geo_origin.cpp
-	* src/node/x3d-geospatial/geo_origin.h
-	* src/node/x3d-geospatial/geo_position_interpolator.cpp
-	* src/node/x3d-geospatial/geo_position_interpolator.h
-	* src/node/x3d-geospatial/geo_touch_sensor.cpp
-	* src/node/x3d-geospatial/geo_touch_sensor.h
-	* src/node/x3d-geospatial/geo_viewpoint.cpp
-	* src/node/x3d-geospatial/geo_viewpoint.h
-	* src/node/x3d-geospatial/geospatial-common.cpp
-	* src/node/x3d-geospatial/geospatial-common.h
-
-2008-09-21 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Environmental Effects node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-environmental-effects static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-environmental-effects/x3d-environmental-effects.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-environmental-effectx/libx3d-environmental-effects.la.
-	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp: Moved
-	node implementations to separate files.
-	* src/node/x3d-environmental-effects/texture_background.cpp
-	* src/node/x3d-environmental-effects/texture_background.h
-
-2008-09-21 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D DIS node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-dis static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-dis/x3d-dis.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-dis/libx3d-dis.la.
-	* src/libopenvrml/openvrml/x3d_dis.cpp: Moved node implementations
-	to separate files.
-	* src/node/x3d-dis/espdu_transform.cpp
-	* src/node/x3d-dis/espdu_transform.h
-	* src/node/x3d-dis/receiver_pdu.cpp
-	* src/node/x3d-dis/receiver_pdu.h
-	* src/node/x3d-dis/signal_pdu.cpp
-	* src/node/x3d-dis/signal_pdu.h
-	* src/node/x3d-dis/transmitter_pdu.cpp
-	* src/node/x3d-dis/transmitter_pdu.h
-
-2008-09-21 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Event Utilities node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-event-utilities static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-event-utilities/x3d-event-utilities.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-event-utilities/libx3d-event-utilities.la.
-	* src/libopenvrml/openvrml/x3d_event_utilities.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-event-utilities/boolean_filter.cpp
-	* src/node/x3d-event-utilities/boolean_filter.h
-	* src/node/x3d-event-utilities/boolean_sequencer.cpp
-	* src/node/x3d-event-utilities/boolean_sequencer.h
-	* src/node/x3d-event-utilities/boolean_toggle.cpp
-	* src/node/x3d-event-utilities/boolean_toggle.h
-	* src/node/x3d-event-utilities/boolean_trigger.cpp
-	* src/node/x3d-event-utilities/boolean_trigger.h
-	* src/node/x3d-event-utilities/integer_sequencer.cpp
-	* src/node/x3d-event-utilities/integer_sequencer.h
-	* src/node/x3d-event-utilities/integer_trigger.cpp
-	* src/node/x3d-event-utilities/integer_trigger.h
-	* src/node/x3d-event-utilities/time_trigger.cpp
-	* src/node/x3d-event-utilities/time_trigger.h
-
-2008-09-21 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Key Device Sensor node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-key-device-sensor static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-key-device-sensor/libx3d-key-device-sensor.la.
-	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-key-device-sensor/string_sensor.cpp
-	* src/node/x3d-key-device-sensor/string_sensor.h
-	* src/node/x3d-key-device-sensor/key_sensor.cpp
-	* src/node/x3d-key-device-sensor/key_sensor.h
-
-2008-09-21 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Interpolation node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-interpolation static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-interpolation/x3d-interpolation.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-interpolation/libx3d-interpolation.la.
-	* src/libopenvrml/openvrml/x3d_interpolation.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-interpolation/coordinate_interpolator2d.cpp
-	* src/node/x3d-interpolation/coordinate_interpolator2d.h
-	* src/node/x3d-interpolation/position_interpolator2d.cpp
-	* src/node/x3d-interpolation/position_interpolator2d.h
-
-2008-09-21 Braden McDaniel  <braden@endoframe.com>
-
-	Removed unnecessary includes.
-
-	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
-	* src/libopenvrml/openvrml/x3d_texturing.cpp
-
-2008-09-21 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Texturing node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-texturing static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-texturing/x3d-texturing.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-texturing/libx3d-texturing.la.
-	* src/libopenvrml/openvrml/x3d_texturing.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-texturing/multi_texture.cpp
-	* src/node/x3d-texturing/multi_texture.h
-	* src/node/x3d-texturing/multi_texture_coordinate.cpp
-	* src/node/x3d-texturing/multi_texture_coordinate.h
-	* src/node/x3d-texturing/multi_texture_transform.cpp
-	* src/node/x3d-texturing/multi_texture_transform.h
-	* src/node/x3d-texturing/texture_coordinate_generator.cpp
-	* src/node/x3d-texturing/texture_coordinate_generator.h
-
-2008-09-20 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Geometry2D node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-geometry2d static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-geometry2d/libx3d-geometry2d.la.
-	* src/libopenvrml/openvrml/x3d_geometry2d.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-geometry2d/arc2d.cpp
-	* src/node/x3d-geometry2d/arc2d.h
-	* src/node/x3d-geometry2d/arc_close2d.cpp
-	* src/node/x3d-geometry2d/arc_close2d.h
-	* src/node/x3d-geometry2d/circle2d.cpp
-	* src/node/x3d-geometry2d/circle2d.h
-	* src/node/x3d-geometry2d/disk2d.cpp
-	* src/node/x3d-geometry2d/disk2d.h
-	* src/node/x3d-geometry2d/polyline2d.cpp
-	* src/node/x3d-geometry2d/polyline2d.h
-	* src/node/x3d-geometry2d/polypoint2d.cpp
-	* src/node/x3d-geometry2d/polypoint2d.h
-	* src/node/x3d-geometry2d/rectangle2d.cpp
-	* src/node/x3d-geometry2d/rectangle2d.h
-	* src/node/x3d-geometry2d/triangle_set2d.cpp
-	* src/node/x3d-geometry2d/triangle_set2d.h
-
-2008-09-18 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Shape node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-shape static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-shape/x3d-shape.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-shape/libx3d-shape.la.
-	* src/libopenvrml/openvrml/x3d_shape.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-shape/fill_properties.cpp
-	* src/node/x3d-shape/fill_properties.h
-	* src/node/x3d-shape/line_properties.cpp
-	* src/node/x3d-shape/line_properties.h
-
-2008-09-17 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Rendering node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-rendering static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-rendering/x3d-rendering.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-rendering/libx3d-rendering.la.
-	* src/libopenvrml/openvrml/x3d_rendering.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-rendering/color_rgba.cpp
-	* src/node/x3d-rendering/color_rgba.h
-	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_fan_set.h
-	* src/node/x3d-rendering/indexed_triangle_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_set.h
-	* src/node/x3d-rendering/indexed_triangle_strip_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_strip_set.h
-	* src/node/x3d-rendering/triangle_fan_set.cpp
-	* src/node/x3d-rendering/triangle_fan_set.h
-	* src/node/x3d-rendering/triangle_set.cpp
-	* src/node/x3d-rendering/triangle_set.h
-	* src/node/x3d-rendering/triangle_strip_set.cpp
-	* src/node/x3d-rendering/triangle_strip_set.h
-
-2008-09-16 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Grouping node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-grouping static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-grouping/x3d-grouping.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-grouping/libx3d-grouping.la.
-	* src/libopenvrml/openvrml/x3d_grouping.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-grouping/static_group.cpp
-	* src/node/x3d-grouping/static_group.h
-
-2008-09-16 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Networking node implementations into a convenience
-	library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-networking static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-networking/x3d-networking.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-networking/libx3d-networking.la.
-	* src/libopenvrml/openvrml/x3d_networking.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-networking/load_sensor.cpp
-	* src/node/x3d-networking/load_sensor.h
-
-2008-09-16 Braden McDaniel  <braden@endoframe.com>
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj:
-	Removed flags defining BOOST_SPIRIT_THREADSAFE,
-	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
-
-2008-09-16 Braden McDaniel  <braden@endoframe.com>
-
-	Moved X3D Core node implementations into a convenience library.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	x3d-core static library project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj
-	* src/Makefile.am: Added convenience library
-	node/x3d-core/libx3d-core.la.
-	* src/libopenvrml/openvrml/x3d_core.cpp: Moved node
-	implementations to separate files.
-	* src/node/x3d-core/metadata_double.cpp
-	* src/node/x3d-core/metadata_double.h
-	* src/node/x3d-core/metadata_float.cpp
-	* src/node/x3d-core/metadata_float.h
-	* src/node/x3d-core/metadata_integer.cpp
-	* src/node/x3d-core/metadata_integer.h
-	* src/node/x3d-core/metadata_set.cpp
-	* src/node/x3d-core/metadata_set.h
-	* src/node/x3d-core/metadata_string.cpp
-	* src/node/x3d-core/metadata_string.h
-
-2008-09-16 Braden McDaniel  <braden@endoframe.com>
-
-	Moved VRML97 node implementations to a static library in the
-	Visual C++ solution.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj
-
-2008-09-15 Braden McDaniel  <braden@endoframe.com>
-
-	Define BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
-	PHOENIX_LIMIT in openvrml-common.h since we need to ensure these
-	get set for client code.
-
-	* src/Makefile.am
-	(libopenvrml_libopenvrml_la_CPPFLAGS): Removed flags defining
-	BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
-	PHOENIX_LIMIT.
-	* src/libopenvrml/openvrml/vrml97_grammar.h: Reordered includes to
-	ensure that openvrml-common.h gets included before Boost headers.
-	* src/libopenvrml/openvrml-common.h: Define
-	BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
-	PHOENIX_LIMIT.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
-	Removed flags defining BOOST_SPIRIT_THREADSAFE,
-	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-vrml97/parse-vrml97.vcproj:
-	Removed flags defining BOOST_SPIRIT_THREADSAFE,
-	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-x3dvrml/parse-x3dvrml.vcproj:
-	Removed flags defining BOOST_SPIRIT_THREADSAFE,
-	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/pretty-print/pretty-print.vcproj:
-	Removed flags defining BOOST_SPIRIT_THREADSAFE,
-	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
-	* tests/Makefile.am
-	(AM_CPPFLAGS): Removed flags defining BOOST_SPIRIT_THREADSAFE,
-	BOOST_SPIRIT_CLOSURE_LIMIT, and PHOENIX_LIMIT.
-	* examples/Makefile.am
-	(pretty_print_CPPFLAGS): Removed flags defining
-	BOOST_SPIRIT_THREADSAFE, BOOST_SPIRIT_CLOSURE_LIMIT, and
-	PHOENIX_LIMIT.
-
-2008-09-15 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/vrml97node.cpp: Explicitly instantiate
-	std::vector<boost::intrusive_ptr<openvrml::node> >::pop_back.  gcc
-	4.0.1 seems to need this (on Mac OS X 10.5, at least) and it
-	should be benign elsewhere.
-
-2008-09-15 Braden McDaniel  <braden@endoframe.com>
-
-	* src/Makefile.am: Made contents of BUILT_SOURCES conditional
-	based on ENABLE_XEMBED and ENABLE_PLAYER.
-
-2008-09-15 Braden McDaniel  <braden@endoframe.com>
-
-	Put the VRML97 node implementations into a convenience library for
-	now.
-
-	* src/Makefile.am
-	(noinst_LTLIBRARIES): Added node/vrml97/libvrml97.la as a
-	convenience library.
-	(libopenvrml_libopenvrml_la_CXXFLAGS): Removed flags now only
-	needed by libvrml97.la.
-	(libopenvrml_libopenvrml_la_SOURCES): Removed sources now present
-	in libvrml97.la.
-	(libopenvrml_libopenvrml_la_LDFLAGS): Removed flags now only
-	needed by libvrml97.la.
-	(node_vrml97_libvrml97_la_CPPFLAGS): Preprocessor flags for
-	node/vrml97/libvrml97.la.
-	(node_vrml97_libvrml97_la_CXXFLAGS): Compiler flags for
-	node/vrml97/libvrml97.la.
-	(node_vrml97_libvrml97_la_SOURCES): Sources for
-	node/vrml97/libvrml97.la.
-	(node_vrml97_libvrml97_la_LDFLAGS): Linker flags for
-	node/vrml97/libvrml97.la.
-
-2008-09-14 Braden McDaniel  <braden@endoframe.com>
-
-	Made openvrml::node_impl_util::node_type_impl's member functions
-	for adding field, eventIn, eventOut, and exposedField handlers
-	templates that take a pointer-to-member.  This reduces the amount
-	of code typically needed when calling these functions.
-
-	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comments.
-	* src/libopenvrml/openvrml/node_impl_util.h
-	(openvrml::node_impl_util::make_field_ptr_ptr(FieldMember
-	DeducedNode::*)): Make a field_ptr_ptr from a pointer-to-member.
-	(openvrml::node_impl_util::make_event_listener_ptr_ptr(EventListenerMember
-	DeducedNode::*)): Make an event_listener_ptr_ptr from a
-	pointer-to-member.
-	(openvrml::node_impl_util::make_event_emitter_ptr_ptr(EventEmitterMember
-	DeducedNode::*)): Make an event_emitter_ptr_ptr from a
-	pointer-to-member.
-	(openvrml::node_impl_util::add_eventin(openvrml::field_value::type_id,
-	const std::string &, EventListenerMember DeducedNode::*)): Changed
-	to a function template taking a pointer-to-member for the member
-	of the node that handles the eventIn.
-	(openvrml::node_impl_util::add_eventout(openvrml::field_value::type_id,
-	const std::string &, EventEmitterMember DeducedNode::*)): Changed
-	to a function template taking a pointer-to-member for the member
-	of the node that handles the eventOut.
-	(openvrml::node_impl_util::add_exposedfield(openvrml::field_value::type_id,
-	const std::string &, EventListenerMember DeducedNode::*,
-	FieldMember DeducedNode::*, EventEmitterMember DeducedNode::*)):
-	Changed to a function template taking pointers-to-member for the
-	member(s) of the node that handle the exposedField.
-	(openvrml::node_impl_util::add_exposedfield(openvrml::field_value::type_id,
-	const std::string &, ExposedfieldMember DeducedNode::*)):
-	Convenience function useful for when all three components of an
-	exposedField are handled by a single member.
-	(openvrml::node_impl_util::add_field(openvrml::field_value::type_id,
-	const std::string &, FieldMember DeducedNode::*)): Changed to a
-	function template taking a pointer-to-member for the member of the
-	node that handles the field.
-	* src/libopenvrml/openvrml/x3d_cad_geometry.cpp
-	* src/libopenvrml/openvrml/x3d_core.cpp
-	* src/libopenvrml/openvrml/x3d_dis.cpp
-	* src/libopenvrml/openvrml/x3d_environmental_effects.cpp
-	* src/libopenvrml/openvrml/x3d_event_utilities.cpp
-	* src/libopenvrml/openvrml/x3d_geometry2d.cpp
-	* src/libopenvrml/openvrml/x3d_geospatial.cpp
-	* src/libopenvrml/openvrml/x3d_grouping.cpp
-	* src/libopenvrml/openvrml/x3d_hanim.cpp
-	* src/libopenvrml/openvrml/x3d_interpolation.cpp
-	* src/libopenvrml/openvrml/x3d_key_device_sensor.cpp
-	* src/libopenvrml/openvrml/x3d_networking.cpp
-	* src/libopenvrml/openvrml/x3d_nurbs.cpp
-	* src/libopenvrml/openvrml/x3d_rendering.cpp
-	* src/libopenvrml/openvrml/x3d_shape.cpp
-	* src/libopenvrml/openvrml/x3d_texturing.cpp
-	* src/node/vrml97/anchor.cpp
-	* src/node/vrml97/appearance.cpp
-	* src/node/vrml97/audio_clip.cpp
-	* src/node/vrml97/background.cpp
-	* src/node/vrml97/billboard.cpp
-	* src/node/vrml97/box.cpp
-	* src/node/vrml97/cad_assembly.cpp
-	* src/node/vrml97/cad_layer.cpp
-	* src/node/vrml97/collision.cpp
-	* src/node/vrml97/color.cpp
-	* src/node/vrml97/color_interpolator.cpp
-	* src/node/vrml97/cone.cpp
-	* src/node/vrml97/coordinate.cpp
-	* src/node/vrml97/coordinate_interpolator.cpp
-	* src/node/vrml97/cylinder.cpp
-	* src/node/vrml97/cylinder_sensor.cpp
-	* src/node/vrml97/directional_light.cpp
-	* src/node/vrml97/elevation_grid.cpp
-	* src/node/vrml97/extrusion.cpp
-	* src/node/vrml97/fog.cpp
-	* src/node/vrml97/font_style.cpp
-	* src/node/vrml97/group.cpp
-	* src/node/vrml97/indexed_face_set.cpp
-	* src/node/vrml97/indexed_line_set.cpp
-	* src/node/vrml97/inline.cpp
-	* src/node/vrml97/image_texture.cpp
-	* src/node/vrml97/lod.cpp
-	* src/node/vrml97/material.cpp
-	* src/node/vrml97/movie_texture.cpp
-	* src/node/vrml97/navigation_info.cpp
-	* src/node/vrml97/normal.cpp
-	* src/node/vrml97/normal_interpolator.cpp
-	* src/node/vrml97/orientation_interpolator.cpp
-	* src/node/vrml97/pixel_texture.cpp
-	* src/node/vrml97/plane_sensor.cpp
-	* src/node/vrml97/point_light.cpp
-	* src/node/vrml97/point_set.cpp
-	* src/node/vrml97/position_interpolator.cpp
-	* src/node/vrml97/proximity_sensor.cpp
-	* src/node/vrml97/scalar_interpolator.cpp
-	* src/node/vrml97/shape.cpp
-	* src/node/vrml97/sound.cpp
-	* src/node/vrml97/sphere.cpp
-	* src/node/vrml97/sphere_sensor.cpp
-	* src/node/vrml97/spot_light.cpp
-	* src/node/vrml97/switch.cpp
-	* src/node/vrml97/text.cpp
-	* src/node/vrml97/texture_coordinate.cpp
-	* src/node/vrml97/texture_transform.cpp
-	* src/node/vrml97/time_sensor.cpp
-	* src/node/vrml97/touch_sensor.cpp
-	* src/node/vrml97/transform.cpp
-	* src/node/vrml97/viewpoint.cpp
-	* src/node/vrml97/visibility_sensor.cpp
-	* src/node/vrml97/world_info.cpp
-
 2008-09-11 Braden McDaniel  <braden@endoframe.com>
 
 	Added a Visual C++ project file for the pretty-print example.
@@ -1975,11 +616,6 @@
 
 2008-09-09 Braden McDaniel  <braden@endoframe.com>
 
-	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj:
-	Removed unnecessary backslash.
-
-2008-09-09 Braden McDaniel  <braden@endoframe.com>
-
 	Order include directories consistently for Debug and Release
 	configurations.
 
@@ -1990,84 +626,6 @@
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
 	Changed to CRLF line endings.
-
-2008-09-08 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.cpp: Added doc-comments and
-	exception specifications to openvrml_::xml_reader.
-
-2008-09-08 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml_::xml_reader): xmlTextReaderPtr, not XmlTextReaderPtr.
-
-2008-09-08 Braden McDaniel  <braden@endoframe.com>
-
-	Use XmlLite on Windows rather than libxml.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	Added dependencies shlwapi.lib and XmlLite.lib; removed
-	dependencies libxml2_a_dll.lib, iconv_a.lib, and WS2_32.lib.
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml_::xml_reader): Added a wrapper that abstracts XmlLite on
-	Windows and libxml's XmlTextReader interface everywhere else.
-	(openvrml_::xml_reader::xml_reader(const std::string &)):
-	Construct using a file name.  On Windows, create an IStream from a
-	file and an IXmlReader.  Everywhere else, create a libxml
-	XmlTextReader.
-	(openvrml_::xml_reader::~xml_reader()): Clean up.
-	(openvrml_::xml_reader::read()): Delegate to IXmlReader::Read on
-	Windows; xmlTextReaderRead everywhere else.
-	(openvrml_::xml_reader::node_type() const): Get the node type
-	identifier.  Conveniently, these IDs have parity between the
-	XmlLite and XmlTextReader APIs.
-	(openvrml_::xml_reader::local_name() const): The local name of the
-	current node.
-	(openvrml_::xml_reader::value() const): The value, if any, of the
-	current node.
-	(openvrml_::xml_reader::move_to_first_attribute()): Move to the
-	first attribute of the current node.
-	(openvrml_::xml_reader::move_to_next_attribute()): Move to the
-	next attribute of the current node.
-	(component::xml_reader::read(const std::string &)): Use
-	openvrml_::xml_reader.
-	(component::xml_reader::process_node(openvrml_::xml_reader &)):
-	Use openvrml_::xml_reader.
-	(component::xml_reader::start_element(openvrml_::xml_reader &)):
-	Use openvrml_::xml_reader.
-	(component::xml_reader::end_element(openvrml_::xml_reader &)): Use
-	openvrml_::xml_reader.
-
-2008-09-07 Braden McDaniel  <braden@endoframe.com>
-
-	Use libxml's XmlTextReader interface rather than its SAX one.  The
-	XmlTextReader interface is a lot closer to Microsoft's XmlLite
-	interface, which should better facilitate using XmlLite when
-	building on Windows.
-
-	* configure.ac: Require at least libxml 2.5.
-	* src/libopenvrml/openvrml/browser.cpp
-	(component::parser): Removed.
-	(component::xml_reader): Added; a parser for OpenVRML's XML
-	component descriptors using libxml's XmlTextReader interface.
-	(openvrml_component_parser_startElement(void *, const xmlChar *,
-	const xmlChar **)): Removed.
-	(openvrml_component_parser_endElement(void *, const xmlChar *)):
-	Removed.
-	(component::xml_reader::xml_reader(::component &)): Added;
-	construct the xml_reader.
-	(component::xml_reader::read(const std::string &)): Added; read an
-	XML component descriptor.
-	(component::xml_reader::process_node(xmlTextReader &)): Added;
-	process a node.
-	(component::xml_reader::start_element(xmlTextReader &)): Process
-	the start of an element.
-	(component::xml_reader::end_element(xmlTextReader &)): Process the
-	end of an element.
-	(component::parser::parser(::component &)): Removed.
-	(component::parser::parse(const std::string &)): Removed.
-	(component::component(const std::string & filename)): Parse the
-	component descriptor using xml_reader.
 
 2008-09-06 Braden McDaniel  <braden@endoframe.com>
 
@@ -2319,10 +877,64 @@
 	(curl_stream_data::initialized() const): Moved to
 	curlbrowserhost.cpp.
 
-2008-09-01 Braden McDaniel  <braden@endoframe.com>
+2008-09-06 Braden McDaniel  <braden@endoframe.com>
 
-	* src/libopenvrml/openvrml/script.h: Don't need to include
-	<boost/scoped_ptr.hpp> here.
+	* src/Makefile.am
+	(dist_openvrml_player_ui_DATA): Applied dist_ prefix.
+	(EXTRA_DIST): Removed openvrml_player_ui_DATA.
+
+2008-09-06 Braden McDaniel  <braden@endoframe.com>
+
+	Use GtkBuilder in openvrml-player instead of libglade.  Note that
+	this changes the environment variable used to locate the UI
+	definition from OPENVRML_PLAYER_GLADEDIR to OPENVRML_PLAYER_UIDIR.
+
+	* configure.ac: Removed check for libglade; require gtk+-2.0 >=
+	2.12.
+	* src/Makefile.am
+	(openvrml_player_openvrml_player_CXXFLAGS): Removed GLADE_CFLAGS.
+	(openvrml_player_openvrml_player_LDFLAGS): Removed GLADE_LIBS.
+	(openvrml_player_gladedir): Removed; replaced with
+	openvrml_player_uidir.
+	(openvrml_player_glade_DATA): Removed; replaced with
+	openvrml_player_ui_DATA.
+	(openvrml_player_uidir): Added.
+	(openvrml_player_ui_DATA): Added.
+	(EXTRA_DIST): Distribute openvrml_player_ui_DATA files.
+	* src/openvrml-player/filechooserdialog.cpp
+	(openvrml_player_file_chooser_dialog_get_type()): Removed; use
+	definition provided by G_DEFINE_TYPE instead.
+	(openvrml_player_file_chooser_dialog_new(GtkWindow *)): Removed;
+	logic moved to constructor.
+	(constructor(GType, guint, GObjectConstructParam *)): Moved dialog
+	setup logic here.
+	(class_init(gpointer, gpointer)): Moved to
+	openvrml_player_file_chooser_dialog_class_init (because
+	G_DEFINE_TYPE wants the long name).
+	(init(GTypeInstance *, gpointer)): Moved to
+	openvrml_player_file_chooser_dialog_init (because G_DEFINE_TYPE
+	wants the long name).
+	(openvrml_player_file_chooser_dialog_class_init(OpenvrmlPlayerFileChooserDialogClass *)):
+	Specify the constructor function.
+	(openvrml_player_file_chooser_dialog_init(OpenvrmlPlayerFileChooserDialog *)):
+	Added.
+	* src/openvrml-player/filechooserdialog.h
+	(openvrml_player_file_chooser_dialog_new(GtkWindow *)): Removed.
+	* src/openvrml-player/openvrml-player.glade: Removed.
+	* src/openvrml-player/openvrml-player.ui: Added.
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Removed calls to glade_init and
+	glade_register_widget; create a GtkBuilder instead of GladeXML;
+	call gtk_builder_connect_signals instead of
+	glade_xml_signal_autoconnect; call gtk_builder_get_object instead
+	of glade_xml_get_widget.
+	(xml_new(GnomeProgram &)): Removed; replaced with builder_new.
+	(builder_new(GnomeProgram &, GError **)): Create a GtkBuilder from
+	openvrml-player.ui.  Use the environment variable
+	OPENVRML_PLAYER_UIDIR to locate this file if it is not in a known
+	location.
+	(openvrml_player_build_file_chooser_dialog(GladeXML *, GType,
+	GladeWidgetInfo *)): Removed.
 
 2008-08-31 Braden McDaniel  <braden@endoframe.com>
 
@@ -2332,29 +944,6 @@
 	read_write_mutex.h here.
 	* src/libopenvrml/openvrml/field_value.h: Don't need to include
 	boost/thread/mutex.hpp here.
-
-2008-08-27 Braden McDaniel  <braden@endoframe.com>
-
-	* data/Makefile.am
-	(dist_component_DATA): Add component XML descriptors to the
-	distribution.
-
-2008-08-27 Braden McDaniel  <braden@endoframe.com>
-
-	* src/Makefile.am
-	(dist_openvrml_player_ui_DATA): Applied dist_ prefix.
-	(EXTRA_DIST): Removed openvrml_player_ui_DATA.
-
-2008-08-27 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Apply AC_CONFIG_MACRO_DIR; require at least
-	autoconf 2.59.
-
-2008-08-21 Braden McDaniel  <braden@endoframe.com>
-
-	* src/script/java.cpp (create_java_vm(JavaVM *&, JNIEnv *&)):
-	Quell gcc warning about deprecated automatic conversion of string
-	literals to char* (from const char*).
 
 2008-08-21 Braden McDaniel  <braden@endoframe.com>
 
@@ -2448,11 +1037,6 @@
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp
 	* src/openvrml-player/filechooserdialog.cpp
 
-2008-08-03 Braden McDaniel  <braden@endoframe.com>
-
-	* tests/Makefile.am: Only compile Java test programs if Script
-	node Java support was enabled.
-
 2008-07-26 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed some potential crashes when processing coordinate, color,
@@ -2474,95 +1058,25 @@
 	-1 entries and invalid coordinate indices in the colorIndex and
 	normalIndex fields.
 
-2008-07-23 Braden McDaniel  <braden@endoframe.com>
-
-	Use GtkBuilder in openvrml-player instead of libglade.  Note that
-	this changes the environment variable used to locate the UI
-	definition from OPENVRML_PLAYER_GLADEDIR to OPENVRML_PLAYER_UIDIR.
-
-	* configure.ac: Removed check for libglade; require gtk+-2.0 >=
-	2.12.
-	* src/Makefile.am
-	(openvrml_player_openvrml_player_CXXFLAGS): Removed GLADE_CFLAGS.
-	(openvrml_player_openvrml_player_LDFLAGS): Removed GLADE_LIBS.
-	(openvrml_player_gladedir): Removed; replaced with
-	openvrml_player_uidir.
-	(openvrml_player_glade_DATA): Removed; replaced with
-	openvrml_player_ui_DATA.
-	(openvrml_player_uidir): Added.
-	(openvrml_player_ui_DATA): Added.
-	(EXTRA_DIST): Distribute openvrml_player_ui_DATA files.
-	* src/openvrml-player/filechooserdialog.cpp
-	(openvrml_player_file_chooser_dialog_get_type()): Removed; use
-	definition provided by G_DEFINE_TYPE instead.
-	(openvrml_player_file_chooser_dialog_new(GtkWindow *)): Removed;
-	logic moved to constructor.
-	(constructor(GType, guint, GObjectConstructParam *)): Moved dialog
-	setup logic here.
-	(class_init(gpointer, gpointer)): Moved to
-	openvrml_player_file_chooser_dialog_class_init (because
-	G_DEFINE_TYPE wants the long name).
-	(init(GTypeInstance *, gpointer)): Moved to
-	openvrml_player_file_chooser_dialog_init (because G_DEFINE_TYPE
-	wants the long name).
-	(openvrml_player_file_chooser_dialog_class_init(OpenvrmlPlayerFileChooserDialogClass *)):
-	Specify the constructor function.
-	(openvrml_player_file_chooser_dialog_init(OpenvrmlPlayerFileChooserDialog *)):
-	Added.
-	* src/openvrml-player/filechooserdialog.h
-	(openvrml_player_file_chooser_dialog_new(GtkWindow *)): Removed.
-	* src/openvrml-player/openvrml-player.glade: Removed.
-	* src/openvrml-player/openvrml-player.ui: Added.
-	* src/openvrml-player/player.cpp
-	(main(int, char *[])): Removed calls to glade_init and
-	glade_register_widget; create a GtkBuilder instead of GladeXML;
-	call gtk_builder_connect_signals instead of
-	glade_xml_signal_autoconnect; call gtk_builder_get_object instead
-	of glade_xml_get_widget.
-	(xml_new(GnomeProgram &)): Removed; replaced with builder_new.
-	(builder_new(GnomeProgram &, GError **)): Create a GtkBuilder from
-	openvrml-player.ui.  Use the environment variable
-	OPENVRML_PLAYER_UIDIR to locate this file if it is not in a known
-	location.
-	(openvrml_player_build_file_chooser_dialog(GladeXML *, GType,
-	GladeWidgetInfo *)): Removed.
-
 2008-07-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/player.cpp: Apply OPENVRML_API to symbols
 	that libglade needs.
 
-2008-07-16 Braden McDaniel  <braden@endoframe.com>
+2008-07-20 Braden McDaniel  <braden@endoframe.com>
 
 	* examples/sdl_viewer.cpp (resource_fetcher::do_get_resource(const
 	std::string &)): Added a comment to note that no translation of
 	URI-encoded characters is being done.
 
-2008-06-27 Braden McDaniel  <braden@endoframe.com>
+2008-07-20 Braden McDaniel  <braden@endoframe.com>
 
 	Added parentheses to quell warnings from gcc 4.3.
 
 	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
 	* src/libopenvrml/openvrml/vrml97_grammar.h
 
-2008-06-27 Braden McDaniel  <braden@endoframe.com>
-
-	Factored platform-specifc getcwd logic out of create_file_url.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml_getcwd()): Wrapper function for getcwd on POSIX and
-	GetCurrentDirectory on Windows.
-	(create_file_url(const uri &)): Delegate to openvrml_getcwd.
-
-2008-06-24 Braden McDaniel  <braden@endoframe.com>
-
-	Use native DLL loading facilities on Windows instead of libltdl.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
-
-2008-06-18 Braden McDaniel  <braden@endoframe.com>
+2008-07-20 Braden McDaniel  <braden@endoframe.com>
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
 	Updated FreeType dependency to 2.3.6; ignore default library
@@ -2585,34 +1099,11 @@
 
 2008-06-16 Braden McDaniel  <braden@endoframe.com>
 
-	If the node hasn't been initialized, we can't use the scene
-	pointer.  Modified update_textures functions to return without
-	doing anything if the node hasn't yet been initialized.
-
-	* src/node/vrml97/background.cpp
-	(openvrml_node_vrml97::background_node::update_textures()): Return
-	without doing anything if the node has not been initialized.
-	* src/node/vrml97/image_texture.cpp
-	(image_texture_node::update_texture()): Return without doing
-	anything if the node has not been initialized.
-
-2008-06-16 Braden McDaniel  <braden@endoframe.com>
-
-	Added missing namespace qualification to openvrml::node uses.
+	* src/libopenvrml/openvrml/vrml97node.cpp: Added missing namespace
+	qualification to openvrml::node uses.
 	From Steinar Hamre <steinarh@users.sourceforge.net>
 
-	* src/node/vrml97/grouping_node_base.h
-	* src/node/vrml97/lod.cpp
-	* src/node/vrml97/inline.cpp
-	* src/node/vrml97/cad_layer.cpp
-	* src/node/vrml97/switch.cpp
-
-2008-06-15 Braden McDaniel  <braden@endoframe.com>
-
-	* models/warbird.wrl: Changed 'vrmlscript' references to
-	'javascript'.
-
-2008-06-12 Braden McDaniel  <braden@endoframe.com>
+2008-06-13 Braden McDaniel  <braden@endoframe.com>
 
 	Increment read_write_mutex::readers_active_ on
 	scoped_read_write_lock promotion and decrement it on demotion.
@@ -2623,115 +1114,13 @@
 	(openvrml::read_write_mutex::scoped_read_write_lock::promote()):
 	Decrement read_write_mutex::readers_active_.
 	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
-	Increment read_write_mutex::readers_active_.
-
-2008-06-11 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/read_write_mutex.cpp
-	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
-	Notify any waiting writers.
-
-2008-05-31 Braden McDaniel  <braden@endoframe.com>
-
-	Visual C++ project file changes to get Release builds working.
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/ltdl/ltdl.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h
-	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj
-
-2008-05-28 Braden McDaniel  <braden@endoframe.com>
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
-	Added VRML97 node source files.
-
-2008-05-28 Braden McDaniel  <braden@endoframe.com>
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h:
-	Define OPENVRML_JAVASCRIPT_LOCAL.
-
-2008-05-28 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/browser.cpp: Replaced "interface" with
-	"interface_" for Windows-friendliness.
-
-2008-05-28 Braden McDaniel  <braden@endoframe.com>
-
-	* ide-projects/Windows/VisualC9_0/OpenVRML/ltdl/ltdl.vcproj: Refer
-	to the local libltdl copy.
-
-2008-05-28 Braden McDaniel  <braden@endoframe.com>
-
-	Replaced "interface" with "interface_" for Windows-friendliness.
-
-	* src/node/vrml97/anchor.cpp
-	* src/node/vrml97/appearance.cpp
-	* src/node/vrml97/audio_clip.cpp
-	* src/node/vrml97/background.cpp
-	* src/node/vrml97/billboard.cpp
-	* src/node/vrml97/box.cpp
-	* src/node/vrml97/cad_assembly.cpp
-	* src/node/vrml97/cad_layer.cpp
-	* src/node/vrml97/collision.cpp
-	* src/node/vrml97/color.cpp
-	* src/node/vrml97/color_interpolator.cpp
-	* src/node/vrml97/cone.cpp
-	* src/node/vrml97/coordinate.cpp
-	* src/node/vrml97/coordinate_interpolator.cpp
-	* src/node/vrml97/cylinder.cpp
-	* src/node/vrml97/cylinder_sensor.cpp
-	* src/node/vrml97/directional_light.cpp
-	* src/node/vrml97/elevation_grid.cpp
-	* src/node/vrml97/extrusion.cpp
-	* src/node/vrml97/fog.cpp
-	* src/node/vrml97/font_style.cpp
-	* src/node/vrml97/group.cpp
-	* src/node/vrml97/image_texture.cpp
-	* src/node/vrml97/indexed_face_set.cpp
-	* src/node/vrml97/indexed_line_set.cpp
-	* src/node/vrml97/inline.cpp
-	* src/node/vrml97/lod.cpp
-	* src/node/vrml97/material.cpp
-	* src/node/vrml97/movie_texture.cpp
-	* src/node/vrml97/navigation_info.cpp
-	* src/node/vrml97/normal.cpp
-	* src/node/vrml97/normal_interpolator.cpp
-	* src/node/vrml97/orientation_interpolator.cpp
-	* src/node/vrml97/pixel_texture.cpp
-	* src/node/vrml97/plane_sensor.cpp
-	* src/node/vrml97/point_light.cpp
-	* src/node/vrml97/point_set.cpp
-	* src/node/vrml97/position_interpolator.cpp
-	* src/node/vrml97/proximity_sensor.cpp
-	* src/node/vrml97/scalar_interpolator.cpp
-	* src/node/vrml97/shape.cpp
-	* src/node/vrml97/sound.cpp
-	* src/node/vrml97/sphere.cpp
-	* src/node/vrml97/sphere_sensor.cpp
-	* src/node/vrml97/spot_light.cpp
-	* src/node/vrml97/switch.cpp
-	* src/node/vrml97/text.cpp
-	* src/node/vrml97/texture_coordinate.cpp
-	* src/node/vrml97/texture_transform.cpp
-	* src/node/vrml97/time_sensor.cpp
-	* src/node/vrml97/touch_sensor.cpp
-	* src/node/vrml97/transform.cpp
-	* src/node/vrml97/viewpoint.cpp
-	* src/node/vrml97/visibility_sensor.cpp
-	* src/node/vrml97/world_info.cpp
+	Increment read_write_mutex::readers_active_; notify any waiting
+	writers.
 
 2008-04-26 Braden McDaniel  <braden@endoframe.com>
 
 	Qualification fixes to satisfy gcc 4.3 pickiness.
 
-	* src/script/java.cpp
-	(Java_vrml_node_Script_emitEvent(JNIEnv *, jobject, jstring,
-	jobject)): Import std::find_if.
-	* src/script/javascript.cpp
-	(eventOut_setProperty(JSContext *, JSObject *, jsval, jsval *)):
-	Import std::find_if.
-	(script::field_setProperty(JSContext *, JSObject *, jsval,
-	jsval *)): Import std::find_if.
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::node_metatype_map::init(viewpoint_node *,
 	double)): Qualify std::for_each.
@@ -2741,83 +1130,11 @@
 	std::for_each.
 	(openvrml::browser::set_world(resource_istream &)): Import
 	std::for_each into the function's outermost scope.
-
-2008-04-12 Braden McDaniel  <braden@endoframe.com>
-
-	Applied OPENVRML_LOCAL to libxml callback functions.
-
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml_component_parser_startElement(void *, const xmlChar *,
-	const xmlChar **)): Applied OPENVRML_LOCAL.
-	(openvrml_component_parser_endElement(void *, const xmlChar *)):
-	Applied OPENVRML_LOCAL.
-
-2008-04-11 Braden McDaniel  <braden@endoframe.com>
-
-	Moved component definitions to XML descriptor files.  Use libxml's
-	SAX interface for parsing.
-
-	* Makefile.am (SUBDIRS): Added "data".
-	* configure.ac: Added "data/Makefile" to AC_OUTPUT; use pkg-config
-	to find libxml.
-	* data/Makefile.am: Added file.
-	* data/component/cad-geometry.xml: Added file; CADGeometry
-	component descriptor.
-	* data/component/core.xml: Added file; Core component descriptor.
-	* data/component/dis.xml: Added file; DIS component descriptor.
-	* data/component/environmental-effects.xml: Added file;
-	EnvironmentalEffects component descriptor.
-	* data/component/environmental-sensor.xml: Added file;
-	EnvironmentalSensor component descriptor.
-	* data/component/event-utilities.xml: Added file; EventUtilities
-	component descriptor.
-	* data/component/geometry2d.xml: Added file; Geometry2D component
-	descriptor.
-	* data/component/geometry3d.xml: Added file; Geometry3D component
-	descriptor.
-	* data/component/geospatial.xml: Added file; Geospatial component
-	descriptor.
-	* data/component/grouping.xml: Added file; Grouping component
-	descriptor.
-	* data/component/h-anim.xml: Added file; H-Anim component
-	descriptor.
-	* data/component/interpolation.xml: Added file; Interpolation
-	component descriptor.
-	* data/component/key-device-sensor.xml: Added file;
-	KeyDeviceSensor component descriptor.
-	* data/component/lighting.xml: Added file; Lighting component
-	descriptor.
-	* data/component/navigation.xml: Added file; Navigation component
-	descriptor.
-	* data/component/networking.xml: Added file; Networking component
-	descriptor.
-	* data/component/nurbs.xml: Added file; NURBS component
-	descriptor.
-	* data/component/pointing-device-sensor.xml: Added file;
-	PointingDeviceSensor component descriptor.
-	* data/component/rendering.xml: Added file; Rendering component
-	descriptor.
-	* data/component/shape.xml: Added file; Shape component
-	descriptor.
-	* data/component/sound.xml: Added file; Sound component
-	descriptor.
-	* data/component/text.xml: Added file; Text component descriptor.
-	* data/component/texturing.xml: Added file; Texturing component
-	descriptor.
-	* data/component/time.xml: Added file; Time component descriptor.
-	* data/component/vrml97.xml: Added file; VRML97 component
-	descriptor.
-	* tests/Makefile.am
-	(TESTS_ENVIRONMENT): Set OPENVRML_DATADIR for the test execution
-	environment.
-	(check-local): Set OPENVRML_DATADIR for the test execution
-	* src/Makefile.am
-	(libopenvrml_libopenvrml_la_CXXFLAGS): Added XML_CFLAGS.
-	(libopenvrml_libopenvrml_la_LDFLAGS): Added XML_LIBS.
-	(libopenvrml_libopenvrml_la_LIBADD): Added -lboost_filesystem.
-	* src/libopenvrml/openvrml/browser.cpp: Removed explicit component
-	definitions in code; instead, parse XML resource files to create
-	component definitions.
+	* src/libopenvrml/openvrml/script.cpp
+	(eventOut_setProperty(JSContext *, JSObject *, jsval, jsval *)):
+	Import std::find_if.
+	(script::field_setProperty(JSContext *, JSObject *, jsval,
+	jsval *)): Import std::find_if.
 
 2008-04-08 Braden McDaniel  <braden@endoframe.com>
 
@@ -2825,6 +1142,17 @@
 
 	* src/openvrml-xembed/gtkvrmlbrowser.cpp (gtk_vrml_browser_new()):
 	Don't call resize here; we don't yet have a valid GL context.
+
+2008-04-08 Braden McDaniel  <braden@endoframe.com>
+
+	Updates to build with the Microsoft compiler.
+
+	* src/libopenvrml/openvrml/vrml97node.cpp
+	(grouping_node_base<Derived>::children_exposedfield): Fully
+	qualify openvrml::mfnode.
+	(cad_layer_node::do_render_child(openvrml::viewer &,
+	openvrml::rendering_context)): For some reason the Microsoft
+	compiler doesn't like "using openvrml::child_node;" here.
 
 2008-03-23 Braden McDaniel  <braden@endoframe.com>
 
@@ -2841,10 +1169,6 @@
 	(openvrml::add_component(node_type_decls &, const std::string &,
 	size_t): Applied OPENVRML_API.
 
-2008-03-23 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Call AC_LIBTOOL_DLOPEN for good measure.
-
 2008-03-21 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Ensure jsapi.h is usable.
@@ -2860,142 +1184,10 @@
 	* configure.ac: Fixed check to see whether SpiderMonkey has been
 	found.
 
-2008-03-19 Braden McDaniel  <braden@endoframe.com>
-
-	Partitioned vrml97node.cpp into multiple files.  For the most
-	part, there is now one translation unit per node implementation.
-	This alleviates performance issues in gcc related to large
-	translation units with lots of template instantiation; it also
-	parallelizes much better.
-
-	* src/Makefile.am
-	(libopenvrml_libopenvrml_la_CPPFLAGS): Added include directories
-	for VRML97 node implementation sources.
-	(libopenvrml_libopenvrml_la_SOURCES): Added VRML97 node
-	implementation source files.
-	* src/libopenvrml/openvrml/vrml97node.cpp: Moved node
-	implementations to individual files.
-	* src/node/vrml97/abstract_indexed_set.h
-	* src/node/vrml97/abstract_light.h
-	* src/node/vrml97/abstract_texture.h
-	* src/node/vrml97/anchor.cpp
-	* src/node/vrml97/anchor.h
-	* src/node/vrml97/appearance.cpp
-	* src/node/vrml97/appearance.h
-	* src/node/vrml97/audio_clip.cpp
-	* src/node/vrml97/audio_clip.h
-	* src/node/vrml97/background.cpp
-	* src/node/vrml97/background.h
-	* src/node/vrml97/billboard.cpp
-	* src/node/vrml97/billboard.h
-	* src/node/vrml97/box.cpp
-	* src/node/vrml97/box.h
-	* src/node/vrml97/cad_assembly.cpp
-	* src/node/vrml97/cad_assembly.h
-	* src/node/vrml97/cad_layer.cpp
-	* src/node/vrml97/cad_layer.h
-	* src/node/vrml97/collision.cpp
-	* src/node/vrml97/collision.h
-	* src/node/vrml97/color.cpp
-	* src/node/vrml97/color.h
-	* src/node/vrml97/color_interpolator.cpp
-	* src/node/vrml97/color_interpolator.h
-	* src/node/vrml97/cone.cpp
-	* src/node/vrml97/cone.h
-	* src/node/vrml97/coordinate.cpp
-	* src/node/vrml97/coordinate.h
-	* src/node/vrml97/coordinate_interpolator.cpp
-	* src/node/vrml97/coordinate_interpolator.h
-	* src/node/vrml97/cylinder.cpp
-	* src/node/vrml97/cylinder.h
-	* src/node/vrml97/cylinder_sensor.cpp
-	* src/node/vrml97/cylinder_sensor.h
-	* src/node/vrml97/directional_light.cpp
-	* src/node/vrml97/directional_light.h
-	* src/node/vrml97/elevation_grid.cpp
-	* src/node/vrml97/elevation_grid.h
-	* src/node/vrml97/extrusion.cpp
-	* src/node/vrml97/extrusion.h
-	* src/node/vrml97/fog.cpp
-	* src/node/vrml97/fog.h
-	* src/node/vrml97/font_style.cpp
-	* src/node/vrml97/font_style.h
-	* src/node/vrml97/group.cpp
-	* src/node/vrml97/group.h
-	* src/node/vrml97/grouping_node_base.h
-	* src/node/vrml97/image_stream_listener.cpp
-	* src/node/vrml97/image_stream_listener.h
-	* src/node/vrml97/image_texture.cpp
-	* src/node/vrml97/image_texture.h
-	* src/node/vrml97/indexed_face_set.cpp
-	* src/node/vrml97/indexed_face_set.h
-	* src/node/vrml97/indexed_line_set.cpp
-	* src/node/vrml97/indexed_line_set.h
-	* src/node/vrml97/inline.cpp
-	* src/node/vrml97/inline.h
-	* src/node/vrml97/lod.cpp
-	* src/node/vrml97/lod.h
-	* src/node/vrml97/material.cpp
-	* src/node/vrml97/material.h
-	* src/node/vrml97/movie_texture.cpp
-	* src/node/vrml97/movie_texture.h
-	* src/node/vrml97/navigation_info.cpp
-	* src/node/vrml97/navigation_info.h
-	* src/node/vrml97/normal.cpp
-	* src/node/vrml97/normal.h
-	* src/node/vrml97/normal_interpolator.cpp
-	* src/node/vrml97/normal_interpolator.h
-	* src/node/vrml97/orientation_interpolator.cpp
-	* src/node/vrml97/orientation_interpolator.h
-	* src/node/vrml97/pixel_texture.cpp
-	* src/node/vrml97/pixel_texture.h
-	* src/node/vrml97/plane_sensor.cpp
-	* src/node/vrml97/plane_sensor.h
-	* src/node/vrml97/point_light.cpp
-	* src/node/vrml97/point_light.h
-	* src/node/vrml97/point_set.cpp
-	* src/node/vrml97/point_set.h
-	* src/node/vrml97/position_interpolator.cpp
-	* src/node/vrml97/position_interpolator.h
-	* src/node/vrml97/proximity_sensor.cpp
-	* src/node/vrml97/proximity_sensor.h
-	* src/node/vrml97/scalar_interpolator.cpp
-	* src/node/vrml97/scalar_interpolator.h
-	* src/node/vrml97/shape.cpp
-	* src/node/vrml97/shape.h
-	* src/node/vrml97/sound.cpp
-	* src/node/vrml97/sound.h
-	* src/node/vrml97/sphere.cpp
-	* src/node/vrml97/sphere.h
-	* src/node/vrml97/sphere_sensor.cpp
-	* src/node/vrml97/sphere_sensor.h
-	* src/node/vrml97/spot_light.cpp
-	* src/node/vrml97/spot_light.h
-	* src/node/vrml97/switch.cpp
-	* src/node/vrml97/switch.h
-	* src/node/vrml97/text.cpp
-	* src/node/vrml97/text.h
-	* src/node/vrml97/texture_coordinate.cpp
-	* src/node/vrml97/texture_coordinate.h
-	* src/node/vrml97/texture_transform.cpp
-	* src/node/vrml97/texture_transform.h
-	* src/node/vrml97/time_sensor.cpp
-	* src/node/vrml97/time_sensor.h
-	* src/node/vrml97/touch_sensor.cpp
-	* src/node/vrml97/touch_sensor.h
-	* src/node/vrml97/transform.cpp
-	* src/node/vrml97/transform.h
-	* src/node/vrml97/viewpoint.cpp
-	* src/node/vrml97/viewpoint.h
-	* src/node/vrml97/visibility_sensor.cpp
-	* src/node/vrml97/visibility_sensor.h
-	* src/node/vrml97/world_info.cpp
-	* src/node/vrml97/world_info.h
-
 2008-02-24 Braden McDaniel  <braden@endoframe.com>
 
-	* src/script/javascript.cpp
-	(script::activate(double, const std::string &, size_t, const
+	* src/script/script.cpp
+	(js_::script::activate(double, const std::string &, size_t, const
 	openvrml::field_value * const[])): Call JS_MaybeGC to run the
 	garbage collector every so often.
 
@@ -3009,251 +1201,6 @@
 	* src/libopenvrml/openvrml/read_write_mutex.cpp
 	(openvrml::read_write_mutex::scoped_read_write_lock::demote()):
 	Notify waiting readers when demoting the lock.
-
-2008-02-24 Braden McDaniel  <braden@endoframe.com>
-
-	* src/script/java.cpp
-	(openvrml_script_LTX_register_factory): needs to be extern "C".
-
-2008-02-24 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Fixed merge error; need to substitute
-	OPENVRML_JAVASCRIPT_RPATH.
-
-2008-02-23 Braden McDaniel  <braden@endoframe.com>
-
-	Moved Script node scripting bindings to dynamically opened
-	modules; reenabled Java binding.
-
-	* Makefile.am (SUBDIRS): Removed reference to java subdirectory.
-	* README: Reflect changes to the directory layout; removed
-	obsolete references to OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT and
-	OPENVRML_ENABLE_SCRIPT_NODE_JAVA.
-	* configure.ac: Reflect changes to the directory layout in
-	AC_OUTPUT; invoke AM_PROG_GCJ; added symbol visibility macros for
-	JavaScript and Java scripting modules; simply check for jni.h
-	rather than attempting to link with libjvm (via OV_CHECK_JNI);
-	added ENABLE_SCRIPT_NODE_JAVASCRIPT and ENABLE_SCRIPT_NODE_JAVA
-	Automake conditionals; establish the location of libjvm using
-	JAVA_HOME; replaced OPENVRML_RPATH with OPENVRML_JAVASCRIPT_RPATH.
-	* openvrml.pc.in: Removed JNI_LIBS substitution.
-	* doc/Doxyfile: Removed reference to ScriptJDK.h.
-	* doc/Makefile.am: Create javadoc documentation for the Java
-	sources.
-	* examples/sdl_viewer.cpp: Apply MIME media types to JavaScript
-	and Java resources.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Added
-	projects ltdl and javascript.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/ltdl/ltdl.vcproj: Added
-	project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj:
-	Added project.
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
-	Removed references to script.cpp, ScriptJDK.cpp, and ScriptJDK.h;
-	define OPENVRML_PKGLIBDIR_ to an empty string for now.
-	* java/vrml/BaseNode.java: Moved to src/script.
-	* java/vrml/Browser.java: Moved to src/script.
-	* java/vrml/ConstField.java: Moved to src/script.
-	* java/vrml/ConstMField.java: Moved to src/script.
-	* java/vrml/Event.java: Moved to src/script.
-	* java/vrml/Field.java: Moved to src/script.
-	* java/vrml/InvalidEventInException.java: Moved to src/script.
-	* java/vrml/InvalidEventOutException.java: Moved to src/script.
-	* java/vrml/InvalidExposedFieldException.java: Moved to
-	src/script.
-	* java/vrml/InvalidFieldChangeException.java: Moved to src/script.
-	* java/vrml/InvalidFieldException.java: Moved to src/script.
-	* java/vrml/InvalidRouteException.java: Moved to src/script.
-	* java/vrml/InvalidVRMLSyntaxException.java: Moved to src/script.
-	* java/vrml/MField.java: Moved to src/script.
-	* java/vrml/Makefile.am: Moved to src/script.
-	* java/vrml/field/ConstMFBool.java: Moved to src/script.
-	* java/vrml/field/ConstMFColor.java: Moved to src/script.
-	* java/vrml/field/ConstMFDouble.java: Moved to src/script.
-	* java/vrml/field/ConstMFFloat.java: Moved to src/script.
-	* java/vrml/field/ConstMFInt32.java: Moved to src/script.
-	* java/vrml/field/ConstMFNode.java: Moved to src/script.
-	* java/vrml/field/ConstMFRotation.java: Moved to src/script.
-	* java/vrml/field/ConstMFString.java: Moved to src/script.
-	* java/vrml/field/ConstMFTime.java: Moved to src/script.
-	* java/vrml/field/ConstMFVec2d.java: Moved to src/script.
-	* java/vrml/field/ConstMFVec2f.java: Moved to src/script.
-	* java/vrml/field/ConstMFVec3d.java: Moved to src/script.
-	* java/vrml/field/ConstMFVec3f.java: Moved to src/script.
-	* java/vrml/field/ConstSFBool.java: Moved to src/script.
-	* java/vrml/field/ConstSFColor.java: Moved to src/script.
-	* java/vrml/field/ConstSFDouble.java: Moved to src/script.
-	* java/vrml/field/ConstSFFloat.java: Moved to src/script.
-	* java/vrml/field/ConstSFImage.java: Moved to src/script.
-	* java/vrml/field/ConstSFInt32.java: Moved to src/script.
-	* java/vrml/field/ConstSFNode.java: Moved to src/script.
-	* java/vrml/field/ConstSFRotation.java: Moved to src/script.
-	* java/vrml/field/ConstSFString.java: Moved to src/script.
-	* java/vrml/field/ConstSFTime.java: Moved to src/script.
-	* java/vrml/field/ConstSFVec2d.java: Moved to src/script.
-	* java/vrml/field/ConstSFVec2f.java: Moved to src/script.
-	* java/vrml/field/ConstSFVec3d.java: Moved to src/script.
-	* java/vrml/field/ConstSFVec3f.java: Moved to src/script.
-	* java/vrml/field/MFBool.java: Moved to src/script.
-	* java/vrml/field/MFColor.java: Moved to src/script.
-	* java/vrml/field/MFDouble.java: Moved to src/script.
-	* java/vrml/field/MFFloat.java: Moved to src/script.
-	* java/vrml/field/MFInt32.java: Moved to src/script.
-	* java/vrml/field/MFNode.java: Moved to src/script.
-	* java/vrml/field/MFRotation.java: Moved to src/script.
-	* java/vrml/field/MFString.java: Moved to src/script.
-	* java/vrml/field/MFTime.java: Moved to src/script.
-	* java/vrml/field/MFVec2d.java: Moved to src/script.
-	* java/vrml/field/MFVec2f.java: Moved to src/script.
-	* java/vrml/field/MFVec3d.java: Moved to src/script.
-	* java/vrml/field/MFVec3f.java: Moved to src/script.
-	* java/vrml/field/Makefile.am: Moved to src/script.
-	* java/vrml/field/SFBool.java: Moved to src/script.
-	* java/vrml/field/SFColor.java: Moved to src/script.
-	* java/vrml/field/SFDouble.java: Moved to src/script.
-	* java/vrml/field/SFFloat.java: Moved to src/script.
-	* java/vrml/field/SFImage.java: Moved to src/script.
-	* java/vrml/field/SFInt32.java: Moved to src/script.
-	* java/vrml/field/SFNode.java: Moved to src/script.
-	* java/vrml/field/SFRotation.java: Moved to src/script.
-	* java/vrml/field/SFString.java: Moved to src/script.
-	* java/vrml/field/SFTime.java: Moved to src/script.
-	* java/vrml/field/SFVec2d.java: Moved to src/script.
-	* java/vrml/field/SFVec2f.java: Moved to src/script.
-	* java/vrml/field/SFVec3d.java: Moved to src/script.
-	* java/vrml/field/SFVec3f.java: Moved to src/script.
-	* java/vrml/node/Makefile.am: Moved to src/script.
-	* java/vrml/node/Node.java: Moved to src/script.
-	* java/vrml/node/Script.java: Moved to src/script.
-	* java/Makefile.am: Moved to src/script.
-	* models/TestJSAI.java: Formatting changes.
-	* src/Makefile.am
-	(SUBDIRS): Recurse into script to build the Java sources.
-	(noinst_HEADERS): Removed reference to ScriptJDK.h.
-	(libopenvrml_libopenvrml_la_CPPFLAGS): Define OPENVRML_PKGLIBDIR_.
-	(libopenvrml_libopenvrml_la_CXXFLAGS): Removed JS_CFLAGS.
-	(libopenvrml_libopenvrml_la_SOURCES): Removed references to
-	script.cpp and ScriptJDK.cpp.
-	(libopenvrml_libopenvrml_la_LDFLAGS): Removed JS_LIBS and
-	JNI_LIBS.
-	(libopenvrml_libopenvrml_la_LIBADD): Added -lltdl.
-	(openvrmlscriptdir): Added.
-	(openvrmlscript_LTLIBRARIES): Add javascript.la and java.la based
-	on their respective Automake conditionals.
-	(script_javascript_la_SOURCES): Added.
-	(script_javascript_la_CPPFLAGS): Added.
-	(script_javascript_la_CXXFLAGS): Added.
-	(script_javascript_la_LDFLAGS): Added; apply
-	OPENVRML_JAVASCRIPT_RPATH.
-	(script_java_la_SOURCES): Added.
-	(script_java_la_CPPFLAGS): Added.
-	(script_java_la_LDFLAGS): Added.
-	(openvrml_xembed_openvrml_xembed_LDFLAGS): Removed OPENVRML_RPATH.
-	* src/libopenvrml/openvrml/script.cpp: Moved implementation of
-	openvrml::script_node to browser.cpp; moved implementation of
-	Script node JavaScript binding to src/script/javascript.cpp.
-	* src/libopenvrml/openvrml/script.h
-	(openvrml::script_factory): Added; an abstract factory for
-	openvrml::script instances.
-	(openvrml::script_node): Moved to browser.h.
-	(openvrml::script_factory_registry): Added; registry for
-	script_factory.
-	* src/libopenvrml/openvrml/browser.cpp: Moved implementation of openvrml::script_node here to share uri implementation.
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::script_node): Moved here from script.h.
-	(openvrml::browser): Made openvrml::script_node a friend.
-	* src/libopenvrml/openvrml/ScriptJDK.cpp: Removed; moved contents to src/script/java.cpp.
-	* src/libopenvrml/openvrml/ScriptJDK.h: Removed file.
-	* src/script/Makefile.am: Added file.
-	* src/script/java.cpp: Added file; contents moved from ScriptJDK.cpp.
-	* src/script/javascript.cpp: Added file; contents moved from script.cpp.
-	* src/script/java/Makefile.am: Added file.
-	* src/script/java/vrml/BaseNode.java: Moved from java.
-	* src/script/java/vrml/Browser.java: Moved from java.
-	* src/script/java/vrml/ConstField.java: Moved from java.
-	* src/script/java/vrml/ConstMField.java: Moved from java.
-	* src/script/java/vrml/Event.java: Moved from java.
-	* src/script/java/vrml/Field.java: Moved from java.
-	* src/script/java/vrml/InvalidEventInException.java: Moved from java.
-	* src/script/java/vrml/InvalidEventOutException.java: Moved from java.
-	* src/script/java/vrml/InvalidExposedFieldException.java: Moved from java.
-	* src/script/java/vrml/InvalidFieldChangeException.java: Moved from java.
-	* src/script/java/vrml/InvalidFieldException.java: Moved from java.
-	* src/script/java/vrml/InvalidRouteException.java: Moved from java.
-	* src/script/java/vrml/InvalidVRMLSyntaxException.java: Moved from java.
-	* src/script/java/vrml/MField.java: Moved from java.
-	* src/script/java/vrml/Makefile.am: Moved from java.
-	* src/script/java/vrml/field/ConstMFBool.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFColor.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFDouble.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFFloat.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFInt32.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFNode.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFRotation.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFString.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFTime.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFVec2d.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFVec2f.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFVec3d.java: Moved from java.
-	* src/script/java/vrml/field/ConstMFVec3f.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFBool.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFColor.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFDouble.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFFloat.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFImage.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFInt32.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFNode.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFRotation.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFString.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFTime.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFVec2d.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFVec2f.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFVec3d.java: Moved from java.
-	* src/script/java/vrml/field/ConstSFVec3f.java: Moved from java.
-	* src/script/java/vrml/field/MFBool.java: Moved from java.
-	* src/script/java/vrml/field/MFColor.java: Moved from java.
-	* src/script/java/vrml/field/MFDouble.java: Moved from java.
-	* src/script/java/vrml/field/MFFloat.java: Moved from java.
-	* src/script/java/vrml/field/MFInt32.java: Moved from java.
-	* src/script/java/vrml/field/MFNode.java: Moved from java.
-	* src/script/java/vrml/field/MFRotation.java: Moved from java.
-	* src/script/java/vrml/field/MFString.java: Moved from java.
-	* src/script/java/vrml/field/MFTime.java: Moved from java.
-	* src/script/java/vrml/field/MFVec2d.java: Moved from java.
-	* src/script/java/vrml/field/MFVec2f.java: Moved from java.
-	* src/script/java/vrml/field/MFVec3d.java: Moved from java.
-	* src/script/java/vrml/field/MFVec3f.java: Moved from java.
-	* src/script/java/vrml/field/Makefile.am: Moved from java.
-	* src/script/java/vrml/field/SFBool.java: Moved from java.
-	* src/script/java/vrml/field/SFColor.java: Moved from java.
-	* src/script/java/vrml/field/SFDouble.java: Moved from java.
-	* src/script/java/vrml/field/SFFloat.java: Moved from java.
-	* src/script/java/vrml/field/SFImage.java: Moved from java.
-	* src/script/java/vrml/field/SFInt32.java: Moved from java.
-	* src/script/java/vrml/field/SFNode.java: Moved from java.
-	* src/script/java/vrml/field/SFRotation.java: Moved from java.
-	* src/script/java/vrml/field/SFString.java: Moved from java.
-	* src/script/java/vrml/field/SFTime.java: Moved from java.
-	* src/script/java/vrml/field/SFVec2d.java: Moved from java.
-	* src/script/java/vrml/field/SFVec2f.java: Moved from java.
-	* src/script/java/vrml/field/SFVec3d.java: Moved from java.
-	* src/script/java/vrml/field/SFVec3f.java: Moved from java.
-	* src/script/java/vrml/node/Makefile.am: Moved from java.
-	* src/script/java/vrml/node/Node.java: Moved from java.
-	* src/script/java/vrml/node/Script.java: Moved from java.
-	* tests/TestScript.java: Added file.
-	* tests/Makefile.am: Build TestScript.java.
-
-2008-02-23 Braden McDaniel  <braden@endoframe.com>
-
-	Updates to build with the Microsoft compiler.
-
-	* src/libopenvrml/openvrml/vrml97node.cpp
-	(grouping_node_base<Derived>::children_exposedfield): Fully
-	qualify openvrml::mfnode.
-	(cad_layer_node::do_render_child(openvrml::viewer &,
-	openvrml::rendering_context)): For some reason the Microsoft
-	compiler doesn't like "using openvrml::child_node;" here.
 
 2008-02-17 Braden McDaniel  <braden@endoframe.com>
 
@@ -3316,31 +1263,7 @@
 	(openvrml::script_node::update(double)): Use a const_iterator when
 	iterating over the eventout_map_.
 
-2008-01-29 Braden McDaniel  <braden@endoframe.com>
-
-	Moved node::add_ref and node::release out-of-line.
-
-	* src/libopenvrml/openvrml/node.cpp
-	(openvrml::node::add_ref() const): Moved from node.h.
-	(openvrml::node::release() const): Moved from node.h.
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::node::add_ref() const): Moved to node.cpp.
-	(openvrml::node::release() const): Moved to node.cpp.
-
 2008-01-28 Braden McDaniel  <braden@endoframe.com>
-
-	Since we aren't doing any ownership transfer, use a
-	boost::scoped_ptr for openvrml::field_value::counted_impl_.
-
-	* src/libopenvrml/openvrml/field_value.h
-	(openvrml::field_value::counted_impl_): Changed to
-	boost::scoped_ptr from std::auto_ptr.
-	(openvrml::field_value::operator=<FieldValue>(const FieldValue&)):
-	Reset the scoped_ptr.
-	(openvrml::field_value::swap<FieldValue>(FieldValue &)):
-	Delegate to boost::scoped_ptr::swap.
-
-2007-01-28 Braden McDaniel  <braden@endoframe.com>
 
 	Use a multimap for storing IS mappings in the parser.  This is
 	required to accommodate exposedFields that may be mapped to an

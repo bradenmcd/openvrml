@@ -22,14 +22,14 @@
 # ifndef OPENVRML_NODE_H
 #   define OPENVRML_NODE_H
 
-#   include <openvrml/field_value.h>
-#   include <openvrml/rendering_context.h>
-#   include <openvrml/viewer.h>
-#   include <boost/bind.hpp>
 #   include <deque>
-#   include <map>
 #   include <set>
 #   include <utility>
+#   include <boost/bind.hpp>
+#   include <openvrml/field_value.h>
+#   include <openvrml/viewer.h>
+#   include <openvrml/rendering_context.h>
+#   include <openvrml/scope.h>
 
 namespace openvrml {
 
@@ -198,11 +198,11 @@ namespace openvrml {
                     bind(node_interface_matches_field(), _1, id));
         if (pos == interfaces.end()) {
             using std::logical_or;
-            pos =
-                find_if(interfaces.begin(), interfaces.end(),
-                        bind(logical_or<bool>(),
-                             bind(node_interface_matches_eventin(), _1, id),
-                             bind(node_interface_matches_eventout(), _1, id)));
+
+            pos = find_if(interfaces.begin(), interfaces.end(),
+                          bind(logical_or<bool>(),
+                               bind(node_interface_matches_eventin(), _1, id),
+                               bind(node_interface_matches_eventout(), _1, id)));
         }
         return pos;
     }
@@ -237,6 +237,7 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
     class node_type;
+    class proto_node;
 
     class OPENVRML_API node_metatype : boost::noncopyable {
         const node_metatype_id id_;
@@ -257,8 +258,7 @@ namespace openvrml {
         void shutdown(double time) OPENVRML_NOTHROW;
 
     protected:
-        explicit node_metatype(const node_metatype_id & id,
-                               openvrml::browser & b)
+        explicit node_metatype(const node_metatype_id & id, openvrml::browser & b)
             OPENVRML_NOTHROW;
 
     private:
@@ -277,7 +277,6 @@ namespace openvrml {
     typedef std::map<std::string, boost::shared_ptr<field_value> >
         initial_value_map;
 
-    class scope;
 
     class OPENVRML_API node_type : boost::noncopyable {
         const node_metatype & metatype_;
@@ -364,12 +363,8 @@ namespace openvrml {
     template <typename FieldValue> class field_value_emitter;
     template <typename FieldValue> class exposedfield;
 
-    namespace local {
-        class proto_node;
-    };
-
     class OPENVRML_API node : boost::noncopyable {
-        friend class local::proto_node;
+        friend class proto_node;
         friend class externproto_node;
 
         friend OPENVRML_API std::ostream & operator<<(std::ostream & out,
@@ -513,9 +508,6 @@ namespace openvrml {
 
         openvrml::scene * scene() const OPENVRML_NOTHROW;
 
-        const std::vector<boost::intrusive_ptr<node> > & impl_nodes() const
-            OPENVRML_NOTHROW;
-
         std::ostream & print(std::ostream & out, size_t indent) const;
 
         void initialize(openvrml::scene & scene, double timestamp)
@@ -556,13 +548,7 @@ namespace openvrml {
              const boost::shared_ptr<openvrml::scope> & scope)
             OPENVRML_NOTHROW;
 
-        read_write_mutex & scene_mutex();
-
     private:
-        virtual
-        const std::vector<boost::intrusive_ptr<node> > & do_impl_nodes() const
-            OPENVRML_NOTHROW;
-
         virtual void do_initialize(double timestamp)
             OPENVRML_THROW1(std::bad_alloc);
         virtual const field_value & do_field(const std::string & id) const
@@ -603,6 +589,12 @@ namespace openvrml {
         virtual viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
     };
 
+    inline void node::add_ref() const OPENVRML_NOTHROW
+    {
+        boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+        ++this->ref_count_;
+    }
+
     inline void intrusive_ptr_add_ref(const node * n) OPENVRML_NOTHROW
     {
         assert(n);
@@ -614,6 +606,16 @@ namespace openvrml {
         boost::mutex::scoped_lock lock(this->ref_count_mutex_);
         assert(this->ref_count_ > 0);
         --this->ref_count_;
+    }
+
+    inline void node::release() const OPENVRML_NOTHROW
+    {
+        bool delete_me;
+        {
+            boost::mutex::scoped_lock lock(this->ref_count_mutex_);
+            delete_me = (--this->ref_count_ == 0);
+        }
+        if (delete_me) { delete this; }
     }
 
     inline void intrusive_ptr_release(const node * n) OPENVRML_NOTHROW
@@ -663,8 +665,6 @@ namespace openvrml {
         return dynamic_cast<field_value_emitter<FieldValue> &>(
             this->do_event_emitter(id));
     }
-
-    OPENVRML_API bool is_proto_instance(const node & n);
 
     OPENVRML_API bool add_route(node & from, const std::string & eventout,
                                 node & to, const std::string & eventin)
@@ -1340,8 +1340,8 @@ namespace openvrml {
 
     protected:
         void halt_traversal() OPENVRML_NOTHROW;
-        bool halted() const OPENVRML_NOTHROW;
-        bool traversed(node & n) const OPENVRML_NOTHROW;
+        bool halted() OPENVRML_NOTHROW;
+        bool traversed(node & n) OPENVRML_NOTHROW;
 
     private:
         virtual void on_entering(node & n);

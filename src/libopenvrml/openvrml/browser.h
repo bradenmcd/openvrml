@@ -110,6 +110,42 @@ namespace openvrml {
     };
 
 
+    class OPENVRML_API bad_url : public std::runtime_error {
+    public:
+        bad_url(const std::string & message);
+        virtual ~bad_url() throw ();
+    };
+
+
+    class OPENVRML_API invalid_url : public bad_url {
+    public:
+        invalid_url();
+        virtual ~invalid_url() throw ();
+    };
+
+
+    class OPENVRML_API bad_media_type : public bad_url {
+    public:
+        explicit bad_media_type(const std::string & received_type)
+            OPENVRML_NOTHROW;
+        virtual ~bad_media_type() throw ();
+    };
+
+
+    class OPENVRML_API unreachable_url : public bad_url {
+    public:
+        unreachable_url();
+        virtual ~unreachable_url() throw ();
+    };
+
+
+    class OPENVRML_API no_alternative_url : public bad_url {
+    public:
+        no_alternative_url();
+        virtual ~no_alternative_url() throw ();
+    };
+
+
     class browser;
 
     class OPENVRML_API browser_event {
@@ -145,35 +181,6 @@ namespace openvrml {
     };
 
 
-    namespace local {
-        class node_metatype_registry_impl;
-    }
-
-    class OPENVRML_API node_metatype_registry : boost::noncopyable {
-        friend class browser;
-        friend bool OPENVRML_API operator==(const node_type &,
-                                            const node_type &)
-            OPENVRML_NOTHROW;
-
-    private:
-        boost::scoped_ptr<local::node_metatype_registry_impl> impl_;
-
-        explicit node_metatype_registry(openvrml::browser & b);
-
-    public:
-        ~node_metatype_registry() OPENVRML_NOTHROW;
-
-        openvrml::browser & browser() const OPENVRML_NOTHROW;
-
-        void register_node_metatype(
-            const std::string & id,
-            const boost::shared_ptr<node_metatype> & metatype)
-            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
-    };
-
-    typedef void (*register_node_metatypes_func)(node_metatype_registry &);
-
-
     class viewer;
     class scene;
     class null_node_metatype;
@@ -182,10 +189,8 @@ namespace openvrml {
 
     class OPENVRML_API browser : boost::noncopyable {
         friend class scene;
-        friend class script_node;
         friend class externproto_node;
-        friend bool OPENVRML_API operator==(const node_type &,
-                                            const node_type &)
+        friend bool OPENVRML_API operator==(const node_type &, const node_type &)
             OPENVRML_NOTHROW;
 
         struct root_scene_loader;
@@ -194,15 +199,53 @@ namespace openvrml {
         struct vrml97_parse_actions;
         struct x3d_vrml_parse_actions;
 
-        OPENVRML_LOCAL static void
-        parse_vrml(std::istream & in,
-                   const std::string & uri,
-                   const std::string & type,
-                   const openvrml::scene & scene,
-                   std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
-                   std::map<std::string, std::string> & meta);
+        class OPENVRML_LOCAL node_metatype_map {
+            mutable read_write_mutex mutex_;
+            typedef std::map<std::string, boost::shared_ptr<node_metatype> >
+                map_t;
+            map_t map_;
 
-        boost::scoped_ptr<node_metatype_registry> node_metatype_registry_;
+        public:
+            node_metatype_map();
+            ~node_metatype_map() OPENVRML_NOTHROW;
+
+            node_metatype_map & operator=(const node_metatype_map & ncm);
+
+            void init(viewpoint_node * initial_viewpoint, double timestamp);
+
+            const boost::shared_ptr<openvrml::node_metatype>
+                insert(const std::string & id,
+                       const boost::shared_ptr<openvrml::node_metatype> & metatype);
+
+            bool remove(const std::string & id);
+
+            const boost::shared_ptr<node_metatype>
+                find(const std::string & id) const;
+
+            const std::vector<node_metatype_id>
+                node_metatype_ids(const openvrml::node_metatype & metatype) const
+                OPENVRML_THROW1(std::bad_alloc);
+
+            void render(viewer & v);
+
+            void shutdown(double timestamp) OPENVRML_NOTHROW;
+
+        private:
+            //
+            // No convenient way to make copy-construction thread-safe, and we
+            // don't really need it.
+            //
+            node_metatype_map(const node_metatype_map & map);
+        };
+
+        OPENVRML_LOCAL static void
+            parse_vrml(
+                std::istream & in,
+                const std::string & uri,
+                const std::string & type,
+                const openvrml::scene & scene,
+                std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
+                std::map<std::string, std::string> & meta);
 
         const boost::scoped_ptr<null_node_metatype> null_node_metatype_;
         const boost::scoped_ptr<null_node_type> null_node_type_;
@@ -211,6 +254,7 @@ namespace openvrml {
         boost::scoped_ptr<boost::thread> load_root_scene_thread_;
 
         boost::thread_group load_proto_thread_group_;
+        node_metatype_map node_metatype_map_;
         script_node_metatype script_node_metatype_;
         resource_fetcher & fetcher_;
 
@@ -354,6 +398,65 @@ namespace openvrml {
 
     protected:
         bool headlight_on();
+    };
+
+
+    class OPENVRML_API scene : boost::noncopyable {
+        struct vrml_from_url_creator;
+
+        openvrml::browser * const browser_;
+        scene * const parent_;
+
+        mutable read_write_mutex nodes_mutex_;
+        std::vector<boost::intrusive_ptr<node> > nodes_;
+
+        mutable read_write_mutex url_mutex_;
+        std::string url_;
+
+        mutable read_write_mutex meta_mutex_;
+        std::map<std::string, std::string> meta_;
+
+        boost::thread_group stream_reader_threads_;
+
+    public:
+        explicit scene(openvrml::browser & browser, scene * parent = 0)
+            OPENVRML_NOTHROW;
+        virtual ~scene() OPENVRML_NOTHROW;
+
+        openvrml::browser & browser() const OPENVRML_NOTHROW;
+        scene * parent() const OPENVRML_NOTHROW;
+        void load(resource_istream & in);
+        void initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        const std::string meta(const std::string & key) const
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+        void meta(const std::string & key, const std::string & value)
+            OPENVRML_THROW1(std::bad_alloc);
+        const std::vector<std::string> meta_keys() const
+            OPENVRML_THROW1(std::bad_alloc);
+        const std::vector<boost::intrusive_ptr<node> > nodes() const
+            OPENVRML_THROW1(std::bad_alloc);
+        void nodes(const std::vector<boost::intrusive_ptr<node> > & n)
+            OPENVRML_THROW2(std::invalid_argument, std::bad_alloc);
+        const scope * root_scope() const OPENVRML_NOTHROW;
+        const std::string url() const OPENVRML_THROW1(std::bad_alloc);
+        void render(openvrml::viewer & viewer, rendering_context context);
+        void load_url(const std::vector<std::string> & url,
+                      const std::vector<std::string> & parameter)
+            OPENVRML_THROW1(std::bad_alloc);
+        std::auto_ptr<resource_istream>
+        get_resource(const std::vector<std::string> & url) const
+            OPENVRML_THROW2(no_alternative_url, std::bad_alloc);
+        void read_stream(std::auto_ptr<resource_istream> in,
+                         std::auto_ptr<stream_listener> listener);
+        void create_vrml_from_url(const std::vector<std::string> & url,
+                                  const boost::intrusive_ptr<node> & node,
+                                  const std::string & event)
+            OPENVRML_THROW3(unsupported_interface, std::bad_cast,
+                            boost::thread_resource_error);
+        void shutdown(double timestamp) OPENVRML_NOTHROW;
+
+    private:
+        virtual void scene_loaded();
     };
 }
 
