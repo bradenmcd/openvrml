@@ -178,29 +178,45 @@ namespace openvrml {
     class scene;
     class null_node_metatype;
     class null_node_type;
-    class externproto_node;
+
+    namespace local {
+        struct vrml97_parse_actions;
+        struct x3d_vrml_parse_actions;
+
+        void parse_vrml(std::istream & in,
+                        const std::string & uri,
+                        const std::string & type,
+                        const openvrml::scene & scene,
+                        std::vector<boost::intrusive_ptr<node> > & nodes,
+                        std::map<std::string, std::string> & meta);
+
+        class externproto_node;
+        class externproto_node_type;
+        class externproto_node_metatype;
+    }
 
     class OPENVRML_API browser : boost::noncopyable {
         friend class scene;
         friend class script_node;
-        friend class externproto_node;
         friend bool OPENVRML_API operator==(const node_type &,
                                             const node_type &)
             OPENVRML_NOTHROW;
 
         struct root_scene_loader;
-        class externproto_node_metatype;
-        class externproto_node_type;
-        struct vrml97_parse_actions;
-        struct x3d_vrml_parse_actions;
+        friend class local::externproto_node;
+        friend class local::externproto_node_type;
+        friend class local::externproto_node_metatype;
+        friend struct local::vrml97_parse_actions;
+        friend struct local::x3d_vrml_parse_actions;
 
-        OPENVRML_LOCAL static void
-        parse_vrml(std::istream & in,
-                   const std::string & uri,
-                   const std::string & type,
-                   const openvrml::scene & scene,
-                   std::vector<boost::intrusive_ptr<openvrml::node> > & nodes,
-                   std::map<std::string, std::string> & meta);
+        friend
+        void
+        local::parse_vrml(std::istream & in,
+                          const std::string & uri,
+                          const std::string & type,
+                          const openvrml::scene & scene,
+                          std::vector<boost::intrusive_ptr<node> > & nodes,
+                          std::map<std::string, std::string> & meta);
 
         boost::scoped_ptr<node_metatype_registry> node_metatype_registry_;
 

@@ -366,11 +366,12 @@ namespace openvrml {
 
     namespace local {
         class proto_node;
+        class externproto_node;
     };
 
     class OPENVRML_API node : boost::noncopyable {
         friend class local::proto_node;
-        friend class externproto_node;
+        friend class local::externproto_node;
 
         friend OPENVRML_API std::ostream & operator<<(std::ostream & out,
                                                       const node & n);

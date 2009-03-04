@@ -104,8 +104,14 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/local/uri.h \
         libopenvrml/openvrml/local/xml_reader.cpp \
         libopenvrml/openvrml/local/xml_reader.h \
+        libopenvrml/openvrml/local/parse_vrml.cpp \
+        libopenvrml/openvrml/local/parse_vrml.h \
+        libopenvrml/openvrml/local/component.cpp \
+        libopenvrml/openvrml/local/component.h \
         libopenvrml/openvrml/local/proto.cpp \
         libopenvrml/openvrml/local/proto.h \
+        libopenvrml/openvrml/local/externproto.cpp \
+        libopenvrml/openvrml/local/externproto.h \
         libopenvrml/openvrml/local/field_value_types.h \
         libopenvrml/openvrml/local/float.h \
         libopenvrml/openvrml/local/node_metatype_registry_impl.cpp \

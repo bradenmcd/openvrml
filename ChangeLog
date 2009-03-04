@@ -1,3 +1,29 @@
+2009-03-04 Braden McDaniel  <braden@endoframe.com>
+
+	Moved the parser instances out of browser.cpp along with a lot of
+	other code that implied.
+
+	* src/libopenvrml/openvrml/local/component.cpp: Added file.
+	* src/libopenvrml/openvrml/local/component.h: Added file.
+	component and profile class definitions.
+	* src/libopenvrml/openvrml/local/externproto.cpp: Added file.
+	* src/libopenvrml/openvrml/local/externproto.h: Added file.
+	Definitions of externproto_node, externproto_node_type, and
+	externproto_node_metatype.
+	* src/libopenvrml/openvrml/local/parse_vrml.cpp: Added file.
+	* src/libopenvrml/openvrml/local/parse_vrml.h: Added file.
+	Declaration of parse_vrml function and definitions of the parse
+	actions classes.
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/scene.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_SOURCES): Added files
+	libopenvrml/openvrml/local/parse_vrml.{cpp,h},
+	libopenvrml/openvrml/local/component.{cpp,h},
+	libopenvrml/openvrml/local/externproto.{cpp,h}.
+
 2009-03-02 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.17.11 release.
