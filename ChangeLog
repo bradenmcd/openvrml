@@ -1,3 +1,11 @@
+2009-03-15 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Use the conventional
+	gl.h/glu.h header paths as a first choice.  Make it up to users
+	who don't want these to make them unavailable to the build
+	environment.  Most of the time, that will be done by configuring
+	--without-x.
+
 2009-03-04 Braden McDaniel  <braden@endoframe.com>
 
 	Moved the parser instances out of browser.cpp along with a lot of

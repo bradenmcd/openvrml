@@ -36,12 +36,14 @@
 #   undef interface
 # endif
 
-# ifdef HAVE_OPENGL_GL_H
+# ifdef HAVE_GL_GLU_H
+#   include <GL/gl.h>
+#   include <GL/glu.h>
+# elif defined(HAVE_OPENGL_GLU_H)
 #   include <OpenGL/gl.h>
 #   include <OpenGL/glu.h>
 # else
-#   include <GL/gl.h>
-#   include <GL/glu.h>
+#   error must define HAVE_GL_GLU_H or HAVE_OPENGL_GLU_H
 # endif
 
 # include <cmath>
