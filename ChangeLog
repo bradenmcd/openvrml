@@ -1,5 +1,10 @@
 2009-03-16 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj:
+	Updated to use FreeType 2.3.9.
+
+2009-03-16 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
 	(openvrml::gl::viewer::do_set_frustum(float, float, float)):
 	Explicitly convert to float to quell a warning from the Microsoft

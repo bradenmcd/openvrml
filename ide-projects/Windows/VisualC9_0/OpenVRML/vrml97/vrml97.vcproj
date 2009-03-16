@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngd.lib zlibd.lib freetype236MT_D.lib"
+				AdditionalDependencies="libpngd.lib zlibd.lib freetype239MT_D.lib"
 				OutputFile="$(SolutionDir)..\bin\node\$(ProjectName).dll"
 				IgnoreDefaultLibraryNames="libcmtd"
 			/>
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpng.lib zlib.lib freetype236MT.lib"
+				AdditionalDependencies="libpng.lib zlib.lib freetype239MT.lib"
 				OutputFile="$(SolutionDir)..\bin\node\$(ProjectName).dll"
 			/>
 			<Tool
