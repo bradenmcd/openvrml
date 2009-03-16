@@ -22,7 +22,7 @@
 # ifndef OPENVRML_SCRIPT_H
 #   define OPENVRML_SCRIPT_H
 
-#   include <openvrml/bad_url.h>
+#   include <boost/scoped_ptr.hpp>
 #   include <openvrml/node.h>
 #   include <openvrml/event.h>
 
@@ -71,42 +71,6 @@ namespace openvrml {
     };
 
 
-    class resource_istream;
-
-    class OPENVRML_API script_factory : boost::noncopyable {
-    public:
-        virtual ~script_factory() OPENVRML_NOTHROW = 0;
-
-        virtual std::auto_ptr<script>
-        create_script(script_node & node,
-                      const boost::shared_ptr<resource_istream> & source) = 0;
-
-    protected:
-        script_factory() OPENVRML_NOTHROW;
-    };
-
-
-    class OPENVRML_API script_factory_registry : boost::noncopyable {
-        friend class script_node;
-
-    public:
-        class impl;
-
-    private:
-        boost::scoped_ptr<impl> impl_;
-
-        script_factory_registry();
-        ~script_factory_registry();
-
-    public:
-        bool register_factory(
-            const std::set<std::string> & media_types,
-            const std::set<std::string> & uri_schemes,
-            const boost::shared_ptr<script_factory> & factory)
-            OPENVRML_THROW2(std::bad_alloc, std::invalid_argument);
-    };
-
-
     class OPENVRML_API script_node_metatype : public node_metatype {
     public:
         script_node_metatype(openvrml::browser & browser);
@@ -123,13 +87,11 @@ namespace openvrml {
     class OPENVRML_API script_node : public child_node {
         friend class script;
 
-        static script_factory_registry script_factory_registry_;
-
     public:
         typedef std::map<std::string, boost::shared_ptr<field_value> >
             field_value_map_t;
 
-        class OPENVRML_API eventout : boost::noncopyable {
+        class eventout : boost::noncopyable {
             script_node & node_;
             boost::scoped_ptr<field_value> value_;
             bool modified_;
@@ -150,8 +112,6 @@ namespace openvrml {
             void emit_event(double timestamp) OPENVRML_THROW1(std::bad_alloc);
         };
 
-        typedef boost::shared_ptr<openvrml::event_listener> event_listener_ptr;
-        typedef std::map<std::string, event_listener_ptr> event_listener_map_t;
         typedef boost::shared_ptr<eventout> eventout_ptr;
         typedef std::map<std::string, eventout_ptr> eventout_map_t;
 
@@ -269,7 +229,7 @@ namespace openvrml {
             virtual const std::string do_eventout_id() const OPENVRML_NOTHROW;
         };
 
-        script_node_type type_;
+        script_node_type type;
         set_metadata_listener set_metadata_listener_;
         sfnode metadata_;
         metadata_changed_emitter metadata_changed_emitter_;
@@ -279,9 +239,11 @@ namespace openvrml {
         mfstring url_;
         url_changed_emitter url_changed_emitter_;
         field_value_map_t field_value_map_;
-        event_listener_map_t event_listener_map_;
+        typedef boost::shared_ptr<openvrml::event_listener> event_listener_ptr;
+        typedef std::map<std::string, event_listener_ptr> event_listener_map_t;
+        event_listener_map_t event_listener_map;
         eventout_map_t eventout_map_;
-        boost::scoped_ptr<script> script_;
+        script * script_;
         int events_received;
 
     public:
@@ -295,14 +257,11 @@ namespace openvrml {
 
         void update(double current_time);
 
-        const event_listener_map_t & event_listener_map() const
-            OPENVRML_NOTHROW;
         const field_value_map_t & field_value_map() const OPENVRML_NOTHROW;
         const eventout_map_t & eventout_map() const OPENVRML_NOTHROW;
 
     private:
-        OPENVRML_LOCAL std::auto_ptr<script> create_script()
-            OPENVRML_THROW2(no_alternative_url, std::bad_alloc);
+        OPENVRML_LOCAL script * create_script();
 
         OPENVRML_LOCAL void assign_with_self_ref_check(const sfnode &,
                                                        sfnode &) const
@@ -326,6 +285,18 @@ namespace openvrml {
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual void do_render_child(viewer & v, rendering_context context);
     };
+
+    inline const script_node::field_value_map_t &
+    script_node::field_value_map() const OPENVRML_NOTHROW
+    {
+        return this->field_value_map_;
+    }
+
+    inline const script_node::eventout_map_t &
+    script_node::eventout_map() const OPENVRML_NOTHROW
+    {
+        return this->eventout_map_;
+    }
 }
 
 # endif

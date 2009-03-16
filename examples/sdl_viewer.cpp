@@ -187,10 +187,6 @@ namespace {
                     media_type = "image/png";
                 } else if (iequals(ext, "jpg") || iequals(ext, "jpeg")) {
                     media_type = "image/jpeg";
-                } else if (iequals(ext, "class")) {
-                    media_type = "application/java";
-                } else if (iequals(ext, "js")) {
-                    media_type = "application/javascript";
                 }
                 return media_type;
             }

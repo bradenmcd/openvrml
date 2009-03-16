@@ -27,7 +27,7 @@
 namespace openvrml {
 
     template <typename FieldValue>
-    class exposedfield :
+    class OPENVRML_API exposedfield :
         public FieldValue,
         public virtual node_field_value_listener<FieldValue>,
         public field_value_emitter<FieldValue> {

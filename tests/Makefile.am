@@ -1,11 +1,14 @@
 AM_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_SPIRIT_THREADSAFE \
+        -DBOOST_SPIRIT_CLOSURE_LIMIT=6 \
+        -DPHOENIX_LIMIT=6 \
         -DBOOST_TEST_DYN_LINK
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = $(OPENVRML_RPATH)
 
-TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=no OPENVRML_DATADIR=$(abs_top_srcdir)/data
+TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=no
 TESTS = color \
         rotation \
         mat4f \
@@ -71,12 +74,6 @@ parse_x3dvrml_LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 browser_parse_vrml_SOURCES = browser_parse_vrml.cpp
 browser_parse_vrml_LDADD = libtest-openvrml.la
 
-JAVAROOT = $(top_builddir)/tests
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/src/script/java/script.jar
-if ENABLE_SCRIPT_NODE_JAVA
-dist_noinst_JAVA = TestScript.java
-endif
-
 EXTRA_DIST = \
         package.m4 \
         testsuite.at \
@@ -122,7 +119,7 @@ EXTRA_DIST = \
 
 TESTSUITE = $(srcdir)/testsuite
 check-local: atconfig atlocal $(TESTSUITE)
-	$(SHELL) $(TESTSUITE) OPENVRML_DATADIR=$(abs_top_srcdir)/data
+	$(SHELL) $(TESTSUITE)
 
 AUTOTEST = autom4te --language=autotest
 $(TESTSUITE): $(srcdir)/package.m4 $(srcdir)/testsuite.at
