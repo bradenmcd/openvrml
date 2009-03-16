@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib libpngd.lib zlibd.lib freetype236MT_D.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib libpngd.lib zlibd.lib freetype239MT_D.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName)d.dll"
 				IgnoreDefaultLibraryNames="libcmtd;msvcrt"
 				GenerateDebugInformation="true"
@@ -151,7 +151,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib libpng.lib zlib.lib freetype236MT.lib"
+				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib libpng.lib zlib.lib freetype239MT.lib"
 				OutputFile="$(SolutionDir)..\bin\$(ProjectName).dll"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
