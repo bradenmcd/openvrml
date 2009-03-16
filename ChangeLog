@@ -1,3 +1,8 @@
+2009-03-16 Braden McDaniel  <braden@endoframe.com>
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Define HAVE_GL_GLU_H.
+
 2009-03-15 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Use the conventional
