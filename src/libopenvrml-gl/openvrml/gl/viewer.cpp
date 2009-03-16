@@ -3812,7 +3812,7 @@ void openvrml::gl::viewer::do_set_frustum(float field_of_view,
     glMatrixMode(GL_PROJECTION);
     if (!this->select_mode) { glLoadIdentity(); }
 
-    (field_of_view *= 180.0) /= pi;
+    (field_of_view *= 180.0f) /= float(pi);
     const float aspect = float(this->win_width) / this->win_height;
     const float znear = (avatar_size > 0.0)
                       ? float(0.5 * avatar_size)
