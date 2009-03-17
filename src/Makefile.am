@@ -50,7 +50,7 @@ noinst_HEADERS = \
         openvrml-player/filechooserdialog.h
 
 LIBOPENVRML_LIBRARY_VERSION =    8:8:0
-LIBOPENVRML_GL_LIBRARY_VERSION = 7:3:0
+LIBOPENVRML_GL_LIBRARY_VERSION = 7:4:0
 #                                | | |
 #                         +------+ | +---+
 #                         |        |     |

@@ -1,6 +1,16 @@
+2009-03-17 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.17.12 release.
+
+	* NEWS
+	* README
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am
+	(LIBOPENVRML_GL_LIBRARY_VERSION): Updated to 7:4:0.
+
 2009-03-16 Braden McDaniel  <braden@endoframe.com>
 
-	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj:
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
 	Updated to use FreeType 2.3.9.
 
 2009-03-16 Braden McDaniel  <braden@endoframe.com>
