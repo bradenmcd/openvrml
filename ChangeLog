@@ -1,5 +1,24 @@
 2009-03-17 Braden McDaniel  <braden@endoframe.com>
 
+	Rely on an installed GtkGLExt.
+
+	* Makefile.am
+	(SUBDIRS): Removed libs.
+	* configure.ac: Check for GtkGLExt; emit GTKGL_{CFLAGS,LIBS}
+	instead of GTK_{CFLAGS,LIBS}; removed lib/gtkglext from
+	AC_CONFIG_SUBDIRS.
+	* lib/gtkglext: Removed.
+	* src/Makefile.am
+	(openvrml_xembed_openvrml_xembed_CXXFLAGS): Replaced GTK_CFLAGS
+	and GL_CFLAGS with GTKGL_CFLAGS.
+	(openvrml_xembed_openvrml_xembed_LDFLAGS): Replaced GTK_LIBS and
+	GL_LIBS with GTKGL_LIBS.
+	(openvrml_xembed_openvrml_xembed_LDADD): Removed references to
+	GtkGLExt libraries in OpenVRML's build tree; we link with the
+	system ones instead via GTKGL_LIBS.
+
+2009-03-17 Braden McDaniel  <braden@endoframe.com>
+
 	Updates for 0.17.12 release.
 
 	* NEWS
