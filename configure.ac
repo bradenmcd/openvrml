@@ -8,7 +8,6 @@ AC_CONFIG_FILES([Makefile]
                 [models/Makefile]
                 [models/audio/Makefile]
                 [models/textures/Makefile]
-                [lib/Makefile]
                 [src/Makefile]
                 [src/libopenvrml/openvrml-config.h]
                 [src/libopenvrml-gl/openvrml-gl-config.h]
@@ -172,7 +171,8 @@ AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
 #
 # openvrml-player uses GtkBuilder, which was introduced in GTK+ 2.12.
 #
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.12 gthread-2.0 glib-2.0 >= 2.6], ,
+PKG_CHECK_MODULES([GTKGL],
+                  [gtkglext-1.0 gtk+-2.0 >= 2.12 gthread-2.0 glib-2.0 >= 2.6], ,
                   [have_gtk=no])
 #
 # openvrml-player uses GNOME_PARAM_GOPTION_CONTEXT, which was
@@ -452,12 +452,7 @@ OPENVRML_JAVASCRIPT_RPATH="-Wl,-rpath -Wl,${openvrml_js_run_path}"
 ])
 AC_SUBST([OPENVRML_JAVASCRIPT_RPATH])
 
-if test X$enable_xembed != Xno; then
-  gtkglext_subdir=gtkglext
-fi
-AC_SUBST([gtkglext_subdir])
-
-AC_CONFIG_SUBDIRS([lib/gtkglext mozilla-plugin])
+AC_CONFIG_SUBDIRS([mozilla-plugin])
 
 AC_CONFIG_TESTDIR([tests])
 

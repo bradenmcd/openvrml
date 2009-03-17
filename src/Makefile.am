@@ -731,9 +731,6 @@ BUILT_SOURCES += \
 endif
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_builddir)/src/openvrml-xembed \
-        -I$(top_srcdir)/lib/gtkglext \
-        -I$(top_builddir)/lib/gtkglext \
-        -I$(top_builddir)/lib/gtkglext/gdk \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -I$(top_builddir)/src/libopenvrml-gl \
@@ -743,8 +740,7 @@ openvrml_xembed_openvrml_xembed_CPPFLAGS = \
 openvrml_xembed_openvrml_xembed_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
         $(DBUS_G_CFLAGS) \
-        $(GTK_CFLAGS) \
-        $(GL_CFLAGS)
+        $(GTKGL_CFLAGS)
 openvrml_xembed_openvrml_xembed_SOURCES = \
         openvrml-xembed/main.cpp \
         openvrml-xembed/browserfactory.cpp \
@@ -756,12 +752,9 @@ openvrml_xembed_openvrml_xembed_SOURCES = \
         openvrml-xembed/streamclient.h
 openvrml_xembed_openvrml_xembed_LDFLAGS = \
         $(DBUS_G_LIBS) \
-        $(GTK_LIBS) \
-        $(GL_LIBS)
+        $(GTKGL_LIBS)
 openvrml_xembed_openvrml_xembed_LDADD = \
-        libopenvrml-gl/libopenvrml-gl.la \
-        $(top_builddir)/lib/gtkglext/gtk/libgtkglext-x11-1.0.la \
-        $(top_builddir)/lib/gtkglext/gdk/libgdkglext-x11-1.0.la
+        libopenvrml-gl/libopenvrml-gl.la
 
 openvrml_xembed_datadir = $(datadir)/openvrml-xembed
 openvrml_xembed_dbusdir = $(openvrml_xembed_datadir)/dbus-1
