@@ -735,7 +735,6 @@ openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml \
         -I$(top_builddir)/src/libopenvrml-gl \
         -I$(top_srcdir)/src/libopenvrml-gl \
-        -I$(mozincludedir) \
         -DGTK_DISABLE_DEPRECATED
 openvrml_xembed_openvrml_xembed_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
