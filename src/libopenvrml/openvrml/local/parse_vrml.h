@@ -150,6 +150,11 @@ namespace openvrml {
                 vrml97_parse_actions & actions_;
             } on_scene_finish;
 
+            static boost::thread_group & get_load_proto_thread_group(browser & b)
+            {
+                return b.load_proto_thread_group_;
+            }
+
             struct on_externproto_t {
                 explicit on_externproto_t(vrml97_parse_actions & actions):
                     actions_(actions)
@@ -209,8 +214,8 @@ namespace openvrml {
                                     metatype_id,
                                     this->actions_.scene_,
                                     uri_list,
-                                    this->actions_.scene_.browser()
-                                    .load_proto_thread_group_));
+                                    get_load_proto_thread_group(
+                                        this->actions_.scene_.browser())));
 
                         this->actions_.scene_.browser().add_node_metatype(
                             externproto_class->id(),
@@ -534,6 +539,11 @@ namespace openvrml {
                 vrml97_parse_actions & actions_;
             } on_node_start;
 
+            static script_node_metatype & get_script_node_metatype(browser & b)
+            {
+                return b.script_node_metatype_;
+            }
+
             struct on_node_finish_t {
                 explicit on_node_finish_t(vrml97_parse_actions & actions):
                     actions_(actions)
@@ -554,7 +564,8 @@ namespace openvrml {
                         ? nd.type->create_node(ps.scope, nd.initial_values)
                         : intrusive_ptr<node>(
                             new script_node(
-                                this->actions_.scene_.browser().script_node_metatype_,
+                                get_script_node_metatype(
+                                    this->actions_.scene_.browser()),
                                 ps.scope,
                                 nd.script_interfaces,
                                 nd.initial_values));

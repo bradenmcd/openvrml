@@ -1,3 +1,10 @@
+2009-03-18 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/local/parse_vrml.h: Fixes to build with
+	gcc 4.0 (on Mac OS X 10.5).  This compiler appears to have some
+	bugs with access rules and inner classes; interjecting some
+	forwarding functions works around the problem.
+
 2009-03-17 Braden McDaniel  <braden@endoframe.com>
 
 	Rely on an installed GtkGLExt.
