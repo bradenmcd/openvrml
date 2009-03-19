@@ -18,21 +18,17 @@
 // with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include <iostream>
-# include <sstream>
 # include <boost/multi_index/detail/scope_guard.hpp>
 // Must include before X11 headers.
 # include <boost/numeric/conversion/converter.hpp>
-# include <boost/ptr_container/ptr_map.hpp>
 # include <X11/keysym.h>
 # include <dbus/dbus-glib.h>
 # include <gdk/gdkx.h>
-# include <openvrml/browser.h>
+# include <openvrml_control/browser.h>
 # include <openvrml/gl/viewer.h>
 # include "browser.h"
 # include "browser-server-glue.h"
 # include "browser-host-client-glue.h"
-# include "plugin_streambuf.h"
 # include <gtk/gtkgl.h>
 # include <gtk/gtkdrawingarea.h>
 
@@ -73,27 +69,6 @@ G_DEFINE_TYPE_WITH_CODE(OpenvrmlXembedBrowser,
                             openvrml_xembed_browser_stream_client_interface_init))
 
 namespace {
-    class G_GNUC_INTERNAL resource_fetcher : public openvrml::resource_fetcher {
-        DBusGProxy & control_host_;
-        openvrml_xembed::uninitialized_plugin_streambuf_map &
-            uninitialized_plugin_streambuf_map_;
-        openvrml_xembed::plugin_streambuf_map & plugin_streambuf_map_;
-        boost::thread_group thread_group_;
-
-    public:
-        resource_fetcher(
-            DBusGProxy & control_host,
-            openvrml_xembed::uninitialized_plugin_streambuf_map &
-                uninitialized_plugin_streambuf_map,
-            openvrml_xembed::plugin_streambuf_map & plugin_streambuf_map);
-        virtual ~resource_fetcher() OPENVRML_NOTHROW;
-
-        void create_thread(const boost::function0<void> & threadfunc);
-
-    private:
-        virtual std::auto_ptr<openvrml::resource_istream>
-        do_get_resource(const std::string & uri);
-    };
 
     class G_GNUC_INTERNAL browser_listener : public openvrml::browser_listener {
         OpenvrmlXembedBrowser & browser_;
@@ -104,23 +79,49 @@ namespace {
     private:
         virtual void do_browser_changed(const openvrml::browser_event & event);
     };
+
+
+    class G_GNUC_INTERNAL browser_host_proxy :
+        public openvrml_control::browser_host {
+
+        DBusGProxy & host_;
+
+    public:
+        explicit browser_host_proxy(DBusGProxy & host):
+            host_(host)
+        {}
+
+    private:
+        virtual int do_get_url(const std::string & url)
+        {
+            GError * error = 0;
+            scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+            gint result = -1;
+            gboolean succeeded =
+                org_openvrml_BrowserHost_get_url(&this->host_,
+                                                 url.c_str(),
+                                                 &result,
+                                                 &error);
+            if (!succeeded) {
+                throw std::invalid_argument(error->message);
+            }
+
+            error_guard.dismiss();
+
+            return result;
+        }
+    };
 }
 
 struct OpenvrmlXembedBrowserPrivate_ {
     DBusGProxy * control_host;
-    ::resource_fetcher * resource_fetcher;
-    openvrml::browser * browser;
+    browser_host_proxy * browser_control_host_proxy;
+    openvrml_control::browser * browser_control;
     browser_listener * listener;
     OpenvrmlXembedBrowserPlug * browser_plug;
     GMutex * browser_plug_mutex;
     GCond * browser_plug_set_cond;
-    GMutex * browser_initialized_mutex;
-    openvrml_xembed::uninitialized_plugin_streambuf_map * uninitialized_streambuf_map;
-    openvrml_xembed::plugin_streambuf_map * streambuf_map;
-    boost::thread * initial_stream_reader_thread;
     bool expect_initial_stream;
-    bool got_initial_stream;
-    bool browser_initialized;
 };
 
 #   define OPENVRML_XEMBED_BROWSER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj), OPENVRML_XEMBED_TYPE_BROWSER, OpenvrmlXembedBrowserPrivate))
@@ -207,68 +208,6 @@ openvrml_xembed_browser_class_init(OpenvrmlXembedBrowserClass * const klass)
         &dbus_glib_openvrml_xembed_browser_object_info);
 }
 
-namespace {
-    //
-    // We don't already know what the URI of the initial stream is until we
-    // start getting that data from the browser.  This is a placeholder that
-    // is used to identify the plugin_streambuf that will be used to receive
-    // the initial stream data.
-    //
-    const char initial_stream_uri[] = "x-openvrml-initial:";
-
-    struct OPENVRML_LOCAL initial_stream_reader {
-        initial_stream_reader(
-            const boost::shared_ptr<openvrml_xembed::plugin_streambuf> &
-                streambuf,
-            openvrml::browser & browser):
-            streambuf_(streambuf),
-            browser_(browser)
-        {}
-
-        void operator()() const throw ()
-        {
-            using openvrml_xembed::plugin_streambuf;
-
-            class plugin_istream : public openvrml::resource_istream {
-                boost::shared_ptr<plugin_streambuf> streambuf_;
-
-            public:
-                explicit plugin_istream(
-                    const boost::shared_ptr<plugin_streambuf> & streambuf):
-                    openvrml::resource_istream(streambuf.get()),
-                    streambuf_(streambuf)
-                {}
-
-                virtual ~plugin_istream() throw ()
-                {}
-
-            private:
-                virtual const std::string do_url() const throw (std::bad_alloc)
-                {
-                    return this->streambuf_->url();
-                }
-
-                virtual const std::string do_type() const
-                    throw (std::bad_alloc)
-                {
-                    return this->streambuf_->type();
-                }
-
-                virtual bool do_data_available() const throw ()
-                {
-                    return this->streambuf_->data_available();
-                }
-            } in(this->streambuf_);
-
-            this->browser_.set_world(in);
-        }
-
-    private:
-        boost::shared_ptr<openvrml_xembed::plugin_streambuf> streambuf_;
-        openvrml::browser & browser_;
-    };
-}
-
 GObject *
 openvrml_xembed_browser_constructor(
     GType type,
@@ -289,54 +228,21 @@ openvrml_xembed_browser_constructor(
 
     try {
         OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
-        browser->priv->uninitialized_streambuf_map =
-            new openvrml_xembed::uninitialized_plugin_streambuf_map;
-        browser->priv->streambuf_map =
-            new openvrml_xembed::plugin_streambuf_map;
-        browser->priv->resource_fetcher =
-            new resource_fetcher(*browser->priv->control_host,
-                                 *browser->priv->uninitialized_streambuf_map,
-                                 *browser->priv->streambuf_map);
-        browser->priv->browser =
-            new openvrml::browser(*browser->priv->resource_fetcher,
-                                  std::cout,
-                                  std::cerr);
+        browser->priv->browser_control_host_proxy =
+            new browser_host_proxy(*browser->priv->control_host);
+        browser->priv->browser_control =
+            new openvrml_control::browser(
+                *browser->priv->browser_control_host_proxy,
+                browser->priv->expect_initial_stream);
         browser->priv->listener = new browser_listener(*browser);
-        browser->priv->browser->add_listener(*browser->priv->listener);
+        browser->priv->browser_control->add_listener(*browser->priv->listener);
 
         browser->priv->browser_plug          = 0;
         browser->priv->browser_plug_mutex    = g_mutex_new();
         browser->priv->browser_plug_set_cond = g_cond_new();
-
-        browser->priv->browser_initialized       = false;
-        browser->priv->browser_initialized_mutex = g_mutex_new();
-
-        //
-        // If necessary, create the initial stream.
-        //
-        if (browser->priv->expect_initial_stream) {
-            using boost::function0;
-            using boost::shared_ptr;
-            using openvrml_xembed::plugin_streambuf;
-
-            const shared_ptr<plugin_streambuf> initial_stream(
-                new plugin_streambuf(
-                    ::initial_stream_uri,
-                    *browser->priv->uninitialized_streambuf_map,
-                    *browser->priv->streambuf_map));
-            initial_stream->state_ = plugin_streambuf::uninitialized;
-            browser->priv->uninitialized_streambuf_map
-                ->insert(::initial_stream_uri, initial_stream);
-
-            const function0<void> initial_stream_reader_func =
-                initial_stream_reader(initial_stream, *browser->priv->browser);
-
-            browser->priv->initial_stream_reader_thread =
-                new boost::thread(initial_stream_reader_func);
-        }
     } catch (std::exception & ex) {
         //
-        // ex is most likely std::bad_alloc or boost::thread_resource_error.
+        // ex is most likely std::bad_alloc.
         //
         g_critical("%s", ex.what());
         return 0;
@@ -347,21 +253,12 @@ openvrml_xembed_browser_constructor(
 void openvrml_xembed_browser_finalize(GObject * const obj)
 {
     OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
-
-    if (browser->priv->expect_initial_stream) {
-        browser->priv->initial_stream_reader_thread->join();
-        delete browser->priv->initial_stream_reader_thread;
-    }
-
-    g_mutex_free(browser->priv->browser_initialized_mutex);
     g_cond_free(browser->priv->browser_plug_set_cond);
     g_mutex_free(browser->priv->browser_plug_mutex);
-    browser->priv->browser->remove_listener(*browser->priv->listener);
+    browser->priv->browser_control->remove_listener(*browser->priv->listener);
     delete browser->priv->listener;
-    delete browser->priv->browser;
-    delete browser->priv->resource_fetcher;
-    delete browser->priv->streambuf_map;
-    delete browser->priv->uninitialized_streambuf_map;
+    delete browser->priv->browser_control;
+    delete browser->priv->browser_control_host_proxy;
 }
 
 void openvrml_xembed_browser_set_property(GObject * const obj,
@@ -458,28 +355,15 @@ openvrml_xembed_browser_new_stream(
     OpenvrmlXembedBrowser * const browser =
         OPENVRML_XEMBED_BROWSER(stream_client);
 
-    shared_ptr<plugin_streambuf> streambuf =
-        browser->priv->uninitialized_streambuf_map->find(url);
-
-    if (!streambuf) {
-        if (!browser->priv->got_initial_stream) {
-            g_assert(
-                browser->priv->uninitialized_streambuf_map->size() == 1);
-            streambuf =
-                browser->priv->uninitialized_streambuf_map->front();
-            browser->priv->got_initial_stream = true;
-        } else {
-            g_set_error(
-                error,
-                OPENVRML_XEMBED_ERROR,
-                OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
-                "Attempt to create a stream that has not been requested: %s",
-                url);
-            return false;
-        }
+    try {
+        browser->priv->browser_control->new_stream(stream_id, type, url);
+    } catch (const openvrml_control::unknown_stream & ex) {
+        g_set_error(error,
+                    OPENVRML_XEMBED_ERROR,
+                    OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
+                    ex.what());
+        return false;
     }
-    g_assert(streambuf->state() != plugin_streambuf::initialized);
-    streambuf->init(stream_id, url, type);
     return true;
 }
 
@@ -495,19 +379,15 @@ openvrml_xembed_browser_destroy_stream(
     OpenvrmlXembedBrowser * const browser =
         OPENVRML_XEMBED_BROWSER(stream_client);
 
-    const shared_ptr<plugin_streambuf> streambuf =
-        browser->priv->streambuf_map->find(stream_id);
-    if (!streambuf) {
-        g_set_error(
-            error,
-            OPENVRML_XEMBED_ERROR,
-            OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
-            "Attempt to destroy a nonexistent stream: %lu",
-            stream_id);
+    try {
+        browser->priv->browser_control->destroy_stream(stream_id);
+    } catch (const openvrml_control::unknown_stream & ex) {
+        g_set_error(error,
+                    OPENVRML_XEMBED_ERROR,
+                    OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
+                    ex.what());
         return false;
     }
-    streambuf->buf_.set_eof();
-    browser->priv->streambuf_map->erase(stream_id);
     return true;
 }
 
@@ -523,50 +403,18 @@ openvrml_xembed_browser_write(OpenvrmlXembedStreamClient * const stream_client,
     OpenvrmlXembedBrowser * const browser =
         OPENVRML_XEMBED_BROWSER(stream_client);
 
-    const shared_ptr<plugin_streambuf> streambuf =
-        browser->priv->streambuf_map->find(stream_id);
-    if (!streambuf) {
-        g_set_error(
-            error,
-            OPENVRML_XEMBED_ERROR,
-            OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
-            "Attempt to write to a nonexistent stream: %lu",
-            stream_id);
-        return false;
-    }
-    for (size_t i = 0; i < data->len; ++i) {
-        streambuf->buf_.put(g_array_index(data, unsigned char, i));
+    try {
+        browser->priv->browser_control->write(
+            stream_id,
+            reinterpret_cast<unsigned char *>(data->data),
+            data->len);
+    } catch (const openvrml_control::unknown_stream & ex) {
+        g_set_error(error,
+                    OPENVRML_XEMBED_ERROR,
+                    OPENVRML_XEMBED_ERROR_UNKNOWN_STREAM,
+                    ex.what());
     }
     return true;
-}
-
-namespace {
-    struct G_GNUC_INTERNAL load_url {
-        load_url(OpenvrmlXembedBrowser & browser,
-                 const std::vector<std::string> & url,
-                 const std::vector<std::string> & parameter):
-            browser_(browser),
-            url_(url),
-            parameter_(parameter)
-        {}
-
-        void operator()() const OPENVRML_NOTHROW
-        {
-            try {
-                g_mutex_lock(this->browser_.priv->browser_initialized_mutex);
-                this->browser_.priv->browser_initialized = false;
-                g_mutex_unlock(this->browser_.priv->browser_initialized_mutex);
-                this->browser_.priv->browser->load_url(this->url_,
-                                                       this->parameter_);
-            } catch (std::exception & ex) {
-                this->browser_.priv->browser->err(ex.what());
-            }
-        }
-
-    private:
-        OpenvrmlXembedBrowser & browser_;
-        const std::vector<std::string> url_, parameter_;
-    };
 }
 
 gboolean
@@ -583,8 +431,7 @@ openvrml_xembed_browser_load_url(OpenvrmlXembedBrowser * const vrml_browser,
         while (url && *url) { url_vec.push_back(*(url++)); }
         while (parameter && *parameter) { param_vec.push_back(*(parameter++)); }
 
-        vrml_browser->priv->resource_fetcher
-            ->create_thread(load_url(*vrml_browser, url_vec, param_vec));
+        vrml_browser->priv->browser_control->load_uri(url_vec, param_vec);
     } catch (const std::bad_alloc & ex) {
         *error = g_error_new(OPENVRML_XEMBED_ERROR,
                              OPENVRML_XEMBED_ERROR_NO_MEMORY,
@@ -653,19 +500,16 @@ gboolean openvrml_xembed_browser_write(OpenvrmlXembedBrowser * const browser,
 
 gchar *
 openvrml_xembed_browser_get_world_url(
-    OpenvrmlXembedBrowser * const vrml_browser,
+    OpenvrmlXembedBrowser * const browser,
     GError ** /* error */)
 {
-    return g_strdup(vrml_browser->priv->browser->world_url().c_str());
+    return g_strdup(browser->priv->browser_control->world_url().c_str());
 }
 
 gboolean
 openvrml_xembed_browser_initialized(OpenvrmlXembedBrowser * const browser)
 {
-    g_mutex_lock(browser->priv->browser_initialized_mutex);
-    const bool browser_initialized = browser->priv->browser_initialized;
-    g_mutex_unlock(browser->priv->browser_initialized_mutex);
-    return browser_initialized;
+    return browser->priv->browser_control->initialized();
 }
 
 
@@ -1249,104 +1093,6 @@ gint openvrml_xembed_browser_plug_timeout_callback(const gpointer ptr)
 
 namespace {
 
-    resource_fetcher::resource_fetcher(
-        DBusGProxy & control_host,
-        openvrml_xembed::uninitialized_plugin_streambuf_map &
-            uninitialized_plugin_streambuf_map,
-        openvrml_xembed::plugin_streambuf_map & plugin_streambuf_map):
-        control_host_(control_host),
-        uninitialized_plugin_streambuf_map_(uninitialized_plugin_streambuf_map),
-        plugin_streambuf_map_(plugin_streambuf_map)
-    {}
-
-    resource_fetcher::~resource_fetcher() OPENVRML_NOTHROW
-    {
-        this->thread_group_.join_all();
-    }
-
-    void
-    resource_fetcher::create_thread(const boost::function0<void> & threadfunc)
-    {
-        this->thread_group_.create_thread(threadfunc);
-    }
-
-    std::auto_ptr<openvrml::resource_istream>
-    resource_fetcher::do_get_resource(const std::string & uri)
-    {
-        using openvrml_xembed::plugin_streambuf;
-
-        class plugin_resource_istream : public openvrml::resource_istream {
-            const boost::shared_ptr<plugin_streambuf> streambuf_;
-            resource_fetcher & resource_fetcher_;
-
-        public:
-            plugin_resource_istream(const std::string & uri,
-                                    resource_fetcher & fetcher):
-                openvrml::resource_istream(0),
-                streambuf_(
-                    new plugin_streambuf(
-                        uri,
-                        fetcher.uninitialized_plugin_streambuf_map_,
-                        fetcher.plugin_streambuf_map_)),
-                resource_fetcher_(fetcher)
-            {
-                using std::ostringstream;
-                using boost::ref;
-
-                this->rdbuf(this->streambuf_.get());
-                fetcher.uninitialized_plugin_streambuf_map_
-                    .insert(uri, this->streambuf_);
-
-                //
-                // We're in a thread started by libopenvrml here.  By using
-                // dbus_g_proxy_begin_call here (instead of dbus_g_proxy_call),
-                // we finish the call in the main thread.  That's important
-                // because we want to make sure this call "finishes" before
-                // we execute the host's successive NewStream call.
-                //
-                GError * error = 0;
-                scope_guard error_guard = make_guard(g_error_free,
-                                                     boost::ref(error));
-                gint get_url_result = -1;
-                gboolean succeeded =
-                    org_openvrml_BrowserHost_get_url(&fetcher.control_host_,
-                                                     uri.c_str(),
-                                                     &get_url_result,
-                                                     &error);
-                if (!succeeded) {
-                    g_critical(error->message);
-                    this->setstate(ios_base::badbit);
-                    return;
-                }
-
-                if (get_url_result != 0) {
-                    this->setstate(ios_base::badbit);
-                }
-                this->streambuf_->set_get_url_result(get_url_result);
-
-                error_guard.dismiss();
-            }
-
-        private:
-            virtual const std::string do_url() const throw ()
-            {
-                return this->streambuf_->url();
-            }
-
-            virtual const std::string do_type() const throw ()
-            {
-                return this->streambuf_->type();
-            }
-
-            virtual bool do_data_available() const throw ()
-            {
-                return this->streambuf_->data_available();
-            }
-        };
-        return std::auto_ptr<openvrml::resource_istream>(
-            new plugin_resource_istream(uri, *this));
-    }
-
     browser_listener::browser_listener(OpenvrmlXembedBrowser & browser):
         browser_(browser)
     {}
@@ -1357,10 +1103,6 @@ namespace {
         switch (event.id()) {
         case openvrml::browser_event::initialized:
             g_signal_emit(&this->browser_, signals[initialized_id], 0);
-
-            g_mutex_lock(this->browser_.priv->browser_initialized_mutex);
-            this->browser_.priv->browser_initialized = true;
-            g_mutex_unlock(this->browser_.priv->browser_initialized_mutex);
             break;
         case openvrml::browser_event::shutdown:
             g_signal_emit(&this->browser_, signals[shutdown_id], 0);
@@ -1374,7 +1116,7 @@ namespace {
         browser_plug_(browser_plug),
         timer(0)
     {
-        this->browser_plug_.priv->browser->priv->browser->viewer(this);
+        this->browser_plug_.priv->browser->priv->browser_control->viewer(this);
     }
 
     GtkGLViewer::~GtkGLViewer() throw ()

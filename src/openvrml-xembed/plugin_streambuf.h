@@ -28,7 +28,10 @@
 #   include <boost/enable_shared_from_this.hpp>
 #   include <openvrml/read_write_mutex.h>
 #   include "bounded_buffer.h"
-#   include "browser.h"
+
+namespace openvrml_control {
+    class browser;
+}
 
 namespace openvrml_xembed {
 
@@ -86,20 +89,7 @@ namespace openvrml_xembed {
         public boost::enable_shared_from_this<plugin_streambuf>,
         public std::streambuf {
 
-        friend
-        GObject *
-        (::openvrml_xembed_browser_constructor)(
-            GType type,
-            guint n_construct_properties,
-            GObjectConstructParam * construct_properties);
-        friend
-        gboolean
-        (::openvrml_xembed_browser_destroy_stream)(OpenvrmlXembedStreamClient *,
-                                                   guint64, GError **);
-        friend
-        gboolean
-        (::openvrml_xembed_browser_write)(OpenvrmlXembedStreamClient *, guint64,
-                                          const GArray *, GError **);
+        friend class openvrml_control::browser;
 
     public:
         enum state_id {

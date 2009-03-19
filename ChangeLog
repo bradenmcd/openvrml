@@ -1,3 +1,73 @@
+2009-03-19 Braden McDaniel  <braden@endoframe.com>
+
+	Created a convenience library libopenvrml-control to hold the
+	platform-independent parts of the OpenVRML control (which is
+	currently called openvrml-xembed).
+
+	* src/Makefile.am
+	(noinst_LTLIBRARIES): Added convenience library
+	libopenvrml-control.
+	(libopenvrml_control_libopenvrml_control_la_SOURCES):
+	libopenvrml-control sources.
+	(libopenvrml_control_libopenvrml_control_la_CPPFLAGS):
+	libopenvrml-control CPPFLAGS.
+	(libopenvrml_control_libopenvrml_control_la_LIBADD): Depends on
+	libopenvrml.
+	(openvrml_xembed_openvrml_xembed_CPPFLAGS): Added
+	libopenvrml-control to include path.
+	(openvrml_xembed_openvrml_xembed_LDADD): Depends on
+	libopenvrml-control.
+	* src/libopenvrml-control/openvrml_control/browser.cpp: Added
+	file. openvrml_control::browser encapsulates a browser "control".
+	* src/libopenvrml-control/openvrml_control/browser.h: Added
+	file. openvrml_control::browser encapsulates a browser "control".
+	* src/openvrml-xembed/browser.cpp
+	(resource_fetcher): Moved to
+	src/libopenvrml-control/openvrml_control/browser.cpp.
+	(browser_host_proxy): Added; implements
+	openvrml_control::browser_host.
+	(OpenvrmlXembedBrowserPrivate_): Added browser_control_host_proxy
+	and browser_control; removed resource_fetcher, browser,
+	browser_initialized_mutex, uninitialized_streambuf_map,
+	streambuf_map, initial_stream_reader_thread, got_initial_stream,
+	and browser_initialized.  The removed members have been moved
+	to (or have equivalents in) openvrml_control::browser.
+	(initial_stream_reader): Moved to
+	src/libopenvrml-control/openvrml_control/browser.cpp.
+	(openvrml_xembed_browser_constructor(GType, guint,
+	GObjectConstructParam *)): Initialize the browser_control and
+	browser_control_host_proxy members; removed initialization of
+	removed members.
+	(openvrml_xembed_browser_finalize(GObject *)): Removed cleanup of
+	removed members; delete browser_control and
+	browser_control_host_proxy.
+	(openvrml_xembed_browser_new_stream(OpenvrmlXembedStreamClient *,
+	guint64, const char *, const char *, GError **)): Delegate to
+	openvrml_control::browser::new_stream.
+	(openvrml_xembed_browser_destroy_stream(OpenvrmlXembedStreamClient *,
+	guint64, GError **)): Delegate to
+	openvrml_control::browser::destroy_stream.
+	(openvrml_xembed_browser_write(OpenvrmlXembedStreamClient *,
+	guint64, const GArray *, GError **)): Delegate to
+	openvrml_control::browser::write.
+	(load_url): Moved to
+	src/libopenvrml-control/openvrml_control/browser.cpp.
+	(openvrml_xembed_browser_load_url(OpenvrmlXembedBrowser *, const
+	gchar **, const gchar **, GError **)): Delegate to
+	openvrml_control::browser::load_uri.
+	(openvrml_xembed_browser_get_world_url(OpenvrmlXembedBrowser *,
+	GError **)): Delegate to openvrml_control::browser::world_url.
+	(openvrml_xembed_browser_initialized(OpenvrmlXembedBrowser *)):
+	Delegate to openvrml_control::browser::initialized.
+	(browser_listener::do_browser_changed(const
+	openvrml::browser_event &)): Don't set browser_initialized; this
+	is now taken care of inside openvrml_control::browser.
+	(GtkGLViewer::GtkGLViewer(OpenvrmlXembedBrowserPlug &)): Call
+	openvrml_control::browser::viewer.
+	* src/openvrml-xembed/plugin_streambuf.h
+	(openvrml_xembed::plugin_streambuf): Grant friendship to
+	openvrml_control::browser.
+
 2009-03-18 Braden McDaniel  <braden@endoframe.com>
 
 	Newer jni.h is more const-correct; play along.
