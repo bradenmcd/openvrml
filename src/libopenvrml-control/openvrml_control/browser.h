@@ -40,17 +40,17 @@ namespace openvrml_control {
 
         class resource_fetcher : public openvrml::resource_fetcher {
             browser_host & control_host_;
-            openvrml_xembed::uninitialized_plugin_streambuf_map &
+            uninitialized_plugin_streambuf_map &
                 uninitialized_plugin_streambuf_map_;
-            openvrml_xembed::plugin_streambuf_map & plugin_streambuf_map_;
+            plugin_streambuf_map & plugin_streambuf_map_;
             boost::thread_group thread_group_;
 
         public:
             resource_fetcher(
                 browser_host & control_host,
-                openvrml_xembed::uninitialized_plugin_streambuf_map &
+                uninitialized_plugin_streambuf_map &
                     uninitialized_plugin_streambuf_map,
-                openvrml_xembed::plugin_streambuf_map & plugin_streambuf_map);
+                plugin_streambuf_map & plugin_streambuf_map);
             virtual ~resource_fetcher() OPENVRML_NOTHROW;
 
             void create_thread(const boost::function0<void> & threadfunc);
@@ -71,9 +71,9 @@ namespace openvrml_control {
             do_browser_changed(const openvrml::browser_event & event);
         };
 
-        openvrml_xembed::uninitialized_plugin_streambuf_map
+        uninitialized_plugin_streambuf_map
             uninitialized_streambuf_map_;
-        openvrml_xembed::plugin_streambuf_map streambuf_map_;
+        plugin_streambuf_map streambuf_map_;
         resource_fetcher fetcher_;
         browser_listener listener_;
         openvrml::browser browser_;

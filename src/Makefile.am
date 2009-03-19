@@ -45,8 +45,6 @@ endif
 
 noinst_HEADERS = \
         libopenvrml/private.h \
-        openvrml-xembed/bounded_buffer.h \
-        openvrml-xembed/plugin_streambuf.h \
         openvrml-player/filechooserdialog.h
 
 LIBOPENVRML_LIBRARY_VERSION =    8:8:0
@@ -732,9 +730,11 @@ BUILT_SOURCES += \
 endif
 libopenvrml_control_libopenvrml_control_la_SOURCES = \
         libopenvrml-control/openvrml_control/browser.cpp \
-        libopenvrml-control/openvrml_control/browser.h
+        libopenvrml-control/openvrml_control/browser.h \
+        libopenvrml-control/openvrml_control/plugin_streambuf.cpp \
+        libopenvrml-control/openvrml_control/plugin_streambuf.h \
+        libopenvrml-control/openvrml_control/bounded_buffer.h
 libopenvrml_control_libopenvrml_control_la_CPPFLAGS = \
-        -I$(top_srcdir)/src/openvrml-xembed \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
 libopenvrml_control_libopenvrml_control_la_LIBADD = \
@@ -742,7 +742,6 @@ libopenvrml_control_libopenvrml_control_la_LIBADD = \
 
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_builddir)/src/openvrml-xembed \
-        -I$(top_srcdir)/src/openvrml-xembed \
         -I$(top_srcdir)/src/libopenvrml-control \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
@@ -757,7 +756,6 @@ openvrml_xembed_openvrml_xembed_SOURCES = \
         openvrml-xembed/main.cpp \
         openvrml-xembed/browserfactory.cpp \
         openvrml-xembed/browserfactory.h \
-        openvrml-xembed/plugin_streambuf.cpp \
         openvrml-xembed/browser.cpp \
         openvrml-xembed/browser.h \
         openvrml-xembed/streamclient.cpp \

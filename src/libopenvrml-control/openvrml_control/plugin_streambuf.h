@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// OpenVRML XEmbed Control
+// OpenVRML Control
 //
 // Copyright 2004, 2005, 2006, 2007, 2008  Braden N. McDaniel
 //
@@ -18,8 +18,8 @@
 // with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifndef OPENVRML_XEMBED_PLUGIN_STREAMBUF_H
-#   define OPENVRML_XEMBED_PLUGIN_STREAMBUF_H
+# ifndef OPENVRML_CONTROL_PLUGIN_STREAMBUF_H
+#   define OPENVRML_CONTROL_PLUGIN_STREAMBUF_H
 
 #   include <map>
 #   include <streambuf>
@@ -30,10 +30,6 @@
 #   include "bounded_buffer.h"
 
 namespace openvrml_control {
-    class browser;
-}
-
-namespace openvrml_xembed {
 
     //
     // plugin_streambuf Life Cycle
@@ -81,6 +77,8 @@ namespace openvrml_xembed {
     // to the plugin_streambuf is removed, the plugin_streambuf is
     // deleted.
     //
+
+    class browser;
 
     class uninitialized_plugin_streambuf_map;
     class plugin_streambuf_map;
@@ -162,4 +160,4 @@ namespace openvrml_xembed {
     };
 }
 
-# endif // ifndef OPENVRML_XEMBED_PLUGIN_STREAMBUF_H
+# endif // ifndef OPENVRML_CONTROL_PLUGIN_STREAMBUF_H

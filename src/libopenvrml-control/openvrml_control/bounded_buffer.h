@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// OpenVRML XEmbed Control
+// OpenVRML Control
 //
 // Copyright 2004, 2005, 2006, 2007  Braden McDaniel
 //
@@ -18,15 +18,15 @@
 // with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifndef OPENVRML_XEMBED_BOUNDED_BUFFER_H
-#   define OPENVRML_XEMBED_BOUNDED_BUFFER_H
+# ifndef OPENVRML_CONTROL_BOUNDED_BUFFER_H
+#   define OPENVRML_CONTROL_BOUNDED_BUFFER_H
 
 #   include <cassert>
 #   include <string>
 #   include <boost/thread/mutex.hpp>
 #   include <boost/thread/condition.hpp>
 
-namespace openvrml_xembed {
+namespace openvrml_control {
 
     template <typename CharT, size_t BufferSize>
     class bounded_buffer {
@@ -113,4 +113,4 @@ namespace openvrml_xembed {
     }
 }
 
-# endif // ifndef OPENVRML_XEMBED_BOUNDED_BUFFER_H
+# endif // ifndef OPENVRML_CONTROL_BOUNDED_BUFFER_H

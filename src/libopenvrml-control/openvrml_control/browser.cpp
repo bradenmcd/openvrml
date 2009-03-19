@@ -37,9 +37,9 @@ openvrml_control::unknown_stream::~unknown_stream() throw ()
 
 openvrml_control::browser::resource_fetcher::
 resource_fetcher(browser_host & control_host,
-                 openvrml_xembed::uninitialized_plugin_streambuf_map &
+                 uninitialized_plugin_streambuf_map &
                      uninitialized_plugin_streambuf_map,
-                 openvrml_xembed::plugin_streambuf_map & plugin_streambuf_map):
+                 plugin_streambuf_map & plugin_streambuf_map):
     control_host_(control_host),
     uninitialized_plugin_streambuf_map_(uninitialized_plugin_streambuf_map),
     plugin_streambuf_map_(plugin_streambuf_map)
@@ -62,8 +62,6 @@ std::auto_ptr<openvrml::resource_istream>
 openvrml_control::browser::resource_fetcher::
 do_get_resource(const std::string & uri)
 {
-    using openvrml_xembed::plugin_streambuf;
-
     class plugin_resource_istream : public openvrml::resource_istream {
         const boost::shared_ptr<plugin_streambuf> streambuf_;
         resource_fetcher & resource_fetcher_;
@@ -145,7 +143,7 @@ namespace {
 
     struct OPENVRML_LOCAL initial_stream_reader {
         initial_stream_reader(
-            const boost::shared_ptr<openvrml_xembed::plugin_streambuf> &
+            const boost::shared_ptr<openvrml_control::plugin_streambuf> &
                 streambuf,
             openvrml::browser & browser):
             streambuf_(streambuf),
@@ -154,7 +152,7 @@ namespace {
 
         void operator()() const throw ()
         {
-            using openvrml_xembed::plugin_streambuf;
+            using openvrml_control::plugin_streambuf;
 
             class plugin_istream : public openvrml::resource_istream {
                 boost::shared_ptr<plugin_streambuf> streambuf_;
@@ -191,7 +189,7 @@ namespace {
         }
 
     private:
-        boost::shared_ptr<openvrml_xembed::plugin_streambuf> streambuf_;
+        boost::shared_ptr<openvrml_control::plugin_streambuf> streambuf_;
         openvrml::browser & browser_;
     };
 }
@@ -215,7 +213,6 @@ openvrml_control::browser::browser(browser_host & host,
     if (expect_initial_stream) {
         using boost::function0;
         using boost::shared_ptr;
-        using openvrml_xembed::plugin_streambuf;
 
         const shared_ptr<plugin_streambuf> initial_stream(
             new plugin_streambuf(::initial_stream_uri,
@@ -252,7 +249,6 @@ void openvrml_control::browser::new_stream(const uint64_t stream_id,
                                            const std::string & uri)
     OPENVRML_THROW1(unknown_stream)
 {
-    using namespace openvrml_xembed;
     using boost::shared_ptr;
 
     shared_ptr<plugin_streambuf> streambuf =
@@ -274,7 +270,6 @@ void openvrml_control::browser::new_stream(const uint64_t stream_id,
 void openvrml_control::browser::destroy_stream(const uint64_t stream_id)
     OPENVRML_THROW1(unknown_stream)
 {
-    using namespace openvrml_xembed;
     using boost::shared_ptr;
 
     const shared_ptr<plugin_streambuf> streambuf =
@@ -289,7 +284,6 @@ void openvrml_control::browser::write(const uint64_t stream_id,
                                       const size_t size)
     OPENVRML_THROW1(unknown_stream)
 {
-    using namespace openvrml_xembed;
     using boost::shared_ptr;
 
     const shared_ptr<plugin_streambuf> streambuf =

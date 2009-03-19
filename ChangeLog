@@ -1,5 +1,60 @@
 2009-03-19 Braden McDaniel  <braden@endoframe.com>
 
+	Moved bounded_buffer and plugin_streambuf to libopenvrml-control.
+
+	* src/Makefile.am
+	(noinst_HEADERS): Removed openvrml-xembed/bounded_buffer.h and
+	openvrml-xembed/plugin_streambuf.h.
+	(libopenvrml_control_libopenvrml_control_la_SOURCES): Added
+	libopenvrml-control/openvrml_control/plugin_streambuf.{cpp,h} and
+	libopenvrml-control/openvrml_control/bounded_buffer.h.
+	(libopenvrml_control_libopenvrml_control_la_CPPFLAGS): Don't need
+	$(top_srcdir)/src/openvrml-xembed in the include path anymore.
+	(openvrml_xembed_openvrml_xembed_CPPFLAGS): Don't need
+	$(top_srcdir)/src/openvrml-xembed in the include path anymore.
+	(openvrml_xembed_openvrml_xembed_SOURCES): Removed
+	openvrml-xembed/plugin_streambuf.cpp.
+	* src/libopenvrml-control/openvrml_control/bounded_buffer.h: Moved
+	from src/openvrml-xembed/bounded_buffer.h.
+	* src/libopenvrml-control/openvrml_control/browser.cpp
+	(openvrml_control::browser::resource_fetcher::resource_fetcher(
+	browser_host &, uninitialized_plugin_streambuf_map &,
+	plugin_streambuf_map &)): uninitialized_plugin_streambuf_map and
+	plugin_streambuf_map are now in the openvrml_control namespace.
+	(openvrml_control::browser::resource_fetcher::do_get_resource(const
+	std::string &)): plugin_streambuf is now in the openvrml_control
+	namespace.
+	(initial_stream_reader::initial_stream_reader(const
+	boost::shared_ptr<openvrml_control::plugin_streambuf> &,
+	openvrml::browser &)): plugin_streambuf is now in the
+	openvrml_control namespace.
+	(initial_stream_reader::operator()() const): plugin_streambuf is
+	now in the openvrml_control namespace.
+	(openvrml_control::browser::browser(browser_host &, bool)):
+	plugin_streambuf is now in the openvrml_control namespace.
+	(openvrml_control::browser::new_stream(uint64_t, const std::string
+	&, const std::string &)): Removed obsolete reference to
+	openvrml_xembed namespace.
+	(openvrml_control::browser::destroy_stream(uint64_t)): Removed
+	obsolete reference to openvrml_xembed namespace.
+	(openvrml_control::browser::write(uint64_t, const unsigned char *,
+	size_t)): Removed obsolete reference to openvrml_xembed namespace.
+	* src/libopenvrml-control/openvrml_control/browser.h:
+	uninitialized_plugin_streambuf_map and plugin_streambuf_map are
+	now in the openvrml_control namespace.
+	* src/libopenvrml-control/openvrml_control/plugin_streambuf.cpp:
+	Moved from src/openvrml-xembed/plugin_streambuf.cpp.
+	* src/libopenvrml-control/openvrml_control/plugin_streambuf.h:
+	Moved from src/openvrml-xembed/plugin_streambuf.h.
+	* src/openvrml-xembed/bounded_buffer.h: Moved to
+	src/libopenvrml-control/openvrml_control/bounded_buffer.h.
+	* src/openvrml-xembed/plugin_streambuf.cpp: Moved to
+	src/libopenvrml-control/openvrml_control/plugin_streambuf.cpp.
+	* src/openvrml-xembed/plugin_streambuf.h: Moved to
+	src/libopenvrml-control/openvrml_control/plugin_streambuf.h.
+
+2009-03-19 Braden McDaniel  <braden@endoframe.com>
+
 	Removed crufty uses of openvrml_xembed namespace.
 
 	* src/openvrml-xembed/browser.cpp
