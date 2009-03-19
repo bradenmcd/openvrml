@@ -1,5 +1,11 @@
 2009-03-19 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-control/openvrml_control/browser.cpp
+	(openvrml_control::browser_host::get_url(const std::string &)):
+	Added missing return statement.
+
+2009-03-19 Braden McDaniel  <braden@endoframe.com>
+
 	Moved bounded_buffer and plugin_streambuf to libopenvrml-control.
 
 	* src/Makefile.am

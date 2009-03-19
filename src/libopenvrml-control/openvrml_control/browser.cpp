@@ -356,5 +356,5 @@ openvrml_control::browser_host::~browser_host()
 
 int openvrml_control::browser_host::get_url(const std::string & url)
 {
-    this->do_get_url(url);
+    return this->do_get_url(url);
 }
