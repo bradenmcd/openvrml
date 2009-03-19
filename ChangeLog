@@ -1,5 +1,21 @@
 2009-03-19 Braden McDaniel  <braden@endoframe.com>
 
+	Moved bounded_buffer to the implementation of
+	openvrml_control::browser.
+
+	* src/Makefile.am
+	(libopenvrml_control_libopenvrml_control_la_SOURCES): Removed
+	reference to
+	libopenvrml-control/openvrml_control/bounded_buffer.h.
+	* src/libopenvrml-control/openvrml_control/bounded_buffer.h:
+	Removed.
+	* src/libopenvrml-control/openvrml_control/browser.cpp: Moved
+	bounded_buffer from
+	src/libopenvrml-control/openvrml_control/bounded_buffer.h to an
+	unnamed namespace here.
+
+2009-03-19 Braden McDaniel  <braden@endoframe.com>
+
 	Moved plugin_streambuf, uninitialized_plugin_streambuf_map, and
 	plugin_streambuf_map to be private member classes of
 	openvrml_control::browser.

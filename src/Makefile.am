@@ -730,8 +730,7 @@ BUILT_SOURCES += \
 endif
 libopenvrml_control_libopenvrml_control_la_SOURCES = \
         libopenvrml-control/openvrml_control/browser.cpp \
-        libopenvrml-control/openvrml_control/browser.h \
-        libopenvrml-control/openvrml_control/bounded_buffer.h
+        libopenvrml-control/openvrml_control/browser.h
 libopenvrml_control_libopenvrml_control_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml

@@ -19,7 +19,6 @@
 //
 
 # include "browser.h"
-# include "bounded_buffer.h"
 # include <boost/enable_shared_from_this.hpp>
 # include <boost/lexical_cast.hpp>
 # include <iostream>
@@ -78,6 +77,93 @@ openvrml_control::unknown_stream::~unknown_stream() throw ()
 // Once the last reference to the resource_istream corresponding to the
 // plugin_streambuf is removed, the plugin_streambuf is deleted.
 //
+
+namespace {
+
+    template <typename CharT, size_t BufferSize>
+    class bounded_buffer {
+        mutable boost::mutex mutex_;
+        boost::condition buffer_not_full_, buffer_not_empty_or_eof_;
+
+        CharT buf_[BufferSize];
+        size_t begin_, end_, buffered_;
+        bool eof_;
+
+    public:
+        typedef CharT char_type;
+        typedef typename std::char_traits<char_type> traits_type;
+        typedef typename traits_type::int_type int_type;
+
+        bounded_buffer();
+        void put(const char_type & c);
+        int_type get();
+        size_t buffered() const;
+        void set_eof();
+        bool eof() const;
+    };
+
+    template <typename CharT, size_t BufferSize>
+    bounded_buffer<CharT, BufferSize>::bounded_buffer():
+        begin_(0),
+        end_(0),
+        buffered_(0),
+        eof_(false)
+    {}
+
+    template <typename CharT, size_t BufferSize>
+    void bounded_buffer<CharT, BufferSize>::put(const char_type & c)
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        while (this->buffered_ == BufferSize) {
+            this->buffer_not_full_.wait(lock);
+        }
+        this->buf_[this->end_] = c;
+        this->end_ = (this->end_ + 1) % BufferSize;
+        ++this->buffered_;
+        this->buffer_not_empty_or_eof_.notify_one();
+    }
+
+    template <typename CharT, size_t BufferSize>
+    typename bounded_buffer<CharT, BufferSize>::int_type
+    bounded_buffer<CharT, BufferSize>::get()
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        while (this->buffered_ == 0 && !this->eof_) {
+            this->buffer_not_empty_or_eof_.wait(lock);
+        }
+        if (this->buffered_ == 0 && this->eof_) {
+            return traits_type::eof();
+        }
+        const int_type c = traits_type::to_int_type(this->buf_[this->begin_]);
+        this->begin_ = (this->begin_ + 1) % BufferSize;
+        --this->buffered_;
+        this->buffer_not_full_.notify_one();
+        assert(!traits_type::eq_int_type(c, traits_type::eof()));
+        return c;
+    }
+
+    template <typename CharT, size_t BufferSize>
+    size_t bounded_buffer<CharT, BufferSize>::buffered() const
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        return this->buffered_;
+    }
+
+    template <typename CharT, size_t BufferSize>
+    void bounded_buffer<CharT, BufferSize>::set_eof()
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        this->eof_ = true;
+        this->buffer_not_empty_or_eof_.notify_one();
+    }
+
+    template <typename CharT, size_t BufferSize>
+    bool bounded_buffer<CharT, BufferSize>::eof() const
+    {
+        boost::mutex::scoped_lock lock(this->mutex_);
+        return this->eof_;
+    }
+}
 
 class OPENVRML_LOCAL openvrml_control::browser::plugin_streambuf :
     public boost::enable_shared_from_this<
