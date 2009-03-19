@@ -731,8 +731,6 @@ endif
 libopenvrml_control_libopenvrml_control_la_SOURCES = \
         libopenvrml-control/openvrml_control/browser.cpp \
         libopenvrml-control/openvrml_control/browser.h \
-        libopenvrml-control/openvrml_control/plugin_streambuf.cpp \
-        libopenvrml-control/openvrml_control/plugin_streambuf.h \
         libopenvrml-control/openvrml_control/bounded_buffer.h
 libopenvrml_control_libopenvrml_control_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \

@@ -19,7 +19,8 @@
 //
 
 # include "browser.h"
-# include <openvrml/browser.h>
+# include "bounded_buffer.h"
+# include <boost/enable_shared_from_this.hpp>
 # include <boost/lexical_cast.hpp>
 # include <iostream>
 
@@ -34,6 +35,344 @@ openvrml_control::unknown_stream::unknown_stream(const uint64_t stream_id):
 
 openvrml_control::unknown_stream::~unknown_stream() throw ()
 {}
+
+//
+// plugin_streambuf Life Cycle
+//
+// A plugin_streambuf is first created in
+// browser::resource_fetcher::do_get_resource (which is called whenever
+// libopenvrml needs to load a stream).
+//
+// Step 1: Requested plugin_streambuf
+//
+// Upon creation, the plugin_streambuf is inserted into the
+// unintialized_plugin_streambuf_map with an initial plugin_streambuf::state
+// of requested.  do_get_resource does not complete until the result of asking
+// the host application to resolve the URL is known; i.e.,
+// plugin_streambuf::get_url_result.  get_url_result blocks until the response
+// is received from the host application; i.e., until
+// plugin_streambuf::set_get_url_result has been called.
+//
+// Step 2: Uninitialized plugin_streambuf
+//
+// If plugin_streambuf::set_get_url_result is given a result code indicating
+// success (i.e., 0), the plugin_streambuf::state is changed to uninitialized
+// (otherwise, the stream is removed from the
+// uninitialized_plugin_streambuf_map and we're done).  When
+// browser::new_stream is called, a plugin_streambuf matching that URL is
+// gotten from the uninitialized_plugin_streambuf_map and
+// plugin_streambuf::init is called on it.  init removes the plugin_streambuf
+// from the uninitialized_plugin_streambuf_map_ and inserts it in the
+// plugin_streambuf_map with a plugin_streambuf::state of initialized.
+//
+// Step 3: Initialized plugin_streambuf (plugin_streambuf_map)
+//
+// The plugin_streambuf_map comprises plugin_streambufs that are being written
+// to in response to browser::write calls and read from by stream readers in
+// libopenvrml.  Once the host is done calling browser::write for a stream, it
+// is expected that it will call browser::destroy_stream.  In response to this
+// call, bounded_buffer<>::set_eof is called on the plugin_streambuf's
+// underlying bounded_buffer<> and the plugin_streambuf is removed from the
+// plugin_streambuf_map.
+//
+// Once the last reference to the resource_istream corresponding to the
+// plugin_streambuf is removed, the plugin_streambuf is deleted.
+//
+
+class OPENVRML_LOCAL openvrml_control::browser::plugin_streambuf :
+    public boost::enable_shared_from_this<
+        openvrml_control::browser::plugin_streambuf>,
+    public std::streambuf {
+
+    friend class openvrml_control::browser;
+
+public:
+    enum state_id {
+        requested,
+        uninitialized,
+        initialized
+    };
+
+private:
+    state_id state_;
+    mutable boost::mutex mutex_;
+    int get_url_result_;
+    mutable boost::condition received_get_url_result_;
+    mutable boost::condition streambuf_initialized_or_failed_;
+    std::string url_;
+    std::string type_;
+    bounded_buffer<char_type, 16384> buf_;
+    int_type i_;
+    char_type c_;
+    uninitialized_plugin_streambuf_map & uninitialized_map_;
+    plugin_streambuf_map & map_;
+
+protected:
+    virtual int_type underflow();
+
+public:
+    plugin_streambuf(const std::string & requested_url,
+                     uninitialized_plugin_streambuf_map & uninitialized_map,
+                     plugin_streambuf_map & map);
+    state_id state() const;
+    void set_get_url_result(int result);
+    void init(size_t stream_id,
+              const std::string & received_url,
+              const std::string & type);
+    void fail();
+    const std::string & url() const;
+    const std::string & type() const;
+    bool data_available() const;
+};
+
+openvrml_control::browser::plugin_streambuf::
+plugin_streambuf(const std::string & requested_url,
+                 uninitialized_plugin_streambuf_map & uninitialized_map,
+                 plugin_streambuf_map & map):
+    state_(requested),
+    get_url_result_(-1),
+    url_(requested_url),
+    i_(0),
+    c_('\0'),
+    uninitialized_map_(uninitialized_map),
+    map_(map)
+{
+    //
+    // This is really just here to emphasize that c_ must not be EOF.
+    //
+    this->i_ = traits_type::not_eof(this->i_);
+    this->c_ =
+        traits_type::to_char_type(
+            traits_type::not_eof(traits_type::to_int_type(this->c_)));
+
+    this->setg(&this->c_, &this->c_, &this->c_);
+}
+
+openvrml_control::browser::plugin_streambuf::state_id
+openvrml_control::browser::plugin_streambuf::state() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    return this->state_;
+}
+
+void
+openvrml_control::browser::plugin_streambuf::
+set_get_url_result(const int result)
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    assert(this->get_url_result_ == -1);
+    this->get_url_result_ = result;
+
+    //
+    // If result is nonzero, the resource fetch failed early (i.e., before
+    // actually getting the stream.  In that case, nothing else should be
+    // playing with this.  Removing this streambuf from uninitialized_map_
+    // below may (and probably will) result in destruction of this instance.
+    //
+    // So, anyone waiting on received_get_url_result_ should be doing so
+    // because the fetching code is trying to do something with this streambuf
+    // because the fetch is in-progress (i.e., succeeding).  If you're waiting
+    // on this condition and result could possibly indicate failure, you're
+    // doing it wrong.
+    //
+    if (result == 0) {
+        this->state_ = plugin_streambuf::uninitialized;
+        this->received_get_url_result_.notify_all();
+    } else {
+        this->uninitialized_map_.erase(*this);
+    }
+}
+
+void
+openvrml_control::browser::plugin_streambuf::
+init(const size_t stream_id,
+     const std::string & received_url,
+     const std::string & type)
+{
+    assert(stream_id);
+    assert(!received_url.empty());
+    assert(!type.empty());
+
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->state_ != plugin_streambuf::uninitialized) {
+        this->received_get_url_result_.wait(lock);
+    }
+
+    assert(this->state_ == uninitialized);
+
+    bool succeeded = this->uninitialized_map_.erase(*this);
+    assert(succeeded);
+    this->url_ = received_url;
+    this->type_ = type;
+    this->state_ = plugin_streambuf::initialized;
+    const boost::shared_ptr<plugin_streambuf> this_ = shared_from_this();
+    succeeded = this->map_.insert(stream_id, this_);
+    assert(succeeded);
+    this->streambuf_initialized_or_failed_.notify_all();
+}
+
+void openvrml_control::browser::plugin_streambuf::fail()
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    const bool succeeded = this->uninitialized_map_.erase(*this);
+    assert(succeeded);
+    this->buf_.set_eof();
+    this->streambuf_initialized_or_failed_.notify_all();
+}
+
+const std::string & openvrml_control::browser::plugin_streambuf::url() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->state_ != plugin_streambuf::initialized) {
+        this->streambuf_initialized_or_failed_.wait(lock);
+    }
+    return this->url_;
+}
+
+const std::string & openvrml_control::browser::plugin_streambuf::type() const
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->state_ != plugin_streambuf::initialized) {
+        this->streambuf_initialized_or_failed_.wait(lock);
+    }
+    return this->type_;
+}
+
+bool openvrml_control::browser::plugin_streambuf::data_available() const
+{
+    //
+    // It may seem a bit counterintuitive to return true here if the stream
+    // has been destroyed; however, if we don't return true in this case,
+    // clients may never get EOF from the stream.
+    //
+    return this->buf_.buffered() > 0 || this->buf_.eof();
+}
+
+openvrml_control::browser::plugin_streambuf::int_type
+openvrml_control::browser::plugin_streambuf::underflow()
+{
+    boost::mutex::scoped_lock lock(this->mutex_);
+    while (this->state_ != plugin_streambuf::initialized) {
+        this->streambuf_initialized_or_failed_.wait(lock);
+    }
+
+    if (traits_type::eq_int_type(this->i_, traits_type::eof())) {
+        return traits_type::eof();
+    }
+
+    this->i_ = this->buf_.get();
+    this->c_ = traits_type::to_char_type(this->i_);
+
+    if (traits_type::eq_int_type(this->i_, traits_type::eof())) {
+        return traits_type::eof();
+    }
+
+    this->setg(&this->c_, &this->c_, &this->c_ + 1);
+    return traits_type::to_int_type(*this->gptr());
+}
+
+const boost::shared_ptr<openvrml_control::browser::plugin_streambuf>
+openvrml_control::browser::uninitialized_plugin_streambuf_map::
+find(const std::string & url) const
+{
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    map_t::const_iterator pos = this->map_.find(url);
+    return pos == this->map_.end()
+        ? boost::shared_ptr<plugin_streambuf>()
+        : pos->second;
+}
+
+void
+openvrml_control::browser::uninitialized_plugin_streambuf_map::
+insert(const std::string & url,
+       const boost::shared_ptr<plugin_streambuf> & streambuf)
+{
+    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+    this->map_.insert(make_pair(url, streambuf));
+}
+
+struct openvrml_control::browser::uninitialized_plugin_streambuf_map::map_entry_matches_streambuf :
+    std::unary_function<bool, map_t::value_type> {
+
+    explicit map_entry_matches_streambuf(const plugin_streambuf * streambuf):
+        streambuf_(streambuf)
+    {}
+
+    bool operator()(const map_t::value_type & entry) const
+    {
+        return this->streambuf_ == entry.second.get();
+    }
+
+private:
+    const plugin_streambuf * const streambuf_;
+};
+
+bool
+openvrml_control::browser::uninitialized_plugin_streambuf_map::
+erase(const plugin_streambuf & streambuf)
+{
+    openvrml::read_write_mutex::scoped_read_write_lock lock(this->mutex_);
+    const map_t::iterator pos =
+        std::find_if(this->map_.begin(), this->map_.end(),
+                     map_entry_matches_streambuf(&streambuf));
+    if (pos == this->map_.end()) { return false; }
+    lock.promote();
+    this->map_.erase(pos);
+    return true;
+}
+
+size_t
+openvrml_control::browser::uninitialized_plugin_streambuf_map::size() const
+{
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    return this->map_.size();
+}
+
+bool
+openvrml_control::browser::uninitialized_plugin_streambuf_map::empty() const
+{
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    return this->map_.empty();
+}
+
+const boost::shared_ptr<openvrml_control::browser::plugin_streambuf>
+openvrml_control::browser::uninitialized_plugin_streambuf_map::front() const
+{
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    assert(!this->map_.empty());
+    return this->map_.begin()->second;
+}
+
+
+const boost::shared_ptr<openvrml_control::browser::plugin_streambuf>
+openvrml_control::browser::plugin_streambuf_map::find(const size_t id) const
+{
+    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    map_t::const_iterator pos = this->map_.find(id);
+    return pos == this->map_.end()
+        ? boost::shared_ptr<plugin_streambuf>()
+        : pos->second;
+}
+
+bool
+openvrml_control::browser::plugin_streambuf_map::
+insert(const size_t id,
+       const boost::shared_ptr<plugin_streambuf> & streambuf)
+{
+    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+    return this->map_.insert(make_pair(id, streambuf)).second;
+}
+
+/**
+ * @brief Erase the entry corresponding to @p id.
+ *
+ * @return @c true if an entry was removed; @c false otherwise.
+ */
+bool openvrml_control::browser::plugin_streambuf_map::erase(const size_t id)
+{
+    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+    return this->map_.erase(id) > 0;
+}
 
 openvrml_control::browser::resource_fetcher::
 resource_fetcher(browser_host & control_host,
@@ -141,58 +480,56 @@ namespace {
     //
     const char initial_stream_uri[] = "x-openvrml-initial:";
 
-    struct OPENVRML_LOCAL initial_stream_reader {
-        initial_stream_reader(
-            const boost::shared_ptr<openvrml_control::plugin_streambuf> &
-                streambuf,
-            openvrml::browser & browser):
-            streambuf_(streambuf),
-            browser_(browser)
+}
+
+struct OPENVRML_LOCAL openvrml_control::browser::initial_stream_reader {
+    initial_stream_reader(
+        const boost::shared_ptr<plugin_streambuf> & streambuf,
+        openvrml::browser & browser):
+        streambuf_(streambuf),
+        browser_(browser)
         {}
 
-        void operator()() const throw ()
-        {
-            using openvrml_control::plugin_streambuf;
+    void operator()() const throw ()
+    {
+        class plugin_istream : public openvrml::resource_istream {
+            boost::shared_ptr<plugin_streambuf> streambuf_;
 
-            class plugin_istream : public openvrml::resource_istream {
-                boost::shared_ptr<plugin_streambuf> streambuf_;
+        public:
+            explicit plugin_istream(
+                const boost::shared_ptr<plugin_streambuf> & streambuf):
+                openvrml::resource_istream(streambuf.get()),
+                streambuf_(streambuf)
+            {}
 
-            public:
-                explicit plugin_istream(
-                    const boost::shared_ptr<plugin_streambuf> & streambuf):
-                    openvrml::resource_istream(streambuf.get()),
-                    streambuf_(streambuf)
-                {}
+            virtual ~plugin_istream() throw ()
+            {}
 
-                virtual ~plugin_istream() throw ()
-                {}
+        private:
+            virtual const std::string do_url() const throw (std::bad_alloc)
+            {
+                return this->streambuf_->url();
+            }
 
-            private:
-                virtual const std::string do_url() const throw (std::bad_alloc)
-                {
-                    return this->streambuf_->url();
-                }
+            virtual const std::string do_type() const
+                throw (std::bad_alloc)
+            {
+                return this->streambuf_->type();
+            }
 
-                virtual const std::string do_type() const
-                    throw (std::bad_alloc)
-                {
-                    return this->streambuf_->type();
-                }
+            virtual bool do_data_available() const throw ()
+            {
+                return this->streambuf_->data_available();
+            }
+        } in(this->streambuf_);
 
-                virtual bool do_data_available() const throw ()
-                {
-                    return this->streambuf_->data_available();
-                }
-            } in(this->streambuf_);
+        this->browser_.set_world(in);
+    }
 
-            this->browser_.set_world(in);
-        }
-
-    private:
-        boost::shared_ptr<openvrml_control::plugin_streambuf> streambuf_;
-        openvrml::browser & browser_;
-    };
-}
+private:
+    boost::shared_ptr<plugin_streambuf> streambuf_;
+    openvrml::browser & browser_;
+};
 
 openvrml_control::browser::browser(browser_host & host,
                                    const bool expect_initial_stream):

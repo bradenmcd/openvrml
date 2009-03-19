@@ -21,7 +21,6 @@
 # ifndef OPENVRML_CONTROL_BROWSER_H
 #   define OPENVRML_CONTROL_BROWSER_H
 
-#   include "plugin_streambuf.h"
 #   include <openvrml/browser.h>
 
 namespace openvrml_control {
@@ -36,7 +35,42 @@ namespace openvrml_control {
     class browser_host;
 
     class browser {
+        class plugin_streambuf;
+        struct initial_stream_reader;
         struct load_url;
+
+        class uninitialized_plugin_streambuf_map : boost::noncopyable {
+            struct map_entry_matches_streambuf;
+
+            mutable openvrml::read_write_mutex mutex_;
+            typedef std::multimap<std::string,
+                                  boost::shared_ptr<plugin_streambuf> >
+                map_t;
+            map_t map_;
+
+        public:
+            const boost::shared_ptr<plugin_streambuf>
+            find(const std::string & url) const;
+            void insert(const std::string & url,
+                        const boost::shared_ptr<plugin_streambuf> & streambuf);
+            bool erase(const plugin_streambuf & streambuf);
+            size_t size() const;
+            bool empty() const;
+            const boost::shared_ptr<plugin_streambuf> front() const;
+        };
+
+        class plugin_streambuf_map : boost::noncopyable {
+            mutable openvrml::read_write_mutex mutex_;
+            typedef std::map<size_t, boost::shared_ptr<plugin_streambuf> >
+                map_t;
+            map_t map_;
+
+        public:
+            const boost::shared_ptr<plugin_streambuf> find(size_t id) const;
+            bool insert(size_t id,
+                        const boost::shared_ptr<plugin_streambuf> & streambuf);
+            bool erase(size_t id);
+        };
 
         class resource_fetcher : public openvrml::resource_fetcher {
             browser_host & control_host_;

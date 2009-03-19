@@ -1,5 +1,28 @@
 2009-03-19 Braden McDaniel  <braden@endoframe.com>
 
+	Moved plugin_streambuf, uninitialized_plugin_streambuf_map, and
+	plugin_streambuf_map to be private member classes of
+	openvrml_control::browser.
+
+	* src/Makefile.am
+	(libopenvrml_control_libopenvrml_control_la_SOURCES): Removed
+	libopenvrml-control/openvrml_control/plugin_streambuf.{cpp,h}.
+	* src/libopenvrml-control/openvrml_control/browser.cpp: Added
+	definition of openvrml_control::browser::plugin_streambuf as well
+	as member definitions for it and
+	openvrml_control::browser::uninitialized_plugin_streambuf_map and
+	openvrml_control::browser::plugin_streambuf_map.
+	* src/libopenvrml-control/openvrml_control/browser.h
+	(openvrml_control::browser): Added declaration plugin_streambuf;
+	added definitions of uninitialized_plugin_streambuf_map and
+	plugin_streambuf_map.
+	* src/libopenvrml-control/openvrml_control/plugin_streambuf.cpp:
+	Removed.
+	* src/libopenvrml-control/openvrml_control/plugin_streambuf.h:
+	Removed.
+
+2009-03-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-control/openvrml_control/browser.cpp
 	(openvrml_control::browser_host::get_url(const std::string &)):
 	Added missing return statement.
