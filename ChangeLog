@@ -7,6 +7,12 @@
 
 2009-03-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am
+	(openvrml_xembed_openvrml_xembed_CPPFLAGS): Removed crufty
+	-I$(mozincludedir).
+
+2009-03-17 Braden McDaniel  <braden@endoframe.com>
+
 	Rely on an installed GtkGLExt.
 
 	* Makefile.am
