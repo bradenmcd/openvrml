@@ -349,7 +349,6 @@ openvrml_xembed_browser_new_stream(
     const char * const url,
     GError ** const error)
 {
-    using namespace openvrml_xembed;
     using boost::shared_ptr;
 
     OpenvrmlXembedBrowser * const browser =
@@ -373,7 +372,6 @@ openvrml_xembed_browser_destroy_stream(
     const guint64 stream_id,
     GError ** const error)
 {
-    using namespace openvrml_xembed;
     using boost::shared_ptr;
 
     OpenvrmlXembedBrowser * const browser =
@@ -397,7 +395,6 @@ openvrml_xembed_browser_write(OpenvrmlXembedStreamClient * const stream_client,
                               const GArray * const data,
                               GError ** const error)
 {
-    using namespace openvrml_xembed;
     using boost::shared_ptr;
 
     OpenvrmlXembedBrowser * const browser =

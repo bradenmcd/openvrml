@@ -1,5 +1,20 @@
 2009-03-19 Braden McDaniel  <braden@endoframe.com>
 
+	Removed crufty uses of openvrml_xembed namespace.
+
+	* src/openvrml-xembed/browser.cpp
+	(openvrml_xembed_browser_new_stream(OpenvrmlXembedStreamClient *,
+	guint64, const char *, const char *, GError **)): Removed crufty
+	use of openvrml_xembed namespace.
+	(openvrml_xembed_browser_destroy_stream(OpenvrmlXembedStreamClient *,
+	guint64, GError **)): Removed crufty use of openvrml_xembed
+	namespace.
+	(openvrml_xembed_browser_write(OpenvrmlXembedStreamClient *,
+	guint64, const GArray *, GError **)): Removed crufty use of
+	openvrml_xembed namespace.
+
+2009-03-19 Braden McDaniel  <braden@endoframe.com>
+
 	Created a convenience library libopenvrml-control to hold the
 	platform-independent parts of the OpenVRML control (which is
 	currently called openvrml-xembed).
