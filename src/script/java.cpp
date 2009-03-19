@@ -4491,20 +4491,20 @@ namespace {
 
     template <> struct set_array_region_t<jfloat> {
         static void (JNIEnv::* const value)(
-            array_type<jfloat>::type, jsize, jsize, jfloat *);
+            array_type<jfloat>::type, jsize, jsize, const jfloat *);
     };
 
     void (JNIEnv::* const set_array_region_t<jfloat>::value)(
-        array_type<jfloat>::type, jsize, jsize, jfloat *) =
+        array_type<jfloat>::type, jsize, jsize, const jfloat *) =
         &JNIEnv::SetFloatArrayRegion;
 
     template <> struct set_array_region_t<jdouble> {
         static void (JNIEnv::* const value)(
-            array_type<jdouble>::type, jsize, jsize, jdouble *);
+            array_type<jdouble>::type, jsize, jsize, const jdouble *);
     };
 
     void (JNIEnv::* const set_array_region_t<jdouble>::value)(
-        array_type<jdouble>::type, jsize, jsize, jdouble *) =
+        array_type<jdouble>::type, jsize, jsize, const jdouble *) =
         &JNIEnv::SetDoubleArrayRegion;
 
     template <typename T>

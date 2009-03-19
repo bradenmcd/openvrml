@@ -1,5 +1,15 @@
 2009-03-18 Braden McDaniel  <braden@endoframe.com>
 
+	Newer jni.h is more const-correct; play along.
+
+	* src/script/java.cpp
+	(set_array_region_t<jfloat>::value): Added "const" for consistency
+	with newer jni.h.
+	(set_array_region_t<jdouble>::value): Added "const" for consistency
+	with newer jni.h.
+
+2009-03-18 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/local/parse_vrml.h: Fixes to build with
 	gcc 4.0 (on Mac OS X 10.5).  This compiler appears to have some
 	bugs with access rules and inner classes; interjecting some
