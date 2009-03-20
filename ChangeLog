@@ -1,5 +1,10 @@
 2009-03-19 Braden McDaniel  <braden@endoframe.com>
 
+	* openvrml.pc.in: libopenvrml no longer links with libjpeg and
+	libpng.
+
+2009-03-19 Braden McDaniel  <braden@endoframe.com>
+
 	Moved bounded_buffer to the implementation of
 	openvrml_control::browser.
 
