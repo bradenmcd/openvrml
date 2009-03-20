@@ -262,10 +262,6 @@ if test X$enable_render_text_node != Xno; then
   if test X$have_fontconfig = Xno -o X$have_freetype = Xno; then
     AC_MSG_FAILURE([fontconfig and FreeType are required for rendering Text nodes.])
   fi
-  if test -n "${OPENVRML_PKG_REQUIRES}"; then
-    OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"
-  fi
-  OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${REQUIRE_FONTCONFIG} ${REQUIRE_FREETYPE}"
   AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
             [Defined if support for rendering Text nodes is enabled.])
   AC_DEFINE_UNQUOTED([OPENVRML_FT_CONST], [$ov_cv_ft_const],
