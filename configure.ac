@@ -289,10 +289,6 @@ AS_IF([test "X$enable_script_node_javascript" = "Xno"],
         AS_IF([test -z "$JS_LIBS"], [JS_LIBS="-ljs"])])
 AS_IF([test X$have_libmozjs != Xyes -a \( X$with_libjs = Xyes -a X$have_libjs != Xyes \) -o X$have_jsapi_h != Xyes],
       [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.])])
-AS_IF([test X$with_libjs != Xyes],
-      [AS_IF([test -n "${OPENVRML_PKG_REQUIRES}"],
-             [OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES},"])
-       OPENVRML_PKG_REQUIRES="${OPENVRML_PKG_REQUIRES} ${mozilla_js_pkg}"])
 AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
           [Defined if Script node JavaScript support is enabled.])
 #

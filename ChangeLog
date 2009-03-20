@@ -1,5 +1,11 @@
 2009-03-20 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Now that the SpiderMonkey dependency is isolated
+	to a dlopen'd module, we don't need to add mozilla-js to
+	OPENVRML_PKG_REQUIRES.
+
+2009-03-20 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Add JAVA_HOME as a precious variable.
 
 2009-03-20 Braden McDaniel  <braden@endoframe.com>
