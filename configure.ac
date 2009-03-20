@@ -425,11 +425,6 @@ AM_CONDITIONAL([WITH_REZ],
 AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 
 #
-# Optional dependencies (substituted in the pkg-config metadata files).
-#
-AC_SUBST([OPENVRML_PKG_REQUIRES])
-
-#
 # Determine whether to apply the -rpath for the Gecko runtime libraries.
 #
 AS_IF([test "X$enable_gecko_rpath" = Xyes],

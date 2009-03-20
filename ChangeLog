@@ -1,5 +1,13 @@
 2009-03-20 Braden McDaniel  <braden@endoframe.com>
 
+	Don't need OPENVRML_PKG_REQUIRES anymore.
+
+	* configure.ac: Removed AC_SUBST for OPENVRML_PKG_REQUIRES.
+	* openvrml.pc.in: Removed Requires; we don't depend on any other
+	pkg-config-aware libraries.
+
+2009-03-20 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Now that font rendering is isolated to a dlopen'd
 	module, we don't need to add fontconfig and freetype2 to
 	OPENVRML_PKG_REQUIRES.
