@@ -1,4 +1,8 @@
-2009-03-19 Braden McDaniel  <braden@endoframe.com>
+2009-03-20 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.pc.in: Link with libboost_filesystem and libltdl.
+
+2009-03-20 Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.pc.in: libopenvrml no longer links with libjpeg and
 	libpng.

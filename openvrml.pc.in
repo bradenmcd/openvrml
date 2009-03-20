@@ -7,5 +7,5 @@ Name: @PACKAGE_NAME@
 Description: VRML/X3D run-time library.
 Version: @PACKAGE_VERSION@
 Requires: @OPENVRML_PKG_REQUIRES@
-Libs: -L${libdir} -lopenvrml -lboost_thread@BOOST_LIB_SUFFIX@
+Libs: -L${libdir} -lopenvrml -lboost_thread@BOOST_LIB_SUFFIX@ -lboost_filesystem@BOOST_LIB_SUFFIX@ -lltdl
 Cflags: -I${includedir}
