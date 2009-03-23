@@ -6,5 +6,6 @@ includedir=@includedir@/@PACKAGE_TARNAME@
 Name: @PACKAGE_NAME@
 Description: VRML/X3D run-time library.
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -lopenvrml -lboost_thread@BOOST_LIB_SUFFIX@ -lboost_filesystem@BOOST_LIB_SUFFIX@ -lltdl
+Libs: -L${libdir} -lopenvrml
+Libs.private: -lboost_thread@BOOST_LIB_SUFFIX@ -lboost_filesystem@BOOST_LIB_SUFFIX@ -lltdl
 Cflags: -I${includedir}

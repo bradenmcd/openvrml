@@ -6,6 +6,7 @@ includedir=@includedir@/@PACKAGE_TARNAME@
 Name: @PACKAGE_NAME@-GL
 Description: OpenGL renderer for OpenVRML.
 Version: @PACKAGE_VERSION@
-Requires: openvrml = @PACKAGE_VERSION@
-Libs: -L${libdir} -lopenvrml-gl @GLU_LIBS@
+Requires.private: openvrml = @PACKAGE_VERSION@
+Libs: -L${libdir} -lopenvrml-gl
+Libs.private: @GLU_LIBS@
 Cflags: -I${includedir} @GLU_CFLAGS@
