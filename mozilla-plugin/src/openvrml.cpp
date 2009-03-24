@@ -38,6 +38,8 @@
 #   error Unsupported toolkit.
 # endif
 
+# include <config.h>
+
 # define OPENVRML_NP_TYPE_BROWSER_HOST (openvrml_np_browser_host_get_type())
 # define OPENVRML_NP_BROWSER_HOST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), OPENVRML_NP_TYPE_BROWSER_HOST, OpenvrmlNpBrowserHost))
 # define OPENVRML_NP_BROWSER_HOST_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), OPENVRML_NP_TYPE_BROWSER_HOST, OpenvrmlNpBrowserHostClass))

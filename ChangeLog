@@ -1,3 +1,19 @@
+2009-03-24 Braden McDaniel  <braden@endoframe.com>
+
+	Moved configuration for the Mozilla plug-in into the top-level
+	configure.ac.
+
+	* configure.ac: Added checks for Mozilla plug-in dependencies.
+	* mozilla-plugin/Makefile.am (ACLOCAL_AMFLAGS): Removed.
+	* mozilla-plugin/configure.ac: Removed.
+	* mozilla-plugin/src/Makefile.am
+	(AM_CPPFLAGS): Define MOZ_X11.
+	(browser-host-server-glue.h): Adjusted path for browser-host.xml.
+	(browser-factory-client-glue.h): Adjusted path for
+	browser-factory.xml.
+	(browser-client-glue.h): Adjusted path for browser.xml.
+	* mozilla-plugin/src/openvrml.cpp: Include <config.h>.
+
 2009-03-23 Braden McDaniel  <braden@endoframe.com>
 
 	Make use of pkg-config's Requires.private and Libs.private.
