@@ -1,5 +1,13 @@
 2009-03-24 Braden McDaniel  <braden@endoframe.com>
 
+	Moved Mozilla plug-in build into the big nonrecursive makefile.
+
+	* configure.ac: No longer emit src/mozilla-plugin/Makefile.
+	* src/Makefile.am: Build the Mozilla plug-in.
+	* src/mozilla-plugin/Makefile.am: Removed.
+
+2009-03-24 Braden McDaniel  <braden@endoframe.com>
+
 	Moved Mozilla plug-in source to src/mozilla-plugin.
 
 	* Makefile (SUBDIRS): Removed mozilla-plugin.

@@ -1,4 +1,4 @@
-SUBDIRS = script mozilla-plugin
+SUBDIRS = script
 
 BUILT_SOURCES =
 
@@ -855,6 +855,48 @@ openvrml-player/browser-client-glue.h: $(srcdir)/openvrml-xembed/browser.xml
 	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL)   \
                    --mode=glib-client                    \
                    --output=$@                           \
+                   $?
+
+mozpluginsdir = $(libdir)/mozilla/plugins
+if ENABLE_MOZILLA_PLUGIN
+mozplugins_LTLIBRARIES = mozilla-plugin/openvrml.la
+BUILT_SOURCES += \
+        mozilla-plugin/browser-host-server-glue.h \
+        mozilla-plugin/browser-factory-client-glue.h \
+        mozilla-plugin/browser-client-glue.h
+endif
+
+mozilla_plugin_openvrml_la_CPPFLAGS = \
+        -DMOZ_X11 \
+        -DGTK_DISABLE_DEPRECATED \
+        -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\" \
+        -Imozilla-plugin
+mozilla_plugin_openvrml_la_CXXFLAGS = \
+        $(MOZILLA_PLUGIN_CFLAGS) \
+        $(DBUS_G_CFLAGS)
+mozilla_plugin_openvrml_la_SOURCES = mozilla-plugin/openvrml.cpp
+mozilla_plugin_openvrml_la_LDFLAGS = \
+        -module -avoid-version \
+        $(MOZILLA_PLUGIN_LIBS) \
+        $(DBUS_G_LIBS)
+
+mozilla-plugin/browser-host-server-glue.h: $(srcdir)/openvrml-xembed/browser-host.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
+                   --prefix=openvrml_np_browser_host   \
+                   --mode=glib-server                  \
+                   --output=$@                         \
+                   $?
+
+mozilla-plugin/browser-factory-client-glue.h: $(srcdir)/openvrml-xembed/browser-factory.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
+                   --mode=glib-client                  \
+                   --output=$@                         \
+                   $?
+
+mozilla-plugin/browser-client-glue.h: $(srcdir)/openvrml-xembed/browser.xml
+	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
+                   --mode=glib-client                  \
+                   --output=$@                         \
                    $?
 
 EXTRA_DIST = \
