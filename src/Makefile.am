@@ -1,4 +1,4 @@
-SUBDIRS = script
+SUBDIRS = script mozilla-plugin
 
 BUILT_SOURCES =
 

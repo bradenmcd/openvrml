@@ -20,20 +20,20 @@ openvrml_la_LDFLAGS = \
         $(MOZILLA_PLUGIN_LIBS) \
         $(DBUS_G_LIBS)
 
-browser-host-server-glue.h: $(srcdir)/../../src/openvrml-xembed/browser-host.xml
+browser-host-server-glue.h: $(srcdir)/../openvrml-xembed/browser-host.xml
 	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
                    --prefix=openvrml_np_browser_host   \
                    --mode=glib-server                  \
                    --output=$@                         \
                    $?
 
-browser-factory-client-glue.h: $(srcdir)/../../src/openvrml-xembed/browser-factory.xml
+browser-factory-client-glue.h: $(srcdir)/../openvrml-xembed/browser-factory.xml
 	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
                    --mode=glib-client                  \
                    --output=$@                         \
                    $?
 
-browser-client-glue.h: $(srcdir)/../../src/openvrml-xembed/browser.xml
+browser-client-glue.h: $(srcdir)/../openvrml-xembed/browser.xml
 	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) \
                    --mode=glib-client                  \
                    --output=$@                         \
