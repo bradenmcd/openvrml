@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
@@ -68,12 +68,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib"
-				OutputFile="$(SolutionDir)..\bin\$(ProjectName)d.dll"
+				OutputFile="$(OutDir)\bin\$(ProjectName).dll"
 				IgnoreDefaultLibraryNames="libcmtd;msvcrt"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)..\lib\$(TargetName).lib"
+				ImportLibrary="$(OutDir)\lib\$(TargetName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -99,7 +99,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="0"
@@ -152,13 +152,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="gdi32.lib advapi32.lib shell32.lib shlwapi.lib XmlLite.lib"
-				OutputFile="$(SolutionDir)..\bin\$(ProjectName).dll"
+				OutputFile="$(OutDir)\bin\$(ProjectName).dll"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
 				LinkTimeCodeGeneration="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(SolutionDir)..\lib\$(TargetName).lib"
+				ImportLibrary="$(OutDir)\lib\$(TargetName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -224,6 +224,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\component.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\dl.cpp"
 				>
 			</File>
@@ -233,6 +237,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\exposedfield.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\externproto.cpp"
 				>
 			</File>
 			<File
@@ -253,6 +261,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\node_metatype_registry_impl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\parse_vrml.cpp"
 				>
 			</File>
 			<File
@@ -321,6 +333,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\component.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\dl.h"
 				>
 			</File>
@@ -330,6 +346,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\exposedfield.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\externproto.h"
 				>
 			</File>
 			<File
@@ -358,6 +378,10 @@
 			</File>
 			<File
 				RelativePath=".\openvrml-config.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\parse_vrml.h"
 				>
 			</File>
 			<File

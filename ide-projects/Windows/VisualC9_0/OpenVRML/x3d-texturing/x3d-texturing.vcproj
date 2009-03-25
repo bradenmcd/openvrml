@@ -62,7 +62,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(SolutionDir)..\bin\node\$(ProjectName).dll"
+				IgnoreImportLibrary="true"
+				OutputFile="$(OutDir)\bin\node\$(ProjectName).dll"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -133,7 +135,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(SolutionDir)..\bin\node\$(ProjectName).dll"
+				IgnoreImportLibrary="true"
+				OutputFile="$(OutDir)\bin\node\$(ProjectName).dll"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"

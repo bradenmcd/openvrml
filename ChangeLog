@@ -1,5 +1,36 @@
 2009-03-25 Braden McDaniel  <braden@endoframe.com>
 
+	Emit .pdb files for node component DLLs.  Also, changed output
+	location so that Debug and Release builds no longer share the same
+	directories.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/pretty-print/pretty-print.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-interpolation/x3d-interpolation.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-networking/x3d-networking.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-nurbs/x3d-nurbs.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-texturing/x3d-texturing.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-event-utilities/x3d-event-utilities.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-grouping/x3d-grouping.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-environmental-effects/x3d-environmental-effects.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-shape/x3d-shape.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-h-anim/x3d-h-anim.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-x3dvrml/parse-x3dvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-vrml97/parse-vrml97.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-rendering/x3d-rendering.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-dis/x3d-dis.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-cad-geometry/x3d-cad-geometry.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj
+
+2009-03-25 Braden McDaniel  <braden@endoframe.com>
+
 	Avoid overusing the "proto_node_metatype" identifier.  The
 	Microsoft compiler doesn't like it and it's just not pretty.
 
