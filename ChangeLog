@@ -1,3 +1,17 @@
+2009-03-25 Braden McDaniel  <braden@endoframe.com>
+
+	Avoid overusing the "proto_node_metatype" identifier.  The
+	Microsoft compiler doesn't like it and it's just not pretty.
+
+	* src/libopenvrml/openvrml/local/externproto.h
+	(openvrml::local::externproto_node_metatype::set_proto_node_metatype(const
+	boost::weak_ptr<proto_node_metatype> &)): Avoid overusing
+	"proto_node_metatype" identifier.
+	* src/libopenvrml/openvrml/local/externproto.h
+	(openvrml::local::externproto_node_metatype::set_proto_node_metatype(const
+	boost::weak_ptr<proto_node_metatype> &)): Avoid overusing
+	"proto_node_metatype" identifier.
+
 2009-03-24 Braden McDaniel  <braden@endoframe.com>
 
 	Moved Mozilla plug-in build into the big nonrecursive makefile.

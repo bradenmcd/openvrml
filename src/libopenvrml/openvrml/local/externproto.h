@@ -72,7 +72,8 @@ namespace openvrml {
             virtual void do_shutdown(double time) OPENVRML_NOTHROW;
 
             void set_proto_node_metatype(
-                const boost::weak_ptr<proto_node_metatype> & proto_node_metatype = boost::weak_ptr<proto_node_metatype>())
+                const boost::weak_ptr<proto_node_metatype> & metatype =
+                    boost::weak_ptr<proto_node_metatype>())
                 OPENVRML_THROW1(std::bad_alloc);
 
             void clear_externproto_node_types() OPENVRML_NOTHROW;

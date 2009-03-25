@@ -199,8 +199,7 @@ void openvrml::local::externproto_node_metatype::do_shutdown(double)
 
 void
 openvrml::local::externproto_node_metatype::
-set_proto_node_metatype(
-    const boost::weak_ptr<openvrml::local::proto_node_metatype> & proto_node_metatype)
+set_proto_node_metatype(const boost::weak_ptr<proto_node_metatype> & metatype)
     OPENVRML_THROW1(std::bad_alloc)
 {
     boost::mutex::scoped_lock lock(this->mutex_);
@@ -208,15 +207,15 @@ set_proto_node_metatype(
     using boost::shared_ptr;
     using boost::static_pointer_cast;
 
-    this->proto_node_metatype_ = proto_node_metatype;
+    this->proto_node_metatype_ = metatype;
 
     //
     // Now that we have a proto_node_metatype, we need to tell all the
     // externproto_node_types we've created so that they can in turn
     // tell the externproto_nodes they've created.
     //
-    const shared_ptr<openvrml::local::proto_node_metatype> shared_proto_node_metatype =
-        proto_node_metatype.lock();
+    const shared_ptr<proto_node_metatype> shared_proto_node_metatype =
+        metatype.lock();
     assert(shared_proto_node_metatype);
     for (externproto_node_types::const_iterator node_type =
              this->externproto_node_types_.begin();
