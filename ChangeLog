@@ -1,5 +1,9 @@
 2009-03-25 Braden McDaniel  <braden@endoframe.com>
 
+	* models/snoman.wrl: Whitespace cleanup.
+
+2009-03-25 Braden McDaniel  <braden@endoframe.com>
+
 	Emit .pdb files for node component DLLs.  Also, changed output
 	location so that Debug and Release builds no longer share the same
 	directories.
