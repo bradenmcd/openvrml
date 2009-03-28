@@ -29,10 +29,6 @@
 #   include <config.h>
 # endif
 
-# ifdef interface
-#   undef interface
-# endif
-
 # include <cmath>
 # include <limits>
 # ifndef NDEBUG

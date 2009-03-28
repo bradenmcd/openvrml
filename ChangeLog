@@ -1,5 +1,10 @@
 2009-03-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: No longer need to
+	undefine "interface".
+
+2009-03-28 Braden McDaniel  <braden@endoframe.com>
+
 	Include OpenGL headers in openvrml/gl/viewer.h to avoid having to
 	forward-declare OpenGL types.
 
