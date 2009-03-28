@@ -29,21 +29,8 @@
 #   include <config.h>
 # endif
 
-# if defined(HAVE_WINDOWS_H) && defined(_WIN32)
-#   include <windows.h>
-# endif
 # ifdef interface
 #   undef interface
-# endif
-
-# ifdef HAVE_GL_GLU_H
-#   include <GL/gl.h>
-#   include <GL/glu.h>
-# elif defined(HAVE_OPENGL_GLU_H)
-#   include <OpenGL/gl.h>
-#   include <OpenGL/glu.h>
-# else
-#   error must define HAVE_GL_GLU_H or HAVE_OPENGL_GLU_H
 # endif
 
 # include <cmath>

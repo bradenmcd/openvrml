@@ -193,6 +193,30 @@ PKG_CHECK_MODULES([MOZILLA_PLUGIN], [xulrunner-plugin],
 
 AC_PATH_XTRA
 AX_CHECK_GLU
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+                  [[#ifndef HAVE_WINDOWS_H
+  choke
+#endif
+]])],
+                  [OPENVRML_GL_HAVE_WINDOWS_H=1],
+                  [OPENVRML_GL_HAVE_WINDOWS_H=0])
+AC_SUBST([OPENVRML_GL_HAVE_WINDOWS_H])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+                  [[#ifndef HAVE_GL_GLU_H
+  choke
+#endif
+]])],
+                  [OPENVRML_GL_HAVE_GL_GLU_H=1],
+                  [OPENVRML_GL_HAVE_GL_GLU_H=0])
+AC_SUBST([OPENVRML_GL_HAVE_GL_GLU_H])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+                  [[#ifndef HAVE_OPENGL_GLU_H
+  choke
+#endif
+]])],
+                  [OPENVRML_GL_HAVE_OPENGL_GLU_H=1],
+                  [OPENVRML_GL_HAVE_OPENGL_GLU_H=0])
+AC_SUBST([OPENVRML_GL_HAVE_OPENGL_GLU_H])
 
 AC_PATH_PROG([SDL_CONFIG], [sdl-config])
 have_sdl=no

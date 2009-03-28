@@ -1,3 +1,17 @@
+2009-03-28 Braden McDaniel  <braden@endoframe.com>
+
+	Include OpenGL headers in openvrml/gl/viewer.h to avoid having to
+	forward-declare OpenGL types.
+
+	* configure.ac: AC_SUBST OPENVRML_GL_HAVE_WINDOWS_H,
+	OPENVRML_GL_HAVE_GL_GLU_H, and OPENVRML_GL_HAVE_OPENGL_GLU_H.
+	* src/libopenvrml-gl/openvrml-gl-config.h.in: Define
+	OPENVRML_GL_HAVE_WINDOWS_H, OPENVRML_GL_HAVE_GL_GLU_H, and
+	OPENVRML_GL_HAVE_OPENGL_GLU_H.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Removed inclusion of
+	OpenGL headers.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h: Include OpenGL headers.
+
 2009-03-25 Braden McDaniel  <braden@endoframe.com>
 
 	* models/snoman.wrl: Whitespace cleanup.

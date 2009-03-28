@@ -23,10 +23,20 @@
 #   define OPENVRML_GL_VIEWER_H
 
 #   include <openvrml-gl-common.h>
-#   include <stack>
 #   include <openvrml/viewer.h>
-
-extern "C" struct GLUtesselator;
+#   if OPENVRML_GL_HAVE_WINDOWS_H && defined(_WIN32)
+#     include <windows.h>
+#   endif
+#   if OPENVRML_GL_HAVE_GL_GLU_H
+#     include <GL/gl.h>
+#     include <GL/glu.h>
+#   elif OPENVRML_GL_HAVE_OPENGL_GLU_H
+#     include <OpenGL/gl.h>
+#     include <OpenGL/glu.h>
+#   else
+#     error must define OPENVRML_GL_HAVE_GL_GLU_H or OPENVRML_GL_HAVE_OPENGL_GLU_H
+#   endif
+#   include <stack>
 
 namespace openvrml {
 

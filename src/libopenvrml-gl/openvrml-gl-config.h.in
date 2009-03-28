@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2005, 2006, 2007  Braden McDaniel
+// Copyright 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -19,9 +19,12 @@
 //
 
 # ifndef OPENVRML_GL_CONFIG_H
-#  define OPENVRML_GL_CONFIG_H
+#   define OPENVRML_GL_CONFIG_H
 
-#  define OPENVRML_GL_API @OPENVRML_GL_API@
-#  define OPENVRML_GL_LOCAL @OPENVRML_GL_LOCAL@
+#   define OPENVRML_GL_API @OPENVRML_GL_API@
+#   define OPENVRML_GL_LOCAL @OPENVRML_GL_LOCAL@
+#   define OPENVRML_GL_HAVE_WINDOWS_H @OPENVRML_GL_HAVE_WINDOWS_H@
+#   define OPENVRML_GL_HAVE_GL_GLU_H @OPENVRML_GL_HAVE_GL_GLU_H@
+#   define OPENVRML_GL_HAVE_OPENGL_GLU_H @OPENVRML_GL_HAVE_OPENGL_GLU_H@
 
 # endif // ifndef OPENVRML_GL_CONFIG_H
