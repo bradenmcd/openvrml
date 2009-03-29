@@ -1,3 +1,9 @@
+2009-03-29 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-control/openvrml_control/browser.cpp
+	(openvrml_control::browser::uninitialized_plugin_streambuf_map::map_entry_matches_streambuf):
+	Applied OPENVRML_LOCAL.
+
 2009-03-28 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: No longer need to

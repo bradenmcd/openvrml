@@ -377,7 +377,7 @@ insert(const std::string & url,
     this->map_.insert(make_pair(url, streambuf));
 }
 
-struct openvrml_control::browser::uninitialized_plugin_streambuf_map::map_entry_matches_streambuf :
+struct OPENVRML_LOCAL openvrml_control::browser::uninitialized_plugin_streambuf_map::map_entry_matches_streambuf :
     std::unary_function<bool, map_t::value_type> {
 
     explicit map_entry_matches_streambuf(const plugin_streambuf * streambuf):
