@@ -512,7 +512,7 @@ openvrml_xembed_browser_initialized(OpenvrmlXembedBrowser * const browser)
 
 G_DEFINE_TYPE(OpenvrmlXembedBrowserPlug,
               openvrml_xembed_browser_plug,
-              GTK_TYPE_PLUG);
+              GTK_TYPE_PLUG)
 
 extern "C" {
     G_GNUC_INTERNAL

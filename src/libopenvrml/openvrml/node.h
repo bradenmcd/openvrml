@@ -397,7 +397,7 @@ namespace openvrml {
     namespace local {
         class proto_node;
         class externproto_node;
-    };
+    }
 
     class OPENVRML_API node : boost::noncopyable {
         friend class local::proto_node;

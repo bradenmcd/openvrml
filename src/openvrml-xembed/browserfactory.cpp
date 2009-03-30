@@ -38,7 +38,7 @@ using namespace boost::multi_index::detail; // for scope_guard
 
 G_DEFINE_TYPE(OpenvrmlXembedBrowserFactory,
               openvrml_xembed_browser_factory,
-              G_TYPE_OBJECT);
+              G_TYPE_OBJECT)
 
 extern "C" {
     G_GNUC_INTERNAL

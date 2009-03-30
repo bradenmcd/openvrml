@@ -623,7 +623,7 @@ namespace openvrml {
                 ;
             match_t match = rule.parse(scan);
             return match.length();
-        };
+        }
     };
 
     const boost::spirit::functor_parser<image_parser> image_p;

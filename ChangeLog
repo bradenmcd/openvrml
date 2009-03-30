@@ -1,5 +1,14 @@
 2009-03-30 Braden McDaniel  <braden@endoframe.com>
 
+	Removed some stray semicolons.
+
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	* src/openvrml-xembed/browser.cpp
+	* src/openvrml-xembed/browserfactory.cpp
+
+2009-03-30 Braden McDaniel  <braden@endoframe.com>
+
 	Expose the types openvrml::null_node_metatype and
 	openvrml::null_node_type.
 
