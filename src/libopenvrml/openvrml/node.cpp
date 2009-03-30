@@ -927,6 +927,51 @@ void openvrml::node_metatype::do_shutdown(double) OPENVRML_NOTHROW
 
 
 /**
+ * @class openvrml::null_node_metatype openvrml/node.h
+ *
+ * @brief A placeholder @c node_metatype.
+ *
+ * The @c null_node_metatype is provided for convenience for the uncommon (but
+ * not inconceivable) situation where one needs something that acts like a
+ * @c node, yet isn't a full-fleged node with proper @c node_metatype and
+ * @c node_type implementations.
+ *
+ * @sa openvrml::null_node_type
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param browser a @c browser.
+ */
+openvrml::null_node_metatype::null_node_metatype(openvrml::browser & browser)
+    OPENVRML_NOTHROW:
+    node_metatype("urn:X-openvrml:node:null", browser)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::null_node_metatype::~null_node_metatype() OPENVRML_NOTHROW
+{}
+
+/**
+ * @brief Do not call.
+ *
+ * @warning Correct code will not call this function.
+ */
+const boost::shared_ptr<openvrml::node_type>
+openvrml::null_node_metatype::
+do_create_type(const std::string &, const node_interface_set &) const
+    OPENVRML_NOTHROW
+{
+    assert(false);
+    static const boost::shared_ptr<node_type> type;
+    return type;
+}
+
+
+/**
  * @typedef openvrml::initial_value_map
  *
  * @brief A map of the initial values with which a @c node is instantiated.
@@ -1123,6 +1168,63 @@ bool openvrml::operator!=(const node_type & lhs, const node_type & rhs)
     OPENVRML_NOTHROW
 {
     return !(lhs == rhs);
+}
+
+
+/**
+ * @class openvrml::null_node_type openvrml/node.h
+ *
+ * @brief A placeholder @c node_type.
+ *
+ * The @c null_node_type is provided for convenience for the uncommon (but not
+ * inconceivable) situation where one needs something that acts like a
+ * @c node, yet isn't a full-fleged node with proper @c node_metatype and
+ * @c node_type implementations.
+ *
+ * @sa openvrml::null_node_metatype
+ */
+
+/**
+ * @brief Construct.
+ */
+openvrml::null_node_type::null_node_type(null_node_metatype & metatype)
+    OPENVRML_NOTHROW:
+    node_type(metatype, std::string())
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::null_node_type::~null_node_type() OPENVRML_NOTHROW
+{}
+
+/**
+ * @brief Do not call.
+ *
+ * @warning Correct code will not call this function.
+ */
+const openvrml::node_interface_set &
+openvrml::null_node_type::do_interfaces() const OPENVRML_NOTHROW
+{
+    assert(false);
+    static const node_interface_set interfaces;
+    return interfaces;
+}
+
+/**
+ * @brief Do not call.
+ *
+ * @warning Correct code will not call this function.
+ */
+const boost::intrusive_ptr<openvrml::node>
+openvrml::null_node_type::
+do_create_node(const boost::shared_ptr<openvrml::scope> &,
+               const initial_value_map &) const
+    OPENVRML_NOTHROW
+{
+    assert(false);
+    static const boost::intrusive_ptr<node> node;
+    return node;
 }
 
 

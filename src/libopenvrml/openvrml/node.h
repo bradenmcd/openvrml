@@ -274,6 +274,20 @@ namespace openvrml {
     };
 
 
+    class OPENVRML_API null_node_metatype : public node_metatype {
+    public:
+        explicit null_node_metatype(openvrml::browser & browser)
+            OPENVRML_NOTHROW;
+        virtual ~null_node_metatype() OPENVRML_NOTHROW;
+
+    private:
+        virtual const boost::shared_ptr<node_type>
+        do_create_type(const std::string & id,
+                       const node_interface_set & interfaces) const
+            OPENVRML_NOTHROW;
+    };
+
+
     typedef std::map<std::string, boost::shared_ptr<field_value> >
         initial_value_map;
 
@@ -314,6 +328,22 @@ namespace openvrml {
         OPENVRML_NOTHROW;
     OPENVRML_API bool operator!=(const node_type & lhs, const node_type & rhs)
         OPENVRML_NOTHROW;
+
+
+    class OPENVRML_API null_node_type : public node_type {
+    public:
+        explicit null_node_type(null_node_metatype & nodeClass)
+            OPENVRML_NOTHROW;
+        virtual ~null_node_type() OPENVRML_NOTHROW;
+
+    private:
+        virtual const node_interface_set & do_interfaces() const
+            OPENVRML_NOTHROW;
+        virtual const boost::intrusive_ptr<node>
+        do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
+                       const initial_value_map & initial_values) const
+            OPENVRML_NOTHROW;
+    };
 
 
     class OPENVRML_API field_value_type_mismatch : public std::logic_error {

@@ -1,3 +1,18 @@
+2009-03-30 Braden McDaniel  <braden@endoframe.com>
+
+	Expose the types openvrml::null_node_metatype and
+	openvrml::null_node_type.
+
+	* src/libopenvrml/openvrml/browser.cpp: Removed
+	openvrml::null_node_metatype and openvrml::null_node_type.
+	* src/libopenvrml/openvrml/browser.h: No longer need to declare
+	openvrml::null_node_metatype and openvrml::null_node_type.
+	* src/libopenvrml/openvrml/node.cpp: Moved definitions of member
+	functions of openvrml::null_node_metatype and
+	openvrml::null_node_type here.
+	* src/libopenvrml/openvrml/node.h: Moved definitions of
+	openvrml::null_node_metatype and openvrml::null_node_type here.
+
 2009-03-29 Braden McDaniel  <braden@endoframe.com>
 
 	Use the nonvirtual interface pattern consistently with the

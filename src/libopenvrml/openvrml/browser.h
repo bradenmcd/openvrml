@@ -176,8 +176,6 @@ namespace openvrml {
 
     class viewer;
     class scene;
-    class null_node_metatype;
-    class null_node_type;
 
     namespace local {
         struct vrml97_parse_actions;

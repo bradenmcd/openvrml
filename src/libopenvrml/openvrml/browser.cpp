@@ -55,38 +55,6 @@ using namespace boost::multi_index::detail;  // for scope_guard
  * @brief Classes that manage the scene.
  */
 
-namespace openvrml {
-
-    class OPENVRML_LOCAL null_node_metatype : public node_metatype {
-    public:
-        explicit null_node_metatype(openvrml::browser & browser)
-            OPENVRML_NOTHROW;
-        virtual ~null_node_metatype() OPENVRML_NOTHROW;
-
-    private:
-        virtual const boost::shared_ptr<node_type>
-        do_create_type(const std::string & id,
-                       const node_interface_set & interfaces) const
-            OPENVRML_NOTHROW;
-    };
-
-
-    class OPENVRML_LOCAL null_node_type : public node_type {
-    public:
-        explicit null_node_type(null_node_metatype & nodeClass)
-            OPENVRML_NOTHROW;
-        virtual ~null_node_type() OPENVRML_NOTHROW;
-
-    private:
-        virtual const node_interface_set & do_interfaces() const
-            OPENVRML_NOTHROW;
-        virtual const boost::intrusive_ptr<node>
-        do_create_node(const boost::shared_ptr<openvrml::scope> & scope,
-                       const initial_value_map & initial_values) const
-            OPENVRML_NOTHROW;
-    };
-} // namespace openvrml
-
 namespace {
 
     class OPENVRML_LOCAL default_navigation_info :
@@ -2566,51 +2534,4 @@ void openvrml::browser::err(const std::string & str) const
 {
     boost::mutex::scoped_lock(this->err_mutex_);
     *this->err_ << str << std::endl;
-}
-
-
-openvrml::null_node_metatype::null_node_metatype(openvrml::browser & browser)
-    OPENVRML_NOTHROW:
-    node_metatype("urn:X-openvrml:node:null", browser)
-{}
-
-openvrml::null_node_metatype::~null_node_metatype() OPENVRML_NOTHROW
-{}
-
-const boost::shared_ptr<openvrml::node_type>
-openvrml::null_node_metatype::
-do_create_type(const std::string &, const node_interface_set &) const
-    OPENVRML_NOTHROW
-{
-    assert(false);
-    static const boost::shared_ptr<node_type> nodeType;
-    return nodeType;
-}
-
-
-openvrml::null_node_type::null_node_type(null_node_metatype & nodeClass)
-    OPENVRML_NOTHROW:
-    node_type(nodeClass, std::string())
-{}
-
-openvrml::null_node_type::~null_node_type() OPENVRML_NOTHROW
-{}
-
-const openvrml::node_interface_set &
-openvrml::null_node_type::do_interfaces() const OPENVRML_NOTHROW
-{
-    assert(false);
-    static const node_interface_set interfaces;
-    return interfaces;
-}
-
-const boost::intrusive_ptr<openvrml::node>
-openvrml::null_node_type::
-do_create_node(const boost::shared_ptr<openvrml::scope> &,
-               const initial_value_map &) const
-    OPENVRML_NOTHROW
-{
-    assert(false);
-    static const boost::intrusive_ptr<node> node;
-    return node;
 }
