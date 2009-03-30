@@ -42,10 +42,12 @@ namespace {
                         const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~coordinate_node() OPENVRML_NOTHROW;
 
+    private:
         //
         // coordinate_node implementation
         //
-        virtual const std::vector<openvrml::vec3f> & point() const OPENVRML_NOTHROW;
+        virtual const std::vector<openvrml::vec3f> & do_point() const
+            OPENVRML_NOTHROW;
     };
 
     /**
@@ -92,8 +94,8 @@ namespace {
      *
      * @return the array of points for this node.
      */
-    const std::vector<openvrml::vec3f> &
-    coordinate_node::point() const OPENVRML_NOTHROW
+    const std::vector<openvrml::vec3f> & coordinate_node::do_point() const
+        OPENVRML_NOTHROW
     {
         return this->point_.mfvec3f::value();
     }

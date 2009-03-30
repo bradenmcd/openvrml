@@ -3195,6 +3195,17 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
 }
 
 /**
+ * @brief Get the material node associated with this appearance node.
+ *
+ * @return the @c material_node associated with this @c appearance_node.
+ */
+const boost::intrusive_ptr<openvrml::node> &
+openvrml::appearance_node::material() const OPENVRML_NOTHROW
+{
+    return this->do_material();
+}
+
+/**
  * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::material() const
  *
  * @brief Get the material node associated with this appearance node.
@@ -3203,12 +3214,35 @@ openvrml::appearance_node * openvrml::appearance_node::to_appearance()
  */
 
 /**
+ * @brief Get the texture node associated with this appearance node.
+ *
+ * @return the @c texture_node associated with this @c appearance_node.
+ */
+const boost::intrusive_ptr<openvrml::node> &
+openvrml::appearance_node::texture() const OPENVRML_NOTHROW
+{
+    return this->do_texture();
+}
+
+/**
  * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::texture() const
  *
  * @brief Get the texture node associated with this appearance node.
  *
  * @return the @c texture_node associated with this @c appearance_node.
  */
+
+/**
+ * @brief Get the texture transform node associated with this appearance node.
+ *
+ * @return the @c texture_transform_node associated with this
+ *         @c appearance_node.
+ */
+const boost::intrusive_ptr<openvrml::node> &
+openvrml::appearance_node::texture_transform() const OPENVRML_NOTHROW
+{
+    return this->do_texture_transform();
+}
 
 /**
  * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::texture_transform() const
@@ -3514,7 +3548,20 @@ openvrml::color_node * openvrml::color_node::to_color() OPENVRML_NOTHROW
 }
 
 /**
- * @fn const std::vector<openvrml::color> & openvrml::color_node::color() const
+ * @brief Get the color array encapsulated by this node.
+ *
+ * This function delegates to @c #do_color.
+ *
+ * @return the color array for this node.
+ */
+const std::vector<openvrml::color> & openvrml::color_node::color() const
+    OPENVRML_NOTHROW
+{
+    return this->do_color();
+}
+
+/**
+ * @fn const std::vector<openvrml::color> & openvrml::color_node::do_color() const
  *
  * @brief Get the color array encapsulated by this node.
  *
@@ -3559,7 +3606,20 @@ openvrml::color_rgba_node::to_color_rgba() OPENVRML_NOTHROW
 }
 
 /**
- * @fn const std::vector<openvrml::color_rgba> & openvrml::color_rgba_node::color_rgba() const
+ * @brief Get the @c color_rgba array encapsulated by this @c node.
+ *
+ * This function delegates to @c #do_color.
+ *
+ * @return the @c color_rgba array for this @c node.
+ */
+const std::vector<openvrml::color_rgba> &
+openvrml::color_rgba_node::color_rgba() const OPENVRML_NOTHROW
+{
+    return this->do_color_rgba();
+}
+
+/**
+ * @fn const std::vector<openvrml::color_rgba> & openvrml::color_rgba_node::do_color_rgba() const
  *
  * @brief Get the @c color_rgba array encapsulated by this @c node.
  *
@@ -3604,7 +3664,20 @@ openvrml::coordinate_node * openvrml::coordinate_node::to_coordinate()
 }
 
 /**
- * @fn const std::vector<openvrml::vec3f> & openvrml::coordinate_node::point() const
+ * @brief Get the points encapsulated by this node.
+ *
+ * This function delegates to @c #do_point.
+ *
+ * @return the array of points for this node.
+ */
+const std::vector<openvrml::vec3f> & openvrml::coordinate_node::point() const
+    OPENVRML_NOTHROW
+{
+    return this->do_point();
+}
+
+/**
+ * @fn const std::vector<openvrml::vec3f> & openvrml::coordinate_node::do_point() const
  *
  * @brief Get the points encapsulated by this node.
  *
@@ -3649,7 +3722,20 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
 }
 
 /**
- * @fn const std::vector<std::string> & openvrml::font_style_node::family() const
+ * @brief Get the list of font families.
+ *
+ * This function delegates to @c #do_family.
+ *
+ * @return the font families that may be used for this FontStyle.
+ */
+const std::vector<std::string> & openvrml::font_style_node::family() const
+    OPENVRML_NOTHROW
+{
+    return this->do_family();
+}
+
+/**
+ * @fn const std::vector<std::string> & openvrml::font_style_node::do_family() const
  *
  * @brief Get the list of font families.
  *
@@ -3657,7 +3743,21 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn bool openvrml::font_style_node::horizontal() const
+ * @brief Get the flag indicating whether the text should be horizontal or
+ *      vertical.
+ *
+ * This function delegates to @c #do_horizontal.
+ *
+ * @return @c true if the text should be horizontal, or @c false if the text
+ *      should be vertical.
+ */
+bool openvrml::font_style_node::horizontal() const OPENVRML_NOTHROW
+{
+    return this->do_horizontal();
+}
+
+/**
+ * @fn bool openvrml::font_style_node::do_horizontal() const
  *
  * @brief Get the flag indicating whether the text should be horizontal or
  *      vertical.
@@ -3667,7 +3767,20 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn const std::vector<std::string> & openvrml::font_style_node::justify() const
+ * @brief Get the descriptor for the text justification.
+ *
+ * This function delegates to @c #do_justify.
+ *
+ * @return the characteristics of the text justification.
+ */
+const std::vector<std::string> & openvrml::font_style_node::justify() const
+    OPENVRML_NOTHROW
+{
+    return this->do_justify();
+}
+
+/**
+ * @fn const std::vector<std::string> & openvrml::font_style_node::do_justify() const
  *
  * @brief Get the descriptor for the text justification.
  *
@@ -3675,7 +3788,19 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn const std::string & openvrml::font_style_node::language() const
+ * @brief Get the language code.
+ *
+ * This function delegates to @c #do_language.
+ *
+ * @return the language code.
+ */
+const std::string & openvrml::font_style_node::language() const OPENVRML_NOTHROW
+{
+    return this->do_language();
+}
+
+/**
+ * @fn const std::string & openvrml::font_style_node::do_language() const
  *
  * @brief Get the language code.
  *
@@ -3683,7 +3808,21 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn bool openvrml::font_style_node::left_to_right() const
+ * @brief Get the flag indicating whether the text should be rendered
+ *      left-to-right.
+ *
+ * This function delegates to @c #do_left_to_right.
+ *
+ * @return @c true if the text should be rendered left-to-right, or @c false if
+ *      the text should be rendered right-to-left.
+ */
+bool openvrml::font_style_node::left_to_right() const OPENVRML_NOTHROW
+{
+    return this->do_left_to_right();
+}
+
+/**
+ * @fn bool openvrml::font_style_node::do_left_to_right() const
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      left-to-right.
@@ -3693,7 +3832,19 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn float openvrml::font_style_node::size() const
+ * @brief Get the size of the text.
+ *
+ * This function delegates to @c #do_size.
+ *
+ * @return the size of the text.
+ */
+float openvrml::font_style_node::size() const OPENVRML_NOTHROW
+{
+    return this->do_size();
+}
+
+/**
+ * @fn float openvrml::font_style_node::do_size() const
  *
  * @brief Get the size of the text.
  *
@@ -3701,7 +3852,19 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn float openvrml::font_style_node::spacing() const
+ * @brief Get the spacing for the text.
+ *
+ * This function delegates to @c #do_spacing.
+ *
+ * @return the spacing for the text.
+ */
+float openvrml::font_style_node::spacing() const OPENVRML_NOTHROW
+{
+    return this->do_spacing();
+}
+
+/**
+ * @fn float openvrml::font_style_node::do_spacing() const
  *
  * @brief Get the spacing for the text.
  *
@@ -3709,7 +3872,19 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn const std::string & openvrml::font_style_node::style() const
+ * @brief Get the style for the text.
+ *
+ * This function delegates to @c #do_style.
+ *
+ * @return the text style.
+ */
+const std::string & openvrml::font_style_node::style() const OPENVRML_NOTHROW
+{
+    return this->do_style();
+}
+
+/**
+ * @fn const std::string & openvrml::font_style_node::do_style() const
  *
  * @brief Get the style for the text.
  *
@@ -3717,7 +3892,21 @@ openvrml::font_style_node * openvrml::font_style_node::to_font_style()
  */
 
 /**
- * @fn bool openvrml::font_style_node::top_to_bottom() const
+ * @brief Get the flag indicating whether the text should be rendered
+ *      top-to-bottom.
+ *
+ * This function delegates to @c #do_top_to_bottom.
+ *
+ * @return @c true if the text should be rendered top-to-bottom, or @c false if
+ *      the text should be rendered bottom-to-top.
+ */
+bool openvrml::font_style_node::top_to_bottom() const OPENVRML_NOTHROW
+{
+    return this->do_top_to_bottom();
+}
+
+/**
+ * @fn bool openvrml::font_style_node::do_top_to_bottom() const
  *
  * @brief Get the flag indicating whether the text should be rendered
  *      top-to-bottom.
@@ -3864,6 +4053,18 @@ bool openvrml::geometry_node::do_emissive() const OPENVRML_NOTHROW
  *      eliminate this method.
  */
 const openvrml::color_node * openvrml::geometry_node::color() const
+    OPENVRML_NOTHROW
+{
+    return this->do_color();
+}
+
+/**
+ * @brief Get the color node (if any) associated with this geometry.
+ *
+ * @return the @c color_node associated associated with this geometry, or 0 if
+ *      there is no such node.
+ */
+const openvrml::color_node * openvrml::geometry_node::do_color() const
     OPENVRML_NOTHROW
 {
     return 0;
@@ -4125,7 +4326,19 @@ openvrml::material_node * openvrml::material_node::to_material()
 }
 
 /**
- * @fn float openvrml::material_node::ambient_intensity() const
+ * @brief Get the ambient intensity.
+ *
+ * This function delegates to @c #do_ambient_intensity.
+ *
+ * @return the ambient intensity.
+ */
+float openvrml::material_node::ambient_intensity() const OPENVRML_NOTHROW
+{
+    return this->do_ambient_intensity();
+}
+
+/**
+ * @fn float openvrml::material_node::do_ambient_intensity() const
  *
  * @brief Get the ambient intensity.
  *
@@ -4133,7 +4346,20 @@ openvrml::material_node * openvrml::material_node::to_material()
  */
 
 /**
- * @fn const openvrml::color & openvrml::material_node::diffuse_color() const
+ * @brief Get the diffuse color.
+ *
+ * This function delegatest to @c #do_diffuse_color.
+ *
+ * @return the diffuse color.
+ */
+const openvrml::color & openvrml::material_node::diffuse_color() const
+    OPENVRML_NOTHROW
+{
+    return this->do_diffuse_color();
+}
+
+/**
+ * @fn const openvrml::color & openvrml::material_node::do_diffuse_color() const
  *
  * @brief Get the diffuse color.
  *
@@ -4141,7 +4367,20 @@ openvrml::material_node * openvrml::material_node::to_material()
  */
 
 /**
- * @fn const openvrml::color & openvrml::material_node::emissive_color() const
+ * @brief Get the emissive color.
+ *
+ * This function delegates to @c #do_emissive_color.
+ *
+ * @return the emissive color.
+ */
+const openvrml::color & openvrml::material_node::emissive_color() const
+    OPENVRML_NOTHROW
+{
+    return this->do_emissive_color();
+}
+
+/**
+ * @fn const openvrml::color & openvrml::material_node::do_emissive_color() const
  *
  * @brief Get the emissive color.
  *
@@ -4149,7 +4388,19 @@ openvrml::material_node * openvrml::material_node::to_material()
  */
 
 /**
- * @fn float openvrml::material_node::shininess() const
+ * @brief Get the shininess.
+ *
+ * This function delegates to @c #do_shininess.
+ *
+ * @return the shininess.
+ */
+float openvrml::material_node::shininess() const OPENVRML_NOTHROW
+{
+    return this->do_shininess();
+}
+
+/**
+ * @fn float openvrml::material_node::do_shininess() const
  *
  * @brief Get the shininess.
  *
@@ -4157,7 +4408,20 @@ openvrml::material_node * openvrml::material_node::to_material()
  */
 
 /**
- * @fn const openvrml::color & openvrml::material_node::specular_color() const
+ * @brief Get the specular color.
+ *
+ * This function delegates to @c #do_specular_color.
+ *
+ * @return the specular color.
+ */
+const openvrml::color & openvrml::material_node::specular_color() const
+    OPENVRML_NOTHROW
+{
+    return this->do_specular_color();
+}
+
+/**
+ * @fn const openvrml::color & openvrml::material_node::do_specular_color() const
  *
  * @brief Get the specular color.
  *
@@ -4165,7 +4429,19 @@ openvrml::material_node * openvrml::material_node::to_material()
  */
 
 /**
- * @fn float openvrml::material_node::transparency() const
+ * @brief Get the transparency.
+ *
+ * This function delegates to @c #do_transparency.
+ *
+ * @return the transparency.
+ */
+float openvrml::material_node::transparency() const OPENVRML_NOTHROW
+{
+    return this->do_transparency();
+}
+
+/**
+ * @fn float openvrml::material_node::do_transparency() const
  *
  * @brief Get the transparency.
  *
@@ -4212,7 +4488,20 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
 }
 
 /**
- * @fn const std::vector<float> & openvrml::navigation_info_node::avatar_size() const
+ * @brief Get the avatar dimensions.
+ *
+ * This function delegates to @c #do_avatar_size.
+ *
+ * @return the avatar dimensions.
+ */
+const std::vector<float> & openvrml::navigation_info_node::avatar_size() const
+    OPENVRML_NOTHROW
+{
+    return this->do_avatar_size();
+}
+
+/**
+ * @fn const std::vector<float> & openvrml::navigation_info_node::do_avatar_size() const
  *
  * @brief Get the avatar dimensions.
  *
@@ -4220,7 +4509,19 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
  */
 
 /**
- * @fn bool openvrml::navigation_info_node::headlight() const
+ * @brief Get the state of the headlight.
+ *
+ * This function delegates to @c #do_headlight.
+ *
+ * @return @c true if the headlight is on; @c false otherwise.
+ */
+bool openvrml::navigation_info_node::headlight() const OPENVRML_NOTHROW
+{
+    return this->do_headlight();
+}
+
+/**
+ * @fn bool openvrml::navigation_info_node::do_headlight() const
  *
  * @brief Get the state of the headlight.
  *
@@ -4228,7 +4529,19 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
  */
 
 /**
- * @fn float openvrml::navigation_info_node::speed() const
+ * @brief Get the current speed of the user view.
+ *
+ * This function delegates to @c #do_speed.
+ *
+ * @return the current speed of the user view.
+ */
+float openvrml::navigation_info_node::speed() const OPENVRML_NOTHROW
+{
+    return this->do_speed();
+}
+
+/**
+ * @fn float openvrml::navigation_info_node::do_speed() const
  *
  * @brief Get the current speed of the user view.
  *
@@ -4236,7 +4549,20 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
  */
 
 /**
- * @fn const std::vector<std::string> & openvrml::navigation_info_node::type() const
+ * @brief Get the navigation type.
+ *
+ * This function delegates to @c do_type.
+ *
+ * @return the navigation type.
+ */
+const std::vector<std::string> & openvrml::navigation_info_node::type() const
+    OPENVRML_NOTHROW
+{
+    return this->do_type();
+}
+
+/**
+ * @fn const std::vector<std::string> & openvrml::navigation_info_node::do_type() const
  *
  * @brief Get the navigation type.
  *
@@ -4244,7 +4570,19 @@ openvrml::navigation_info_node::to_navigation_info() OPENVRML_NOTHROW
  */
 
 /**
- * @fn float openvrml::navigation_info_node::visibility_limit() const
+ * @brief Get the visibility limit.
+ *
+ * This function delegates to @c #do_visibility_limit.
+ *
+ * @return the visibility limit.
+ */
+float openvrml::navigation_info_node::visibility_limit() const OPENVRML_NOTHROW
+{
+    return this->do_visibility_limit();
+}
+
+/**
+ * @fn float openvrml::navigation_info_node::do_visibility_limit() const
  *
  * @brief Get the visibility limit.
  *
@@ -4288,7 +4626,20 @@ openvrml::normal_node * openvrml::normal_node::to_normal() OPENVRML_NOTHROW
 }
 
 /**
- * @fn const std::vector<openvrml::vec3f> & openvrml::normal_node::vector() const
+ * @brief Get the array of normal vectors.
+ *
+ * This function delegates to @c #do_vector.
+ *
+ * @return the array of normal vectors.
+ */
+const std::vector<openvrml::vec3f> & openvrml::normal_node::vector() const
+    OPENVRML_NOTHROW
+{
+    return this->do_vector();
+}
+
+/**
+ * @fn const std::vector<openvrml::vec3f> & openvrml::normal_node::do_vector() const
  *
  * @brief Get the array of normal vectors.
  *
@@ -4571,8 +4922,22 @@ openvrml::texture_node * openvrml::texture_node::to_texture() OPENVRML_NOTHROW
     return this;
 }
 
+
 /**
- * @fn const openvrml::image & openvrml::texture_node::image() const
+ * @brief The image.
+ *
+ * This function delegates to @c #do_image.
+ *
+ * @return the image.
+ */
+const openvrml::image & openvrml::texture_node::image() const
+    OPENVRML_NOTHROW
+{
+    return this->do_image();
+}
+
+/**
+ * @fn const openvrml::image & openvrml::texture_node::do_image() const
  *
  * @brief The image.
  *
@@ -4580,7 +4945,21 @@ openvrml::texture_node * openvrml::texture_node::to_texture() OPENVRML_NOTHROW
  */
 
 /**
- * @fn bool openvrml::texture_node::repeat_s() const
+ * @brief Get the flag indicating whether the texture should repeat in the
+ *      <var>S</var> direction.
+ *
+ * This function delegates to @c #do_repeat_s.
+ *
+ * @return @c true if the image should repeat in the <var>S</var> direction,
+ *      @c false otherwise.
+ */
+bool openvrml::texture_node::repeat_s() const OPENVRML_NOTHROW
+{
+    return this->do_repeat_s();
+}
+
+/**
+ * @fn bool openvrml::texture_node::do_repeat_s() const
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>S</var> direction.
@@ -4590,7 +4969,21 @@ openvrml::texture_node * openvrml::texture_node::to_texture() OPENVRML_NOTHROW
  */
 
 /**
- * @fn bool openvrml::texture_node::repeat_t() const
+ * @brief Get the flag indicating whether the texture should repeat in the
+ *      <var>T</var> direction.
+ *
+ * This function delegates to @c #do_repeat_t.
+ *
+ * @return @c true if the image should repeat in the <var>T</var> direction,
+ *      @c false otherwise.
+ */
+bool openvrml::texture_node::repeat_t() const OPENVRML_NOTHROW
+{
+    return this->do_repeat_t();
+}
+
+/**
+ * @fn bool openvrml::texture_node::do_repeat_t() const
  *
  * @brief Get the flag indicating whether the texture should repeat in the
  *      <var>T</var> direction.
@@ -4638,7 +5031,20 @@ openvrml::texture_coordinate_node::to_texture_coordinate()
 }
 
 /**
- * @fn const std::vector<openvrml::vec2f> & openvrml::texture_coordinate_node::point() const
+ * @brief The texture coordinates.
+ *
+ * This function delegates to @c #do_point.
+ *
+ * @return the texture coordinates.
+ */
+const std::vector<openvrml::vec2f> &
+openvrml::texture_coordinate_node::point() const OPENVRML_NOTHROW
+{
+    return this->do_point();
+}
+
+/**
+ * @fn const std::vector<openvrml::vec2f> & openvrml::texture_coordinate_node::do_point() const
  *
  * @brief The texture coordinates.
  *
@@ -4802,7 +5208,20 @@ openvrml::transform_node * openvrml::transform_node::to_transform()
 }
 
 /**
- * @fn const openvrml::mat4f & openvrml::transform_node::transform() const
+ * @brief Get the transformation associated with the @c node as a matrix.
+ *
+ * This function delegates to @c #do_transform.
+ *
+ * @return the transformation associated with the @c node.
+ */
+const openvrml::mat4f & openvrml::transform_node::transform() const
+    OPENVRML_NOTHROW
+{
+    return this->do_transform();
+}
+
+/**
+ * @fn const openvrml::mat4f & openvrml::transform_node::do_transform() const
  *
  * @brief Get the transformation associated with the @c node as a matrix.
  *
@@ -4849,7 +5268,22 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
 }
 
 /**
- * @fn const openvrml::mat4f & openvrml::viewpoint_node::transformation() const
+ * @brief Get the transformation of the @c viewpoint_node in the global
+ *        coordinate system.
+ *
+ * This function delegates to @c #do_transformation.
+ *
+ * @return the transformation of the @c viewpoint_node in the global coordinate
+ *         system.
+ */
+const openvrml::mat4f & openvrml::viewpoint_node::transformation() const
+    OPENVRML_NOTHROW
+{
+    return this->do_transformation();
+}
+
+/**
+ * @fn const openvrml::mat4f & openvrml::viewpoint_node::do_transformation() const
  *
  * @brief Get the transformation of the @c viewpoint_node in the global
  *        coordinate system.
@@ -4859,7 +5293,22 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
  */
 
 /**
- * @fn const openvrml::mat4f & openvrml::viewpoint_node::user_view_transform() const
+ * @brief Get the transformation of the user view relative to the
+ *      @c viewpoint_node.
+ *
+ * This function delegates to @c #do_user_view_transform().
+ *
+ * @return the transformation of the user view relative to the
+ *         @c viewpoint_node.
+ */
+const openvrml::mat4f & openvrml::viewpoint_node::user_view_transform() const
+    OPENVRML_NOTHROW
+{
+    return this->do_user_view_transform();
+}
+
+/**
+ * @fn const openvrml::mat4f & openvrml::viewpoint_node::do_user_view_transform() const
  *
  * @brief Get the transformation of the user view relative to the
  *      @c viewpoint_node.
@@ -4869,7 +5318,21 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
  */
 
 /**
- * @fn void openvrml::viewpoint_node::user_view_transform(const mat4f & transform)
+ * @brief Set the transformation of the user view relative to the
+ *        @c viewpoint_node.
+ *
+ * This function delegates to @c #do_user_view_transform(const mat4f &).
+ *
+ * @param[in] transform the new transformation.
+ */
+void openvrml::viewpoint_node::user_view_transform(const mat4f & transform)
+    OPENVRML_NOTHROW
+{
+    this->do_user_view_transform(transform);
+}
+
+/**
+ * @fn void openvrml::viewpoint_node::do_user_view_transform(const mat4f & transform)
  *
  * @brief Set the transformation of the user view relative to the
  *        @c viewpoint_node.
@@ -4878,7 +5341,20 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
  */
 
 /**
- * @fn const std::string & openvrml::viewpoint_node::description() const
+ * @brief Get the description.
+ *
+ * This function delegates to @c #do_description.
+ *
+ * @return the description.
+ */
+const std::string & openvrml::viewpoint_node::description() const
+    OPENVRML_NOTHROW
+{
+    return this->do_description();
+}
+
+/**
+ * @fn const std::string & openvrml::viewpoint_node::do_description() const
  *
  * @brief Get the description.
  *
@@ -4886,7 +5362,19 @@ openvrml::viewpoint_node * openvrml::viewpoint_node::to_viewpoint()
  */
 
 /**
- * @fn float openvrml::viewpoint_node::field_of_view() const
+ * @brief Get the field of view.
+ *
+ * This function delegates to @c #do_field_of_view.
+ *
+ * @return the field of view in radians.
+ */
+float openvrml::viewpoint_node::field_of_view() const OPENVRML_NOTHROW
+{
+    return this->do_field_of_view();
+}
+
+/**
+ * @fn float openvrml::viewpoint_node::do_field_of_view() const
  *
  * @brief Get the field of view.
  *

@@ -135,13 +135,6 @@ namespace openvrml_node_vrml97 {
 
         void bind(bool val, double timestamp) OPENVRML_THROW1(std::bad_alloc);
 
-        virtual const openvrml::mat4f & transformation() const OPENVRML_NOTHROW;
-        virtual const openvrml::mat4f & user_view_transform() const OPENVRML_NOTHROW;
-        virtual void user_view_transform(const openvrml::mat4f & transform)
-            OPENVRML_NOTHROW;
-        virtual const std::string & description() const OPENVRML_NOTHROW;
-        virtual float field_of_view() const OPENVRML_NOTHROW;
-
         const openvrml::sfrotation & orientation() const;
         const openvrml::sfvec3f & position() const;
 
@@ -149,6 +142,15 @@ namespace openvrml_node_vrml97 {
         virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
         virtual void do_relocate() OPENVRML_THROW1(std::bad_alloc);
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
+
+        virtual const openvrml::mat4f & do_transformation() const
+            OPENVRML_NOTHROW;
+        virtual const openvrml::mat4f & do_user_view_transform() const
+            OPENVRML_NOTHROW;
+        virtual void do_user_view_transform(const openvrml::mat4f & transform)
+            OPENVRML_NOTHROW;
+        virtual const std::string & do_description() const OPENVRML_NOTHROW;
+        virtual float do_field_of_view() const OPENVRML_NOTHROW;
 
         void update_final_transformation() const OPENVRML_NOTHROW;
     };

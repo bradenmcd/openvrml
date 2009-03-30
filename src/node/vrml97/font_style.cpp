@@ -52,18 +52,21 @@ namespace {
                         const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~font_style_node() OPENVRML_NOTHROW;
 
+    private:
         //
         // font_style_node implementation
         //
-        virtual const std::vector<std::string> & family() const OPENVRML_NOTHROW;
-        virtual bool horizontal() const OPENVRML_NOTHROW;
-        virtual const std::vector<std::string> & justify() const OPENVRML_NOTHROW;
-        virtual const std::string & language() const OPENVRML_NOTHROW;
-        virtual bool left_to_right() const OPENVRML_NOTHROW;
-        virtual float size() const OPENVRML_NOTHROW;
-        virtual float spacing() const OPENVRML_NOTHROW;
-        virtual const std::string & style() const OPENVRML_NOTHROW;
-        virtual bool top_to_bottom() const OPENVRML_NOTHROW;
+        virtual const std::vector<std::string> & do_family() const
+            OPENVRML_NOTHROW;
+        virtual bool do_horizontal() const OPENVRML_NOTHROW;
+        virtual const std::vector<std::string> & do_justify() const
+            OPENVRML_NOTHROW;
+        virtual const std::string & do_language() const OPENVRML_NOTHROW;
+        virtual bool do_left_to_right() const OPENVRML_NOTHROW;
+        virtual float do_size() const OPENVRML_NOTHROW;
+        virtual float do_spacing() const OPENVRML_NOTHROW;
+        virtual const std::string & do_style() const OPENVRML_NOTHROW;
+        virtual bool do_top_to_bottom() const OPENVRML_NOTHROW;
     };
 
     /**
@@ -172,7 +175,7 @@ namespace {
      *         this <code>font_style_node</code>.
      */
     const std::vector<std::string> &
-    font_style_node::family() const OPENVRML_NOTHROW
+    font_style_node::do_family() const OPENVRML_NOTHROW
     {
         return this->family_.value();
     }
@@ -184,7 +187,7 @@ namespace {
      * @return @c true if the text should be horizontal, or @c false if the
      *         text should be vertical.
      */
-    bool font_style_node::horizontal() const OPENVRML_NOTHROW
+    bool font_style_node::do_horizontal() const OPENVRML_NOTHROW
     {
         return this->horizontal_.value();
     }
@@ -196,7 +199,7 @@ namespace {
      *         justification.
      */
     const std::vector<std::string> &
-    font_style_node::justify() const OPENVRML_NOTHROW
+    font_style_node::do_justify() const OPENVRML_NOTHROW
     {
         return this->justify_.value();
     }
@@ -206,7 +209,7 @@ namespace {
      *
      * @return the language code.
      */
-    const std::string & font_style_node::language() const
+    const std::string & font_style_node::do_language() const
         OPENVRML_NOTHROW
     {
         return this->language_.value();
@@ -219,7 +222,7 @@ namespace {
      * @return @c true if the text should be rendered left-to-right, or
      *         @c false if the text should be rendered right-to-left.
      */
-    bool font_style_node::left_to_right() const OPENVRML_NOTHROW
+    bool font_style_node::do_left_to_right() const OPENVRML_NOTHROW
     {
         return this->leftToRight.value();
     }
@@ -229,7 +232,7 @@ namespace {
      *
      * @return the size of the text.
      */
-    float font_style_node::size() const OPENVRML_NOTHROW
+    float font_style_node::do_size() const OPENVRML_NOTHROW
     {
         return this->size_.value();
     }
@@ -239,7 +242,7 @@ namespace {
      *
      * @return the spacing for the text.
      */
-    float font_style_node::spacing() const OPENVRML_NOTHROW
+    float font_style_node::do_spacing() const OPENVRML_NOTHROW
     {
         return this->spacing_.value();
     }
@@ -249,7 +252,7 @@ namespace {
      *
      * @return an string descriptor of the text style.
      */
-    const std::string & font_style_node::style() const
+    const std::string & font_style_node::do_style() const
         OPENVRML_NOTHROW
     {
         return this->style_.value();
@@ -262,7 +265,7 @@ namespace {
      * @return @c true if the text should be rendered top-to-bottom, or
      *         @c false if the text should be rendered bottom-to-top.
      */
-    bool font_style_node::top_to_bottom() const OPENVRML_NOTHROW
+    bool font_style_node::do_top_to_bottom() const OPENVRML_NOTHROW
     {
         return this->topToBottom.value();
     }

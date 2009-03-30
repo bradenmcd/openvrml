@@ -96,13 +96,6 @@ namespace {
             OPENVRML_NOTHROW;
         virtual ~default_navigation_info() OPENVRML_NOTHROW;
 
-        virtual const std::vector<float> & avatar_size() const
-            OPENVRML_NOTHROW;
-        virtual bool headlight() const OPENVRML_NOTHROW;
-        virtual float speed() const OPENVRML_NOTHROW;
-        virtual const std::vector<std::string> & type() const OPENVRML_NOTHROW;
-        virtual float visibility_limit() const OPENVRML_NOTHROW;
-
     private:
         virtual void do_field(const std::string & id,
                               const openvrml::field_value & value)
@@ -124,6 +117,14 @@ namespace {
         virtual openvrml::event_emitter &
         do_event_emitter(const std::string & id)
             OPENVRML_THROW1(openvrml::unsupported_interface);
+
+        virtual const std::vector<float> & do_avatar_size() const
+            OPENVRML_NOTHROW;
+        virtual bool do_headlight() const OPENVRML_NOTHROW;
+        virtual float do_speed() const OPENVRML_NOTHROW;
+        virtual const std::vector<std::string> & do_type() const
+            OPENVRML_NOTHROW;
+        virtual float do_visibility_limit() const OPENVRML_NOTHROW;
     };
 
     const boost::shared_ptr<openvrml::scope> null_scope_ptr;
@@ -153,7 +154,7 @@ namespace {
      *
      * @return [0.25, 1.6, 0.75]
      */
-    const std::vector<float> & default_navigation_info::avatar_size() const
+    const std::vector<float> & default_navigation_info::do_avatar_size() const
         OPENVRML_NOTHROW
     {
         static const float array[] = { 0.25f, 1.6f, 0.75f };
@@ -166,7 +167,7 @@ namespace {
      *
      * @return @c true
      */
-    bool default_navigation_info::headlight() const OPENVRML_NOTHROW
+    bool default_navigation_info::do_headlight() const OPENVRML_NOTHROW
     {
         return true;
     }
@@ -176,7 +177,7 @@ namespace {
      *
      * @return 1.0
      */
-    float default_navigation_info::speed() const OPENVRML_NOTHROW
+    float default_navigation_info::do_speed() const OPENVRML_NOTHROW
     {
         return 1.0;
     }
@@ -186,7 +187,7 @@ namespace {
      *
      * @return ["WALK", "ANY"]
      */
-    const std::vector<std::string> & default_navigation_info::type() const
+    const std::vector<std::string> & default_navigation_info::do_type() const
         OPENVRML_NOTHROW
     {
         static const char * array[] = { "WALK", "ANY" };
@@ -199,7 +200,7 @@ namespace {
      *
      * @return 0.0
      */
-    float default_navigation_info::visibility_limit() const OPENVRML_NOTHROW
+    float default_navigation_info::do_visibility_limit() const OPENVRML_NOTHROW
     {
         return 0.0;
     }
@@ -265,15 +266,6 @@ namespace {
             OPENVRML_NOTHROW;
         virtual ~default_viewpoint() OPENVRML_NOTHROW;
 
-        virtual const openvrml::mat4f & transformation() const
-            OPENVRML_NOTHROW;
-        virtual const openvrml::mat4f & user_view_transform() const
-            OPENVRML_NOTHROW;
-        virtual void user_view_transform(const openvrml::mat4f & transform)
-            OPENVRML_NOTHROW;
-        virtual const std::string & description() const OPENVRML_NOTHROW;
-        virtual float field_of_view() const OPENVRML_NOTHROW;
-
     private:
         virtual void do_field(const std::string & id,
                               const openvrml::field_value & value)
@@ -295,6 +287,15 @@ namespace {
         virtual openvrml::event_emitter &
         do_event_emitter(const std::string & id)
             OPENVRML_THROW1(openvrml::unsupported_interface);
+
+        virtual const openvrml::mat4f & do_transformation() const
+            OPENVRML_NOTHROW;
+        virtual const openvrml::mat4f & do_user_view_transform() const
+            OPENVRML_NOTHROW;
+        virtual void do_user_view_transform(const openvrml::mat4f & transform)
+            OPENVRML_NOTHROW;
+        virtual const std::string & do_description() const OPENVRML_NOTHROW;
+        virtual float do_field_of_view() const OPENVRML_NOTHROW;
     };
 
     /**
@@ -317,7 +318,7 @@ namespace {
     default_viewpoint::~default_viewpoint() OPENVRML_NOTHROW
     {}
 
-    const openvrml::mat4f & default_viewpoint::transformation() const
+    const openvrml::mat4f & default_viewpoint::do_transformation() const
         OPENVRML_NOTHROW
     {
         using openvrml::mat4f;
@@ -338,26 +339,27 @@ namespace {
         return t;
     }
 
-    const openvrml::mat4f & default_viewpoint::user_view_transform() const
+    const openvrml::mat4f & default_viewpoint::do_user_view_transform() const
         OPENVRML_NOTHROW
     {
         return this->userViewTransform;
     }
 
     void
-    default_viewpoint::user_view_transform(const openvrml::mat4f & transform)
+    default_viewpoint::do_user_view_transform(const openvrml::mat4f & transform)
         OPENVRML_NOTHROW
     {
         this->userViewTransform = transform;
     }
 
-    const std::string & default_viewpoint::description() const OPENVRML_NOTHROW
+    const std::string & default_viewpoint::do_description() const
+        OPENVRML_NOTHROW
     {
         static const std::string desc;
         return desc;
     }
 
-    float default_viewpoint::field_of_view() const OPENVRML_NOTHROW
+    float default_viewpoint::do_field_of_view() const OPENVRML_NOTHROW
     {
         static const float fieldOfView = 0.785398f;
         return fieldOfView;

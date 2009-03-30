@@ -31,7 +31,9 @@ namespace openvrml_node_vrml97 {
     /**
      * @brief Class object for NavigationInfo nodes.
      */
-    class OPENVRML_LOCAL navigation_info_metatype : public openvrml::node_metatype {
+    class OPENVRML_LOCAL navigation_info_metatype :
+        public openvrml::node_metatype {
+
         navigation_info_node * first;
         openvrml::node_impl_util::bound_node_stack<navigation_info_node>
             bound_nodes;
@@ -100,16 +102,17 @@ namespace openvrml_node_vrml97 {
 
         void bind(bool val, double timestamp) OPENVRML_THROW1(std::bad_alloc);
 
-        virtual const std::vector<float> & avatar_size() const
-            OPENVRML_NOTHROW;
-        virtual bool headlight() const OPENVRML_NOTHROW;
-        virtual float speed() const OPENVRML_NOTHROW;
-        virtual const std::vector<std::string> & type() const OPENVRML_NOTHROW;
-        virtual float visibility_limit() const OPENVRML_NOTHROW;
-
     private:
         virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
+
+        virtual const std::vector<float> & do_avatar_size() const
+            OPENVRML_NOTHROW;
+        virtual bool do_headlight() const OPENVRML_NOTHROW;
+        virtual float do_speed() const OPENVRML_NOTHROW;
+        virtual const std::vector<std::string> & do_type() const
+            OPENVRML_NOTHROW;
+        virtual float do_visibility_limit() const OPENVRML_NOTHROW;
     };
 }
 

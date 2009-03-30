@@ -75,13 +75,14 @@ namespace {
                            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~movie_texture_node() OPENVRML_NOTHROW;
 
-        virtual const openvrml::image & image() const OPENVRML_NOTHROW;
-
     private:
         virtual void do_initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
+
+        virtual const openvrml::image & do_image() const OPENVRML_NOTHROW;
         virtual openvrml::viewer::texture_object_t
             do_render_texture(openvrml::viewer & v);
+
         virtual void do_update(double time);
     };
 
@@ -414,7 +415,7 @@ namespace {
      * @return the image.
      */
     const openvrml::image &
-    movie_texture_node::image() const OPENVRML_NOTHROW
+    movie_texture_node::do_image() const OPENVRML_NOTHROW
     {
         return this->image_;
     }

@@ -1,5 +1,31 @@
 2009-03-29 Braden McDaniel  <braden@endoframe.com>
 
+	Use the nonvirtual interface pattern consistently with the
+	abstract node types.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/node/vrml97/material.cpp
+	* src/node/vrml97/movie_texture.cpp
+	* src/node/vrml97/navigation_info.cpp
+	* src/node/vrml97/color.cpp
+	* src/node/vrml97/coordinate.cpp
+	* src/node/vrml97/viewpoint.h
+	* src/node/vrml97/image_texture.cpp
+	* src/node/vrml97/navigation_info.h
+	* src/node/vrml97/appearance.cpp
+	* src/node/vrml97/pixel_texture.cpp
+	* src/node/vrml97/texture_coordinate.cpp
+	* src/node/vrml97/transform.cpp
+	* src/node/vrml97/font_style.cpp
+	* src/node/vrml97/normal.cpp
+	* src/node/vrml97/viewpoint.cpp
+	* src/node/vrml97/abstract_texture.h
+	* src/node/x3d-rendering/color_rgba.cpp
+
+2009-03-29 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-control/openvrml_control/browser.cpp
 	(openvrml_control::browser::uninitialized_plugin_streambuf_map::map_entry_matches_streambuf):
 	Applied OPENVRML_LOCAL.

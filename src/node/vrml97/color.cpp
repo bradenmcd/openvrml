@@ -42,10 +42,11 @@ namespace {
                    const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~color_node() OPENVRML_NOTHROW;
 
+    private:
         //
         // color_node implementation
         //
-        virtual const std::vector<openvrml::color> & color() const
+        virtual const std::vector<openvrml::color> & do_color() const
             OPENVRML_NOTHROW;
     };
 
@@ -93,8 +94,8 @@ namespace {
      *
      * @return the color array associated with the node.
      */
-    const std::vector<openvrml::color> &
-    color_node::color() const OPENVRML_NOTHROW
+    const std::vector<openvrml::color> & color_node::do_color() const
+        OPENVRML_NOTHROW
     {
         return this->color_.mfcolor::value();
     }

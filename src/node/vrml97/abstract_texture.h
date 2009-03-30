@@ -40,16 +40,17 @@ namespace openvrml_node_vrml97 {
     public:
         virtual ~abstract_texture_node() OPENVRML_NOTHROW = 0;
 
-        //
-        // texture_node implementation.
-        //
-        virtual bool repeat_s() const OPENVRML_NOTHROW;
-        virtual bool repeat_t() const OPENVRML_NOTHROW;
-
     protected:
         abstract_texture_node(
             const openvrml::node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
+
+    private:
+        //
+        // texture_node implementation.
+        //
+        virtual bool do_repeat_s() const OPENVRML_NOTHROW;
+        virtual bool do_repeat_t() const OPENVRML_NOTHROW;
     };
 
     /**
@@ -96,7 +97,7 @@ namespace openvrml_node_vrml97 {
      *         direction, @c false otherwise.
      */
     template <typename Derived>
-    bool abstract_texture_node<Derived>::repeat_s() const OPENVRML_NOTHROW
+    bool abstract_texture_node<Derived>::do_repeat_s() const OPENVRML_NOTHROW
     {
         return this->repeat_s_.value();
     }
@@ -108,7 +109,7 @@ namespace openvrml_node_vrml97 {
      *         direction, @c false otherwise.
      */
     template <typename Derived>
-    bool abstract_texture_node<Derived>::repeat_t() const OPENVRML_NOTHROW
+    bool abstract_texture_node<Derived>::do_repeat_t() const OPENVRML_NOTHROW
     {
         return this->repeat_t_.value();
     }

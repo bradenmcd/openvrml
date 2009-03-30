@@ -43,10 +43,11 @@ namespace {
                     const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~normal_node() OPENVRML_NOTHROW;
 
+    private:
         //
         // normal_node implementation.
         //
-        virtual const std::vector<openvrml::vec3f> & vector() const
+        virtual const std::vector<openvrml::vec3f> & do_vector() const
             OPENVRML_NOTHROW;
     };
 
@@ -94,8 +95,8 @@ namespace {
      *
      * @return the array of normal vectors.
      */
-    const std::vector<openvrml::vec3f> &
-    normal_node::vector() const OPENVRML_NOTHROW
+    const std::vector<openvrml::vec3f> & normal_node::do_vector() const
+        OPENVRML_NOTHROW
     {
         return this->vector_.mfvec3f::value();
     }

@@ -44,10 +44,12 @@ namespace {
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~texture_coordinate_node() OPENVRML_NOTHROW;
 
+    private:
         //
         // texture_coordinate_node implementation.
         //
-        virtual const std::vector<openvrml::vec2f> & point() const OPENVRML_NOTHROW;
+        virtual const std::vector<openvrml::vec2f> & do_point() const
+            OPENVRML_NOTHROW;
     };
 
 
@@ -118,7 +120,7 @@ namespace {
      * @return the mfvec2f array of points for this node.
      */
     const std::vector<openvrml::vec2f> &
-    texture_coordinate_node::point() const OPENVRML_NOTHROW
+    texture_coordinate_node::do_point() const OPENVRML_NOTHROW
     {
         return this->point_.mfvec2f::value();
     }

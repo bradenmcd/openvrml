@@ -486,7 +486,7 @@ void openvrml_node_vrml97::navigation_info_node::bind(const bool val,
  * @return the avatar size.
  */
 const std::vector<float> &
-openvrml_node_vrml97::navigation_info_node::avatar_size() const
+openvrml_node_vrml97::navigation_info_node::do_avatar_size() const
     OPENVRML_NOTHROW
 {
     return this->avatar_size_.mffloat::value();
@@ -497,7 +497,7 @@ openvrml_node_vrml97::navigation_info_node::avatar_size() const
  *
  * @return @c true if the headlight is on; @c false otherwise.
  */
-bool openvrml_node_vrml97::navigation_info_node::headlight() const
+bool openvrml_node_vrml97::navigation_info_node::do_headlight() const
     OPENVRML_NOTHROW
 {
     return this->headlight_.sfbool::value();
@@ -508,7 +508,7 @@ bool openvrml_node_vrml97::navigation_info_node::headlight() const
  *
  * @return the speed.
  */
-float openvrml_node_vrml97::navigation_info_node::speed() const
+float openvrml_node_vrml97::navigation_info_node::do_speed() const
     OPENVRML_NOTHROW
 {
     return this->speed_.sffloat::value();
@@ -520,7 +520,7 @@ float openvrml_node_vrml97::navigation_info_node::speed() const
  * @return the navigation type.
  */
 const std::vector<std::string> &
-openvrml_node_vrml97::navigation_info_node::type() const OPENVRML_NOTHROW
+openvrml_node_vrml97::navigation_info_node::do_type() const OPENVRML_NOTHROW
 {
     return this->type_.mfstring::value();
 }
@@ -530,7 +530,7 @@ openvrml_node_vrml97::navigation_info_node::type() const OPENVRML_NOTHROW
  *
  * @return the visibility limit.
  */
-float openvrml_node_vrml97::navigation_info_node::visibility_limit() const
+float openvrml_node_vrml97::navigation_info_node::do_visibility_limit() const
     OPENVRML_NOTHROW
 {
     return this->visibility_limit_.sffloat::value();

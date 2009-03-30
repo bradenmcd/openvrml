@@ -884,12 +884,10 @@ namespace openvrml {
 
         void render_appearance(viewer & v, rendering_context context);
 
-        virtual const boost::intrusive_ptr<node> & material() const
-            OPENVRML_NOTHROW = 0;
-        virtual const boost::intrusive_ptr<node> & texture() const
-            OPENVRML_NOTHROW = 0;
-        virtual const boost::intrusive_ptr<node> & texture_transform() const
-            OPENVRML_NOTHROW = 0;
+        const boost::intrusive_ptr<node> & material() const OPENVRML_NOTHROW;
+        const boost::intrusive_ptr<node> & texture() const OPENVRML_NOTHROW;
+        const boost::intrusive_ptr<node> & texture_transform() const
+            OPENVRML_NOTHROW;
 
     protected:
         appearance_node(const node_type & type,
@@ -899,6 +897,12 @@ namespace openvrml {
     private:
         virtual appearance_node * to_appearance() OPENVRML_NOTHROW;
 
+        virtual const boost::intrusive_ptr<node> & do_material() const
+            OPENVRML_NOTHROW = 0;
+        virtual const boost::intrusive_ptr<node> & do_texture() const
+            OPENVRML_NOTHROW = 0;
+        virtual const boost::intrusive_ptr<node> & do_texture_transform() const
+            OPENVRML_NOTHROW = 0;
         virtual void do_render_appearance(viewer & v,
                                           rendering_context context);
     };
@@ -953,8 +957,7 @@ namespace openvrml {
     public:
         virtual ~color_node() OPENVRML_NOTHROW = 0;
 
-        virtual const std::vector<openvrml::color> & color() const
-            OPENVRML_NOTHROW = 0;
+        const std::vector<openvrml::color> & color() const OPENVRML_NOTHROW;
 
     protected:
         color_node(const node_type & type,
@@ -963,6 +966,9 @@ namespace openvrml {
 
     private:
         virtual color_node * to_color() OPENVRML_NOTHROW;
+
+        virtual const std::vector<openvrml::color> & do_color() const
+            OPENVRML_NOTHROW = 0;
     };
 
 
@@ -970,8 +976,8 @@ namespace openvrml {
     public:
         virtual ~color_rgba_node() OPENVRML_NOTHROW = 0;
 
-        virtual const std::vector<openvrml::color_rgba> & color_rgba() const
-            OPENVRML_NOTHROW = 0;
+        const std::vector<openvrml::color_rgba> & color_rgba() const
+            OPENVRML_NOTHROW;
 
     protected:
         color_rgba_node(const node_type & type,
@@ -980,6 +986,9 @@ namespace openvrml {
 
     private:
         virtual color_rgba_node * to_color_rgba() OPENVRML_NOTHROW;
+
+        virtual const std::vector<openvrml::color_rgba> & do_color_rgba() const
+            OPENVRML_NOTHROW = 0;
     };
 
 
@@ -987,7 +996,7 @@ namespace openvrml {
     public:
         virtual ~coordinate_node() OPENVRML_NOTHROW = 0;
 
-        virtual const std::vector<vec3f> & point() const OPENVRML_NOTHROW = 0;
+        const std::vector<vec3f> & point() const OPENVRML_NOTHROW;
 
     protected:
         coordinate_node(const node_type & type,
@@ -996,6 +1005,9 @@ namespace openvrml {
 
     private:
         virtual coordinate_node * to_coordinate() OPENVRML_NOTHROW;
+
+        virtual const std::vector<vec3f> & do_point() const
+            OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1003,17 +1015,15 @@ namespace openvrml {
     public:
         virtual ~font_style_node() OPENVRML_NOTHROW = 0;
 
-        virtual const std::vector<std::string> & family() const
-            OPENVRML_NOTHROW = 0;
-        virtual bool horizontal() const OPENVRML_NOTHROW = 0;
-        virtual const std::vector<std::string> & justify() const
-            OPENVRML_NOTHROW = 0;
-        virtual const std::string & language() const OPENVRML_NOTHROW = 0;
-        virtual bool left_to_right() const OPENVRML_NOTHROW = 0;
-        virtual float size() const OPENVRML_NOTHROW = 0;
-        virtual float spacing() const OPENVRML_NOTHROW = 0;
-        virtual const std::string & style() const OPENVRML_NOTHROW = 0;
-        virtual bool top_to_bottom() const OPENVRML_NOTHROW = 0;
+        const std::vector<std::string> & family() const OPENVRML_NOTHROW;
+        bool horizontal() const OPENVRML_NOTHROW;
+        const std::vector<std::string> & justify() const OPENVRML_NOTHROW;
+        const std::string & language() const OPENVRML_NOTHROW;
+        bool left_to_right() const OPENVRML_NOTHROW;
+        float size() const OPENVRML_NOTHROW;
+        float spacing() const OPENVRML_NOTHROW;
+        const std::string & style() const OPENVRML_NOTHROW;
+        bool top_to_bottom() const OPENVRML_NOTHROW;
 
     protected:
         font_style_node(const node_type & type,
@@ -1022,6 +1032,18 @@ namespace openvrml {
 
     private:
         virtual font_style_node * to_font_style() OPENVRML_NOTHROW;
+
+        virtual const std::vector<std::string> & do_family() const
+            OPENVRML_NOTHROW = 0;
+        virtual bool do_horizontal() const OPENVRML_NOTHROW = 0;
+        virtual const std::vector<std::string> & do_justify() const
+            OPENVRML_NOTHROW = 0;
+        virtual const std::string & do_language() const OPENVRML_NOTHROW = 0;
+        virtual bool do_left_to_right() const OPENVRML_NOTHROW = 0;
+        virtual float do_size() const OPENVRML_NOTHROW = 0;
+        virtual float do_spacing() const OPENVRML_NOTHROW = 0;
+        virtual const std::string & do_style() const OPENVRML_NOTHROW = 0;
+        virtual bool do_top_to_bottom() const OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1035,7 +1057,7 @@ namespace openvrml {
         viewer::object_t render_geometry(viewer & v,
                                          rendering_context context);
         bool emissive() const OPENVRML_NOTHROW;
-        virtual const color_node * color() const OPENVRML_NOTHROW;
+        const color_node * color() const OPENVRML_NOTHROW;
 
     protected:
         geometry_node(const node_type & type,
@@ -1046,6 +1068,7 @@ namespace openvrml {
         virtual viewer::object_t
         do_render_geometry(viewer & v, rendering_context context);
         virtual bool do_emissive() const OPENVRML_NOTHROW;
+        virtual const color_node * do_color() const OPENVRML_NOTHROW;
 
         virtual geometry_node * to_geometry() OPENVRML_NOTHROW;
     };
@@ -1069,8 +1092,10 @@ namespace openvrml {
 
     private:
         virtual grouping_node * to_grouping() OPENVRML_NOTHROW;
-        virtual const std::vector<boost::intrusive_ptr<node> >
-            do_children() const OPENVRML_THROW1(std::bad_alloc) = 0;
+
+        virtual
+        const std::vector<boost::intrusive_ptr<node> > do_children() const
+            OPENVRML_THROW1(std::bad_alloc) = 0;
     };
 
 
@@ -1102,12 +1127,12 @@ namespace openvrml {
     public:
         virtual ~material_node() OPENVRML_NOTHROW = 0;
 
-        virtual float ambient_intensity() const OPENVRML_NOTHROW = 0;
-        virtual const color & diffuse_color() const OPENVRML_NOTHROW = 0;
-        virtual const color & emissive_color() const OPENVRML_NOTHROW = 0;
-        virtual float shininess() const OPENVRML_NOTHROW = 0;
-        virtual const color & specular_color() const OPENVRML_NOTHROW = 0;
-        virtual float transparency() const OPENVRML_NOTHROW = 0;
+        float ambient_intensity() const OPENVRML_NOTHROW;
+        const color & diffuse_color() const OPENVRML_NOTHROW;
+        const color & emissive_color() const OPENVRML_NOTHROW;
+        float shininess() const OPENVRML_NOTHROW;
+        const color & specular_color() const OPENVRML_NOTHROW;
+        float transparency() const OPENVRML_NOTHROW;
 
     protected:
         material_node(const node_type & type,
@@ -1116,6 +1141,13 @@ namespace openvrml {
 
     private:
         virtual material_node * to_material() OPENVRML_NOTHROW;
+
+        virtual float do_ambient_intensity() const OPENVRML_NOTHROW = 0;
+        virtual const color & do_diffuse_color() const OPENVRML_NOTHROW = 0;
+        virtual const color & do_emissive_color() const OPENVRML_NOTHROW = 0;
+        virtual float do_shininess() const OPENVRML_NOTHROW = 0;
+        virtual const color & do_specular_color() const OPENVRML_NOTHROW = 0;
+        virtual float do_transparency() const OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1123,13 +1155,11 @@ namespace openvrml {
     public:
         virtual ~navigation_info_node() OPENVRML_NOTHROW = 0;
 
-        virtual const std::vector<float> & avatar_size() const
-            OPENVRML_NOTHROW = 0;
-        virtual bool headlight() const OPENVRML_NOTHROW = 0;
-        virtual float speed() const OPENVRML_NOTHROW = 0;
-        virtual const std::vector<std::string> & type() const
-            OPENVRML_NOTHROW = 0;
-        virtual float visibility_limit() const OPENVRML_NOTHROW = 0;
+        const std::vector<float> & avatar_size() const OPENVRML_NOTHROW;
+        bool headlight() const OPENVRML_NOTHROW;
+        float speed() const OPENVRML_NOTHROW;
+        const std::vector<std::string> & type() const OPENVRML_NOTHROW;
+        float visibility_limit() const OPENVRML_NOTHROW;
 
     protected:
         navigation_info_node(const node_type & type,
@@ -1138,6 +1168,14 @@ namespace openvrml {
 
     private:
         virtual navigation_info_node * to_navigation_info() OPENVRML_NOTHROW;
+
+        virtual const std::vector<float> & do_avatar_size() const
+            OPENVRML_NOTHROW = 0;
+        virtual bool do_headlight() const OPENVRML_NOTHROW = 0;
+        virtual float do_speed() const OPENVRML_NOTHROW = 0;
+        virtual const std::vector<std::string> & do_type() const
+            OPENVRML_NOTHROW = 0;
+        virtual float do_visibility_limit() const OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1145,7 +1183,7 @@ namespace openvrml {
     public:
         virtual ~normal_node() OPENVRML_NOTHROW = 0;
 
-        virtual const std::vector<vec3f> & vector() const OPENVRML_NOTHROW = 0;
+        const std::vector<vec3f> & vector() const OPENVRML_NOTHROW;
 
     protected:
         normal_node(const node_type & type,
@@ -1154,6 +1192,9 @@ namespace openvrml {
 
     private:
         virtual normal_node * to_normal() OPENVRML_NOTHROW;
+
+        virtual const std::vector<vec3f> & do_vector() const
+            OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1218,9 +1259,9 @@ namespace openvrml {
 
         viewer::texture_object_t render_texture(viewer & v);
 
-        virtual const openvrml::image & image() const OPENVRML_NOTHROW = 0;
-        virtual bool repeat_s() const OPENVRML_NOTHROW = 0;
-        virtual bool repeat_t() const OPENVRML_NOTHROW = 0;
+        const openvrml::image & image() const OPENVRML_NOTHROW;
+        bool repeat_s() const OPENVRML_NOTHROW;
+        bool repeat_t() const OPENVRML_NOTHROW;
 
     protected:
         texture_node(const node_type & type,
@@ -1231,6 +1272,10 @@ namespace openvrml {
         virtual texture_node * to_texture() OPENVRML_NOTHROW;
 
         virtual viewer::texture_object_t do_render_texture(viewer & v);
+
+        virtual const openvrml::image & do_image() const OPENVRML_NOTHROW = 0;
+        virtual bool do_repeat_s() const OPENVRML_NOTHROW = 0;
+        virtual bool do_repeat_t() const OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1238,7 +1283,7 @@ namespace openvrml {
     public:
         virtual ~texture_coordinate_node() OPENVRML_NOTHROW = 0;
 
-        virtual const std::vector<vec2f> & point() const OPENVRML_NOTHROW = 0;
+        const std::vector<vec2f> & point() const OPENVRML_NOTHROW;
 
     protected:
         texture_coordinate_node(
@@ -1249,6 +1294,9 @@ namespace openvrml {
     private:
         virtual texture_coordinate_node * to_texture_coordinate()
             OPENVRML_NOTHROW;
+
+        virtual const std::vector<vec2f> & do_point() const
+            OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1294,7 +1342,7 @@ namespace openvrml {
     public:
         virtual ~transform_node() OPENVRML_NOTHROW = 0;
 
-        virtual const mat4f & transform() const OPENVRML_NOTHROW = 0;
+        const mat4f & transform() const OPENVRML_NOTHROW;
 
     protected:
         transform_node(const node_type & type,
@@ -1303,6 +1351,8 @@ namespace openvrml {
 
     private:
         virtual transform_node * to_transform() OPENVRML_NOTHROW;
+
+        virtual const mat4f & do_transform() const OPENVRML_NOTHROW = 0;
     };
 
 
@@ -1310,12 +1360,11 @@ namespace openvrml {
     public:
         virtual ~viewpoint_node() OPENVRML_NOTHROW = 0;
 
-        virtual const mat4f & transformation() const OPENVRML_NOTHROW = 0;
-        virtual const mat4f & user_view_transform() const OPENVRML_NOTHROW = 0;
-        virtual void user_view_transform(const mat4f & transform)
-            OPENVRML_NOTHROW = 0;
-        virtual const std::string & description() const OPENVRML_NOTHROW = 0;
-        virtual float field_of_view() const OPENVRML_NOTHROW = 0;
+        const mat4f & transformation() const OPENVRML_NOTHROW;
+        const mat4f & user_view_transform() const OPENVRML_NOTHROW;
+        void user_view_transform(const mat4f & transform) OPENVRML_NOTHROW;
+        const std::string & description() const OPENVRML_NOTHROW;
+        float field_of_view() const OPENVRML_NOTHROW;
 
     protected:
         viewpoint_node(const node_type & type,
@@ -1324,6 +1373,14 @@ namespace openvrml {
 
     private:
         virtual viewpoint_node * to_viewpoint() OPENVRML_NOTHROW;
+
+        virtual const mat4f & do_transformation() const OPENVRML_NOTHROW = 0;
+        virtual const mat4f & do_user_view_transform() const
+            OPENVRML_NOTHROW = 0;
+        virtual void do_user_view_transform(const mat4f & transform)
+            OPENVRML_NOTHROW = 0;
+        virtual const std::string & do_description() const OPENVRML_NOTHROW = 0;
+        virtual float do_field_of_view() const OPENVRML_NOTHROW = 0;
     };
 
 

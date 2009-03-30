@@ -709,7 +709,7 @@ void openvrml_node_vrml97::viewpoint_node::bind(const bool val,
  *         coordinate system.
  */
 const openvrml::mat4f &
-openvrml_node_vrml97::viewpoint_node::transformation() const OPENVRML_NOTHROW
+openvrml_node_vrml97::viewpoint_node::do_transformation() const OPENVRML_NOTHROW
 {
     this->update_final_transformation();
     return this->final_transformation;
@@ -723,7 +723,7 @@ openvrml_node_vrml97::viewpoint_node::transformation() const OPENVRML_NOTHROW
  *         @c viewpoint_node.
  */
 const openvrml::mat4f &
-openvrml_node_vrml97::viewpoint_node::user_view_transform() const
+openvrml_node_vrml97::viewpoint_node::do_user_view_transform() const
     OPENVRML_NOTHROW
 {
     return this->user_view_transform_;
@@ -737,7 +737,7 @@ openvrml_node_vrml97::viewpoint_node::user_view_transform() const
  */
 void
 openvrml_node_vrml97::viewpoint_node::
-user_view_transform(const openvrml::mat4f & transform) OPENVRML_NOTHROW
+do_user_view_transform(const openvrml::mat4f & transform) OPENVRML_NOTHROW
 {
     this->user_view_transform_ = transform;
 }
@@ -747,7 +747,7 @@ user_view_transform(const openvrml::mat4f & transform) OPENVRML_NOTHROW
  *
  * @return the description.
  */
-const std::string & openvrml_node_vrml97::viewpoint_node::description() const
+const std::string & openvrml_node_vrml97::viewpoint_node::do_description() const
     OPENVRML_NOTHROW
 {
     return this->description_.sfstring::value();
@@ -758,7 +758,7 @@ const std::string & openvrml_node_vrml97::viewpoint_node::description() const
  *
  * @return the field of view in radians.
  */
-float openvrml_node_vrml97::viewpoint_node::field_of_view() const
+float openvrml_node_vrml97::viewpoint_node::do_field_of_view() const
     OPENVRML_NOTHROW
 {
     return this->field_of_view_.sffloat::value();

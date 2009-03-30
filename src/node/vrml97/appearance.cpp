@@ -49,14 +49,16 @@ namespace {
 
         virtual bool modified() const;
 
+    private:
         //
         // appearance_node implementation
         //
-        virtual const boost::intrusive_ptr<node> & material() const OPENVRML_NOTHROW;
-        virtual const boost::intrusive_ptr<node> & texture() const OPENVRML_NOTHROW;
-        virtual const boost::intrusive_ptr<node> & texture_transform() const OPENVRML_NOTHROW;
-
-    private:
+        virtual const boost::intrusive_ptr<node> & do_material() const
+            OPENVRML_NOTHROW;
+        virtual const boost::intrusive_ptr<node> & do_texture() const
+            OPENVRML_NOTHROW;
+        virtual const boost::intrusive_ptr<node> & do_texture_transform() const
+            OPENVRML_NOTHROW;
         virtual void do_render_appearance(openvrml::viewer & v,
                                           openvrml::rendering_context context);
     };
@@ -140,19 +142,19 @@ namespace {
      *          this Appearance.
      */
     const boost::intrusive_ptr<openvrml::node> &
-    appearance_node::material() const OPENVRML_NOTHROW
+    appearance_node::do_material() const OPENVRML_NOTHROW
     {
         return this->material_.sfnode::value();
     }
 
-/**
- * @brief Get the texture node.
- *
- * @return an sfnode object containing the texture node associated with
- *         this Appearance.
- */
+    /**
+     * @brief Get the texture node.
+     *
+     * @return an sfnode object containing the texture node associated with
+     *         this Appearance.
+     */
     const boost::intrusive_ptr<openvrml::node> &
-    appearance_node::texture() const OPENVRML_NOTHROW
+    appearance_node::do_texture() const OPENVRML_NOTHROW
     {
         return this->texture_.sfnode::value();
     }
@@ -164,7 +166,7 @@ namespace {
      *         associated with this Appearance.
      */
     const boost::intrusive_ptr<openvrml::node> &
-    appearance_node::texture_transform() const OPENVRML_NOTHROW
+    appearance_node::do_texture_transform() const OPENVRML_NOTHROW
     {
         return this->texture_transform_.sfnode::value();
     }

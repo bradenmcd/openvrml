@@ -42,9 +42,8 @@ namespace {
                            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~pixel_texture_node() OPENVRML_NOTHROW;
 
-        virtual const openvrml::image & image() const OPENVRML_NOTHROW;
-
     private:
+        virtual const openvrml::image & do_image() const OPENVRML_NOTHROW;
         virtual openvrml::viewer::texture_object_t
             do_render_texture(openvrml::viewer & v);
     };
@@ -96,7 +95,7 @@ namespace {
      * @return the image.
      */
     const openvrml::image &
-    pixel_texture_node::image() const OPENVRML_NOTHROW
+    pixel_texture_node::do_image() const OPENVRML_NOTHROW
     {
         return this->image_.sfimage::value();
     }

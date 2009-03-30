@@ -49,17 +49,19 @@ namespace {
                       const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~material_node() OPENVRML_NOTHROW;
 
+    private:
         //
         // material_node implementation
         //
-        virtual float ambient_intensity() const OPENVRML_NOTHROW;
-        virtual const openvrml::color & diffuse_color() const OPENVRML_NOTHROW;
-        virtual const openvrml::color & emissive_color() const
+        virtual float do_ambient_intensity() const OPENVRML_NOTHROW;
+        virtual const openvrml::color & do_diffuse_color() const
             OPENVRML_NOTHROW;
-        virtual float shininess() const OPENVRML_NOTHROW;
-        virtual const openvrml::color & specular_color() const
+        virtual const openvrml::color & do_emissive_color() const
             OPENVRML_NOTHROW;
-        virtual float transparency() const OPENVRML_NOTHROW;
+        virtual float do_shininess() const OPENVRML_NOTHROW;
+        virtual const openvrml::color & do_specular_color() const
+            OPENVRML_NOTHROW;
+        virtual float do_transparency() const OPENVRML_NOTHROW;
     };
 
     /**
@@ -141,7 +143,7 @@ namespace {
      *
      * @return the ambient intensity.
      */
-    float material_node::ambient_intensity() const OPENVRML_NOTHROW
+    float material_node::do_ambient_intensity() const OPENVRML_NOTHROW
     {
         return this->ambient_intensity_.sffloat::value();
     }
@@ -152,7 +154,7 @@ namespace {
      * @return the diffuse color.
      */
     const openvrml::color &
-    material_node::diffuse_color() const OPENVRML_NOTHROW
+    material_node::do_diffuse_color() const OPENVRML_NOTHROW
     {
         return this->diffuse_color_.sfcolor::value();
     }
@@ -163,7 +165,7 @@ namespace {
      * @return the emissive color.
      */
     const openvrml::color &
-    material_node::emissive_color() const OPENVRML_NOTHROW
+    material_node::do_emissive_color() const OPENVRML_NOTHROW
     {
         return this->emissive_color_.sfcolor::value();
     }
@@ -173,7 +175,7 @@ namespace {
      *
      * @return the shininess.
      */
-    float material_node::shininess() const OPENVRML_NOTHROW
+    float material_node::do_shininess() const OPENVRML_NOTHROW
     {
         return this->shininess_.sffloat::value();
     }
@@ -184,7 +186,7 @@ namespace {
      * @return the specular color.
      */
     const openvrml::color &
-    material_node::specular_color() const OPENVRML_NOTHROW
+    material_node::do_specular_color() const OPENVRML_NOTHROW
     {
         return this->specular_color_.sfcolor::value();
     }
@@ -194,7 +196,7 @@ namespace {
      *
      * @return the transparency.
      */
-    float material_node::transparency() const OPENVRML_NOTHROW
+    float material_node::do_transparency() const OPENVRML_NOTHROW
     {
         return this->transparency_.sffloat::value();
     }

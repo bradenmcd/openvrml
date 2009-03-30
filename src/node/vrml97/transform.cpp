@@ -39,7 +39,8 @@ namespace {
         class center_exposedfield : public exposedfield<openvrml::sfvec3f> {
         public:
             explicit center_exposedfield(transform_node & node);
-            center_exposedfield(const center_exposedfield & obj) OPENVRML_NOTHROW;
+            center_exposedfield(const center_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~center_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -50,17 +51,20 @@ namespace {
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class rotation_exposedfield : public exposedfield<openvrml::sfrotation> {
+        class rotation_exposedfield :
+            public exposedfield<openvrml::sfrotation> {
         public:
             explicit rotation_exposedfield(transform_node & node);
-            rotation_exposedfield(const rotation_exposedfield & obj) OPENVRML_NOTHROW;
+            rotation_exposedfield(const rotation_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~rotation_exposedfield() OPENVRML_NOTHROW;
 
         private:
             virtual std::auto_ptr<openvrml::field_value> do_clone() const
                 OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const openvrml::sfrotation & rotation,
-                                           double timestamp)
+            virtual
+            void event_side_effect(const openvrml::sfrotation & rotation,
+                                   double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
@@ -95,7 +99,8 @@ namespace {
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class translation_exposedfield : public exposedfield<openvrml::sfvec3f> {
+        class translation_exposedfield :
+            public exposedfield<openvrml::sfvec3f> {
         public:
             explicit translation_exposedfield(transform_node & node);
             translation_exposedfield(const translation_exposedfield & obj)
@@ -105,8 +110,9 @@ namespace {
         private:
             virtual std::auto_ptr<openvrml::field_value> do_clone() const
                 OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const openvrml::sfvec3f & translation,
-                                           double timestamp)
+            virtual
+            void event_side_effect(const openvrml::sfvec3f & translation,
+                                   double timestamp)
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
@@ -125,11 +131,11 @@ namespace {
                        const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~transform_node() OPENVRML_NOTHROW;
 
-        virtual const openvrml::mat4f & transform() const OPENVRML_NOTHROW;
-
     private:
         virtual void do_render_child(openvrml::viewer & viewer,
                                      openvrml::rendering_context context);
+
+        virtual const openvrml::mat4f & do_transform() const OPENVRML_NOTHROW;
 
         void recalc_bsphere();
         void update_transform() const OPENVRML_NOTHROW;
@@ -635,8 +641,8 @@ namespace {
      *
      * @return the transformation associated with the node.
      */
-    const openvrml::mat4f &
-    transform_node::transform() const OPENVRML_NOTHROW
+    const openvrml::mat4f & transform_node::do_transform() const
+        OPENVRML_NOTHROW
     {
         this->update_transform();
         return this->transform_;
@@ -648,9 +654,8 @@ namespace {
      * @param viewer    a Viewer.
      * @param context   the rendering context.
      */
-    void
-    transform_node::
-    do_render_child(openvrml::viewer & viewer, openvrml::rendering_context context)
+    void transform_node::do_render_child(openvrml::viewer & viewer,
+                                         openvrml::rendering_context context)
     {
         using openvrml::bounding_volume;
         if (context.cull_flag != bounding_volume::inside) {
