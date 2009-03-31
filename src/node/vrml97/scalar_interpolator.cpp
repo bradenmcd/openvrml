@@ -62,31 +62,6 @@ namespace {
     };
 
 
-    class OPENVRML_LOCAL shape_node : public openvrml::node_impl_util::abstract_node<shape_node>,
-                                      public openvrml::child_node {
-        friend class shape_metatype;
-
-        exposedfield<openvrml::sfnode> appearance_;
-        exposedfield<openvrml::sfnode> geometry_;
-        openvrml::sfvec3f bbox_center_;
-        openvrml::sfvec3f bbox_size_;
-
-        openvrml::viewer::object_t viewerObject;
-
-    public:
-        shape_node(const openvrml::node_type & type,
-                   const boost::shared_ptr<openvrml::scope> & scope);
-        virtual ~shape_node() OPENVRML_NOTHROW;
-
-        virtual bool modified() const;
-
-    private:
-        virtual const openvrml::bounding_volume & do_bounding_volume() const;
-
-        virtual void do_render_child(openvrml::viewer & viewer,
-                                     openvrml::rendering_context context);
-    };
-
     /**
      * @class scalar_interpolator_node
      *

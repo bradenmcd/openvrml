@@ -1,5 +1,10 @@
 2009-03-30 Braden McDaniel  <braden@endoframe.com>
 
+	* src/node/vrml97/scaler_interpolator.cpp: Removed errant
+	shape_node definition.
+
+2009-03-30 Braden McDaniel  <braden@endoframe.com>
+
 	Removed some stray semicolons.
 
 	* src/libopenvrml/openvrml/node.h
