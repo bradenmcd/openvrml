@@ -1,5 +1,11 @@
 2009-03-31 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/local/dl.cpp
+	(openvrml::local::dl::error()): Fixes for the Windows
+	implementation.
+
+2009-03-31 Braden McDaniel  <braden@endoframe.com>
+
 	Added a dlerror work-alike; use it to emit some diagnostic
 	information if loading a module fails.
 

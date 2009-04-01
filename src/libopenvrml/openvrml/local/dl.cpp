@@ -20,7 +20,11 @@
 
 # include "dl.h"
 # include <boost/filesystem.hpp>
+# include <boost/ref.hpp>
 # include <boost/tokenizer.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
+
+using namespace boost::multi_index::detail;  // for scope_guard
 
 int openvrml::local::dl::init()
 {
@@ -138,7 +142,7 @@ const std::string openvrml::local::dl::error()
                                           source,
                                           err,
                                           LANG_USER_DEFAULT,
-                                          &buf,
+                                          reinterpret_cast<LPSTR>(&buf),
                                           buf_size,
                                           args);
     assert(buf_chars != 0); // If FormatMessage failed, just give up.
