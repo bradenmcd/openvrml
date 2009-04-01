@@ -21,6 +21,7 @@
 # include "node_metatype_registry_impl.h"
 # include <openvrml/browser.h>
 # include <boost/multi_index/detail/scope_guard.hpp>
+# include <iostream>
 # include <sstream>
 
 using namespace boost::multi_index::detail;  // for scope_guard
@@ -37,7 +38,10 @@ int openvrml_open_node_module(const char * const filename, void * const data)
         *static_cast<node_metatype_registry_impl *>(data);
 
     const dl::handle handle = dl::open(filename);
-    if (!handle) { return 0; } // Ignore things we can't open.
+    if (!handle) {
+        std::cerr << dl::error() << std::endl;
+        return 0;
+    }
     scope_guard handle_guard = make_guard(dl::close, handle);
 
     //

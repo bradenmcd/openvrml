@@ -19,7 +19,6 @@
 //
 
 # include "dl.h"
-# include <string>
 # include <boost/filesystem.hpp>
 # include <boost/tokenizer.hpp>
 
@@ -122,6 +121,31 @@ openvrml::local::dl::handle openvrml::local::dl::open(const char * filename)
     return LoadLibrary(filename);
 # else
     return lt_dlopenext(filename);
+# endif
+}
+
+const std::string openvrml::local::dl::error()
+{
+# ifdef _WIN32
+    const DWORD err = GetLastError();
+    char * buf = 0;
+    scope_guard buf_guard = make_guard(LocalFree, boost::ref(buf));
+    static const LPCVOID source = 0;
+    static const DWORD buf_size = 0;
+    static va_list * const args = 0;
+    const DWORD buf_chars = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
+                                          | FORMAT_MESSAGE_FROM_SYSTEM,
+                                          source,
+                                          err,
+                                          LANG_USER_DEFAULT,
+                                          &buf,
+                                          buf_size,
+                                          args);
+    assert(buf_chars != 0); // If FormatMessage failed, just give up.
+    const std::string buf_str(buf ? buf : "");
+    return buf_str;
+# else
+    return lt_dlerror();
 # endif
 }
 

@@ -1,3 +1,16 @@
+2009-03-31 Braden McDaniel  <braden@endoframe.com>
+
+	Added a dlerror work-alike; use it to emit some diagnostic
+	information if loading a module fails.
+
+	* src/libopenvrml/openvrml/local/dl.cpp
+	(openvrml::local::dl::error()): Added function.
+	* src/libopenvrml/openvrml/local/dl.h: Added declaration of
+	openvrml::local::dl::error().
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
+	(openvrml_open_node_module(const char *, void *)): Print the
+	result of openvrml::local::dl::error if module loading fails.
+
 2009-03-30 Braden McDaniel  <braden@endoframe.com>
 
 	* src/node/vrml97/scaler_interpolator.cpp: Removed errant

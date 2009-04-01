@@ -27,6 +27,7 @@
 #   else
 #     include <ltdl.h>
 #   endif
+#   include <string>
 
 namespace openvrml {
 
@@ -50,6 +51,8 @@ namespace openvrml {
 #   endif
 
             OPENVRML_LOCAL handle open(const char * filename);
+
+            OPENVRML_LOCAL const std::string error();
 
             OPENVRML_LOCAL int close(handle);
 
