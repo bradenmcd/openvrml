@@ -37,4 +37,7 @@
 
 #   define OPENVRML_GL_LOCAL
 
+#   define OPENVRML_GL_HAVE_GL_GLU_H 1
+#   define OPENVRML_GL_HAVE_WINDOWS_H 1
+
 # endif // ifndef OPENVRML_GL_CONFIG_H

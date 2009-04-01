@@ -1,3 +1,11 @@
+2009-04-01 Braden McDaniel  <braden@endoframe.com>
+
+	Define OPENVRML_GL_HAVE_GL_GLU_H and OPENVRML_GL_HAVE_WINDOWS_H
+	for the Visual Studio build.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl-config.h
+
 2009-03-31 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/local/dl.cpp
