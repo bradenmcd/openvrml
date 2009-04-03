@@ -106,12 +106,6 @@
  */
 
 /**
- * @typedef openvrml::viewer::object_t
- *
- * @brief An object handle.
- */
-
-/**
  * @brief Construct.
  */
 openvrml::viewer::viewer() OPENVRML_NOTHROW:
@@ -200,24 +194,19 @@ void openvrml::viewer::reset_user_navigation()
  * @param[in] retain    whether the object should be retained for reuse.
  *
  * This function delegates to @c viewer::do_begin_object.
- *
- * @return the display object identifier.
  */
-openvrml::viewer::object_t openvrml::viewer::begin_object(const char * id,
-                                                          bool retain)
+void openvrml::viewer::begin_object(const char * id, bool retain)
 {
     return this->do_begin_object(id, retain);
 }
 
 /**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_begin_object(const char * id, bool retain)
+ * @fn void openvrml::viewer::do_begin_object(const char * id, bool retain)
  *
  * @brief Begin a display list.
  *
  * @param[in] id        object identifier.
  * @param[in] retain    whether the object should be retained for reuse.
- *
- * @return the display object identifier.
  */
 
 /**
@@ -251,10 +240,8 @@ void openvrml::viewer::end_object()
  * @param[in] right         right texture.
  * @param[in] top           top texture.
  * @param[in] bottom        bottom texture.
- *
- * @return display object identifier.
  */
-openvrml::viewer::object_t
+void
 openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
                                     const std::vector<color> & ground_color,
                                     const std::vector<float> & sky_angle,
@@ -272,7 +259,7 @@ openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
 }
 
 /**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, const texture_node & front, const texture_node & back, const texture_node & left, const texture_node & right, const texture_node & top, const texture_node & bottom)
+ * @fn void openvrml::viewer::do_insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, const texture_node & front, const texture_node & back, const texture_node & left, const texture_node & right, const texture_node & top, const texture_node & bottom)
  *
  * @brief Insert a background into a display list.
  *
@@ -286,8 +273,6 @@ openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
  * @param[in] right         right texture.
  * @param[in] top           top texture.
  * @param[in] bottom        bottom texture.
- *
- * @return display object identifier.
  */
 
 /**
@@ -620,14 +605,11 @@ void openvrml::viewer::insert_sphere(const geometry_node & n,
  * @param[in] intensity         intensity.
  * @param[in] color             color.
  * @param[in] direction         direction.
- *
- * @return display object identifier.
  */
-openvrml::viewer::object_t
-openvrml::viewer::insert_dir_light(const float ambient_intensity,
-                                   const float intensity,
-                                   const color & color,
-                                   const vec3f & direction)
+void openvrml::viewer::insert_dir_light(const float ambient_intensity,
+                                        const float intensity,
+                                        const color & color,
+                                        const vec3f & direction)
 {
     return this->do_insert_dir_light(ambient_intensity,
                                      intensity,
@@ -636,7 +618,7 @@ openvrml::viewer::insert_dir_light(const float ambient_intensity,
 }
 
 /**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_dir_light(float ambient_intensity, float intensity , const color & color, const vec3f & direction)
+ * @fn void openvrml::viewer::do_insert_dir_light(float ambient_intensity, float intensity , const color & color, const vec3f & direction)
  *
  * @brief Insert a directional light into a display list.
  *
@@ -644,8 +626,6 @@ openvrml::viewer::insert_dir_light(const float ambient_intensity,
  * @param[in] intensity         intensity.
  * @param[in] color             color.
  * @param[in] direction         direction.
- *
- * @return display object identifier.
  */
 
 /**
@@ -659,16 +639,13 @@ openvrml::viewer::insert_dir_light(const float ambient_intensity,
  * @param[in] intensity         intensity.
  * @param[in] location          location.
  * @param[in] radius            radius.
- *
- * @return display object identifier.
  */
-openvrml::viewer::object_t
-openvrml::viewer::insert_point_light(const float ambient_intensity,
-                                     const vec3f & attenuation,
-                                     const color & color,
-                                     const float intensity,
-                                     const vec3f & location,
-                                     const float radius)
+void openvrml::viewer::insert_point_light(const float ambient_intensity,
+                                          const vec3f & attenuation,
+                                          const color & color,
+                                          const float intensity,
+                                          const vec3f & location,
+                                          const float radius)
 {
     return this->do_insert_point_light(ambient_intensity,
                                        attenuation,
@@ -679,7 +656,7 @@ openvrml::viewer::insert_point_light(const float ambient_intensity,
 }
 
 /**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_point_light(float ambient_intensity, const vec3f & attenuation, const color & color, float intensity, const vec3f & location, float radius)
+ * @fn void openvrml::viewer::do_insert_point_light(float ambient_intensity, const vec3f & attenuation, const color & color, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
  *
@@ -689,8 +666,6 @@ openvrml::viewer::insert_point_light(const float ambient_intensity,
  * @param[in] intensity         intensity.
  * @param[in] location          location.
  * @param[in] radius            radius.
- *
- * @return display object identifier.
  */
 
 /**
@@ -707,19 +682,16 @@ openvrml::viewer::insert_point_light(const float ambient_intensity,
  * @param[in] intensity         intensity.
  * @param[in] location          location.
  * @param[in] radius            radius.
- *
- * @return display object identifier.
  */
-openvrml::viewer::object_t
-openvrml::viewer::insert_spot_light(const float ambient_intensity,
-                                    const vec3f & attenuation,
-                                    const float beam_width,
-                                    const color & color,
-                                    const float cut_off_angle,
-                                    const vec3f & direction,
-                                    const float intensity,
-                                    const vec3f & location,
-                                    const float radius)
+void openvrml::viewer::insert_spot_light(const float ambient_intensity,
+                                         const vec3f & attenuation,
+                                         const float beam_width,
+                                         const color & color,
+                                         const float cut_off_angle,
+                                         const vec3f & direction,
+                                         const float intensity,
+                                         const vec3f & location,
+                                         const float radius)
 {
     return this->do_insert_spot_light(ambient_intensity,
                                       attenuation,
@@ -733,7 +705,7 @@ openvrml::viewer::insert_spot_light(const float ambient_intensity,
 }
 
 /**
- * @fn openvrml::viewer::object_t openvrml::viewer::do_insert_spot_light(float ambient_intensity, const vec3f & attenuation, float beam_width, const color & color, float cut_off_angle, const vec3f & direction, float intensity, const vec3f & location, float radius)
+ * @fn void openvrml::viewer::do_insert_spot_light(float ambient_intensity, const vec3f & attenuation, float beam_width, const color & color, float cut_off_angle, const vec3f & direction, float intensity, const vec3f & location, float radius)
  *
  * @brief Insert a point light into a display list.
  *
@@ -746,8 +718,6 @@ openvrml::viewer::insert_spot_light(const float ambient_intensity,
  * @param[in] intensity         intensity.
  * @param[in] location          location.
  * @param[in] radius            radius.
- *
- * @return display object identifier.
  */
 
 /**
@@ -938,7 +908,7 @@ void openvrml::viewer::insert_texture(const texture_node & n,
 }
 
 /**
- * @fn openvrml::viewer::texture_object_t openvrml::viewer::do_insert_texture(const texture_node & n, bool retainHint)
+ * @fn void openvrml::viewer::do_insert_texture(const texture_node & n, bool retainHint)
  *
  * @brief Create a texture object.
  *

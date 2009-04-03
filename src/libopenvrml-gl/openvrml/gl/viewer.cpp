@@ -1004,11 +1004,8 @@ namespace {
  *
  * @param[in] id        not used.
  * @param[in] retain    not used.
- *
- * @return 0.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_begin_object(const char *, bool)
+void openvrml::gl::viewer::do_begin_object(const char *, bool)
 {
     // Finish setup stuff before first object
     if (1 == ++this->objects) {
@@ -1026,7 +1023,6 @@ openvrml::gl::viewer::do_begin_object(const char *, bool)
         }
     }
     this->modelview_matrix_stack_.push();
-    return 0;
 }
 
 /**
@@ -1133,10 +1129,8 @@ void openvrml::gl::viewer::do_reset_user_navigation()
  * @param[in] right         right texture.
  * @param[in] top           top texture.
  * @param[in] bottom        bottom texture.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
+void
 openvrml::gl::viewer::
 do_insert_background(const std::vector<float> & groundAngle,
                      const std::vector<color> & groundColor,
@@ -1399,8 +1393,6 @@ do_insert_background(const std::vector<float> & groundAngle,
     this->background.r(r);
     this->background.g(g);
     this->background.b(b);
-
-    return object_t(glid);
 }
 
 /**
@@ -3292,14 +3284,11 @@ openvrml::gl::viewer::do_insert_sphere(const geometry_node & n,
  * @param[in] intensity         intensity.
  * @param[in] color             color.
  * @param[in] direction         direction.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_dir_light(const float ambientIntensity,
-                                          const float intensity,
-                                          const color & color,
-                                          const vec3f & direction)
+void openvrml::gl::viewer::do_insert_dir_light(const float ambientIntensity,
+                                               const float intensity,
+                                               const color & color,
+                                               const vec3f & direction)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3316,7 +3305,7 @@ openvrml::gl::viewer::do_insert_dir_light(const float ambientIntensity,
     for (i = 0; i < max_lights; ++i) {
         if (this->light_info_[i].type == viewer::light_unused) { break; }
     }
-    if (i == max_lights) { return 0; }
+    if (i == max_lights) { return; }
 
     this->light_info_[i].type = viewer::light_directional;
     this->light_info_[i].nesting_level = 0;
@@ -3334,8 +3323,6 @@ openvrml::gl::viewer::do_insert_dir_light(const float ambientIntensity,
 
     glLightf(light, GL_SPOT_CUTOFF, 180.0);
     glLightf(light, GL_SPOT_EXPONENT, 0.0);
-
-    return 0;
 }
 
 /**
@@ -3348,20 +3335,17 @@ openvrml::gl::viewer::do_insert_dir_light(const float ambientIntensity,
  * @param[in] location          location.
  * @param[in] radius            radius.
  *
- * @return display object identifier.
- *
  * @todo Only objects within radius should be lit by each PointLight.
  *      Test each object drawn against each point light and enable
  *      the lights accordingly? Get light and geometry into consistent
  *      coordinates first.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_point_light(const float ambientIntensity,
-                                            const vec3f & attenuation,
-                                            const color & color,
-                                            const float intensity,
-                                            const vec3f & location,
-                                            const float radius)
+void openvrml::gl::viewer::do_insert_point_light(const float ambientIntensity,
+                                                 const vec3f & attenuation,
+                                                 const color & color,
+                                                 const float intensity,
+                                                 const vec3f & location,
+                                                 const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3378,7 +3362,7 @@ openvrml::gl::viewer::do_insert_point_light(const float ambientIntensity,
     for (i = 0; i < max_lights; ++i) {
         if (this->light_info_[i].type == viewer::light_unused) { break; }
     }
-    if (i == max_lights) { return 0; }
+    if (i == max_lights) { return; }
 
     this->light_info_[i].type = viewer::light_positional;
     this->light_info_[i].location = location;
@@ -3399,8 +3383,6 @@ openvrml::gl::viewer::do_insert_point_light(const float ambientIntensity,
     // Disable old spot settings
     glLightf(light, GL_SPOT_CUTOFF, 180.0);
     glLightf(light, GL_SPOT_EXPONENT, 0.0);
-
-    return 0;
 }
 
 /**
@@ -3416,20 +3398,17 @@ openvrml::gl::viewer::do_insert_point_light(const float ambientIntensity,
  * @param[in] location          location.
  * @param[in] radius            radius.
  *
- * @return 0.
- *
  * @todo Same comments as for PointLight apply here.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_spot_light(const float ambientIntensity,
-                                           const vec3f & attenuation,
-                                           const float beamWidth,
-                                           const color & color,
-                                           const float cutOffAngle,
-                                           const vec3f & direction,
-                                           const float intensity,
-                                           const vec3f & location,
-                                           const float radius)
+void openvrml::gl::viewer::do_insert_spot_light(const float ambientIntensity,
+                                                const vec3f & attenuation,
+                                                const float beamWidth,
+                                                const color & color,
+                                                const float cutOffAngle,
+                                                const vec3f & direction,
+                                                const float intensity,
+                                                const vec3f & location,
+                                                const float radius)
 {
     float amb[4] = { ambientIntensity * color.r(),
                      ambientIntensity * color.g(),
@@ -3447,7 +3426,7 @@ openvrml::gl::viewer::do_insert_spot_light(const float ambientIntensity,
     for (i = 0; i < max_lights; ++i) {
         if (this->light_info_[i].type == viewer::light_unused) { break; }
     }
-    if (i == max_lights) { return 0; }
+    if (i == max_lights) { return; }
 
     this->light_info_[i].type = viewer::light_positional;
     this->light_info_[i].location = location;
@@ -3469,8 +3448,6 @@ openvrml::gl::viewer::do_insert_spot_light(const float ambientIntensity,
     glLightf(light, GL_SPOT_CUTOFF, GLfloat(cutOffAngle * 180.0 / pi));
     // The exponential dropoff is not right/spec compliant...
     glLightf(light, GL_SPOT_EXPONENT, beamWidth < cutOffAngle ? 1.0f : 0.0f);
-
-    return 0;
 }
 
 /**

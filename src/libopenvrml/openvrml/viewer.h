@@ -59,8 +59,6 @@ namespace openvrml {
             pick_mode
         };
 
-        typedef long object_t;
-
         virtual ~viewer() OPENVRML_NOTHROW = 0;
 
         openvrml::browser * browser() const OPENVRML_NOTHROW;
@@ -69,19 +67,19 @@ namespace openvrml {
         double frame_rate();
         void reset_user_navigation();
 
-        object_t begin_object(const char * id, bool retain = false);
+        void begin_object(const char * id, bool retain = false);
         void end_object();
 
-        object_t insert_background(const std::vector<float> & ground_angle,
-                                   const std::vector<color> & ground_color,
-                                   const std::vector<float> & sky_angle,
-                                   const std::vector<color> & sky_color,
-                                   const texture_node & front,
-                                   const texture_node & back,
-                                   const texture_node & left,
-                                   const texture_node & right,
-                                   const texture_node & top,
-                                   const texture_node & bottom);
+        void insert_background(const std::vector<float> & ground_angle,
+                               const std::vector<color> & ground_color,
+                               const std::vector<float> & sky_angle,
+                               const std::vector<color> & sky_color,
+                               const texture_node & front,
+                               const texture_node & back,
+                               const texture_node & left,
+                               const texture_node & right,
+                               const texture_node & top,
+                               const texture_node & bottom);
 
         void insert_box(const geometry_node & n, const vec3f & size);
         void insert_cone(const geometry_node & n,
@@ -124,25 +122,25 @@ namespace openvrml {
                           const std::vector<vec2f> & tex_coord,
                           const std::vector<int32> & tex_coord_index);
         void insert_sphere(const geometry_node & n, float radius);
-        object_t insert_dir_light(float ambient_intensity,
-                                  float intensity,
-                                  const color & color,
-                                  const vec3f & direction);
-        object_t insert_point_light(float ambient_intensity,
-                                    const vec3f & attenuation,
-                                    const color & color,
-                                    float intensity,
-                                    const vec3f & location,
-                                    float radius);
-        object_t insert_spot_light(float ambient_intensity,
-                                   const vec3f & attenuation,
-                                   float beam_width,
-                                   const color & color,
-                                   float cut_off_angle,
-                                   const vec3f & direction,
-                                   float intensity,
-                                   const vec3f & location,
-                                   float radius);
+        void insert_dir_light(float ambient_intensity,
+                              float intensity,
+                              const color & color,
+                              const vec3f & direction);
+        void insert_point_light(float ambient_intensity,
+                                const vec3f & attenuation,
+                                const color & color,
+                                float intensity,
+                                const vec3f & location,
+                                float radius);
+        void insert_spot_light(float ambient_intensity,
+                               const vec3f & attenuation,
+                               float beam_width,
+                               const color & color,
+                               float cut_off_angle,
+                               const vec3f & direction,
+                               float intensity,
+                               const vec3f & location,
+                               float radius);
 
         void remove_object(const node & n);
 
@@ -213,12 +211,11 @@ namespace openvrml {
         virtual double do_frame_rate() = 0;
         virtual void do_reset_user_navigation() = 0;
 
-        virtual object_t do_begin_object(const char * id,
-                                         bool retain = false) = 0;
+        virtual void do_begin_object(const char * id, bool retain = false) = 0;
         virtual void do_end_object() = 0;
 
         virtual
-        object_t
+        void
         do_insert_background(const std::vector<float> & ground_angle,
                              const std::vector<color> & ground_color,
                              const std::vector<float> & sky_angle,
@@ -279,25 +276,26 @@ namespace openvrml {
                              const std::vector<int32> & tex_coord_index) = 0;
         virtual
         void do_insert_sphere(const geometry_node & n, float radius) = 0;
-        virtual object_t do_insert_dir_light(float ambient_intensity,
-                                             float intensity,
-                                             const color & color,
-                                             const vec3f & direction) = 0;
-        virtual object_t do_insert_point_light(float ambient_intensity,
-                                               const vec3f & attenuation,
-                                               const color & color,
-                                               float intensity,
-                                               const vec3f & location,
-                                               float radius) = 0;
-        virtual object_t do_insert_spot_light(float ambient_intensity,
-                                              const vec3f & attenuation,
-                                              float beam_width,
-                                              const color & color,
-                                              float cut_off_angle,
-                                              const vec3f & direction,
-                                              float intensity,
-                                              const vec3f & location,
-                                              float radius) = 0;
+
+        virtual void do_insert_dir_light(float ambient_intensity,
+                                         float intensity,
+                                         const color & color,
+                                         const vec3f & direction) = 0;
+        virtual void do_insert_point_light(float ambient_intensity,
+                                           const vec3f & attenuation,
+                                           const color & color,
+                                           float intensity,
+                                           const vec3f & location,
+                                           float radius) = 0;
+        virtual void do_insert_spot_light(float ambient_intensity,
+                                          const vec3f & attenuation,
+                                          float beam_width,
+                                          const color & color,
+                                          float cut_off_angle,
+                                          const vec3f & direction,
+                                          float intensity,
+                                          const vec3f & location,
+                                          float radius) = 0;
 
         virtual void do_remove_object(const node & ref) = 0;
 

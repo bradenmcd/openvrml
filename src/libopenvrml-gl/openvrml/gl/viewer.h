@@ -188,12 +188,12 @@ namespace openvrml {
             virtual void do_reset_user_navigation();
 
             // Scope dirlights, open/close display lists
-            virtual object_t do_begin_object(const char * id, bool retain);
+            virtual void do_begin_object(const char * id, bool retain);
             virtual void do_end_object();
 
             // Insert objects into the display list
             virtual
-            object_t
+            void
             do_insert_background(const std::vector<float> & groundAngle,
                                  const std::vector<color> & groundColor,
                                  const std::vector<float> & skyAngle,
@@ -266,25 +266,25 @@ namespace openvrml {
                                           float radius);
 
             // Lights
-            virtual object_t do_insert_dir_light(float ambientIntensity,
-                                                 float intensity,
-                                                 const color & color,
-                                                 const vec3f & direction);
-            virtual object_t do_insert_point_light(float ambientIntensity,
-                                                   const vec3f & attenuation,
-                                                   const color & color,
-                                                   float intensity,
-                                                   const vec3f & location,
-                                                   float radius);
-            virtual object_t do_insert_spot_light(float ambientIntensity,
-                                                  const vec3f & attenuation,
-                                                  float beamWidth,
-                                                  const color & color,
-                                                  float cutOffAngle,
-                                                  const vec3f & direction,
-                                                  float intensity,
-                                                  const vec3f & location,
-                                                  float radius);
+            virtual void do_insert_dir_light(float ambientIntensity,
+                                             float intensity,
+                                             const color & color,
+                                             const vec3f & direction);
+            virtual void do_insert_point_light(float ambientIntensity,
+                                               const vec3f & attenuation,
+                                               const color & color,
+                                               float intensity,
+                                               const vec3f & location,
+                                               float radius);
+            virtual void do_insert_spot_light(float ambientIntensity,
+                                              const vec3f & attenuation,
+                                              float beamWidth,
+                                              const color & color,
+                                              float cutOffAngle,
+                                              const vec3f & direction,
+                                              float intensity,
+                                              const vec3f & location,
+                                              float radius);
 
 
             virtual void do_remove_object(const node & ref);
