@@ -22,6 +22,7 @@
 # include "browser.h"
 # include "scene.h"
 # include "scope.h"
+# include "viewer.h"
 # include <openvrml/local/uri.h>
 # include <openvrml/local/node_metatype_registry_impl.h>
 # include <openvrml/local/component.h>

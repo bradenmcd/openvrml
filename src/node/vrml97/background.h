@@ -20,7 +20,6 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include <openvrml/node.h>
 # include <openvrml/node_impl_util.h>
 
 namespace openvrml_node_vrml97 {
@@ -33,6 +32,8 @@ namespace openvrml_node_vrml97 {
     class OPENVRML_LOCAL background_metatype : public openvrml::node_metatype {
         background_node * first;
         openvrml::node_impl_util::bound_node_stack<background_node> bound_nodes;
+        openvrml::null_node_metatype null_texture_node_metatype_;
+        openvrml::null_node_type null_texture_node_type_;
 
     public:
         static const char * const id;
@@ -67,8 +68,9 @@ namespace openvrml_node_vrml97 {
 
         friend class background_metatype;
 
-        class set_bind_listener : public openvrml::node_impl_util::event_listener_base<self_t>,
-                                  public sfbool_listener {
+        class set_bind_listener :
+            public openvrml::node_impl_util::event_listener_base<self_t>,
+            public sfbool_listener {
         public:
             explicit set_bind_listener(background_node & node);
             virtual ~set_bind_listener() OPENVRML_NOTHROW;
@@ -79,31 +81,11 @@ namespace openvrml_node_vrml97 {
                 OPENVRML_THROW1(std::bad_alloc);
         };
 
-        class texture_url_exposedfield : public exposedfield<openvrml::mfstring> {
-            bool background_node::* needs_update_;
-
-        public:
-            explicit texture_url_exposedfield(
-                background_node & node,
-                bool background_node::* needs_update)
-                OPENVRML_NOTHROW;
-            texture_url_exposedfield(const texture_url_exposedfield & obj)
-                OPENVRML_NOTHROW;
-            virtual ~texture_url_exposedfield() OPENVRML_NOTHROW;
-
-        private:
-            virtual std::auto_ptr<openvrml::field_value> do_clone() const
-                OPENVRML_THROW1(std::bad_alloc);
-            virtual void event_side_effect(const mfstring & value,
-                                           double timestamp)
-                OPENVRML_THROW1(std::bad_alloc);
-        };
-
         set_bind_listener set_bind_listener_;
         exposedfield<openvrml::mffloat> ground_angle_;
         exposedfield<openvrml::mfcolor> ground_color_;
-        texture_url_exposedfield back_url_, bottom_url_, front_url_, left_url_,
-            right_url_, top_url_;
+        exposedfield<openvrml::mfstring> back_url_, bottom_url_, front_url_,
+            left_url_, right_url_, top_url_;
         exposedfield<openvrml::mffloat> sky_angle_;
         exposedfield<openvrml::mfcolor> sky_color_;
         openvrml::sfbool is_bound_;
@@ -111,32 +93,12 @@ namespace openvrml_node_vrml97 {
         openvrml::sftime bind_time_;
         sftime_emitter bind_time_emitter_;
 
-        openvrml::read_write_mutex front_mutex_;
-        openvrml::image front;
-        bool front_needs_update;
-
-        openvrml::read_write_mutex back_mutex_;
-        openvrml::image back;
-        bool back_needs_update;
-
-        openvrml::read_write_mutex left_mutex_;
-        openvrml::image left;
-        bool left_needs_update;
-
-        openvrml::read_write_mutex right_mutex_;
-        openvrml::image right;
-        bool right_needs_update;
-
-        openvrml::read_write_mutex top_mutex_;
-        openvrml::image top;
-        bool top_needs_update;
-
-        openvrml::read_write_mutex bottom_mutex_;
-        openvrml::image bottom;
-        bool bottom_needs_update;
-
-        // Display list object for background
-        openvrml::viewer::object_t viewerObject;
+        boost::intrusive_ptr<openvrml::texture_node> front;
+        boost::intrusive_ptr<openvrml::texture_node> back;
+        boost::intrusive_ptr<openvrml::texture_node> left;
+        boost::intrusive_ptr<openvrml::texture_node> right;
+        boost::intrusive_ptr<openvrml::texture_node> top;
+        boost::intrusive_ptr<openvrml::texture_node> bottom;
 
     public:
         background_node(const openvrml::node_type & type,
@@ -148,7 +110,5 @@ namespace openvrml_node_vrml97 {
     private:
         virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
-
-        void update_textures() OPENVRML_THROW1(std::bad_alloc);
     };
 }

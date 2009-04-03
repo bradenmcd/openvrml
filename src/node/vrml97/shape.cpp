@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "shape.h"
+# include <private.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "shape.h"
 
 namespace {
 
@@ -40,8 +41,6 @@ namespace {
         exposedfield<openvrml::sfnode> geometry_;
         openvrml::sfvec3f bbox_center_;
         openvrml::sfvec3f bbox_size_;
-
-        openvrml::viewer::object_t viewerObject;
 
     public:
         shape_node(const openvrml::node_type & type,
@@ -82,17 +81,6 @@ namespace {
      */
 
     /**
-     * @var openvrml::viewer::object_t shape_node::viewerObject
-     *
-     * @brief A reference to the node's previously used rendering data.
-     *
-     * If supported by the Viewer implementation, this member holds a reference
-     * to the node's rendering data once the node has already been rendered
-     * once. The intent is to capitalize on USE references in the VRML scene
-     * graph.
-     */
-
-    /**
      * @brief Construct.
      *
      * @param type  the node_type associated with the node.
@@ -107,17 +95,14 @@ namespace {
         child_node(type, scope),
         appearance_(*this),
         geometry_(*this),
-        bbox_size_(openvrml::make_vec3f(-1,-1,-1)),
-        viewerObject(0)
+        bbox_size_(openvrml::make_vec3f(-1,-1,-1))
     {}
 
     /**
      * @brief Destroy.
      */
     shape_node::~shape_node() OPENVRML_NOTHROW
-    {
-        // need viewer to free viewerObject ...
-    }
+    {}
 
     /**
      * @brief Determine whether the node has been modified.
@@ -158,9 +143,8 @@ namespace {
      * @param v         a viewer.
      * @param context   a rendering context.
      */
-    void
-    shape_node::
-    do_render_child(openvrml::viewer & v, const openvrml::rendering_context context)
+    void shape_node::do_render_child(openvrml::viewer & v,
+                                     const openvrml::rendering_context context)
     {
         using openvrml::node_cast;
         using openvrml::geometry_node;
@@ -184,17 +168,14 @@ namespace {
             geometry->modified(true);
         }
 
-        if (this->viewerObject && (this->modified()
-                                   || (appearance && appearance->modified())
-                                   || (geometry && geometry->modified()))) {
-            v.remove_object(this->viewerObject);
-            this->viewerObject = 0;
+        if (this->modified()
+            || (appearance && appearance->modified())
+            || (geometry && geometry->modified())) {
+            v.remove_object(*this);
         }
 
-        if (this->viewerObject) {
-            v.insert_reference(this->viewerObject);
-        } else if (geometry) {
-            this->viewerObject = v.begin_object(this->id().c_str());
+        if (geometry) {
+            v.begin_object(this->id().c_str());
 
             // Don't care what color it is if we are picking
             bool picking = (viewer::pick_mode == v.mode());

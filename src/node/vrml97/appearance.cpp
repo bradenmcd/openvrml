@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "appearance.h"
+# include <openvrml/browser.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/browser.h>
-# include <openvrml/node_impl_util.h>
-# include "appearance.h"
 
 namespace {
 

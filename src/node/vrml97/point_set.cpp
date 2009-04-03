@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "point_set.h"
+# include <private.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "point_set.h"
 
 namespace {
 
@@ -52,8 +53,8 @@ namespace {
         virtual const openvrml::bounding_volume &
         do_bounding_volume() const;
 
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
         virtual bool do_emissive() const OPENVRML_NOTHROW;
 
         void recalc_bsphere();
@@ -132,10 +133,10 @@ namespace {
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   the rendering context.
      */
-    openvrml::viewer::object_t
+    void
     point_set_node::
     do_render_geometry(openvrml::viewer & viewer,
                        const openvrml::rendering_context context)
@@ -168,12 +169,10 @@ namespace {
             ? colorNode->color()
             : vector<openvrml::color>();
 
-        openvrml::viewer::object_t obj = viewer.insert_point_set(coord, color);
+        viewer.insert_point_set(*this, coord, color);
 
         if (colorNode) { colorNode->modified(false); }
         if (coordinateNode) { coordinateNode->modified(false); }
-
-        return obj;
     }
 
     /**

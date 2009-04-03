@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "indexed_face_set.h"
+# include "abstract_indexed_set.h"
+# include <private.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <private.h>
-# include "indexed_face_set.h"
-# include "abstract_indexed_set.h"
 
 namespace {
 
@@ -86,11 +87,9 @@ namespace {
         virtual bool modified() const;
 
     private:
-        virtual const openvrml::bounding_volume &
-        do_bounding_volume() const;
-
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual const openvrml::bounding_volume & do_bounding_volume() const;
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
 
         void recalc_bsphere();
     };
@@ -340,7 +339,7 @@ namespace {
      *
      * @todo stripify, crease angle, generate normals ...
      */
-    openvrml::viewer::object_t
+    void
     indexed_face_set_node::
     do_render_geometry(openvrml::viewer & v,
                        const openvrml::rendering_context context)
@@ -404,19 +403,17 @@ namespace {
             optMask |= viewer::mask_normal_per_vertex;
         }
 
-        const openvrml::viewer::object_t obj =
-            v.insert_shell(optMask,
-                           coord, this->coord_index_.value(),
-                           color, this->color_index_.value(),
-                           normal, this->normal_index_.value(),
-                           texCoord, this->tex_coord_index_.value());
+        v.insert_shell(*this,
+                       optMask,
+                       coord, this->coord_index_.value(),
+                       color, this->color_index_.value(),
+                       normal, this->normal_index_.value(),
+                       texCoord, this->tex_coord_index_.value());
 
         if (colorNode) { colorNode->modified(false); }
         if (coordinateNode) { coordinateNode->modified(false); }
         if (normalNode) { normalNode->modified(false); }
         if (texCoordNode) { texCoordNode->modified(false); }
-
-        return obj;
     }
 
     /**

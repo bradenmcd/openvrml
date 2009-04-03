@@ -24,6 +24,7 @@
 # include <openvrml/local/float.h>
 # include <openvrml/node_impl_util.h>
 # include <openvrml/browser.h>
+# include <openvrml/viewer.h>
 # include <boost/array.hpp>
 
 # ifdef HAVE_CONFIG_H

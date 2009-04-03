@@ -63,8 +63,8 @@ namespace {
         virtual bool modified() const;
         virtual const color_node * color() const OPENVRML_NOTHROW;
     private:
-        virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        rendering_context context);
         virtual const openvrml::bounding_volume &
             do_bounding_volume() const;
 
@@ -182,14 +182,11 @@ namespace {
      *
      * @todo Implement this!
      */
-    openvrml::viewer::object_t
+    void
     triangle_fan_set_node::
     do_render_geometry(openvrml::viewer & /* viewer */,
                        const rendering_context /* context */)
-    {
-        //TODO: Implement this!
-        return 0;
-    }
+    {}
 
 
     /**

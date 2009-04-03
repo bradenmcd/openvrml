@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "indexed_line_set.h"
+# include "abstract_indexed_set.h"
+# include <private.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <private.h>
-# include "indexed_line_set.h"
-# include "abstract_indexed_set.h"
 
 namespace {
 
@@ -44,8 +45,8 @@ namespace {
         virtual ~indexed_line_set_node() OPENVRML_NOTHROW;
 
     private:
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
         virtual bool do_emissive() const OPENVRML_NOTHROW;
     };
 
@@ -91,7 +92,7 @@ namespace {
      *
      * @todo colors
      */
-    openvrml::viewer::object_t
+    void
     indexed_line_set_node::
     do_render_geometry(openvrml::viewer & viewer, openvrml::rendering_context)
     {
@@ -113,15 +114,13 @@ namespace {
             ? colorNode->color()
             : vector<openvrml::color>();
 
-        openvrml::viewer::object_t obj =
-            viewer.insert_line_set(coord, this->coord_index_.value(),
-                                   this->color_per_vertex_.value(),
-                                   color, this->color_index_.value());
+        viewer.insert_line_set(*this,
+                               coord, this->coord_index_.value(),
+                               this->color_per_vertex_.value(),
+                               color, this->color_index_.value());
 
         if (colorNode) { colorNode->modified(false); }
         if (coordinateNode) { coordinateNode->modified(false); }
-
-        return obj;
     }
 
     /**

@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "elevation_grid.h"
+# include <private.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "elevation_grid.h"
 
 namespace {
 
@@ -71,8 +72,8 @@ namespace {
         virtual bool modified() const;
 
     private:
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
     };
 
     /**
@@ -279,13 +280,10 @@ namespace {
      * @param v         a viewer.
      * @param context   the rendering context.
      */
-    openvrml::viewer::object_t
-    elevation_grid_node::
-    do_render_geometry(openvrml::viewer & v, openvrml::rendering_context)
+    void elevation_grid_node::do_render_geometry(openvrml::viewer & v,
+                                                 openvrml::rendering_context)
     {
         using openvrml::node_cast;
-
-        openvrml::viewer::object_t obj = 0;
 
         openvrml::color_node * const colorNode =
             node_cast<openvrml::color_node *>(
@@ -332,24 +330,21 @@ namespace {
                 optMask |= viewer::mask_normal_per_vertex;
             }
 
-            obj =
-                v.insert_elevation_grid(
-                    optMask,
-                    this->height_.mffloat::value(),
-                    this->x_dimension_.sfint32::value(),
-                    this->z_dimension_.sfint32::value(),
-                    this->x_spacing_.sffloat::value(),
-                    this->z_spacing_.sffloat::value(),
-                    color,
-                    normal,
-                    texCoord);
+            v.insert_elevation_grid(*this,
+                                    optMask,
+                                    this->height_.mffloat::value(),
+                                    this->x_dimension_.sfint32::value(),
+                                    this->z_dimension_.sfint32::value(),
+                                    this->x_spacing_.sffloat::value(),
+                                    this->z_spacing_.sffloat::value(),
+                                    color,
+                                    normal,
+                                    texCoord);
         }
 
         if (colorNode) { colorNode->modified(false); }
         if (normalNode) { normalNode->modified(false); }
         if (texCoordNode) { texCoordNode->modified(false); }
-
-        return obj;
     }
 }
 

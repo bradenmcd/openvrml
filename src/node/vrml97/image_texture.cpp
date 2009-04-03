@@ -23,8 +23,9 @@
 # include "image_texture.h"
 # include "abstract_texture.h"
 # include "image_stream_listener.h"
-# include <openvrml/scene.h>
 # include <private.h>
+# include <openvrml/scene.h>
+# include <openvrml/viewer.h>
 # include <boost/array.hpp>
 
 # ifdef HAVE_CONFIG_H
@@ -66,8 +67,7 @@ namespace {
 
     private:
         virtual const openvrml::image & do_image() const OPENVRML_NOTHROW;
-        virtual openvrml::viewer::texture_object_t
-            do_render_texture(openvrml::viewer & v);
+        virtual void do_render_texture(openvrml::viewer & v);
 
         void update_texture();
     };
@@ -227,14 +227,10 @@ namespace {
      *
      * @return object identifier for the inserted texture.
      */
-    openvrml::viewer::texture_object_t
-    image_texture_node::do_render_texture(openvrml::viewer & v)
+    void image_texture_node::do_render_texture(openvrml::viewer & v)
     {
         this->update_texture();
-        return v.insert_texture(this->image_,
-                                this->repeat_s_.value(),
-                                this->repeat_t_.value(),
-                                true);
+        return v.insert_texture(*this, true);
     }
 
     /**

@@ -19,13 +19,14 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "cone.h"
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include "cone.h"
 
 namespace {
 
@@ -47,9 +48,8 @@ namespace {
         virtual ~cone_node() OPENVRML_NOTHROW;
 
     private:
-        virtual openvrml::viewer::object_t
-            do_render_geometry(openvrml::viewer & viewer,
-                               openvrml::rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
     };
 
     /**
@@ -120,16 +120,14 @@ namespace {
      * @param viewer    a viewer.
      * @param context   the rendering context.
      */
-    openvrml::viewer::object_t
-    cone_node::
-    do_render_geometry(openvrml::viewer & viewer, openvrml::rendering_context)
+    void cone_node::do_render_geometry(openvrml::viewer & viewer,
+                                       openvrml::rendering_context)
     {
-        const openvrml::viewer::object_t object_ref =
-            viewer.insert_cone(this->height.value(),
-                               this->bottomRadius.value(),
-                               this->bottom.value(),
-                               this->side.value());
-        return object_ref;
+        viewer.insert_cone(*this,
+                           this->height.value(),
+                           this->bottomRadius.value(),
+                           this->bottom.value(),
+                           this->side.value());
     }
 }
 

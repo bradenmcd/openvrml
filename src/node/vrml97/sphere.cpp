@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "sphere.h"
+# include <private.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "sphere.h"
 
 namespace {
 
@@ -47,8 +48,8 @@ namespace {
 
     private:
         virtual const openvrml::bounding_volume & do_bounding_volume() const;
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
     };
 
     /**
@@ -103,16 +104,14 @@ namespace {
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   the rendering context.
      */
-    openvrml::viewer::object_t
+    void
     sphere_node::
     do_render_geometry(openvrml::viewer & viewer, openvrml::rendering_context)
     {
-        const openvrml::viewer::object_t object_ref =
-            viewer.insert_sphere(this->radius.value());
-        return object_ref;
+        viewer.insert_sphere(*this, this->radius.value());
     }
 
     /**

@@ -51,8 +51,8 @@ namespace {
 
         virtual bool modified() const;
     private:
-        virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        rendering_context context);
     };
 
 
@@ -84,19 +84,16 @@ namespace {
     /**
      * @brief Insert this geometry into @p viewer's display list.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   the rendering context.
      *
      * @todo Implement this!
      */
-    openvrml::viewer::object_t
+    void
     arc2d_node::
     do_render_geometry(openvrml::viewer & /* viewer */,
                        const rendering_context /* context */)
-    {
-        //TODO: Implement this!
-        return 0;
-    }
+    {}
 
 
     /**

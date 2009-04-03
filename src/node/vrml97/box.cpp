@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "box.h"
+# include <openvrml/browser.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/browser.h>
-# include <openvrml/node_impl_util.h>
-# include "box.h"
 
 namespace {
 
@@ -47,13 +48,9 @@ namespace {
         virtual ~box_node() OPENVRML_NOTHROW;
 
     private:
-        virtual const openvrml::bounding_volume &
-        do_bounding_volume() const;
-
-        virtual
-        openvrml::viewer::object_t
-        do_render_geometry(openvrml::viewer & viewer,
-                           openvrml::rendering_context context);
+        virtual const openvrml::bounding_volume & do_bounding_volume() const;
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
     };
 
 
@@ -111,16 +108,11 @@ namespace {
      *
      * @param viewer    a viewer.
      * @param context   the rendering context.
-     *
-     * @return display object identifier.
      */
-    openvrml::viewer::object_t
-    box_node::
-    do_render_geometry(openvrml::viewer & viewer, openvrml::rendering_context)
+    void box_node::do_render_geometry(openvrml::viewer & viewer,
+                                      openvrml::rendering_context)
     {
-        const openvrml::viewer::object_t object_ref =
-            viewer.insert_box(this->size.value());
-        return object_ref;
+        viewer.insert_box(*this, this->size.value());
     }
 
     /**

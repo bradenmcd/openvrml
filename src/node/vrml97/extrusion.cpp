@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "extrusion.h"
+# include <private.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/node_impl_util.h>
-# include <private.h>
-# include "extrusion.h"
 
 namespace {
 
@@ -106,8 +107,8 @@ namespace {
         virtual ~extrusion_node() OPENVRML_NOTHROW;
 
     private:
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
     };
 
     /**
@@ -475,13 +476,11 @@ namespace {
      * @param v         a viewer.
      * @param context   the rendering context.
      */
-    openvrml::viewer::object_t
-    extrusion_node::
-    do_render_geometry(openvrml::viewer & v, openvrml::rendering_context)
+    void extrusion_node::do_render_geometry(openvrml::viewer & v,
+                                            openvrml::rendering_context)
     {
         using openvrml::viewer;
 
-        viewer::object_t obj = 0;
         if (!this->cross_section_.value().empty()
             && this->spine_.value().size() > 1) {
             unsigned int optMask = 0;
@@ -491,14 +490,13 @@ namespace {
             if (this->begin_cap_.value()) { optMask |= viewer::mask_bottom; }
             if (this->end_cap_.value())   { optMask |= viewer::mask_top; }
 
-            obj = v.insert_extrusion(optMask,
-                                     this->spine_.value(),
-                                     this->cross_section_.value(),
-                                     this->orientation_.value(),
-                                     this->scale_.value());
+            v.insert_extrusion(*this,
+                               optMask,
+                               this->spine_.value(),
+                               this->cross_section_.value(),
+                               this->orientation_.value(),
+                               this->scale_.value());
         }
-
-        return obj;
     }
 }
 

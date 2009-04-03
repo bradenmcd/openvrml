@@ -91,8 +91,8 @@ namespace {
 
         virtual bool modified() const;
     private:
-        virtual viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        rendering_context context);
     };
 
 
@@ -255,14 +255,11 @@ namespace {
      *
      * @todo Implement this!
      */
-    openvrml::viewer::object_t
+    void
     nurbs_trimmed_surface_node::
     do_render_geometry(openvrml::viewer & /* viewer */,
                        const rendering_context /* context */)
-    {
-        //TODO: Implement this!
-        return 0;
-    }
+    {}
 
 
     /**

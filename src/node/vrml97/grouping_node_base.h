@@ -21,8 +21,9 @@
 # ifndef OPENVRML_NODE_VRML97_GROUPING_NODE_BASE_H
 #   define OPENVRML_NODE_VRML97_GROUPING_NODE_BASE_H
 
-# include <boost/multi_index/detail/scope_guard.hpp>
 # include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
+# include <boost/multi_index/detail/scope_guard.hpp>
 
 namespace openvrml_node_vrml97 {
 
@@ -93,8 +94,6 @@ namespace openvrml_node_vrml97 {
         add_children_listener add_children_listener_;
         remove_children_listener remove_children_listener_;
         children_exposedfield children_;
-
-        openvrml::viewer::object_t viewerObject;
 
         openvrml::bounding_sphere bsphere;
 
@@ -411,12 +410,6 @@ namespace openvrml_node_vrml97 {
      */
 
     /**
-     * @var openvrml::viewer::object_t grouping_node_base::viewerObject
-     *
-     * @brief Handle for the renderer.
-     */
-
-    /**
      * @var openvrml::bounding_sphere grouping_node_base::bsphere
      *
      * @brief Cached copy of the bounding_sphere enclosing this node's children.
@@ -440,8 +433,7 @@ namespace openvrml_node_vrml97 {
         bbox_size_(openvrml::make_vec3f(-1.0, -1.0, -1.0)),
         add_children_listener_(*this),
         remove_children_listener_(*this),
-        children_(*this),
-        viewerObject(0)
+        children_(*this)
     {
         this->bounding_volume_dirty(true);
     }
@@ -451,9 +443,7 @@ namespace openvrml_node_vrml97 {
      */
     template <typename Derived>
     grouping_node_base<Derived>::~grouping_node_base() OPENVRML_NOTHROW
-    {
-        // delete viewerObject...
-    }
+    {}
 
     /**
      * @brief Determine whether the node has been modified.
@@ -521,20 +511,17 @@ namespace openvrml_node_vrml97 {
         using std::vector;
         using namespace openvrml;
 
-        if (this->viewerObject && this->modified()) {
-            viewer.remove_object(this->viewerObject);
-            this->viewerObject = 0;
+        if (this->modified()) {
+            viewer.remove_object(*this);
         }
 
-        if (this->viewerObject) {
-            viewer.insert_reference(this->viewerObject);
-        } else if (!this->children_.mfnode::value().empty()) {
+        if (!this->children_.mfnode::value().empty()) {
             vector<boost::intrusive_ptr<node> >::size_type i;
             vector<boost::intrusive_ptr<node> >::size_type n =
                 this->children_.mfnode::value().size();
             size_t nSensors = 0;
 
-            this->viewerObject = viewer.begin_object(this->id().c_str());
+            viewer.begin_object(this->id().c_str());
 
             // Draw nodes that impact their siblings (DirectionalLights,
             // TouchSensors, any others? ...)

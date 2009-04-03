@@ -124,7 +124,6 @@ namespace {
 
         mutable openvrml::mat4f transform_;
         mutable bool transform_dirty;
-        openvrml::viewer::object_t xformObject;
 
     public:
         transform_node(const openvrml::node_type & type,
@@ -584,12 +583,6 @@ namespace {
      */
 
     /**
-     * @var openvrml::viewer::object_t transform_node::xformObject
-     *
-     * @brief A handle to the renderer's representation of the Transform.
-     */
-
-    /**
      * @var openvrml::mat4f transform_node::transform_
      *
      * @brief Cached copy of this node's transformation.
@@ -622,8 +615,7 @@ namespace {
         scale_orientation_(*this),
         translation_(*this),
         transform_(openvrml::make_mat4f()),
-        transform_dirty(true),
-        xformObject(0)
+        transform_dirty(true)
     {
         this->bounding_volume_dirty(true);
     }
@@ -632,9 +624,7 @@ namespace {
      * @brief Destroy.
      */
     transform_node::~transform_node() OPENVRML_NOTHROW
-    {
-        // delete xformObject...
-    }
+    {}
 
     /**
      * @brief Get the transformation associated with the node as a matrix.
@@ -681,15 +671,12 @@ namespace {
         openvrml::mat4f new_LM = this->transform_ * context.matrix();
         context.matrix(new_LM);
 
-        if (this->xformObject && modified()) {
-            viewer.remove_object(this->xformObject);
-            this->xformObject = 0;
+        if (modified()) {
+            viewer.remove_object(*this);
         }
 
-        if (this->xformObject) {
-            viewer.insert_reference(this->xformObject);
-        } else if (!this->children_.mfnode::value().empty()) {
-            this->xformObject = viewer.begin_object(this->id().c_str());
+        if (!this->children_.mfnode::value().empty()) {
+            viewer.begin_object(this->id().c_str());
 
             // Apply transforms
             viewer.transform(this->transform());

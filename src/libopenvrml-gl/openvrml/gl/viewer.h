@@ -36,6 +36,7 @@
 #   else
 #     error must define OPENVRML_GL_HAVE_GL_GLU_H or OPENVRML_GL_HAVE_OPENGL_GLU_H
 #   endif
+#   include <map>
 #   include <stack>
 
 namespace openvrml {
@@ -43,6 +44,12 @@ namespace openvrml {
     namespace gl {
 
         class OPENVRML_GL_API viewer : public openvrml::viewer {
+            typedef std::map<const node *, GLuint> list_map_t;
+            list_map_t list_map_;
+
+            typedef std::map<const texture_node *, GLuint> texture_map_t;
+            texture_map_t texture_map_;
+
         public:
             enum { max_lights = 8 };
 
@@ -185,63 +192,78 @@ namespace openvrml {
             virtual void do_end_object();
 
             // Insert objects into the display list
-            virtual object_t
-                do_insert_background(const std::vector<float> & groundAngle,
-                                     const std::vector<color> & groundColor,
-                                     const std::vector<float> & skyAngle,
-                                     const std::vector<color> & skyColor,
-                                     const image & front,
-                                     const image & back,
-                                     const image & left,
-                                     const image & right,
-                                     const image & top,
-                                     const image & bottom);
+            virtual
+            object_t
+            do_insert_background(const std::vector<float> & groundAngle,
+                                 const std::vector<color> & groundColor,
+                                 const std::vector<float> & skyAngle,
+                                 const std::vector<color> & skyColor,
+                                 const texture_node & front,
+                                 const texture_node & back,
+                                 const texture_node & left,
+                                 const texture_node & right,
+                                 const texture_node & top,
+                                 const texture_node & bottom);
 
 
-            virtual object_t do_insert_box(const vec3f & size);
-            virtual object_t do_insert_cone(float height, float radius,
-                                            bool bottom, bool side);
-            virtual object_t do_insert_cylinder(float height, float radius,
-                                                bool bottom, bool side,
-                                                bool top);
+            virtual void do_insert_box(const geometry_node & n,
+                                       const vec3f & size);
+            virtual void do_insert_cone(const geometry_node & n,
+                                        float height, float radius,
+                                        bool bottom, bool side);
+            virtual void do_insert_cylinder(const geometry_node & n,
+                                            float height, float radius,
+                                            bool bottom, bool side, bool top);
 
-            virtual object_t
-                do_insert_elevation_grid(unsigned int mask,
-                                         const std::vector<float> & height,
-                                         int32 xDimension,
-                                         int32 zDimension,
-                                         float xSpacing,
-                                         float zSpacing,
-                                         const std::vector<color> & color,
-                                         const std::vector<vec3f> & normal,
-                                         const std::vector<vec2f> & texCoord);
-            virtual object_t
-                do_insert_extrusion(
-                    unsigned int mask,
-                    const std::vector<vec3f> & spine,
-                    const std::vector<vec2f> & crossSection,
-                    const std::vector<openvrml::rotation> & orientation,
-                    const std::vector<vec2f> & scale);
-            virtual object_t
-                do_insert_line_set(const std::vector<vec3f> & coord,
-                                   const std::vector<int32> & coordIndex,
-                                   bool colorPerVertex,
-                                   const std::vector<color> & color,
-                                   const std::vector<int32> & colorIndex);
-            virtual object_t
-                do_insert_point_set(const std::vector<vec3f> & coord,
-                                    const std::vector<color> & color);
-            virtual object_t
-                do_insert_shell(unsigned int mask,
-                                const std::vector<vec3f> & coord,
-                                const std::vector<int32> & coordIndex,
-                                const std::vector<color> & color,
-                                const std::vector<int32> & colorIndex,
-                                const std::vector<vec3f> & normal,
-                                const std::vector<int32> & normalIndex,
-                                const std::vector<vec2f> & texCoord,
-                                const std::vector<int32> & texCoordIndex);
-            virtual object_t do_insert_sphere(float radius);
+            virtual
+            void do_insert_elevation_grid(const geometry_node & n,
+                                          unsigned int mask,
+                                          const std::vector<float> & height,
+                                          int32 xDimension,
+                                          int32 zDimension,
+                                          float xSpacing,
+                                          float zSpacing,
+                                          const std::vector<color> & color,
+                                          const std::vector<vec3f> & normal,
+                                          const std::vector<vec2f> & texCoord);
+
+            virtual
+            void
+            do_insert_extrusion(
+                const geometry_node & n,
+                unsigned int mask,
+                const std::vector<vec3f> & spine,
+                const std::vector<vec2f> & crossSection,
+                const std::vector<openvrml::rotation> & orientation,
+                const std::vector<vec2f> & scale);
+
+            virtual
+            void do_insert_line_set(const geometry_node & n,
+                                    const std::vector<vec3f> & coord,
+                                    const std::vector<int32> & coordIndex,
+                                    bool colorPerVertex,
+                                    const std::vector<color> & color,
+                                    const std::vector<int32> & colorIndex);
+
+            virtual
+            void do_insert_point_set(const geometry_node & n,
+                                     const std::vector<vec3f> & coord,
+                                     const std::vector<color> & color);
+
+            virtual
+            void do_insert_shell(const geometry_node & n,
+                                 unsigned int mask,
+                                 const std::vector<vec3f> & coord,
+                                 const std::vector<int32> & coordIndex,
+                                 const std::vector<color> & color,
+                                 const std::vector<int32> & colorIndex,
+                                 const std::vector<vec3f> & normal,
+                                 const std::vector<int32> & normalIndex,
+                                 const std::vector<vec2f> & texCoord,
+                                 const std::vector<int32> & texCoordIndex);
+
+            virtual void do_insert_sphere(const geometry_node & n,
+                                          float radius);
 
             // Lights
             virtual object_t do_insert_dir_light(float ambientIntensity,
@@ -265,9 +287,7 @@ namespace openvrml {
                                                   float radius);
 
 
-            virtual object_t do_insert_reference(object_t existing_object);
-
-            virtual void do_remove_object(object_t ref);
+            virtual void do_remove_object(const node & ref);
 
             virtual void do_enable_lighting(bool);
 
@@ -290,16 +310,10 @@ namespace openvrml {
 
             virtual void do_set_sensitive(node * object);
 
-            virtual texture_object_t
-                do_insert_texture(const image & img,
-                                  bool repeat_s,
-                                  bool repeat_t,
-                                  bool retainHint = false);
+            virtual void do_insert_texture(const texture_node & n,
+                                           bool retainHint = false);
 
-            // Reference/remove a texture object
-            virtual void do_insert_texture_reference(texture_object_t ref,
-                                                     size_t components);
-            virtual void do_remove_texture_object(texture_object_t);
+            virtual void do_remove_texture_object(const texture_node & n);
 
             virtual void do_set_texture_transform(const vec2f & center,
                                                   float rotation,

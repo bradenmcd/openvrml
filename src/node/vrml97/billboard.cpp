@@ -39,8 +39,6 @@ namespace {
 
         exposedfield<openvrml::sfvec3f> axis_of_rotation_;
 
-        openvrml::viewer::object_t xformObject;
-
     public:
         static
         const openvrml::mat4f
@@ -73,12 +71,6 @@ namespace {
      * @var openvrml::node_impl_util::abstract_node<billboard_node>::exposedfield<openvrml::sfvec3f> billboard_node::axis_of_rotation_
      *
      * @brief axisOfRotation exposedField.
-     */
-
-    /**
-     * @var openvrml::viewer::object_t billboard_node::xformObject
-     *
-     * @brief Handle for the renderer.
      */
 
     /**
@@ -178,17 +170,14 @@ namespace {
         child_node(type, scope),
         grouping_node(type, scope),
         openvrml_node_vrml97::grouping_node_base<billboard_node>(type, scope),
-        axis_of_rotation_(*this, openvrml::make_vec3f(0.0, 1.0, 0.0)),
-        xformObject(0)
+        axis_of_rotation_(*this, openvrml::make_vec3f(0.0, 1.0, 0.0))
     {}
 
     /**
      * @brief Destroy.
      */
     billboard_node::~billboard_node() OPENVRML_NOTHROW
-    {
-        // delete xformObject...
-    }
+    {}
 
     /**
      * @brief Render the node.
@@ -208,15 +197,12 @@ namespace {
         new_LM = LM * new_LM;
         context.matrix(new_LM);
 
-        if (this->xformObject && this->modified()) {
-            viewer.remove_object(this->xformObject);
-            this->xformObject = 0;
+        if (this->modified()) {
+            viewer.remove_object(*this);
         }
 
-        if (this->xformObject) {
-            viewer.insert_reference(this->xformObject);
-        } else if (this->children_.mfnode::value().size() > 0) {
-            this->xformObject = viewer.begin_object(this->id().c_str());
+        if (this->children_.mfnode::value().size() > 0) {
+            viewer.begin_object(this->id().c_str());
 
             viewer.transform(LM);
 

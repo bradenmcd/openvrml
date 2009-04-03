@@ -20,13 +20,14 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "fog.h"
+# include <private.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <private.h>
-# include "fog.h"
 
 /**
  * @var openvrml_node_vrml97::fog_node * openvrml_node_vrml97::fog_metatype::first

@@ -21,6 +21,7 @@
 
 # include "browser.h"
 # include "scope.h"
+# include "viewer.h"
 # include <openvrml/local/node_metatype_registry_impl.h>
 # include <openvrml/local/uri.h>
 # include <openvrml/local/field_value_types.h>
@@ -4025,22 +4026,6 @@ bool openvrml::font_style_node::top_to_bottom() const OPENVRML_NOTHROW
  */
 
 /**
- * @internal
- *
- * @var boost::mutex openvrml::geometry_node::geometry_reference_mutex_
- *
- * @brief Mutex protecting @c #geometry_reference.
- */
-
-/**
- * @internal
- *
- * @var openvrml::viewer::object_t openvrml::geometry_node::geometry_reference
- *
- * @brief Identifier for a geometry object in the renderer.
- */
-
-/**
  * @brief Construct.
  *
  * @param[in] type  the @c node_type associated with the @c node.
@@ -4051,16 +4036,11 @@ geometry_node(const node_type & type,
               const boost::shared_ptr<openvrml::scope> & scope)
     OPENVRML_NOTHROW:
     node(type, scope),
-    bounded_volume_node(type, scope),
-    geometry_reference(0)
+    bounded_volume_node(type, scope)
 {}
 
 /**
  * @brief Destroy.
- *
- * @todo Proper resource deallocation in the @c viewer depends on the
- *       @c viewer @b not having been decoupled from the @c browser.  We need
- *       to handle this better via some refcounting scheme.
  */
 openvrml::geometry_node::~geometry_node() OPENVRML_NOTHROW
 {}
@@ -4081,31 +4061,18 @@ openvrml::geometry_node * openvrml::geometry_node::to_geometry()
  *
  * @param[in,out] v     viewer.
  * @param[in] context   rendering context.
- *
- * @return object identifier for the inserted geometry.
  */
-openvrml::viewer::object_t
-openvrml::geometry_node::render_geometry(viewer & v,
-                                         rendering_context context)
+void openvrml::geometry_node::render_geometry(viewer & v,
+                                              rendering_context context)
 {
     read_write_mutex::scoped_read_lock lock(this->scene_mutex());
-    if (this->scene()) {
-        boost::mutex::scoped_lock lock(this->geometry_reference_mutex_);
 
-        if (this->geometry_reference != 0 && this->modified()) {
-            v.remove_object(this->geometry_reference);
-            this->geometry_reference = 0;
-        }
+    if (!this->scene()) { return; }
 
-        if (this->geometry_reference != 0) {
-            v.insert_reference(this->geometry_reference);
-        } else {
-            this->geometry_reference = this->do_render_geometry(v, context);
-            this->modified(false);
-        }
-        return this->geometry_reference;
-    }
-    return 0;
+    if (this->modified()) { v.remove_object(*this); }
+
+    this->do_render_geometry(v, context);
+    this->modified(false);
 }
 
 /**
@@ -4126,14 +4093,9 @@ bool openvrml::geometry_node::emissive() const OPENVRML_NOTHROW
  *
  * @param[in,out] v     viewer.
  * @param[in] context   rendering context.
- *
- * @return object identifier for the inserted geometry.
  */
-openvrml::viewer::object_t
-openvrml::geometry_node::do_render_geometry(viewer &, rendering_context)
-{
-    return 0;
-}
+void openvrml::geometry_node::do_render_geometry(viewer &, rendering_context)
+{}
 
 /**
  * @brief @c #emissive implementation.
@@ -4931,22 +4893,6 @@ openvrml::sound_source_node * openvrml::sound_source_node::to_sound_source()
  */
 
 /**
- * @internal
- *
- * @var boost::mutex openvrml::texture_node::texture_reference_mutex_
- *
- * @brief Mutex protecting @c #texture_reference.
- */
-
-/**
- * @internal
- *
- * @var openvrml::viewer::texture_object_t openvrml::texture_node::texture_reference
- *
- * @brief Identifier for a texture object in the renderer.
- */
-
-/**
  * @brief Construct.
  *
  * @param[in] type  the @c node_type associated with the @c node.
@@ -4956,16 +4902,11 @@ openvrml::texture_node::
 texture_node(const node_type & type,
              const boost::shared_ptr<openvrml::scope> & scope)
     OPENVRML_NOTHROW:
-    node(type, scope),
-    texture_reference(0)
+    node(type, scope)
 {}
 
 /**
  * @brief Destroy.
- *
- * @todo Proper resource deallocation in the @c viewer depends on the
- *       @c viewer @b not having been decoupled from the @c browser.  We need
- *       to handle this better via some refcounting scheme.
  */
 openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
 {}
@@ -4974,45 +4915,26 @@ openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
  * @brief Insert a texture into a viewer.
  *
  * @param[in,out] v viewer.
- *
- * @return object identifier for the inserted texture.
  */
-openvrml::viewer::texture_object_t
-openvrml::texture_node::render_texture(viewer & v)
+void openvrml::texture_node::render_texture(viewer & v)
 {
     read_write_mutex::scoped_read_lock lock(this->scene_mutex());
-    if (this->scene()) {
-        boost::mutex::scoped_lock lock(this->texture_reference_mutex_);
 
-        if (this->texture_reference != 0 && this->modified()) {
-            v.remove_texture_object(this->texture_reference);
-            this->texture_reference = 0;
-        }
+    if (!this->scene()) { return; }
 
-        if (this->texture_reference != 0) {
-            v.insert_texture_reference(this->texture_reference,
-                                       this->image().comp());
-        } else {
-            this->texture_reference = this->do_render_texture(v);
-            this->modified(false);
-        }
-        return this->texture_reference;
-    }
-    return 0;
+    if (this->modified()) { v.remove_texture_object(*this); }
+
+    this->do_render_texture(v);
+    this->modified(false);
 }
 
 /**
  * @brief @c #render_texture implementation.
  *
  * @param[in,out] v viewer.
- *
- * @return object identifier for the inserted texture.
  */
-openvrml::viewer::texture_object_t
-openvrml::texture_node::do_render_texture(viewer &)
-{
-    return 0;
-}
+void openvrml::texture_node::do_render_texture(viewer &)
+{}
 
 /**
  * @brief Cast to a @c texture_node.

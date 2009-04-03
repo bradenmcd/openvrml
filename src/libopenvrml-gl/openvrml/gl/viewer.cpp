@@ -25,26 +25,20 @@
  * @brief Definition of @c openvrml::gl::viewer.
  */
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
-
+# include "viewer.h"
+# include <openvrml/browser.h>
 # include <cmath>
 # include <limits>
 # ifndef NDEBUG
 #   include <iostream>
 # endif
-# include <openvrml/browser.h>
-# include "viewer.h"
+
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 // Use the stencil buffer to set the SHAPE mask.
 #   define USE_STENCIL_SHAPE 0
-
-// Textures are now done using OGL1.1 bindTexture API rather than
-// display lists when this flag is set. Don't define this if you
-// are still at OpenGL 1.0 (or get a newer OpenGL).
-
-# define USE_TEXTURE_DISPLAY_LISTS 1
 
 #   ifdef NDEBUG
 #     define OPENVRML_GL_PRINT_MESSAGE_(message_)
@@ -1148,12 +1142,12 @@ do_insert_background(const std::vector<float> & groundAngle,
                      const std::vector<color> & groundColor,
                      const std::vector<float> & skyAngle,
                      const std::vector<color> & skyColor,
-                     const image & front,
-                     const image & back,
-                     const image & left,
-                     const image & right,
-                     const image & top,
-                     const image & bottom)
+                     const texture_node & front,
+                     const texture_node & back,
+                     const texture_node & left,
+                     const texture_node & right,
+                     const texture_node & top,
+                     const texture_node & bottom)
 {
     using std::vector;
 
@@ -1173,12 +1167,12 @@ do_insert_background(const std::vector<float> & groundAngle,
     // Don't bother with a dlist if we aren't drawing anything
     if (!this->select_mode && (!skyAngle.empty()
                                || !groundAngle.empty()
-                               || !front.array().empty()
-                               || !back.array().empty()
-                               || !left.array().empty()
-                               || !right.array().empty()
-                               || !top.array().empty()
-                               || !bottom.array().empty())) {
+                               || !front.image().array().empty()
+                               || !back.image().array().empty()
+                               || !left.image().array().empty()
+                               || !right.image().array().empty()
+                               || !top.image().array().empty()
+                               || !bottom.image().array().empty())) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
@@ -1195,12 +1189,12 @@ do_insert_background(const std::vector<float> & groundAngle,
     if (!this->select_mode
             && (!skyAngle.empty()
                 || !groundAngle.empty()
-                || !front.array().empty()
-                || !back.array().empty()
-                || !left.array().empty()
-                || !right.array().empty()
-                || !top.array().empty()
-                || !bottom.array().empty())) {
+                || !front.image().array().empty()
+                || !back.image().array().empty()
+                || !left.image().array().empty()
+                || !right.image().array().empty()
+                || !top.image().array().empty()
+                || !bottom.image().array().empty())) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
@@ -1307,12 +1301,10 @@ do_insert_background(const std::vector<float> & groundAngle,
             glEnable(GL_TEXTURE_2D);
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-            static const bool repeat_s = false;
-            static const bool repeat_t = false;
             static const bool retain = true;
 
-            if (!front.array().empty()) {
-                this->insert_texture(front, repeat_s, repeat_t, retain);
+            if (!front.image().array().empty()) {
+                this->insert_texture(front, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, -1, -1);
@@ -1324,8 +1316,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(-1, 1, -1);
                 glEnd(); // GL_QUADS
             }
-            if (!back.array().empty()) {
-                this->insert_texture(back, repeat_s, repeat_t, retain);
+            if (!back.image().array().empty()) {
+                this->insert_texture(back, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(1, -1, 1);
@@ -1337,8 +1329,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(1, 1, 1);
                 glEnd(); // GL_QUADS
             }
-            if (!left.array().empty()) {
-                this->insert_texture(left, repeat_s, repeat_t, retain);
+            if (!left.image().array().empty()) {
+                this->insert_texture(left, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, -1, 1);
@@ -1350,8 +1342,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(-1, 1, 1);
                 glEnd(); // GL_QUADS
             }
-            if (!right.array().empty()) {
-                this->insert_texture(right, repeat_s, repeat_t, retain);
+            if (!right.image().array().empty()) {
+                this->insert_texture(right, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(1, -1, -1);
@@ -1363,8 +1355,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(1, 1, -1);
                 glEnd(); // GL_QUADS
             }
-            if (!top.array().empty()) {
-                this->insert_texture(top, repeat_s, repeat_t, retain);
+            if (!top.image().array().empty()) {
+                this->insert_texture(top, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, 1, -1);
@@ -1376,8 +1368,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(-1, 1, 1);
                 glEnd(); // GL_QUADS
             }
-            if (!bottom.array().empty()) {
-                this->insert_texture(bottom, repeat_s, repeat_t, retain);
+            if (!bottom.image().array().empty()) {
+                this->insert_texture(bottom, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, -1, 1);
@@ -1414,13 +1406,18 @@ do_insert_background(const std::vector<float> & groundAngle,
 /**
  * @brief Insert a box into a display list.
  *
+ * @param[in] n     the @c geometry_node corresponding to the box.
  * @param[in] size  box dimensions.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_box(const vec3f & size)
+void openvrml::gl::viewer::do_insert_box(const geometry_node & n,
+                                         const vec3f & size)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     GLuint glid = 0;
 
     if (!this->select_mode) {
@@ -1438,7 +1435,7 @@ openvrml::gl::viewer::do_insert_box(const vec3f & size)
         {0, 4, 5, 1}
     };
 
-    static const GLfloat n[6][3] =        // normals
+    static const GLfloat normal[6][3] =        // normals
     {
         {-1.0, 0.0, 0.0},
         {0.0, 0.0, 1.0},
@@ -1463,7 +1460,7 @@ openvrml::gl::viewer::do_insert_box(const vec3f & size)
 
     glBegin(GL_QUADS);
     for (i = 0; i < 6; ++i) {
-        glNormal3fv(&n[i][0]);
+        glNormal3fv(&normal[i][0]);
 
         //glTexCoord2f(0.0, 1.0);
         glTexCoord2f(0.0, 0.0);
@@ -1484,9 +1481,10 @@ openvrml::gl::viewer::do_insert_box(const vec3f & size)
     glEnd();
 
     end_geometry();
-    if (glid) { glEndList(); }
-
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(std::make_pair(&n, glid));
+    }
 }
 
 namespace {
@@ -1497,12 +1495,12 @@ namespace {
      * @param[in] height    the height for the cylinder.
      * @param[in] radius    the radius for the cylinder.
      * @param[in] numFacets the number of facets for the sides of the cylinder.
-     * @retval c        the coordinates.
-     * @retval tc       the texture coordinates.
-     * @retval faces    the faces.
+     * @param[out] c        the coordinates.
+     * @param[out] tc       the texture coordinates.
+     * @param[out] faces    the faces.
      *
-     * It might be smarter to do just one, and reference it with scaling (but the
-     * world creator could just as easily do that with DEF/USE ...).
+     * It might be smarter to do just one, and reference it with scaling (but
+     * the world creator could just as easily do that with DEF/USE ...).
      */
     OPENVRML_GL_LOCAL void computeCylinder(const double height,
                                            const double radius,
@@ -1554,19 +1552,24 @@ namespace {
 /**
  * @brief Insert a cone into a display list.
  *
+ * @param[in] n         the @c geometry_node corresponding to the cone.
  * @param[in] height    height.
  * @param[in] radius    radius at base.
  * @param[in] bottom    show the bottom.
  * @param[in] side      show the side.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_cone(const float height,
-                                     const float radius,
-                                     const bool bottom,
-                                     const bool side)
+void openvrml::gl::viewer::do_insert_cone(const geometry_node & n,
+                                          const float height,
+                                          const float radius,
+                                          const bool bottom,
+                                          const bool side)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     GLuint glid = 0;
 
     if (!this->select_mode) {
@@ -1631,29 +1634,35 @@ openvrml::gl::viewer::do_insert_cone(const float height,
     }
 
     end_geometry();
-    if (glid) { glEndList(); }
-
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(std::make_pair(&n, glid));
+    }
 }
 
 /**
  * @brief Insert a cylinder into a display list.
  *
+ * @param[in] n         the @c geometry_node corresponding to the cylinder.
  * @param[in] height    height.
  * @param[in] radius    radius.
  * @param[in] bottom    show the bottom.
  * @param[in] side      show the side.
  * @param[in] top       show the top.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_cylinder(const float height,
-                                         const float radius,
-                                         const bool bottom,
-                                         const bool side,
-                                         const bool top)
+void openvrml::gl::viewer::do_insert_cylinder(const geometry_node & n,
+                                              const float height,
+                                              const float radius,
+                                              const bool bottom,
+                                              const bool side,
+                                              const bool top)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     GLuint glid = 0;
 
     if (!this->select_mode) {
@@ -1734,9 +1743,10 @@ openvrml::gl::viewer::do_insert_cylinder(const float height,
     }
 
     end_geometry();
-    if (glid) { glEndList(); }
-
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(std::make_pair(&n, glid));
+    }
 }
 
 namespace {
@@ -1783,6 +1793,8 @@ namespace {
 /**
  * @brief Insert an elevation grid into a display list.
  *
+ * @param[in] node          the @c geometry_node corresponding to the elevation
+ *                          grid.
  * @param[in] mask
  * @param[in] height        height field.
  * @param[in] xDimension    vertices in the x direction.
@@ -1793,9 +1805,10 @@ namespace {
  * @param[in] normal        normals.
  * @param[in] texCoord      texture coordinates.
  */
-openvrml::gl::viewer::object_t
+void
 openvrml::gl::viewer::
-do_insert_elevation_grid(const unsigned int mask,
+do_insert_elevation_grid(const geometry_node & node,
+                         const unsigned int mask,
                          const std::vector<float> & height,
                          const int32 xDimension,
                          const int32 zDimension,
@@ -1805,6 +1818,12 @@ do_insert_elevation_grid(const unsigned int mask,
                          const std::vector<vec3f> & normal,
                          const std::vector<vec2f> & texCoord)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&node);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     int32 i, j;
     float x, z;
 
@@ -1912,8 +1931,10 @@ do_insert_elevation_grid(const unsigned int mask,
     }
 
     this->end_geometry();
-    if (glid) { glEndList(); }
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(list_map_t::value_type(&node, glid));
+    }
 }
 
 
@@ -2523,22 +2544,28 @@ namespace {
 /**
  * @brief Insert an extrusion into a display list.
  *
+ * @param[in] n             the @c geometry_node corresponding to the extrusion.
  * @param[in] mask
  * @param[in] spine         spine points.
  * @param[in] crossSection  cross-sections.
  * @param[in] orientation   cross-section orientations.
  * @param[in] scale         cross-section scales.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
+void
 openvrml::gl::viewer::
-do_insert_extrusion(unsigned int mask,
+do_insert_extrusion(const geometry_node & n,
+                    unsigned int mask,
                     const std::vector<vec3f> & spine,
                     const std::vector<vec2f> & crossSection,
                     const std::vector<openvrml::rotation> & orientation,
                     const std::vector<vec2f> & scale)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     using std::vector;
     vector<vec3f> c(crossSection.size() * spine.size());
     vector<vec2f> tc(crossSection.size() * spine.size());
@@ -2559,24 +2586,24 @@ do_insert_extrusion(unsigned int mask,
     if (!(mask & mask_solid)) { glDisable(GL_CULL_FACE); }
 
     // Handle creaseAngle, correct normals, ...
-    size_t n = 0;
+    size_t section = 0;
     for (vector<vec3f>::size_type i = 0;
          i < spine.size() - 1;
-         ++i, n += crossSection.size()) {
+         ++i, section += crossSection.size()) {
         glBegin(GL_QUAD_STRIP);
         for (size_t j = 0; j < crossSection.size(); ++j) {
             // Compute normals
             vec3f v1 = j < crossSection.size() - 1
-                     ? c[n + j + 1] - c[n + j]
-                     : c[n + j] - c[n + j - 1];
-            vec3f v2 = c[n + j + crossSection.size()] - c[n + j];
+                     ? c[section + j + 1] - c[section + j]
+                     : c[section + j] - c[section + j - 1];
+            vec3f v2 = c[section + j + crossSection.size()] - c[section + j];
             v1 *= v2;
             glNormal3fv(&v1[0]);
 
-            glTexCoord2fv(&tc[n + j + crossSection.size()][0]);
-            glVertex3fv(&c[n + j + crossSection.size()][0]);
-            glTexCoord2fv(&tc[n + j][0]);
-            glVertex3fv(&c[n + j][0]);
+            glTexCoord2fv(&tc[section + j + crossSection.size()][0]);
+            glVertex3fv(&c[section + j + crossSection.size()][0]);
+            glTexCoord2fv(&tc[section + j][0]);
+            glVertex3fv(&c[section + j][0]);
         }
         glEnd();
     }
@@ -2591,31 +2618,41 @@ do_insert_extrusion(unsigned int mask,
     }
 
     this->end_geometry();
-    if (glid) { glEndList(); }
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(list_map_t::value_type(&n, glid));
+    }
 }
 
 /**
  * @brief Insert a line set into a display list.
  *
+ * @param[in] n                 the @c geometry_node corresponding to the line
+ *                              set.
  * @param[in] coord             coordinates.
  * @param[in] coordIndex        coordinate indices.
- * @param[in] colorPerVertex    whether colors are applied per-vertex or per-face.
+ * @param[in] colorPerVertex    whether colors are applied per-vertex or per-
+ *                              face.
  * @param[in] color             colors.
  * @param[in] colorIndex        color indices.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_line_set(const std::vector<vec3f> & coord,
+void
+openvrml::gl::viewer::do_insert_line_set(const geometry_node & n,
+                                         const std::vector<vec3f> & coord,
                                          const std::vector<int32> & coordIndex,
                                          bool colorPerVertex,
                                          const std::vector<color> & color,
                                          const std::vector<int32> & colorIndex)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     GLuint glid = 0;
 
-    if (coord.size() < 2) { return 0; }
+    if (coord.size() < 2) { return; }
 
     if (!this->select_mode) {
         glid = glGenLists(1);
@@ -2671,23 +2708,30 @@ openvrml::gl::viewer::do_insert_line_set(const std::vector<vec3f> & coord,
 
     this->end_geometry();
 
-    if (glid) { glEndList(); }
-
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(list_map_t::value_type(&n, glid));
+    }
 }
 
 /**
  * @brief Insert a point set into a display list.
  *
+ * @param[in] n         the @c geometry_node corresponding to the point set.
  * @param[in] coord     points.
  * @param[in] color     colors.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_point_set(const std::vector<vec3f> & coord,
+void
+openvrml::gl::viewer::do_insert_point_set(const geometry_node & n,
+                                          const std::vector<vec3f> & coord,
                                           const std::vector<color> & color)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     GLuint glid = 0;
 
     if (!this->select_mode) {
@@ -2710,9 +2754,10 @@ openvrml::gl::viewer::do_insert_point_set(const std::vector<vec3f> & coord,
 
     glEnd();
     this->end_geometry();
-    if (glid) { glEndList(); }
-
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(list_map_t::value_type(&n, glid));
+    }
 }
 
 namespace {
@@ -2959,6 +3004,7 @@ namespace {
 /**
  * @brief Insert a shell into a display list.
  *
+ * @param[in] n                 the @c geometry_node corresponding to the shell.
  * @param[in] mask
  * @param[in] coord             coordinates.
  * @param[in] coord_index       coordinate indices.
@@ -2968,12 +3014,11 @@ namespace {
  * @param[in] normal_index      normal indices.
  * @param[in] tex_coord         texture coordinates.
  * @param[in] tex_coord_index   texture coordinate indices.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
+void
 openvrml::gl::viewer::
-do_insert_shell(unsigned int mask,
+do_insert_shell(const geometry_node & n,
+                unsigned int mask,
                 const std::vector<vec3f> & coord,
                 const std::vector<int32> & coord_index,
                 const std::vector<color> & color,
@@ -2983,8 +3028,14 @@ do_insert_shell(unsigned int mask,
                 const std::vector<vec2f> & tex_coord,
                 const std::vector<int32> & tex_coord_index)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     using std::vector;
-    if (coord_index.size() < 4) { return 0; } // 3 pts and a trailing -1
+    if (coord_index.size() < 4) { return; } // 3 pts and a trailing -1
 
     // Texture coordinate generation parameters.
     int texAxes[2] = { 0, 1 };         // Map s,t to x,y,z
@@ -2998,7 +3049,7 @@ do_insert_shell(unsigned int mask,
         // do the bounds intersect the radius of any active positional lights.
         texGenParams(bounds, texAxes, texParams);
         if (fequal(texParams[1], 0.0f) || fequal(texParams[3], 0.0f)) {
-            return 0;
+            return;
         }
     }
 
@@ -3111,9 +3162,10 @@ do_insert_shell(unsigned int mask,
 
     this->end_geometry();
 
-    if (glid) { glEndList(); }
-
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(list_map_t::value_type(&n, glid));
+    }
 }
 
 namespace {
@@ -3169,13 +3221,19 @@ namespace {
 /**
  * @brief Insert a sphere into a display list.
  *
+ * @param[in] n         the @c geometry_node corresponding to the sphere.
  * @param[in] radius    sphere radius.
- *
- * @return display object identifier.
  */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_sphere(const float radius)
+void
+openvrml::gl::viewer::do_insert_sphere(const geometry_node & n,
+                                       const float radius)
 {
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
+    }
+
     GLuint glid = 0;
 
     if (!this->select_mode) {
@@ -3221,9 +3279,10 @@ openvrml::gl::viewer::do_insert_sphere(const float radius)
     }
 
     this->end_geometry();
-    if (glid) { glEndList(); }
-
-    return object_t(glid);
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(list_map_t::value_type(&n, glid));
+    }
 }
 
 /**
@@ -3414,27 +3473,17 @@ openvrml::gl::viewer::do_insert_spot_light(const float ambientIntensity,
     return 0;
 }
 
-
-/**
- * @brief Insert a reference to an existing object into a display list.
- *
- * @return 0.
- */
-openvrml::gl::viewer::object_t
-openvrml::gl::viewer::do_insert_reference(const object_t existing_object)
-{
-    glCallList(GLuint(existing_object));
-    return 0;
-}
-
 /**
  * @brief Remove an object from the display list.
  *
  * @param[in] ref   object handle.
  */
-void openvrml::gl::viewer::do_remove_object(const object_t ref)
+void openvrml::gl::viewer::do_remove_object(const node & ref)
 {
-    glDeleteLists(GLuint(ref), 1);
+    const list_map_t::const_iterator list = this->list_map_.find(&ref);
+    if (list == this->list_map_.end()) { return; }
+    glDeleteLists(list->second, 1);
+    this->list_map_.erase(&ref);
 }
 
 /**
@@ -3612,18 +3661,11 @@ namespace {
 /**
  * @brief Create a texture object.
  *
- * @param[in] img           image.
- * @param[in] repeat_s      repeat in the S direction.
- * @param[in] repeat_t      repeat in the T direction.
+ * @param[in] n             texture.
  * @param[in] retainHint    whether the texture is likely to be reused.
- *
- * @return a handle to the inserted texture.
  */
-openvrml::gl::viewer::texture_object_t
-openvrml::gl::viewer::do_insert_texture(const image & img,
-                                        bool repeat_s,
-                                        bool repeat_t,
-                                        bool retainHint)
+void openvrml::gl::viewer::do_insert_texture(const texture_node & n,
+                                             bool retainHint)
 {
     using std::vector;
 
@@ -3634,11 +3676,20 @@ openvrml::gl::viewer::do_insert_texture(const image & img,
         GL_RGBA             // 4 components
     };
 
-    if (img.array().empty()) { return 0; }
+    const texture_map_t::const_iterator texture = this->texture_map_.find(&n);
+    if (texture != this->texture_map_.end()) {
+        // Enable blending if needed.
+        const int32 comp = n.image().comp();
+        if (this->blend && (comp == 2 || comp == 4)) { glEnable(GL_BLEND); }
+        glBindTexture(GL_TEXTURE_2D, texture->second);
+        return;
+    }
 
-    GLsizei width = GLsizei(img.x());
-    GLsizei height = GLsizei(img.y());
-    const GLubyte * pixels = &img.array()[0];
+    if (n.image().array().empty()) { return; }
+
+    GLsizei width = GLsizei(n.image().x());
+    GLsizei height = GLsizei(n.image().y());
+    const GLubyte * pixels = &n.image().array()[0];
 
     //
     // Rescale the texture if necessary.
@@ -3653,19 +3704,19 @@ openvrml::gl::viewer::do_insert_texture(const image & img,
 
     vector<GLubyte> rescaled_pixels;
 
-    if (size_t(width) != img.x() || size_t(height) != img.y()) {
+    if (size_t(width) != n.image().x() || size_t(height) != n.image().y()) {
         //
         // Throws std::bad_alloc.
         //
-        rescaled_pixels.resize(img.comp() * width * height);
+        rescaled_pixels.resize(n.image().comp() * width * height);
 
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        const GLint result = gluScaleImage(fmt[img.comp() - 1],
-                                           GLsizei(img.x()),
-                                           GLsizei(img.y()),
+        const GLint result = gluScaleImage(fmt[n.image().comp() - 1],
+                                           GLsizei(n.image().x()),
+                                           GLsizei(n.image().y()),
                                            GL_UNSIGNED_BYTE,
-                                           &img.array()[0],
+                                           &n.image().array()[0],
                                            width,
                                            height,
                                            GL_UNSIGNED_BYTE,
@@ -3681,29 +3732,27 @@ openvrml::gl::viewer::do_insert_texture(const image & img,
     GLuint glid = 0;
 
     if (pixels) {
-        if (this->select_mode) { return 0; }
+        if (this->select_mode) { return; }
 
         // Enable blending if needed
-        if (this->blend && (img.comp() == 2 || img.comp() == 4)) {
+        if (this->blend && (n.image().comp() == 2 || n.image().comp() == 4)) {
             glEnable(GL_BLEND);
         }
 
-#if USE_TEXTURE_DISPLAY_LISTS
         if (retainHint) {
             glGenTextures(1, &glid);
             glBindTexture(GL_TEXTURE_2D, glid);
         }
-#endif
 
         // Texturing is enabled in setMaterialMode
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         glTexParameteri(GL_TEXTURE_2D,
                         GL_TEXTURE_WRAP_S,
-                        repeat_s ? GL_REPEAT : GL_CLAMP);
+                        n.repeat_s() ? GL_REPEAT : GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D,
                         GL_TEXTURE_WRAP_T,
-                        repeat_t ? GL_REPEAT : GL_CLAMP);
+                        n.repeat_t() ? GL_REPEAT : GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -3711,50 +3760,33 @@ openvrml::gl::viewer::do_insert_texture(const image & img,
         static const GLint border = 0;
         glTexImage2D(GL_TEXTURE_2D,
                      level,
-                     GLint(img.comp()),
+                     GLint(n.image().comp()),
                      width,
                      height,
                      border,
-                     fmt[img.comp() - 1],
+                     fmt[n.image().comp() - 1],
                      GL_UNSIGNED_BYTE,
                      pixels);
         OPENVRML_GL_PRINT_ERRORS_;
     }
 
-    return texture_object_t(glid);
-}
-
-/**
- * @brief Insert a texture into the display list from an existing handle.
- *
- * @param[in] ref           texture handle.
- * @param[in] components    number of components.
- */
-void
-openvrml::gl::viewer::do_insert_texture_reference(const texture_object_t ref,
-                                                  const size_t components)
-{
-#if USE_TEXTURE_DISPLAY_LISTS
-    // Enable blending if needed
-    if (this->blend && (components == 2 || components == 4)) {
-        glEnable(GL_BLEND);
+    if (glid) {
+        this->texture_map_.insert(texture_map_t::value_type(&n, glid));
     }
-    glBindTexture(GL_TEXTURE_2D, GLuint(ref));
-#endif
 }
-
 
 /**
  * @brief Remove a texture from the display list.
  *
  * @param[in] ref   texture handle.
  */
-void openvrml::gl::viewer::do_remove_texture_object(const texture_object_t ref)
+void openvrml::gl::viewer::do_remove_texture_object(const texture_node & ref)
 {
-#if USE_TEXTURE_DISPLAY_LISTS
-    const GLuint glid = GLuint(ref);
-    glDeleteTextures(1, &glid);
-#endif
+    const texture_map_t::iterator texture = this->texture_map_.find(&ref);
+    if (texture != this->texture_map_.end()) {
+        glDeleteTextures(1, &texture->second);
+        this->texture_map_.erase(texture);
+    }
 }
 
 /**

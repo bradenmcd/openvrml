@@ -24,7 +24,6 @@
 
 #   include <openvrml/field_value.h>
 #   include <openvrml/rendering_context.h>
-#   include <openvrml/viewer.h>
 #   include <boost/bind.hpp>
 #   include <deque>
 #   include <map>
@@ -237,6 +236,7 @@ namespace openvrml {
     class browser;
     class viewpoint_node;
     class node_type;
+    class viewer;
 
     class OPENVRML_API node_metatype : boost::noncopyable {
         const node_metatype_id id_;
@@ -332,7 +332,7 @@ namespace openvrml {
 
     class OPENVRML_API null_node_type : public node_type {
     public:
-        explicit null_node_type(null_node_metatype & nodeClass)
+        explicit null_node_type(null_node_metatype & type)
             OPENVRML_NOTHROW;
         virtual ~null_node_type() OPENVRML_NOTHROW;
 
@@ -1078,14 +1078,10 @@ namespace openvrml {
 
 
     class OPENVRML_API geometry_node : public virtual bounded_volume_node {
-        boost::mutex geometry_reference_mutex_;
-        viewer::object_t geometry_reference;
-
     public:
         virtual ~geometry_node() OPENVRML_NOTHROW = 0;
 
-        viewer::object_t render_geometry(viewer & v,
-                                         rendering_context context);
+        void render_geometry(viewer & v, rendering_context context);
         bool emissive() const OPENVRML_NOTHROW;
         const color_node * color() const OPENVRML_NOTHROW;
 
@@ -1095,8 +1091,7 @@ namespace openvrml {
             OPENVRML_NOTHROW;
 
     private:
-        virtual viewer::object_t
-        do_render_geometry(viewer & v, rendering_context context);
+        virtual void do_render_geometry(viewer & v, rendering_context context);
         virtual bool do_emissive() const OPENVRML_NOTHROW;
         virtual const color_node * do_color() const OPENVRML_NOTHROW;
 
@@ -1281,13 +1276,10 @@ namespace openvrml {
 
 
     class OPENVRML_API texture_node : public virtual node {
-        boost::mutex texture_reference_mutex_;
-        viewer::texture_object_t texture_reference;
-
     public:
         virtual ~texture_node() OPENVRML_NOTHROW = 0;
 
-        viewer::texture_object_t render_texture(viewer & v);
+        void render_texture(viewer & v);
 
         const openvrml::image & image() const OPENVRML_NOTHROW;
         bool repeat_s() const OPENVRML_NOTHROW;
@@ -1301,7 +1293,7 @@ namespace openvrml {
     private:
         virtual texture_node * to_texture() OPENVRML_NOTHROW;
 
-        virtual viewer::texture_object_t do_render_texture(viewer & v);
+        virtual void do_render_texture(viewer & v);
 
         virtual const openvrml::image & do_image() const OPENVRML_NOTHROW = 0;
         virtual bool do_repeat_s() const OPENVRML_NOTHROW = 0;

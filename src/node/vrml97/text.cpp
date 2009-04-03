@@ -20,12 +20,11 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# ifdef HAVE_CONFIG_H
-#   include <config.h>
-# endif
-
-# include <boost/array.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include "text.h"
+# include <private.h>
+# include <openvrml/node_impl_util.h>
+# include <openvrml/browser.h>
+# include <openvrml/viewer.h>
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 #   include <ft2build.h>
 #   include FT_FREETYPE_H
@@ -43,10 +42,12 @@ extern "C" {
 }
 #   endif
 # endif
-# include <openvrml/node_impl_util.h>
-# include <openvrml/browser.h>
-# include <private.h>
-# include "text.h"
+# include <boost/array.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
+
+# ifdef HAVE_CONFIG_H
+#   include <config.h>
+# endif
 
 namespace {
 
@@ -165,8 +166,8 @@ namespace {
         virtual bool modified() const;
 
     private:
-        virtual openvrml::viewer::object_t do_render_geometry(openvrml::viewer & viewer,
-                                                    openvrml::rendering_context context);
+        virtual void do_render_geometry(openvrml::viewer & viewer,
+                                        openvrml::rendering_context context);
 
         virtual void do_initialize(double timestamp)
             OPENVRML_THROW1(std::bad_alloc);
@@ -1105,26 +1106,23 @@ namespace {
      * @param v         a viewer.
      * @param context   the rendering context.
      */
-    openvrml::viewer::object_t
-    text_node::
-    do_render_geometry(openvrml::viewer & v, openvrml::rendering_context)
+    void text_node::do_render_geometry(openvrml::viewer & v,
+                                       openvrml::rendering_context)
     {
         using openvrml::int32;
-        const openvrml::viewer::object_t retval =
-            v.insert_shell(openvrml::viewer::mask_ccw,
-                           this->text_geometry_.coord,
-                           this->text_geometry_.coord_index,
-                           std::vector<openvrml::color>(), // color
-                           std::vector<int32>(), // colorIndex
-                           this->text_geometry_.normal,
-                           std::vector<int32>(), // normalIndex
-                           this->text_geometry_.tex_coord,
-                           std::vector<int32>()); // texCoordIndex
+        v.insert_shell(*this,
+                       openvrml::viewer::mask_ccw,
+                       this->text_geometry_.coord,
+                       this->text_geometry_.coord_index,
+                       std::vector<openvrml::color>(), // color
+                       std::vector<int32>(), // colorIndex
+                       this->text_geometry_.normal,
+                       std::vector<int32>(), // normalIndex
+                       this->text_geometry_.tex_coord,
+                       std::vector<int32>()); // texCoordIndex
         if (this->font_style_.sfnode::value()) {
             this->font_style_.sfnode::value()->modified(false);
         }
-
-        return retval;
     }
 
     /**

@@ -19,14 +19,15 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "pixel_texture.h"
+# include "abstract_texture.h"
+# include <private.h>
+# include <openvrml/viewer.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <private.h>
-# include "pixel_texture.h"
-# include "abstract_texture.h"
 
 namespace {
 
@@ -44,8 +45,7 @@ namespace {
 
     private:
         virtual const openvrml::image & do_image() const OPENVRML_NOTHROW;
-        virtual openvrml::viewer::texture_object_t
-            do_render_texture(openvrml::viewer & v);
+        virtual void do_render_texture(openvrml::viewer & v);
     };
 
     /**
@@ -107,13 +107,9 @@ namespace {
      *
      * @return object identifier for the inserted texture.
      */
-    openvrml::viewer::texture_object_t
-    pixel_texture_node::do_render_texture(openvrml::viewer & v)
+    void pixel_texture_node::do_render_texture(openvrml::viewer & v)
     {
-        return v.insert_texture(this->image_.sfimage::value(),
-                                this->repeat_s_.value(),
-                                this->repeat_t_.value(),
-                                true);
+        v.insert_texture(*this, true);
     }
 }
 

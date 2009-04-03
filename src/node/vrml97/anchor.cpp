@@ -19,14 +19,14 @@
 // along with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include "anchor.h"
+# include "grouping_node_base.h"
+# include <openvrml/scene.h>
+# include <boost/array.hpp>
+
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-# include <boost/array.hpp>
-# include <openvrml/scene.h>
-# include "anchor.h"
-# include "grouping_node_base.h"
 
 namespace {
 

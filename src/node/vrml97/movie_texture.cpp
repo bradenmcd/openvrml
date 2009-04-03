@@ -76,12 +76,12 @@ namespace {
         virtual ~movie_texture_node() OPENVRML_NOTHROW;
 
     private:
-        virtual void do_initialize(double timestamp) OPENVRML_THROW1(std::bad_alloc);
+        virtual void do_initialize(double timestamp)
+            OPENVRML_THROW1(std::bad_alloc);
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
 
         virtual const openvrml::image & do_image() const OPENVRML_NOTHROW;
-        virtual openvrml::viewer::texture_object_t
-            do_render_texture(openvrml::viewer & v);
+        virtual void do_render_texture(openvrml::viewer & v);
 
         virtual void do_update(double time);
     };
@@ -455,8 +455,7 @@ namespace {
      *
      * @return object identifier for the inserted texture.
      */
-    openvrml::viewer::texture_object_t
-    movie_texture_node::do_render_texture(openvrml::viewer & /* v */)
+    void movie_texture_node::do_render_texture(openvrml::viewer & /* v */)
     {
 # if 0
         if (!this->img_ || this->frame < 0) { return 0; }
@@ -473,9 +472,7 @@ namespace {
         }
 
         this->lastFrame = this->frame;
-        return texture_object;
 # endif
-        return 0;
     }
 }
 

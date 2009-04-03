@@ -20,6 +20,7 @@
 
 # include "static_group.h"
 # include <openvrml/node_impl_util.h>
+# include <openvrml/viewer.h>
 # include <boost/array.hpp>
 
 # ifdef HAVE_CONFIG_H
@@ -44,8 +45,6 @@ namespace {
         mfnode children_;
         sfvec3f bbox_center_;
         sfvec3f bbox_size_;
-
-        viewer::object_t viewerObject;
 
         bounding_sphere bsphere;
 
@@ -164,24 +163,21 @@ namespace {
      */
     void
     static_group_node::render_nocull(openvrml::viewer & viewer,
-                                               rendering_context context)
+                                     const rendering_context context)
     {
         using std::vector;
 
-        if (this->viewerObject && this->modified()) {
-            viewer.remove_object(this->viewerObject);
-            this->viewerObject = 0;
+        if (this->modified()) {
+            viewer.remove_object(*this);
         }
 
-        if (this->viewerObject) {
-            viewer.insert_reference(this->viewerObject);
-        } else if (!this->children_.mfnode::value().empty()) {
+        if (!this->children_.mfnode::value().empty()) {
             vector<boost::intrusive_ptr<node> >::size_type i;
             vector<boost::intrusive_ptr<node> >::size_type n =
                 this->children_.mfnode::value().size();
             size_t nSensors = 0;
 
-            this->viewerObject = viewer.begin_object(this->id().c_str());
+            viewer.begin_object(this->id().c_str());
 
             // Draw nodes that impact their siblings (DirectionalLights,
             // TouchSensors, any others? ...)
@@ -272,8 +268,7 @@ namespace {
         child_node(type, scope),
         abstract_node<self_t>(type, scope),
         grouping_node(type, scope),
-        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f)),
-        viewerObject(0)
+        bbox_size_(make_vec3f(-1.0f, -1.0f, -1.0f))
     {}
 
     /**

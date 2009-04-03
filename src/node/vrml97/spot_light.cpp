@@ -21,9 +21,10 @@
 
 # include "spot_light.h"
 # include "abstract_light.h"
+# include <private.h>
 # include <openvrml/browser.h>
 # include <openvrml/scene.h>
-# include <private.h>
+# include <openvrml/viewer.h>
 # include <boost/array.hpp>
 
 # ifdef HAVE_CONFIG_H

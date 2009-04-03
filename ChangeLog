@@ -1,3 +1,354 @@
+2009-04-03 Braden McDaniel  <braden@endoframe.com>
+
+	Localize the management of display list and texture object
+	references inside the renderer.
+
+	* src/libopenvrml/openvrml/browser.cpp: Include viewer.h.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::geometry_node::geometry_node(const node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Removed geometry_reference
+	member.
+	(openvrml::geometry_node::render_geometry(viewer &,
+	rendering_context)): Return void; we don't need to manage the
+	geometry_reference anymore.
+	(openvrml::geometry_node::do_render_geometry(viewer &,
+	rendering_context)): Return void.
+	(openvrml::texture_node::texture_node(const node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Removed texture_reference
+	member.
+	(openvrml::texture_node::render_texture(viewer &)): Return void;
+	we don't need to manage the texture_reference anymore.
+	(openvrml::texture_node::do_render_texture(viewer &)): Return
+	void.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::geometry_node): Removed geometry_reference and
+	geometry_reference_mutex_ members.
+	(openvrml::texture_node): Removed texture_reference and
+	texture_reference_mutex_ members.
+	* src/libopenvrml/openvrml/viewer.cpp
+	(openvrml::viewer::insert_background(const std::vector<float> &,
+	const std::vector<color> &, const std::vector<float> &, const
+	std::vector<color> &, const texture_node &, const texture_node &,
+	const texture_node &, const texture_node &, const texture_node &,
+	const texture_node &)): Pass openvrml::texture_node for the
+	textures instead of openvrml::image.
+	(openvrml::viewer::insert_box(const geometry_node &, const
+	vec3f&)): Pass the geometry_node as the first parameter.
+	(openvrml::viewer::insert_cone(const geometry_node &, float,
+	float, bool, bool)): Pass the geometry_node as the first
+	parameter.
+	(openvrml::viewer::insert_cylinder(const geometry_node &, float,
+	float, bool, bool, bool)): Pass the geometry_node as the first
+	parameter.
+	(openvrml::viewer::insert_elevation_grid(const geometry_node &,
+	unsigned int, const std::vector<float> &, int32, int32, const
+	std::vector<vec3f> &, const std::vector<vec2f> &)): Pass the
+	geometry_node as the first parameter.
+	(openvrml::viewer::insert_extrusion(const geometry_node &,
+	unsigned int, const std::vector<vec3f> &, const
+	std::vector<vec2f>&, const std::vector<rotation> &, const
+	std::vector<vec2f> &)): Pass the geometry_node as the first
+	parameter.
+	(openvrml::viewer::insert_line_set(const geometry_node &, const
+	std::vector<vec3f> &, const std::vector<int32> &, bool, const
+	std::vector<color> &, const std::vector<int32> &)): Pass the
+	geometry_node as the first parameter.
+	(openvrml::viewer::insert_point_set(const geometry_node &, const
+	std::vector<vec3f> &, const std::vector<color> &)): Pass the
+	geometry_node as the first parameter.
+	(openvrml::viewer::insert_shell(const geometry_node &, unsigned
+	int, const std::vector<vec3f> &, const std::vector<int32> &, const
+	std::vector<color> &, const std::vector<int32> &, const
+	std::vector<vec3f> &, const std::vector<int32> &, const
+	std::vector<vec2f> &, const std::vector<int32> &)): Pass the
+	geometry_node as the first parameter.
+	(openvrml::viewer::insert_sphere(const geometry_node &, float)):
+	Pass the geometry_node as the first parameter.
+	(openvrml::viewer::insert_reference(object_t)): Removed.
+	(openvrml::viewer::remove_object(const node &)): Take a node
+	reference instead of an object_t.
+	(openvrml::viewer::insert_texture(const texture_node &, bool)):
+	Take a texture_node instead of an image; return void.
+	(openvrml::viewer::insert_texture_reference(texture_object_t,
+	size_t)): Removed.
+	(openvrml::viewer::remove_texture_object(const texture_node &)):
+	Take a texture_node instead of a texture_object_t.
+	* src/libopenvrml/openvrml/viewer.h
+	(openvrml::viewer): Removed texture_object_t typedef; pass
+	texture_nodes to insert_background instead of images; pass
+	geometry_node & as the first parameter of insert_box, insert_cone,
+	insert_cylinder, insert_elevation_grid, insert_extrusion,
+	insert_line_set, insert_point_set, insert_shell, and
+	insert_sphere; pass texture_node & to insert_texture instead of an
+	image; removed insert_reference and insert_texture_reference.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::do_insert_background(const
+	std::vector<float> &, const std::vector<color> &, const
+	std::vector<float> &, const std::vector<color> &, const
+	texture_node &, const texture_node &, const texture_node &, const
+	texture_node &, const texture_node &, const texture_node &)): Get
+	the textures from the texture_nodes instead of the images.
+	(openvrml::gl::viewer::do_insert_box(const geometry_node &, const
+	vec3f &)): Store/retrieve the display list in list_map_.
+	(openvrml::gl::viewer::do_insert_cone(const geometry_node &,
+	float, float, bool, bool)): Store/retrieve the display list in
+	list_map_.
+	(openvrml::gl::viewer::do_insert_cylinder(const geometry_node &,
+	float, float, bool, bool, bool)): Store/retrieve the display list
+	in list_map_.
+	(openvrml::gl::viewer::do_insert_elevation_grid(const
+	geometry_node &, unsigned int, const std::vector<float> &, int32,
+	int32, const std::vector<vec3f> &, const std::vector<vec2f> &)):
+	Store/retrieve the display list in list_map_.
+	(openvrml::gl::viewer::do_insert_extrusion(const geometry_node &,
+	unsigned int, const std::vector<vec3f> &, const
+	std::vector<vec2f>&, const std::vector<rotation> &, const
+	std::vector<vec2f> &)): Store/retrieve the display list in
+	list_map_.
+	(openvrml::gl::viewer::do_insert_line_set(const geometry_node &,
+	const std::vector<vec3f> &, const std::vector<int32> &, bool,
+	const std::vector<color> &, const std::vector<int32> &)):
+	Store/retrieve the display list in list_map_.
+	(openvrml::gl::viewer::do_insert_point_set(const geometry_node &,
+	const std::vector<vec3f> &, const std::vector<color> &)):
+	Store/retrieve the display list in list_map_.
+	(openvrml::gl::viewer::do_insert_shell(const geometry_node &,
+	unsigned int, const std::vector<vec3f> &, const
+	std::vector<int32>&, const std::vector<color> &, const
+	std::vector<int32> &, const std::vector<vec3f> &, const
+	std::vector<int32> &, const std::vector<vec2f> &, const
+	std::vector<int32> &)): Store/retrieve the display list in
+	list_map_.
+	(openvrml::gl::viewer::do_insert_sphere(const geometry_node &,
+	float)): Store/retrieve the display list in list_map_.
+	(openvrml::gl::viewer::do_insert_reference(object_t)): Removed.
+	(openvrml::gl::viewer::do_remove_object(const node &)): Retrieve
+	the display list to delete from list_map_.
+	(openvrml::gl::viewer::do_insert_texture(const texture_node &,
+	bool)): Store/retrieve the texture object reference in
+	texture_map_.
+	(openvrml::gl::viewer::do_insert_texture_reference(texture_object_t,
+	size_t)): Removed.
+	(openvrml::gl::viewer::do_remove_texture_object(const
+	texture_node&)): Retrieve the texture object to delete from
+	texture_map_.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	(openvrml::gl::viewer): Added members list_map_ and texture_map_.
+	* src/node/vrml97/anchor.cpp: Reorderd includes for consistency.
+	* src/node/vrml97/appearance.cpp: Include <openvrml/viewer.h>.
+	* src/node/vrml97/background.cpp
+	(openvrml_node_vrml97::background_metatype::background_metatype(openvrml::browser&)):
+	Initialize null_texture_node_metatype_ and null_texture_node_type_
+	members.
+	(null_texture_node): A "null" texture_node implementation to
+	provide the default background.
+	(openvrml_node_vrml97::background_metatype::do_render(openvrml::viewer&)
+	const): Use null_texture_node for the default background textures.
+	(openvrml_node_vrml97::background_node::texture_url_exposedfield::texture_url_exposedfield(background_node&,
+	bool background_node::*)): Removed.
+	(openvrml_node_vrml97::background_node::texture_url_exposedfield::texture_url_exposedfield(const
+	texture_url_exposedfield &)): Removed.
+	(openvrml_node_vrml97::background_node::texture_url_exposedfield::~texture_url_exposedfield()):
+	Removed.
+	(openvrml_node_vrml97::background_node::texture_url_exposedfield::do_clone()
+	const): Removed.
+	(openvrml_node_vrml97::background_node::texture_url_exposedfield::event_side_effect(const
+	openvrml::mfstring &, double)): Removed.
+	(openvrml_node_vrml97::background_node::background_node(const
+	openvrml::node_type &, const
+	boost::shareed_ptr<openvrml::scope>&)): Don't need to pass the
+	update flag pointer to the url fields; removed initialization of
+	the update flags; construct ImageTexture nodes to provide the
+	textures.
+	(openvrml_node_vrml97::background_node::update_textures()):
+	Removed.
+	(null_scope_ptr): Something to hand off to the null_texture_node
+	base class constructors.
+	(null_texture_node::null_texture_node(const
+	openvrml::null_node_type &)): Added null_texture_node constructor.
+	(null_texture_node::~null_texture_node()): Added null_texture_node
+	destructor.
+	(null_texture_node::do_field(const std::string &, const
+	openvrml::field_value &)): Do-nothing (but crash) implementation.
+	(null_texture_node::do_field(const std::string &) const)):
+	Do-nothing (but crash) implementation.
+	(null_texture_node::do_process_event(const std::string &, const
+	openvrml::field_value &, double)): Do-nothing (but crash)
+	implementation.
+	(null_texture_node::do_eventout(const std::string &) const)):
+	Do-nothing (but crash) implementation.
+	(null_texture_node::do_event_listener(const std::string &)):
+	Do-nothing (but crash) implementation.
+	(null_texture_node::do_event_emitter(const std::string &)):
+	Do-nothing (but crash) implementation.
+	(null_texture_node::do_image() const): Return an empty
+	openvrml::image.
+	(null_texture_node::do_repeat_s() const): Return false.
+	(null_texture_node::do_repeat_t() const): Return false.
+	* src/node/vrml97/background.h
+	(openvrml_node_vrml97::background_metatype): Added members
+	null_texture_node_metatype_ and null_texture_node_type_.
+	(openvrml_node_vrml97::background_node): Removed
+	texture_url_exposedfield; changed back_url_, bottom_url_,
+	front_url_, left_url_, right_url, and top_url_ to
+	exposedfield<openvrml::mfstring>; changed front, back, left,
+	right, top, and bottom to
+	boost::intrusive_ptr<openvrml::texture_node>; removed texture
+	mutex and update flag members; removed update_textures member
+	function.
+	* src/node/vrml97/billboard.cpp
+	(billboard_node): Removed xformObject member.
+	(billboard_node::billboard_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Removed initialization of
+	xformObject.
+	(billboard_node::do_render_child(openvrml::viewer &,
+	openvrml::rendering_context)): Removed code to manage xformObject.
+	* src/node/vrml97/box.cpp
+	(box_node::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/cone.cpp
+	(cone_node::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/cylinder.cpp
+	(cylinder_node::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/directional_light.cpp: Include
+	<openvrml/viewer.h>.
+	* src/node/vrml97/elevation_grid.cpp
+	(elevation_grid_node::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/extrusion.cpp
+	(extrusion_node::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/fog.cpp: Include <openvrml/viewer.h>.
+	* src/node/vrml97/grouping_node_base.h
+	(openvrml_node_vrml97::grouping_node_base<Derived>): Removed
+	viewerObject member.
+	(openvrml_node_vrml97::grouping_node_base<Derived>::grouping_node_base(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Removed initialization of
+	viewerObject.
+	(openvrml_node_vrml97::grouping_node_base<Derived>::render_nocull(openvrml::viewer&,
+	openvrml::rendering_context)): Removed code to manage
+	viewerObject.
+	* src/node/vrml97/image_texture.cpp
+	(image_texture_node::do_render_texture(openvrml::viewer &)):
+	Return void.
+	* src/node/vrml97/indexed_face_set.cpp
+	(indexed_face_set::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/indexed_line_set.cpp
+	(indexed_line_set::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/movie_texture.cpp
+	(movie_texture_node::do_render_texture(openvrml::viewer &)):
+	Return void.
+	* src/node/vrml97/pixel_texture.cpp
+	(pixel_texture_node::do_render_texture(openvrml::viewer &)):
+	Return void.
+	* src/node/vrml97/point_light.cpp: Include <openvrml/viewer.h>.
+	* src/node/vrml97/point_set.cpp
+	(point_set::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/proximity_sensor.cpp: Include
+	<openvrml/viewer.h>.
+	* src/node/vrml97/sphere.cpp
+	(sphere::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/spot_light.cpp: Include <openvrml/viewer.h>.
+	* src/node/vrml97/shape.cpp
+	(shape_node): Removed viewerObject member.
+	(shape_node::shape_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Removed initialization of
+	viewerObject.
+	(shape_node::do_render_child(openvrml::viewer &,
+	openvrml::rendering_context)): Removed code to manage
+	viewerObject.
+	* src/node/vrml97/text.cpp
+	(text::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/vrml97/texture_transform.cpp: Include
+	<openvrml/viewer.h>.
+	* src/node/vrml97/transform.cpp
+	(transform_node): Removed xformObject member.
+	(transform_node::transform_node(const openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Removed initialization of
+	xformObject.
+	(transform_node::do_render_child(openvrml::viewer &,
+	openvrml::rendering_context)): Removed code to manage xformObject.
+	* src/node/vrml97/visibility_sensor.cpp: Include
+	<openvrml/viewer.h>.
+	* src/node/x3d-cad-geometry/indexed_quad_set.cpp
+	(indexed_quad_set::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Return void.
+	* src/node/x3d-geospatial/geo_elevation_grid.cpp
+	(geo_elevation_grid_node::do_render_geometry(openvrml::viewer &,
+	rendering_context)): Return void.
+	* src/node/x3d-grouping/static_group.cpp
+	(static_group_node): Removed viewerObject member.
+	(static_group_node::render_nocull(openvrml::viewer &,
+	rendering_context)): Removed code to manage viewerObject.
+	(static_group_node::static_group_node(const node_type &, const
+	boost::shared_ptr<openvrml::scope> &)): Removed viewerObject
+	initialization.
+	* src/node/x3d-nurbs/nurbs_curve.cpp
+	(nurbs_curve_node::do_render_geometry(openvrml::viewer &,
+	rendering_context)): Return void.
+	* src/node/x3d-nurbs/nurbs_patch_surface.cpp
+	(nurbs_patch_surface_node::do_render_geometry(openvrml::viewer &,
+	rendering_context)): Return void.
+	* src/node/x3d-nurbs/nurbs_trimmed_surface.cpp
+	(nurbs_trimmed_surface_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-nurbs/nurbs_swept_surface.cpp
+	(nurbs_swept_surface_node::do_render_geometry(openvrml::viewer &,
+	rendering_context)): Return void.
+	* src/node/x3d-nurbs/nurbs_swung_surface.cpp
+	(nurbs_swung_surface_node::do_render_geometry(openvrml::viewer &,
+	rendering_context)): Return void.
+	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
+	(indexed_triangle_fan_set_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-rendering/indexed_triangle_set.cpp
+	(indexed_triangle_set_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-rendering/indexed_triangle_strip_set.cpp
+	(indexed_triangle_strip_set_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-rendering/triangle_fan_set.cpp
+	(triangle_fan_set_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-rendering/triangle_set.cpp
+	(triangle_set_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-rendering/triangle_strip_set.cpp
+	(triangle_strip_set_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/arc2d.cpp
+	(arc2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/arc_close2d.cpp
+	(arc_close2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/circle2d.cpp
+	(circle2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/disk2d.cpp
+	(disk2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/polyline2d.cpp
+	(polyline2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/polypoint2d.cpp
+	(polypoint2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/rectangle2d.cpp
+	(rectangle2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+	* src/node/x3d-geometry2d/triangle_set2d.cpp
+	(triangle_set2d_node::do_render_geometry(openvrml::viewer&,
+	rendering_context)): Return void.
+
 2009-04-01 Braden McDaniel  <braden@endoframe.com>
 
 	Define OPENVRML_GL_HAVE_GL_GLU_H and OPENVRML_GL_HAVE_WINDOWS_H
@@ -27,7 +378,7 @@
 
 2009-03-30 Braden McDaniel  <braden@endoframe.com>
 
-	* src/node/vrml97/scaler_interpolator.cpp: Removed errant
+	* src/node/vrml97/scalar_interpolator.cpp: Removed errant
 	shape_node definition.
 
 2009-03-30 Braden McDaniel  <braden@endoframe.com>
