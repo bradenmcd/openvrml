@@ -70,10 +70,10 @@ namespace {
         //
         // Window system specific methods
         //
-        virtual void post_redraw();
-        virtual void set_cursor(cursor_style c);
-        virtual void swap_buffers();
-        virtual void set_timer(double);
+        virtual void do_post_redraw();
+        virtual void do_set_cursor(cursor_style c);
+        virtual void do_swap_buffers();
+        virtual void do_set_timer(double);
     };
 }
 
@@ -384,7 +384,7 @@ namespace {
         } while (!done);
     }
 
-    void sdl_viewer::post_redraw()
+    void sdl_viewer::do_post_redraw()
     {
         SDL_Event redraw_event;
         redraw_event.type = SDL_USEREVENT;
@@ -394,10 +394,10 @@ namespace {
         SDL_PushEvent(&redraw_event);
     }
 
-    void sdl_viewer::set_cursor(cursor_style)
+    void sdl_viewer::do_set_cursor(cursor_style)
     {}
 
-    void sdl_viewer::swap_buffers()
+    void sdl_viewer::do_swap_buffers()
     {
         SDL_GL_SwapBuffers();
     }
@@ -416,7 +416,7 @@ namespace {
         return 0;
     }
 
-    void sdl_viewer::set_timer(const double t)
+    void sdl_viewer::do_set_timer(const double t)
     {
         if (!this->update_timer_id) {
             const Uint32 interval = Uint32(1000.0 * t + 20); // milliseconds.

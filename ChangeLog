@@ -1,3 +1,35 @@
+2009-04-04 Braden McDaniel  <braden@endoframe.com>
+
+	Apply the nonvirtual interface pattern to openvrml::gl::viewer's
+	pure virtual functions.
+
+	* examples/sdl_viewer.cpp (sdl_viewer): Override do_post_redraw,
+	do_set_cursor, do_swap_buffers, and do_set_timer.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::post_redraw()): Delegate to do_post_redraw.
+	(openvrml::gl::viewer::do_post_redraw()): Moved the logic that was
+	in post_redraw to here.
+	(openvrml::gl::viewer::set_cursor(cursor_style)): Delegate to
+	do_set_cursor.
+	(openvrml::gl::viewer::do_set_cursor(cursor_style)): Moved the
+	logic that was in set_cursor to here.
+	(openvrml::gl::viewer::swap_buffers()): Delegate to
+	do_swap_buffers.
+	(openvrml::gl::viewer::do_swap_buffers()): Moved the logic that
+	was in swap_buffers to here.
+	(openvrml::gl::viewer::set_timer(double)): Delegate to
+	do_set_timer.
+	(openvrml::gl::viewer::do_set_timer(double)): Moved the logic that
+	was in set_timer to here.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	(openvrml::gl::viewer): Made post_redraw, set_cursor,
+	swap_buffers, and set_timer nonvirtual (and protected); added
+	private virtual functions do_post_redraw, do_set_cursor,
+	do_swap_buffers, and do_set_timer.
+	* src/openvrml-xembed/browser.cpp
+	(GtkGLViewer): Override do_post_redraw, do_set_cursor,
+	do_swap_buffers, and do_set_timer.
+
 2009-04-03 Braden McDaniel  <braden@endoframe.com>
 
 	Get rid of the last vestiges of openvrml::viewer::object_t.

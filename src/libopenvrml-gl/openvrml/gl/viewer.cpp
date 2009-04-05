@@ -4659,14 +4659,33 @@ openvrml::gl::viewer::do_draw_bounding_sphere(
 }
 
 /**
- * @fn void openvrml::gl::viewer::post_redraw()
+ * @brief Called to indicate to the windowing system that a redraw is
+ *        necessary.
+ */
+void openvrml::gl::viewer::post_redraw()
+{
+    this->do_post_redraw();
+}
+
+/**
+ * @fn void openvrml::gl::viewer::do_post_redraw()
  *
  * @brief Called to indicate to the windowing system that a redraw is
  *        necessary.
  */
 
 /**
- * @fn void openvrml::gl::viewer::set_cursor(cursor_style c)
+ * @brief Called to set the cursor style.
+ *
+ * @param[in] c cursor style identifier.
+ */
+void openvrml::gl::viewer::set_cursor(const cursor_style c)
+{
+    this->do_set_cursor(c);
+}
+
+/**
+ * @fn void openvrml::gl::viewer::do_set_cursor(cursor_style c)
  *
  * @brief Called to set the cursor style.
  *
@@ -4674,14 +4693,33 @@ openvrml::gl::viewer::do_draw_bounding_sphere(
  */
 
 /**
- * @fn void openvrml::gl::viewer::swap_buffers()
+ * @brief Called to indicate to the windowing system that the front and back
+ *        buffers should be swapped.
+ */
+void openvrml::gl::viewer::swap_buffers()
+{
+    this->do_swap_buffers();
+}
+
+/**
+ * @fn void openvrml::gl::viewer::do_swap_buffers()
  *
  * @brief Called to indicate to the windowing system that the front and back
  *        buffers should be swapped.
  */
 
 /**
- * @fn void openvrml::gl::viewer::set_timer(double interval)
+ * @brief Set a delay.
+ *
+ * @param[in] interval  milliseconds to delay.
+ */
+void openvrml::gl::viewer::set_timer(const double interval)
+{
+    this->do_set_timer(interval);
+}
+
+/**
+ * @fn void openvrml::gl::viewer::do_set_timer(double interval)
  *
  * @brief Set a delay.
  *

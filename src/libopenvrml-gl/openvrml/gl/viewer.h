@@ -163,6 +163,11 @@ namespace openvrml {
             // Check for pickable entity selection
             bool checkSensitive(int x, int y, event_type event);
 
+            void post_redraw();
+            void set_cursor(cursor_style c);
+            void swap_buffers();
+            void set_timer(double interval);
+
         public:
             viewer();
             virtual ~viewer() OPENVRML_NOTHROW;
@@ -340,10 +345,10 @@ namespace openvrml {
 
             // Window system specific methods
 
-            virtual void post_redraw() = 0;
-            virtual void set_cursor(cursor_style c) = 0;
-            virtual void swap_buffers() = 0;
-            virtual void set_timer(double interval) = 0;
+            virtual void do_post_redraw() = 0;
+            virtual void do_set_cursor(cursor_style c) = 0;
+            virtual void do_swap_buffers() = 0;
+            virtual void do_set_timer(double interval) = 0;
         };
     }
 }

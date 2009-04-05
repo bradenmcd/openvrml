@@ -617,10 +617,10 @@ namespace {
         //
         // Implement pure virtual methods from openvrml::gl::viewer.
         //
-        virtual void post_redraw();
-        virtual void set_cursor(openvrml::gl::viewer::cursor_style);
-        virtual void swap_buffers();
-        virtual void set_timer(double);
+        virtual void do_post_redraw();
+        virtual void do_set_cursor(openvrml::gl::viewer::cursor_style);
+        virtual void do_swap_buffers();
+        virtual void do_set_timer(double);
     };
 }
 
@@ -1121,7 +1121,7 @@ namespace {
         if (this->timer) { g_source_remove(timer); }
     }
 
-    void GtkGLViewer::post_redraw()
+    void GtkGLViewer::do_post_redraw()
     {
         if (!this->browser_plug_.priv->redraw_needed) {
             this->browser_plug_.priv->redraw_needed = true;
@@ -1130,7 +1130,7 @@ namespace {
         }
     }
 
-    void GtkGLViewer::set_cursor(cursor_style style)
+    void GtkGLViewer::do_set_cursor(cursor_style style)
     {
         GdkCursor * cursor(0);
 
@@ -1170,7 +1170,7 @@ namespace {
         gdk_cursor_destroy(cursor);
     }
 
-    void GtkGLViewer::swap_buffers()
+    void GtkGLViewer::do_swap_buffers()
     {
         GdkGLDrawable * const gl_drawable =
             gtk_widget_get_gl_drawable(
@@ -1178,7 +1178,7 @@ namespace {
         gdk_gl_drawable_swap_buffers(gl_drawable);
     }
 
-    void GtkGLViewer::set_timer(const double t)
+    void GtkGLViewer::do_set_timer(const double t)
     {
         if (!this->timer) {
             this->timer =
