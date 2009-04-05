@@ -1,5 +1,29 @@
 2009-04-05 Braden McDaniel  <braden@endoframe.com>
 
+	Clean up allocated GL resources on window resize so that the
+	viewer can be reinitialized.  Some platforms and bindings (notably
+	SDL on Windows) destroy the GL context on resize.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::viewer()): Initialize the tesselator to 0;
+	allocate the tesselator in openvrml::gl::viewer::initialize
+	instead.
+	(openvrml::gl::viewer::~viewer()): Call shutdown.
+	(openvrml::gl::viewer::initialize()): Allocate the GLU tesselator
+	here.
+	(openvrml::gl::viewer::delete_list): Function object to call
+	glDeleteLists.
+	(openvrml::gl::viewer::delete_texture): Function object to call
+	glDeleteTextures.
+	(openvrml::gl::viewer::shutdown()): Clean up display lists,
+	textures objects, and the GLU tesselator.
+	(openvrml::gl::viewer::resize(size_t, size_t)): Call shutdown.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	(openvrml::gl::viewer): Declare structs delete_list and
+	delete_texture; added shutdown member function.
+
+2009-04-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/node/vrml97/abstract_indexed_set.h
 	(openvrml_node_vrml97::abstract_indexed_set_node<Derived>::do_color()
 	const): Override openvrml::geometry_node::do_color instead of

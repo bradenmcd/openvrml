@@ -45,9 +45,11 @@ namespace openvrml {
 
         class OPENVRML_GL_API viewer : public openvrml::viewer {
             typedef std::map<const node *, GLuint> list_map_t;
+            struct delete_list;
             list_map_t list_map_;
 
             typedef std::map<const texture_node *, GLuint> texture_map_t;
+            struct delete_texture;
             texture_map_t texture_map_;
 
         public:
@@ -146,8 +148,8 @@ namespace openvrml {
             double render_time;
             double render_time1;
 
-            // Initialize OpenGL state
             void initialize();
+            void shutdown();
 
             void begin_geometry();
             void end_geometry();

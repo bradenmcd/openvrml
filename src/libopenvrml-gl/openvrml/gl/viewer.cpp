@@ -911,7 +911,7 @@ openvrml::gl::viewer::viewer():
     win_height(1),
     objects(0),
     nested_objects(0),
-    tesselator(gluNewTess()),
+    tesselator(0),
     sensitive(0),
     active_sensitive(0),
     over_sensitive(0),
@@ -936,7 +936,7 @@ openvrml::gl::viewer::viewer():
  */
 openvrml::gl::viewer::~viewer() OPENVRML_NOTHROW
 {
-    gluDeleteTess(this->tesselator);
+    this->shutdown();
 }
 
 /**
@@ -944,6 +944,9 @@ openvrml::gl::viewer::~viewer() OPENVRML_NOTHROW
  */
 void openvrml::gl::viewer::initialize()
 {
+    assert(!this->tesselator);
+    this->tesselator = gluNewTess();
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
@@ -964,6 +967,39 @@ void openvrml::gl::viewer::initialize()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     this->gl_initialized = true;
+}
+
+struct OPENVRML_LOCAL openvrml::gl::viewer::delete_list {
+    void operator()(const list_map_t::value_type & value) const
+    {
+        glDeleteLists(value.second, 1);
+    }
+};
+
+struct OPENVRML_LOCAL openvrml::gl::viewer::delete_texture {
+    void operator()(const texture_map_t::value_type & value) const
+    {
+        glDeleteTextures(1, &value.second);
+    }
+};
+
+/**
+ * @brief Shut down.
+ */
+void openvrml::gl::viewer::shutdown()
+{
+    std::for_each(this->list_map_.begin(), this->list_map_.end(),
+                  delete_list());
+    this->list_map_.clear();
+
+    std::for_each(this->texture_map_.begin(), this->texture_map_.end(),
+                  delete_texture());
+    this->texture_map_.clear();
+
+    if (this->tesselator) { gluDeleteTess(this->tesselator); }
+    this->tesselator = 0;
+
+    this->gl_initialized = false;
 }
 
 namespace {
@@ -3989,9 +4025,18 @@ void openvrml::gl::viewer::redraw()
  */
 void openvrml::gl::viewer::resize(size_t width, size_t height)
 {
+    //
+    // Some platforms/bindings may destroy the GL context when resizing the
+    // window.  Go ahead and clean up display lists and texture maps.  They'll
+    // get recreated as needed.
+    //
+    this->shutdown();
+
     if (width < 2) { width = 2; }
     if (height < 2) { height = 2; }
-    glViewport(0, 0, GLsizei(width), GLsizei(height));
+    glViewport(0, 0,
+               static_cast<GLsizei>(width),
+               static_cast<GLsizei>(height));
     this->win_width = width;
     this->win_height = height;
 }
