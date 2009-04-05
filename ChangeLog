@@ -1,3 +1,10 @@
+2009-04-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/node/vrml97/abstract_indexed_set.h
+	(openvrml_node_vrml97::abstract_indexed_set_node<Derived>::do_color()
+	const): Override openvrml::geometry_node::do_color instead of
+	openvrml::geometry_node::color (which is now nonvirtual).
+
 2009-04-04 Braden McDaniel  <braden@endoframe.com>
 
 	Apply the nonvirtual interface pattern to openvrml::gl::viewer's

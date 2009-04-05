@@ -80,7 +80,7 @@ namespace openvrml_node_vrml97 {
 
         virtual bool modified() const;
 
-        virtual const openvrml::color_node * color() const OPENVRML_NOTHROW;
+        virtual const openvrml::color_node * do_color() const OPENVRML_NOTHROW;
 
     protected:
         abstract_indexed_set_node(
@@ -283,7 +283,7 @@ namespace openvrml_node_vrml97 {
      */
     template <typename Derived>
     const openvrml::color_node *
-    abstract_indexed_set_node<Derived>::color() const OPENVRML_NOTHROW
+    abstract_indexed_set_node<Derived>::do_color() const OPENVRML_NOTHROW
     {
         using openvrml::sfnode;
         return openvrml::node_cast<openvrml::color_node *>(
