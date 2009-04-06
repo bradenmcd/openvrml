@@ -793,37 +793,6 @@ openvrml_node_vrml97::background_node::do_shutdown(const double timestamp)
 
 namespace {
 
-    OPENVRML_LOCAL void
-    update_texture(openvrml_node_vrml97::background_node & node,
-                   openvrml::read_write_mutex & img_mutex,
-                   const openvrml::mfstring & url,
-                   openvrml::image & img)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        try {
-            using openvrml::image;
-            using openvrml_node_vrml97::image_stream_listener;
-
-            if (url.value().empty()) {
-                img = image();
-            } else {
-                using std::auto_ptr;
-
-                auto_ptr<openvrml::resource_istream> in(
-                    node.scene()->get_resource(url.value()));
-                auto_ptr<openvrml::stream_listener> listener(
-                    new image_stream_listener(in->url(),
-                                              img,
-                                              node,
-                                              img_mutex));
-                node.scene()->read_stream(in, listener);
-            }
-        } catch (const openvrml::no_alternative_url &) {}
-    }
-}
-
-namespace {
-
     const boost::shared_ptr<openvrml::scope> null_scope_ptr;
 
     null_texture_node::null_texture_node(const openvrml::null_node_type & type)

@@ -1,5 +1,12 @@
 2009-04-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/node/vrml97/background.cpp
+	(update_texture(openvrml_node_vrml97::background_node &,
+	openvrml::read_write_mutex &, const openvrml::mfstring &,
+	openvrml::image &)): Removed (cruft).
+
+2009-04-05 Braden McDaniel  <braden@endoframe.com>
+
 	Clean up allocated GL resources on window resize so that the
 	viewer can be reinitialized.  Some platforms and bindings (notably
 	SDL on Windows) destroy the GL context on resize.
