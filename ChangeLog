@@ -1,4 +1,10 @@
-2009-04-05 Braden McDaniel  <braden@endoframe.com>
+2009-04-06 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/exposedfield.h
+	(openvrml::exposedfield<FieldValue>): Resolve ambiguity regarding
+	"value".
+
+2009-04-06 Braden McDaniel  <braden@endoframe.com>
 
 	* src/node/vrml97/background.cpp
 	(update_texture(openvrml_node_vrml97::background_node &,

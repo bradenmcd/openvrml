@@ -34,6 +34,8 @@ namespace openvrml {
     public:
         virtual ~exposedfield() OPENVRML_NOTHROW;
 
+        using FieldValue::value;
+
     protected:
         exposedfield(openvrml::node & node,
                      const typename FieldValue::value_type & value =
