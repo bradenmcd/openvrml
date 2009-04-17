@@ -120,7 +120,7 @@ start_element(openvrml::local::xml_reader & reader)
     case component::xml_reader::level:
         if (reader.local_name() == "requires") {
             string id;
-            size_t level;
+            size_t level = 0;
             move_to_attr_result = reader.move_to_first_attribute();
             while (move_to_attr_result > 0) {
                 using boost::lexical_cast;

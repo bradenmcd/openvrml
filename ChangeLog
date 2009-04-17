@@ -1,5 +1,11 @@
 2009-04-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/local/component.cpp
+	(openvrml::local::component::xml_reader::start_element(openvrml::local::xml_reader&)):
+	Quell uninitialized variable warning.
+
+2009-04-17 Braden McDaniel  <braden@endoframe.com>
+
 	* src/script/java.cpp: Include <iostream> for std::cerr.
 
 2009-04-17 Braden McDaniel  <braden@endoframe.com>
