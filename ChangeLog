@@ -1,5 +1,11 @@
 2009-04-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/mozilla-plugin/openvrml.cpp
+	(NPP_StreamAsFile(NPP, NPStream *, const char *)): Quell unused
+	variable warning.
+
+2009-04-17 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/local/xml_reader.cpp: Whitespace
 	changes.
 

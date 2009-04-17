@@ -608,6 +608,7 @@ void NPP_StreamAsFile(const NPP instance,
                       NPStream *,
                       const char * /* fname */)
 {
+    boost::ignore_unused_variable_warning(instance);
     assert(instance);
 }
 
