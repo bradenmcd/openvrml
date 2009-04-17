@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2005, 2006, 2007, 2008  Braden McDaniel
+// Copyright 2005, 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -35,15 +35,19 @@
 #     define PHOENIX_LIMIT 6
 #   endif
 
-#   if OPENVRML_ENABLE_EXCEPTION_SPECS
+#   if OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS
 #     define OPENVRML_NOTHROW throw ()
+#   else
+#     define OPENVRML_NOTHROW
+#   endif
+
+#   if OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS
 #     define OPENVRML_THROW1(ex_) throw (ex_)
 #     define OPENVRML_THROW2(ex1_, ex2_) throw (ex1_, ex2_)
 #     define OPENVRML_THROW3(ex1_, ex2_, ex3_) throw (ex1_, ex2_, ex3_)
 #     define OPENVRML_THROW4(ex1_, ex2_, ex3_, ex4_) throw (ex1_, ex2_, ex3_, ex4_)
 #     define OPENVRML_THROW5(ex1_, ex2_, ex3_, ex4_, ex5_) throw (ex1_, ex2_, ex3_, ex4_, ex5_)
 #   else
-#     define OPENVRML_NOTHROW
 #     define OPENVRML_THROW1(ex_)
 #     define OPENVRML_THROW2(ex1_, ex2_)
 #     define OPENVRML_THROW3(ex1_, ex2_, ex3_)

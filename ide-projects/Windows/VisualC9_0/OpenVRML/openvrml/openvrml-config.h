@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2005  Braden McDaniel
+// Copyright 2005, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,7 @@
 
 #   define OPENVRML_LOCAL
 
-#   define OPENVRML_ENABLE_EXCEPTION_SPECS 0
+#   define OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS 0
+#   define OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS 0
 
 # endif // ifndef OPENVRML_CONFIG_H

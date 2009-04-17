@@ -147,9 +147,19 @@ for details.
 that modify what features are built and/or what packages OpenVRML
 depends on.
 
- --disable-exception-specs
-     Disable use of C++ exception specifications.  This is likely to
-     improve performance.  Note that this changes the library ABI.
+ --enable-exception-specs[=yes,no,nothrow]
+     Modulate use of C++ exception specifications.  By default,
+     OpenVRML uses exception specifications wherever the set of
+     exceptions thrown from a function can be constrained.  This can
+     aid in debugging; but in general it is likely to degrade
+     performance.  Exception specifications can be disabled altogether
+     (using an argument of "no" or the option
+     "--disable-exception-specs"); or, only empty (i.e., nonthrowing)
+     exception specifications can be enabled (using an argument of
+     "nothrow").  Some compilers may be able to use the nonthrowing
+     exception specification as an optimization hint.  Note that
+     changing what exception specifications are applied changes the
+     library ABI.
 
  --enable-gecko-rpath
      Enable use of the Gecko runtime library directory -rpath flag.  On

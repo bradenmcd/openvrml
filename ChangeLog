@@ -1,3 +1,25 @@
+2009-04-16 Braden McDaniel  <braden@endoframe.com>
+
+	Allow OpenVRML to be configured to use only nonthrowing exception
+	specifications.
+
+	* README: Added documentation for
+	"--enable-exception-specs=nothrow".
+	* configure.ac: Added "nothrow" argument to the
+	--enable-exception-specs option.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h:
+	Define OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS and
+	OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS to 0; the Microsoft
+	compiler ignores exception specifications, so there's nothing to
+	do here.
+	* src/libopenvrml/openvrml-common.h: Distinguish between throwing
+	and "nothrow" exception specifications with the preprocessor
+	symbols OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS and
+	OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS.
+	* src/libopenvrml/openvrml-config.h.in: Define
+	OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS and
+	OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS.
+
 2009-04-06 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/exposedfield.h

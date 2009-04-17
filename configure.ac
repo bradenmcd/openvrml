@@ -240,14 +240,17 @@ AC_SUBST([SDL_LIBS])
 # Use exception specifications?
 #
 AC_ARG_ENABLE([exception-specs],
-              [AC_HELP_STRING([--disable-exception-specs],
-                              [disable use of C++ exception specifications])])
-if test X$enable_exceptions_specs = Xno; then
-  OPENVRML_ENABLE_EXCEPTION_SPECS=0
-else
-  OPENVRML_ENABLE_EXCEPTION_SPECS=1
-fi
-AC_SUBST([OPENVRML_ENABLE_EXCEPTION_SPECS])
+              [AC_HELP_STRING([--enable-exception-specs[[=yes,no,nothrow]]],
+                              [modulate use of C++ exception specifications [default=yes]])])
+AS_IF([test X$enable_exception_specs = Xno],
+      [OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS=0
+       OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS=0],
+      [OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS=1
+       AS_IF([test X$enable_exception_specs = Xnothrow],
+             [OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS=0],
+             [OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS=1])])
+AC_SUBST([OPENVRML_ENABLE_THROWING_EXCEPTION_SPECS])
+AC_SUBST([OPENVRML_ENABLE_NOTHROW_EXCEPTION_SPECS])
 
 #
 # Enable use of the Gecko -rpath flag
