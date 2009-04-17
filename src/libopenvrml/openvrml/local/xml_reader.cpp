@@ -187,8 +187,8 @@ int openvrml::local::xml_reader::read() OPENVRML_NOTHROW
     return (hr == S_OK)
         ? 1
         : (hr == S_FALSE)
-        ? 0
-        : -1;
+            ? 0
+            : -1;
 # else
     return xmlTextReaderRead(this->reader);
 # endif
@@ -273,8 +273,8 @@ int openvrml::local::xml_reader::move_to_first_attribute() OPENVRML_NOTHROW
     return (hr == S_OK)
         ? 1
         : (hr == S_FALSE)
-        ? 0
-        : -1;
+            ? 0
+            : -1;
 # else
     return xmlTextReaderMoveToFirstAttribute(this->reader);
 # endif
@@ -294,8 +294,8 @@ int openvrml::local::xml_reader::move_to_next_attribute() OPENVRML_NOTHROW
     return (hr == S_OK)
         ? 1
         : (hr == S_FALSE)
-        ? 0
-        : -1;
+            ? 0
+            : -1;
 # else
     return xmlTextReaderMoveToNextAttribute(this->reader);
 # endif

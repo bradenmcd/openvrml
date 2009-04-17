@@ -1,5 +1,10 @@
 2009-04-17 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/local/xml_reader.cpp: Whitespace
+	changes.
+
+2009-04-17 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Updated to reflect that Script node Java support is now
 	enabled by default.
 
