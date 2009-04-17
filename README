@@ -186,18 +186,14 @@ depends on.
      Disable support for JavaScript in the Script node.  By default,
      OpenVRML uses the Mozilla JavaScript library to execute JavaScript.
 
- --enable-script-node-java
-     Enable support for Java in the Script node.  "configure" searches
+ --disable-script-node-java
+     Disable support for Java in the Script node.  "configure" searches
      for a Java Native Interface (JNI) implementation, which may be
      provided either by a Java Development Kit or the GNU Compiler for
      Java (gcj).  If using a Java Development Kit, you will probably
      need to supply the include and library directories using CPPFLAGS
      and LDFLAGS, respectively.  See the file INSTALL for general
      information on using these variables.
-
-     NOTE: This option is not supported in this release of OpenVRML.
-     (Don't even bother trying; the code simply does not build.) Java
-     scripting support will reappear in a future release of OpenVRML.
 
  --disable-gl-renderer
      Do not build the GL renderer.  OpenVRML's GL renderer depends on
