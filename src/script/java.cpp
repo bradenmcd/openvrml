@@ -88,6 +88,7 @@
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/scoped_array.hpp>
 # include <algorithm>
+# include <iostream>
 # include <cstdio>
 # include <cstring>
 # include <sstream>
