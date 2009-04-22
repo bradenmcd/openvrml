@@ -79,9 +79,12 @@ namespace {
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~geo_elevation_grid_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
         virtual const color_node * color() const OPENVRML_NOTHROW;
+
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_geometry(openvrml::viewer & viewer,
                                         rendering_context context);
     };
@@ -246,9 +249,11 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool geo_elevation_grid_node::modified() const
+    bool geo_elevation_grid_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified();
+        return this->geo_origin_.value()
+            && this->geo_origin_.value()->modified();
     }
 
     /**

@@ -54,10 +54,10 @@ namespace {
                           const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~static_group_node() OPENVRML_NOTHROW;
 
-
-        virtual bool modified() const;
-
     protected:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_child(openvrml::viewer & viewer,
                                      rendering_context context);
         virtual const openvrml::bounding_volume &
@@ -114,13 +114,11 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool static_group_node::modified() const
+    bool static_group_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        if (this->node::modified()) { return true; }
-        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
-            if (this->children_.mfnode::value()[i]->modified()) {
-                return true;
-            }
+        for (size_t i = 0; i < this->children_.value().size(); ++i) {
+            if (this->children_.value()[i]->modified()) { return true; }
         }
         return false;
     }

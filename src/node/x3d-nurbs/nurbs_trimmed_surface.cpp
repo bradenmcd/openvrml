@@ -89,8 +89,10 @@ namespace {
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~nurbs_trimmed_surface_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_geometry(openvrml::viewer & viewer,
                                         rendering_context context);
     };
@@ -261,16 +263,27 @@ namespace {
                        const rendering_context /* context */)
     {}
 
-
     /**
      * @brief Determine whether the node has been modified.
      *
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool nurbs_trimmed_surface_node::modified() const
+    bool nurbs_trimmed_surface_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified();
+        if ((this->control_point_.value()
+             && this->control_point_.value()->modified())
+            || this->tex_coord_.value() && this->tex_coord_.value()->modified())
+        {
+            return true;
+        }
+
+        for (size_t i = 0; i < this->trimming_contour_.value().size(); ++i) {
+            if (this->trimming_contour_.value()[i]->modified()) { return true; }
+        }
+
+        return false;
     }
 
     /**

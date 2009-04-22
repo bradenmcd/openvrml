@@ -53,8 +53,10 @@ namespace {
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~nurbs_swung_surface_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_geometry(openvrml::viewer & viewer,
                                         rendering_context context);
     };
@@ -112,9 +114,13 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool nurbs_swung_surface_node::modified() const
+    bool nurbs_swung_surface_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified();
+        return (this->componentcurve_.value()
+                && this->componentcurve_.value()->modified())
+            || (this->trajectory_curve_.value()
+                && this->trajectory_curve_.value()->modified());
     }
 
     /**

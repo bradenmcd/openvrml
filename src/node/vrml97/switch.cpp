@@ -58,9 +58,10 @@ namespace {
                     const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~switch_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_children_event_side_effect(const openvrml::mfnode & choice,
                                                    double timestamp)
             OPENVRML_THROW1(std::bad_alloc);
@@ -238,17 +239,15 @@ namespace {
     /**
      * @brief Determine whether the node has been modified.
      *
-     * @return @c true if the node or one of its children has been modified,
-     *      @c false otherwise.
+     * @return @c true if one of the node's rendered children has been
+     *         modified, @c false otherwise.
      */
-    bool switch_node::modified() const
+    bool switch_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        if (this->node::modified()) { return true; }
-
-        long w = this->which_choice_.sfint32::value();
-
-        return w >= 0 && size_t(w) < this->children_.mfnode::value().size()
-            && this->children_.mfnode::value()[w]->modified();
+        const openvrml::int32 w = this->which_choice_.value();
+        return w >= 0 && static_cast<size_t>(w) < this->children_.value().size()
+            && this->children_.value()[w]->modified();
     }
 
     /**

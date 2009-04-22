@@ -47,7 +47,6 @@ namespace {
                            const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~circle2d_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
     private:
         virtual void do_render_geometry(openvrml::viewer & viewer,
                                         rendering_context context);
@@ -79,18 +78,6 @@ namespace {
     do_render_geometry(openvrml::viewer & /* viewer */,
                        const rendering_context /* context */)
     {}
-
-
-    /**
-     * @brief Determine whether the node has been modified.
-     *
-     * @return @c true if the node or one of its children has been modified,
-     *      @c false otherwise.
-     */
-    bool circle2d_node::modified() const
-    {
-        return this->node::modified();
-    }
 
     /**
      * @brief Construct.

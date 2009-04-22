@@ -61,9 +61,10 @@ namespace {
                        const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~cad_layer_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual
         void do_children_event_side_effect(const openvrml::mfnode & choice,
                                            double timestamp)
@@ -232,16 +233,14 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool cad_layer_node::modified() const
+    bool cad_layer_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        if (this->node::modified()) { return true; }
-
-        openvrml::mfnode::value_type::const_iterator iter =
-            current_children_.value().begin();
-        for (; iter != current_children_.value().end(); ++iter)
-        {
-            if ((*iter)->modified())
-                return true;
+        for (openvrml::mfnode::value_type::const_iterator child =
+                 current_children_.value().begin();
+             child != current_children_.value().end();
+             ++child) {
+            if ((*child)->modified()) { return true; }
         }
         return false;
     }

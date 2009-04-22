@@ -78,14 +78,15 @@ namespace openvrml_node_vrml97 {
     public:
         virtual ~abstract_indexed_set_node() OPENVRML_NOTHROW = 0;
 
-        virtual bool modified() const;
-
         virtual const openvrml::color_node * do_color() const OPENVRML_NOTHROW;
 
     protected:
         abstract_indexed_set_node(
             const openvrml::node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
+
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
     };
 
     /**
@@ -266,14 +267,11 @@ namespace openvrml_node_vrml97 {
      *      @c false otherwise.
      */
     template <typename Derived>
-    bool abstract_indexed_set_node<Derived>::modified() const
+    bool abstract_indexed_set_node<Derived>::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        using openvrml::sfnode;
-        return this->node::modified()
-            || (this->color_.sfnode::value()
-                && this->color_.sfnode::value()->modified())
-            || (this->coord_.sfnode::value()
-                && this->coord_.sfnode::value()->modified());
+        return (this->color_.value() && this->color_.value()->modified())
+            || (this->coord_.value() && this->coord_.value()->modified());
     }
 
     /**

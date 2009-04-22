@@ -1,3 +1,87 @@
+2009-04-21 Braden McDaniel  <braden@endoframe.com>
+
+	Apply the nonvirtual interface idiom to openvrml::node::modified.
+
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node::modified(bool)): Added exception specification
+	noting that boost::thread_resource_error can be thrown; call
+	do_modified.
+	(openvrml::node::do_modified() const): Added function; this base
+	class implementation always returns false.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Made modified function nonvirtual; added private
+	virtual function do_modified.
+	* src/node/vrml97/abstract_indexed_set.h
+	(openvrml_node_vrml97::abstract_indexed_set<Derived>): Override
+	do_modified instead of modified.
+	* src/node/vrml97/appearance.cpp
+	(appearance): Override do_modified instead of modified.
+	* src/node/vrml97/cad_layer.cpp
+	(cad_layer): Override do_modified instead of modified.
+	* src/node/vrml97/collision.cpp
+	(collision): Override do_modified instead of modified.
+	* src/node/vrml97/elevation_grid.cpp
+	(elevation_grid): Override do_modified instead of modified.
+	* src/node/vrml97/grouping_node_base.h
+	(openvrml_node_vrml97::grouping_node_base<Derived>): Override
+	do_modified instead of modified.
+	* src/node/vrml97/indexed_face_set.cpp
+	(indexed_face_set): Override do_modified instead of modified.
+	* src/node/vrml97/lod.cpp
+	(lod): Override do_modified instead of modified.
+	* src/node/vrml97/point_set.cpp
+	(point_set): Override do_modified instead of modified.
+	* src/node/vrml97/shape.cpp
+	(shape): Override do_modified instead of modified.
+	* src/node/vrml97/switch.cpp
+	(switch): Override do_modified instead of modified.
+	* src/node/vrml97/text.cpp
+	(text): Override do_modified instead of modified.
+	* src/node/x3d-cad-geometry/cad_face.cpp
+	(cad_face): Override do_modified instead of modified.
+	* src/node/x3d-cad-geometry/indexed_quad_set.cpp
+	(indexed_quad_set): Override do_modified instead of modified.
+	* src/node/x3d-geometry2d/arc2d.cpp
+	(arc2d): Removed unnecessary override of modified.
+	* src/node/x3d-geometry2d/arc_close2d.cpp
+	(arc_close2d): Removed unnecessary override of modified.
+	* src/node/x3d-geometry2d/circle2d.cpp
+	(circle2d): Removed unnecessary override of modified.
+	* src/node/x3d-geometry2d/disk2d.cpp
+	(disk2d): Removed unnecessary override of modified.
+	* src/node/x3d-geometry2d/polypoint2d.cpp
+	(polypoint2d): Removed unnecessary override of modified.
+	* src/node/x3d-geometry2d/rectangle2d.cpp
+	(rectangle2d): Removed unnecessary override of modified.
+	* src/node/x3d-geometry2d/triangle_set2d.cpp
+	(triangle_set2d): Removed unnecessary override of modified.
+	* src/node/x3d-geospatial/geo_elevation_grid.cpp
+	(geo_elevation_grid): Override do_modified instead of modified.
+	* src/node/x3d-grouping/static_group.cpp
+	(static_group): Override do_modified instead of modified.
+	* src/node/x3d-nurbs/nurbs_curve.cpp
+	(nurbs_curve): Override do_modified instead of modified.
+	* src/node/x3d-nurbs/nurbs_patch_surface.cpp
+	(nurbs_patch_surface): Override do_modified instead of modified.
+	* src/node/x3d-nurbs/nurbs_swept_surface.cpp
+	(nurbs_swept_surface): Override do_modified instead of modified.
+	* src/node/x3d-nurbs/nurbs_swung_surface.cpp
+	(nurbs_swung_surface): Override do_modified instead of modified.
+	* src/node/x3d-nurbs/nurbs_trimmed_surface.cpp
+	(nurbs_trimmed_surface): Override do_modified instead of modified.
+	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
+	(indexed_triangle_fan_set): Override do_modified instead of
+	modified.
+	* src/node/x3d-rendering/indexed_triangle_set.cpp
+	(indexed_triangle_set): Override do_modified instead of modified.
+	* src/node/x3d-rendering/triangle_fan_set.cpp
+	(indexed_triangle_fan_set): Override do_modified instead of
+	modified.
+	* src/node/x3d-rendering/triangle_set.cpp
+	(triangle_set): Override do_modified instead of modified.
+	* src/node/x3d-rendering/triangle_strip_set.cpp
+	(triangle_strip_set): Override do_modified instead of modified.
+
 2009-04-17 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/local/component.cpp

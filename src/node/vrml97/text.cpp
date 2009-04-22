@@ -163,9 +163,10 @@ namespace {
                   const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~text_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_geometry(openvrml::viewer & viewer,
                                         openvrml::rendering_context context);
 
@@ -1093,11 +1094,11 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool text_node::modified() const
+    bool text_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified()
-            || (this->font_style_.sfnode::value()
-                && this->font_style_.sfnode::value()->modified());
+        return this->font_style_.value()
+            && this->font_style_.value()->modified();
     }
 
     /**

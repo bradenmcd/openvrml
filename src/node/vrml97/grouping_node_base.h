@@ -103,9 +103,10 @@ namespace openvrml_node_vrml97 {
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~grouping_node_base() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     protected:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_child(openvrml::viewer & viewer,
                                      openvrml::rendering_context context);
         virtual const openvrml::bounding_volume &
@@ -448,19 +449,15 @@ namespace openvrml_node_vrml97 {
     /**
      * @brief Determine whether the node has been modified.
      *
-     * @return @c true if the node or one of its children has been modified,
-     *      @c false otherwise.
+     * @return @c true if one of the node's children has been modified,
+     *         @c false otherwise.
      */
     template <typename Derived>
-    bool grouping_node_base<Derived>::modified() const
+    bool grouping_node_base<Derived>::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        using namespace openvrml;
-
-        if (this->node::modified()) { return true; }
-        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
-            if (this->children_.mfnode::value()[i]->modified()) {
-                return true;
-            }
+        for (size_t i = 0; i < this->children_.value().size(); ++i) {
+            if (this->children_.value()[i]->modified()) { return true; }
         }
         return false;
     }

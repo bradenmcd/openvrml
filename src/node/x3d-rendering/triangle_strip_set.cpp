@@ -60,9 +60,12 @@ namespace {
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~triangle_strip_set_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
         virtual const color_node * color() const OPENVRML_NOTHROW;
+
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_geometry(openvrml::viewer & viewer,
                                         rendering_context context);
         virtual const openvrml::bounding_volume &
@@ -195,9 +198,14 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool triangle_strip_set_node::modified() const
+    bool triangle_strip_set_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified();
+        return (this->color_.value() && this->color_.value()->modified())
+            || (this->coord_.value() && this->coord_.value()->modified())
+            || (this->normal_.value() && this->normal_.value()->modified())
+            || (this->tex_coord_.value()
+                && this->tex_coord_.value()->modified());
     }
 
     /**

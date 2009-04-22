@@ -2683,8 +2683,12 @@ openvrml::viewpoint_node * openvrml::node::to_viewpoint() OPENVRML_NOTHROW
  * Indicates the node needs to be revisited for rendering.
  *
  * @param[in] value
+ *
+ * @exception boost::thread_resource_error if @c #modified_mutex_ cannot be
+ *                                         locked.
  */
 void openvrml::node::modified(const bool value)
+    OPENVRML_THROW1(boost::thread_resource_error)
 {
     read_write_mutex::scoped_write_lock lock(this->modified_mutex_);
     this->modified_ = value;
@@ -2699,11 +2703,32 @@ void openvrml::node::modified(const bool value)
  * return @c true if any of their children have been modified.
  *
  * @return @c true if the @c node has been modified; @c false otherwise.
+ *
+ * @exception boost::thread_resource_error if @c #modified_mutex_ cannot be
+ *                                         locked.
  */
 bool openvrml::node::modified() const
+    OPENVRML_THROW1(boost::thread_resource_error)
 {
     read_write_mutex::scoped_read_lock lock(this->modified_mutex_);
-    return this->modified_;
+    return this->modified_ || this->do_modified();
+}
+
+/**
+ * @brief Determine whether the @c node has been modified.
+ *
+ * The default implementation returns @c false.  Subclasses that can have
+ * child @c node%s should override this method and return @c true if any of
+ * their children has been modified.
+ *
+ * @return @c false.
+ *
+ * @exception boost::thread_resource_error if a mutex cannot be locked.
+ */
+bool openvrml::node::do_modified() const
+    OPENVRML_THROW1(boost::thread_resource_error)
+{
+    return false;
 }
 
 /**

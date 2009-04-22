@@ -48,9 +48,10 @@ namespace {
                         const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~appearance_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         //
         // appearance_node implementation
         //
@@ -125,15 +126,13 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *         @c false otherwise.
      */
-    bool appearance_node::modified() const
+    bool appearance_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return (this->node::modified()
-                || (this->material_.sfnode::value()
-                    && this->material_.sfnode::value()->modified())
-                || (this->texture_.sfnode::value()
-                    && this->texture_.sfnode::value()->modified())
-                || (this->texture_transform_.sfnode::value()
-                    && this->texture_transform_.sfnode::value()->modified()));
+        return (this->material_.value() && this->material_.value()->modified())
+            || (this->texture_.value() && this->texture_.value()->modified())
+            || (this->texture_transform_.value()
+                && this->texture_transform_.value()->modified());
     }
 
     /**

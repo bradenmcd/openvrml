@@ -47,9 +47,10 @@ namespace {
                        const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~point_set_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual const openvrml::bounding_volume &
         do_bounding_volume() const;
 
@@ -121,13 +122,11 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool point_set_node::modified() const
+    bool point_set_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified()
-            || (this->color_.sfnode::value()
-                && this->color_.sfnode::value()->modified())
-            || (this->coord_.sfnode::value()
-                && this->coord_.sfnode::value()->modified());
+        return (this->color_.value() && this->color_.value()->modified())
+            || (this->coord_.value() && this->coord_.value()->modified());
     }
 
     /**

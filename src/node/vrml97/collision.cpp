@@ -48,7 +48,9 @@ namespace {
                        const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~collision_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
+    private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
     };
 
 
@@ -119,7 +121,8 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool collision_node::modified() const
+    bool collision_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
         return (this->proxy_.value() && this->proxy_.value()->modified())
             || (this->openvrml_node_vrml97::grouping_node_base<collision_node>::

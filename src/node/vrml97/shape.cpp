@@ -47,9 +47,10 @@ namespace {
                    const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~shape_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual const openvrml::bounding_volume & do_bounding_volume() const;
 
         virtual void do_render_child(openvrml::viewer & viewer,
@@ -110,13 +111,12 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool shape_node::modified() const
+    bool shape_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified()
-            || (this->geometry_.sfnode::value()
-                && this->geometry_.sfnode::value()->modified())
-            || (this->appearance_.sfnode::value()
-                && this->appearance_.sfnode::value()->modified());
+        return (this->geometry_.value() && this->geometry_.value()->modified())
+            || (this->appearance_.value()
+                && this->appearance_.value()->modified());
     }
 
     OPENVRML_LOCAL void set_unlit_material(openvrml::viewer & v)

@@ -45,10 +45,11 @@ namespace {
                  const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~lod_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     private:
-        virtual void do_render_child(openvrml::viewer & viewer,
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
+         virtual void do_render_child(openvrml::viewer & viewer,
                                      openvrml::rendering_context context);
         virtual const std::vector<boost::intrusive_ptr<openvrml::node> >
             do_children() const OPENVRML_THROW1(std::bad_alloc);
@@ -116,15 +117,12 @@ namespace {
      * @return @c true if the node or one of its children has been modified,
      *         @c false otherwise.
      */
-    bool lod_node::modified() const
+    bool lod_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        if (this->node::modified()) { return true; }
-
         // This should really check which range is being rendered...
-        for (size_t i = 0; i < this->children_.mfnode::value().size(); ++i) {
-            if (this->children_.mfnode::value()[i]->modified()) {
-                return true;
-            }
+        for (size_t i = 0; i < this->children_.value().size(); ++i) {
+            if (this->children_.value()[i]->modified()) { return true; }
         }
         return false;
     }

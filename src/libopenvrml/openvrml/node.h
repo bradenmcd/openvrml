@@ -575,8 +575,8 @@ namespace openvrml {
             OPENVRML_THROW2(unsupported_interface, std::bad_cast);
         void shutdown(double timestamp) OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-        void modified(bool value);
+        bool modified() const OPENVRML_THROW1(boost::thread_resource_error);
+        void modified(bool value) OPENVRML_THROW1(boost::thread_resource_error);
 
     protected:
         static void emit_event(openvrml::event_emitter & emitter,
@@ -605,6 +605,9 @@ namespace openvrml {
         do_event_emitter(const std::string & id)
             OPENVRML_THROW1(unsupported_interface) = 0;
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
+
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
 
         virtual script_node * to_script() OPENVRML_NOTHROW;
         virtual appearance_node * to_appearance() OPENVRML_NOTHROW;

@@ -50,9 +50,10 @@ namespace {
                       const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~cad_face_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
-
     protected:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual const openvrml::bounding_volume & do_bounding_volume() const;
         virtual const std::vector<boost::intrusive_ptr<node> >
             do_children() const OPENVRML_THROW1(std::bad_alloc);
@@ -105,11 +106,10 @@ namespace {
      * @return @c true if the node or it child has been modified
      *      @c false otherwise.
      */
-    bool cad_face_node::modified() const
+    bool cad_face_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        if (this->node::modified()) { return true; }
-        if (shape_.sfnode::value().get() == NULL) { return false; }
-        return shape_.sfnode::value()->modified();
+        return this->shape_.value() && this->shape_.value()->modified();
     }
 
     /**

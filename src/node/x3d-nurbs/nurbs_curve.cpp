@@ -54,8 +54,10 @@ namespace {
                          const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~nurbs_curve_node() OPENVRML_NOTHROW;
 
-        virtual bool modified() const;
     private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
         virtual void do_render_geometry(openvrml::viewer & viewer,
                                         rendering_context context);
     };
@@ -118,16 +120,17 @@ namespace {
                        const rendering_context /* context */)
     {}
 
-
     /**
      * @brief Determine whether the node has been modified.
      *
      * @return @c true if the node or one of its children has been modified,
      *      @c false otherwise.
      */
-    bool nurbs_curve_node::modified() const
+    bool nurbs_curve_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
     {
-        return this->node::modified();
+        return this->control_point_.value()
+            && this->control_point_.value()->modified();
     }
 
     /**
