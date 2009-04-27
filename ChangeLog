@@ -1,5 +1,11 @@
 2009-04-27 Braden McDaniel  <braden@endoframe.com>
 
+	* src/node/vrml97/image_texture.cpp
+	(image_texture_node::do_render_texture(openvrml::viewer & v)):
+	openvrml::viewer::insert_texture no longer returns a value.
+
+2009-04-27 Braden McDaniel  <braden@endoframe.com>
+
 	* AUTHORS: Removed reference to GIF copyright; OpenVRML hasn't
 	supported GIF for some years.
 

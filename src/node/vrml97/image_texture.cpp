@@ -230,7 +230,7 @@ namespace {
     void image_texture_node::do_render_texture(openvrml::viewer & v)
     {
         this->update_texture();
-        return v.insert_texture(*this, true);
+        v.insert_texture(*this, true);
     }
 
     /**
@@ -243,11 +243,10 @@ namespace {
         if (this->texture_needs_update) {
             using openvrml_node_vrml97::image_stream_listener;
             try {
-                if (!this->url_.mfstring::value().empty()) {
+                if (!this->url_.value().empty()) {
                     using std::auto_ptr;
                     auto_ptr<openvrml::resource_istream> in(
-                        this->scene()->get_resource(
-                            this->url_.mfstring::value()));
+                        this->scene()->get_resource(this->url_.value()));
                     auto_ptr<openvrml::stream_listener> listener(
                         new image_stream_listener(in->url(),
                                                   this->image_,
