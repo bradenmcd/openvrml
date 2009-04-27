@@ -1,3 +1,8 @@
+2009-04-27 Braden McDaniel  <braden@endoframe.com>
+
+	* AUTHORS: Removed reference to GIF copyright; OpenVRML hasn't
+	supported GIF for some years.
+
 2009-04-21 Braden McDaniel  <braden@endoframe.com>
 
 	Apply the nonvirtual interface idiom to openvrml::node::modified.
