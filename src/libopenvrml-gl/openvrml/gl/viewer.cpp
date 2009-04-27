@@ -1012,6 +1012,7 @@ namespace {
             const GLubyte * const error_str = gluErrorString(glerr);
             const GLubyte * end;
             for (end = error_str; *end; ++end) {}
+            boost::ignore_unused_variable_warning(s);
             OPENVRML_GL_PRINT_MESSAGE_("GL ERROR: " + s + " "
                                        + std::string(error_str, end));
         }
@@ -1172,13 +1173,14 @@ do_insert_background(const std::vector<float> & groundAngle,
                      const std::vector<color> & groundColor,
                      const std::vector<float> & skyAngle,
                      const std::vector<color> & skyColor,
-                     const texture_node & front,
-                     const texture_node & back,
-                     const texture_node & left,
-                     const texture_node & right,
-                     const texture_node & top,
-                     const texture_node & bottom)
+                     texture_node & front,
+                     texture_node & back,
+                     texture_node & left,
+                     texture_node & right,
+                     texture_node & top,
+                     texture_node & bottom)
 {
+    std::cout << "do_insert_background" << std::endl;
     using std::vector;
 
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
@@ -1216,15 +1218,7 @@ do_insert_background(const std::vector<float> & groundAngle,
     glClear(mask);
 
     // Draw the background as big spheres centered at the view position
-    if (!this->select_mode
-            && (!skyAngle.empty()
-                || !groundAngle.empty()
-                || !front.image().array().empty()
-                || !back.image().array().empty()
-                || !left.image().array().empty()
-                || !right.image().array().empty()
-                || !top.image().array().empty()
-                || !bottom.image().array().empty())) {
+    if (!this->select_mode && (!skyAngle.empty() || !groundAngle.empty())) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
@@ -1331,10 +1325,8 @@ do_insert_background(const std::vector<float> & groundAngle,
             glEnable(GL_TEXTURE_2D);
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-            static const bool retain = true;
-
+            front.render_texture(*this);
             if (!front.image().array().empty()) {
-                this->insert_texture(front, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, -1, -1);
@@ -1346,8 +1338,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(-1, 1, -1);
                 glEnd(); // GL_QUADS
             }
+            back.render_texture(*this);
             if (!back.image().array().empty()) {
-                this->insert_texture(back, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(1, -1, 1);
@@ -1359,8 +1351,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(1, 1, 1);
                 glEnd(); // GL_QUADS
             }
+            left.render_texture(*this);
             if (!left.image().array().empty()) {
-                this->insert_texture(left, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, -1, 1);
@@ -1372,8 +1364,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(-1, 1, 1);
                 glEnd(); // GL_QUADS
             }
+            right.render_texture(*this);
             if (!right.image().array().empty()) {
-                this->insert_texture(right, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(1, -1, -1);
@@ -1385,8 +1377,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(1, 1, -1);
                 glEnd(); // GL_QUADS
             }
+            top.render_texture(*this);
             if (!top.image().array().empty()) {
-                this->insert_texture(top, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, 1, -1);
@@ -1398,8 +1390,8 @@ do_insert_background(const std::vector<float> & groundAngle,
                 glVertex3f(-1, 1, 1);
                 glEnd(); // GL_QUADS
             }
+            bottom.render_texture(*this);
             if (!bottom.image().array().empty()) {
-                this->insert_texture(bottom, retain);
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, 0);
                 glVertex3f(-1, -1, 1);

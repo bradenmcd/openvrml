@@ -246,12 +246,12 @@ openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
                                     const std::vector<color> & ground_color,
                                     const std::vector<float> & sky_angle,
                                     const std::vector<color> & sky_color,
-                                    const texture_node & front,
-                                    const texture_node & back,
-                                    const texture_node & left,
-                                    const texture_node & right,
-                                    const texture_node & top,
-                                    const texture_node & bottom)
+                                    texture_node & front,
+                                    texture_node & back,
+                                    texture_node & left,
+                                    texture_node & right,
+                                    texture_node & top,
+                                    texture_node & bottom)
 {
     return this->do_insert_background(ground_angle, ground_color,
                                       sky_angle, sky_color,
@@ -259,7 +259,7 @@ openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
 }
 
 /**
- * @fn void openvrml::viewer::do_insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, const texture_node & front, const texture_node & back, const texture_node & left, const texture_node & right, const texture_node & top, const texture_node & bottom)
+ * @fn void openvrml::viewer::do_insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, texture_node & front, texture_node & back, texture_node & left, texture_node & right, texture_node & top, texture_node & bottom)
  *
  * @brief Insert a background into a display list.
  *

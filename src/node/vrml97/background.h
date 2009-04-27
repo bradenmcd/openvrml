@@ -110,5 +110,7 @@ namespace openvrml_node_vrml97 {
     private:
         virtual void do_initialize(double timestamp) OPENVRML_NOTHROW;
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
     };
 }

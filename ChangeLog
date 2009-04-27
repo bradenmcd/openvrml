@@ -1,5 +1,31 @@
 2009-04-27 Braden McDaniel  <braden@endoframe.com>
 
+	Override do_modified for background_node; set the initial value of
+	the url field for the subordinate image_texture_nodes.
+
+	* src/libopenvrml/openvrml/viewer.cpp: Changed insert_background
+	to take nonconst texture_nodes.
+	* src/libopenvrml/openvrml/viewer.h: Changed insert_background to
+	take nonconst texture_nodes.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Changed
+	insert_background to take nonconst texture_nodes; always call
+	render_texture on the texture_nodes in order to trigger
+	downloading the image.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h: Changed
+	insert_background to take nonconst texture_nodes.
+	* src/node/vrml97/background.cpp
+	(openvrml_node_vrml97::background_metatype::do_render(openvrml::viewer&)
+	const): Made static null_texture_nodes nonconst.
+	(openvrml_node_vrml97::background_node::do_initialize(double)):
+	Set the initial value for the "url" fields of the subordinate
+	image_texture_nodes.
+	(openvrml_node_vrml97::background_node::do_modified() const):
+	Check the modified flags of the subordinate image_texture_nodes.
+	* src/node/vrml97/background.h
+	(openvrml_node_vrml97::background_node): Override do_modified.
+
+2009-04-27 Braden McDaniel  <braden@endoframe.com>
+
 	* src/node/vrml97/image_texture.cpp
 	(image_texture_node::do_render_texture(openvrml::viewer & v)):
 	openvrml::viewer::insert_texture no longer returns a value.

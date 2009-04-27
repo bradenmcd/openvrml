@@ -21,7 +21,6 @@
 //
 
 # include "background.h"
-# include "image_stream_listener.h"
 # include <openvrml/browser.h>
 # include <openvrml/scene.h>
 # include <openvrml/scope.h>
@@ -249,12 +248,12 @@ do_render(openvrml::viewer & v) const
         static const vector<color> ground_color;
         static const vector<float> sky_angle;
         static const vector<color> sky_color;
-        static const null_texture_node front(this->null_texture_node_type_);
-        static const null_texture_node back(this->null_texture_node_type_);
-        static const null_texture_node left(this->null_texture_node_type_);
-        static const null_texture_node right(this->null_texture_node_type_);
-        static const null_texture_node top(this->null_texture_node_type_);
-        static const null_texture_node bottom(this->null_texture_node_type_);
+        static null_texture_node front(this->null_texture_node_type_);
+        static null_texture_node back(this->null_texture_node_type_);
+        static null_texture_node left(this->null_texture_node_type_);
+        static null_texture_node right(this->null_texture_node_type_);
+        static null_texture_node top(this->null_texture_node_type_);
+        static null_texture_node bottom(this->null_texture_node_type_);
         v.insert_background(ground_angle, ground_color,
                             sky_angle, sky_color,
                             front, back,
@@ -271,10 +270,10 @@ do_render(openvrml::viewer & v) const
             v.remove_object(background);
         }
 
-        v.insert_background(background.ground_angle_.mffloat::value(),
-                            background.ground_color_.mfcolor::value(),
-                            background.sky_angle_.mffloat::value(),
-                            background.sky_color_.mfcolor::value(),
+        v.insert_background(background.ground_angle_.value(),
+                            background.ground_color_.value(),
+                            background.sky_angle_.value(),
+                            background.sky_color_.value(),
                             *background.front,
                             *background.back,
                             *background.left,
@@ -755,14 +754,42 @@ void openvrml_node_vrml97::background_node::bind(const bool val,
     node::emit_event(this->is_bound_emitter_, timestamp);
 }
 
+namespace {
+    OPENVRML_LOCAL void set_url(openvrml::node & n,
+                                const openvrml::mfstring & url,
+                                const double timestamp)
+        OPENVRML_NOTHROW
+    {
+        using openvrml::mfstring;
+        using openvrml::mfstring_listener;
+        mfstring_listener & listener = n.event_listener<mfstring>("url");
+        listener.process_event(url, timestamp);
+    }
+}
+
 /**
  * @brief Initialize.
  *
  * @param timestamp the current time.
  */
-void openvrml_node_vrml97::background_node::do_initialize(double)
+void
+openvrml_node_vrml97::background_node::do_initialize(const double timestamp)
     OPENVRML_NOTHROW
 {
+    set_url(*this->front, this->front_url_, timestamp);
+    set_url(*this->back, this->back_url_, timestamp);
+    set_url(*this->left, this->left_url_, timestamp);
+    set_url(*this->right, this->right_url_, timestamp);
+    set_url(*this->top, this->top_url_, timestamp);
+    set_url(*this->bottom, this->bottom_url_, timestamp);
+
+    this->front->initialize(*this->scene(), timestamp);
+    this->back->initialize(*this->scene(), timestamp);
+    this->left->initialize(*this->scene(), timestamp);
+    this->right->initialize(*this->scene(), timestamp);
+    this->top->initialize(*this->scene(), timestamp);
+    this->bottom->initialize(*this->scene(), timestamp);
+
     using boost::polymorphic_downcast;
     background_metatype & nodeClass =
         const_cast<background_metatype &>(
@@ -789,6 +816,17 @@ openvrml_node_vrml97::background_node::do_shutdown(const double timestamp)
     node_metatype.unbind(*this, timestamp);
 
     if (node_metatype.is_first(*this)) { node_metatype.reset_first(); }
+}
+
+bool openvrml_node_vrml97::background_node::do_modified() const
+    OPENVRML_THROW1(boost::thread_resource_error)
+{
+    return (this->front && this->front->modified())
+        || (this->back && this->back->modified())
+        || (this->left && this->left->modified())
+        || (this->right && this->right->modified())
+        || (this->top && this->top->modified())
+        || (this->bottom && this->bottom->modified());
 }
 
 namespace {

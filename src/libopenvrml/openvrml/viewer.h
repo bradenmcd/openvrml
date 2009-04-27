@@ -74,12 +74,12 @@ namespace openvrml {
                                const std::vector<color> & ground_color,
                                const std::vector<float> & sky_angle,
                                const std::vector<color> & sky_color,
-                               const texture_node & front,
-                               const texture_node & back,
-                               const texture_node & left,
-                               const texture_node & right,
-                               const texture_node & top,
-                               const texture_node & bottom);
+                               texture_node & front,
+                               texture_node & back,
+                               texture_node & left,
+                               texture_node & right,
+                               texture_node & top,
+                               texture_node & bottom);
 
         void insert_box(const geometry_node & n, const vec3f & size);
         void insert_cone(const geometry_node & n,
@@ -220,12 +220,12 @@ namespace openvrml {
                              const std::vector<color> & ground_color,
                              const std::vector<float> & sky_angle,
                              const std::vector<color> & sky_color,
-                             const texture_node & front,
-                             const texture_node & back,
-                             const texture_node & left,
-                             const texture_node & right,
-                             const texture_node & top,
-                             const texture_node & bottom) = 0;
+                             texture_node & front,
+                             texture_node & back,
+                             texture_node & left,
+                             texture_node & right,
+                             texture_node & top,
+                             texture_node & bottom) = 0;
 
         virtual
         void do_insert_box(const geometry_node & n, const vec3f & size) = 0;
