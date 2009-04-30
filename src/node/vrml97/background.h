@@ -32,8 +32,8 @@ namespace openvrml_node_vrml97 {
     class OPENVRML_LOCAL background_metatype : public openvrml::node_metatype {
         background_node * first;
         openvrml::node_impl_util::bound_node_stack<background_node> bound_nodes;
-        openvrml::null_node_metatype null_texture_node_metatype_;
-        openvrml::null_node_type null_texture_node_type_;
+        openvrml::null_node_metatype default_background_node_metatype_;
+        openvrml::null_node_type default_background_node_type_;
 
     public:
         static const char * const id;
@@ -64,7 +64,7 @@ namespace openvrml_node_vrml97 {
 
     class OPENVRML_LOCAL background_node :
         public openvrml::node_impl_util::abstract_node<background_node>,
-        public openvrml::child_node {
+        public openvrml::background_node {
 
         friend class background_metatype;
 
@@ -112,5 +112,20 @@ namespace openvrml_node_vrml97 {
         virtual void do_shutdown(double timestamp) OPENVRML_NOTHROW;
         virtual bool do_modified() const
             OPENVRML_THROW1(boost::thread_resource_error);
+
+        virtual const std::vector<float> & do_ground_angle() const
+            OPENVRML_NOTHROW;
+        virtual const std::vector<openvrml::color> & do_ground_color() const
+            OPENVRML_NOTHROW;
+        virtual const std::vector<float> & do_sky_angle() const
+            OPENVRML_NOTHROW;
+        virtual const std::vector<openvrml::color> & do_sky_color() const
+            OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_front() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_back() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_left() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_right() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_top() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_bottom() const OPENVRML_NOTHROW;
     };
 }

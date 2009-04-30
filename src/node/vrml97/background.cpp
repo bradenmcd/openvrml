@@ -47,7 +47,8 @@
 /**
  * @brief @c node_metatype identifier.
  */
-const char * const openvrml_node_vrml97::background_metatype::id = "urn:X-openvrml:node:Background";
+const char * const openvrml_node_vrml97::background_metatype::id =
+    "urn:X-openvrml:node:Background";
 
 /**
  * @brief Construct.
@@ -58,8 +59,8 @@ openvrml_node_vrml97::background_metatype::
 background_metatype(openvrml::browser & browser):
     node_metatype(background_metatype::id, browser),
     first(0),
-    null_texture_node_metatype_(browser),
-    null_texture_node_type_(this->null_texture_node_metatype_)
+    default_background_node_metatype_(browser),
+    default_background_node_type_(this->default_background_node_metatype_)
 {}
 
 /**
@@ -181,50 +182,6 @@ do_initialize(openvrml::viewpoint_node *, const double timestamp)
     }
 }
 
-namespace {
-
-    class OPENVRML_LOCAL null_texture_node : public openvrml::texture_node {
-    public:
-        explicit null_texture_node(const openvrml::null_node_type & type)
-            OPENVRML_NOTHROW;
-        virtual ~null_texture_node() OPENVRML_NOTHROW;
-
-    private:
-        virtual void do_field(const std::string & id,
-                              const openvrml::field_value & value)
-            OPENVRML_NOTHROW;
-
-        virtual
-        const openvrml::field_value &
-        do_field(const std::string & id) const
-            OPENVRML_NOTHROW;
-
-        virtual void do_process_event(const std::string & id,
-                                      const openvrml::field_value & value,
-                                      double timestamp)
-            OPENVRML_NOTHROW;
-
-        virtual
-        const openvrml::field_value &
-        do_eventout(const std::string & id) const
-            OPENVRML_NOTHROW;
-
-        virtual
-        openvrml::event_listener &
-        do_event_listener(const std::string & id)
-            OPENVRML_THROW1(openvrml::unsupported_interface);
-
-        virtual
-        openvrml::event_emitter &
-        do_event_emitter(const std::string & id)
-            OPENVRML_THROW1(openvrml::unsupported_interface);
-
-        virtual const openvrml::image & do_image() const OPENVRML_NOTHROW;
-        virtual bool do_repeat_s() const OPENVRML_NOTHROW;
-        virtual bool do_repeat_t() const OPENVRML_NOTHROW;
-    };
-}
-
 /**
  * @brief @c node_metatype%-specific rendering.
  *
@@ -243,22 +200,11 @@ do_render(openvrml::viewer & v) const
         //
         // Default background.
         //
-        using std::vector;
-        static const vector<float> ground_angle;
-        static const vector<color> ground_color;
-        static const vector<float> sky_angle;
-        static const vector<color> sky_color;
-        static null_texture_node front(this->null_texture_node_type_);
-        static null_texture_node back(this->null_texture_node_type_);
-        static null_texture_node left(this->null_texture_node_type_);
-        static null_texture_node right(this->null_texture_node_type_);
-        static null_texture_node top(this->null_texture_node_type_);
-        static null_texture_node bottom(this->null_texture_node_type_);
-        v.insert_background(ground_angle, ground_color,
-                            sky_angle, sky_color,
-                            front, back,
-                            left, right,
-                            top, bottom);
+        static const boost::shared_ptr<openvrml::scope> null_scope_ptr;
+        static const background_node
+            default_background(this->default_background_node_type_,
+                               null_scope_ptr);
+        v.insert_background(default_background);
     } else {
         assert(this->bound_nodes.top());
         background_node & background = *this->bound_nodes.top();
@@ -270,16 +216,7 @@ do_render(openvrml::viewer & v) const
             v.remove_object(background);
         }
 
-        v.insert_background(background.ground_angle_.value(),
-                            background.ground_color_.value(),
-                            background.sky_angle_.value(),
-                            background.sky_color_.value(),
-                            *background.front,
-                            *background.back,
-                            *background.left,
-                            *background.right,
-                            *background.top,
-                            *background.bottom);
+        v.insert_background(background);
 
         background.modified(false);
     }
@@ -675,8 +612,9 @@ background_node(const openvrml::node_type & type,
                 const boost::shared_ptr<openvrml::scope> & scope):
     node(type, scope),
     bounded_volume_node(type, scope),
-    openvrml::node_impl_util::abstract_node<background_node>(type, scope),
     child_node(type, scope),
+    openvrml::node_impl_util::abstract_node<background_node>(type, scope),
+    openvrml::background_node(type, scope),
     set_bind_listener_(*this),
     ground_angle_(*this),
     ground_color_(*this),
@@ -693,6 +631,12 @@ background_node(const openvrml::node_type & type,
     is_bound_emitter_(*this, this->is_bound_),
     bind_time_emitter_(*this, this->bind_time_)
 {
+    //
+    // The scope may be null if this is the default background.  In that case,
+    // we can leave the texture nodes null.
+    //
+    if (!scope) { return; }
+
     using openvrml::mfstring;
     using openvrml::node_cast;
     using openvrml::texture_node;
@@ -829,82 +773,112 @@ bool openvrml_node_vrml97::background_node::do_modified() const
         || (this->bottom && this->bottom->modified());
 }
 
-namespace {
+/**
+ * @brief Ground angles.
+ *
+ * @return a vector of angles corresponding to ground colors.
+ */
+const std::vector<float> &
+openvrml_node_vrml97::background_node::do_ground_angle() const OPENVRML_NOTHROW
+{
+    return this->ground_angle_.value();
+}
 
-    const boost::shared_ptr<openvrml::scope> null_scope_ptr;
+/**
+ * @brief Ground colors.
+ *
+ * @return a vector of ground colors.
+ */
+const std::vector<openvrml::color> &
+openvrml_node_vrml97::background_node::do_ground_color() const OPENVRML_NOTHROW
+{
+    return this->ground_color_.value();
+}
 
-    null_texture_node::null_texture_node(const openvrml::null_node_type & type)
-        OPENVRML_NOTHROW:
-        openvrml::node(type, null_scope_ptr),
-        openvrml::texture_node(type, null_scope_ptr)
-    {}
+/**
+ * @brief Sky angles.
+ *
+ * @return a vector of angles corresponding to sky colors.
+ */
+const std::vector<float> &
+openvrml_node_vrml97::background_node::do_sky_angle() const OPENVRML_NOTHROW
+{
+    return this->sky_angle_.value();
+}
 
-    null_texture_node::~null_texture_node() OPENVRML_NOTHROW
-    {}
+/**
+ * @brief Sky colors.
+ *
+ * @return a vector of sky colors.
+ */
+const std::vector<openvrml::color> &
+openvrml_node_vrml97::background_node::do_sky_color() const OPENVRML_NOTHROW
+{
+    return this->sky_color_.value();
+}
 
-    void null_texture_node::do_field(const std::string &,
-                                     const openvrml::field_value &)
-        OPENVRML_NOTHROW
-    {
-        assert(false && "do not call this function");
-    }
+/**
+ * @brief Front texture.
+ *
+ * @return the front texture.
+ */
+openvrml::texture_node * openvrml_node_vrml97::background_node::do_front() const
+    OPENVRML_NOTHROW
+{
+    return this->front.get();
+}
 
-    const openvrml::field_value &
-    null_texture_node::do_field(const std::string &) const OPENVRML_NOTHROW
-    {
-        assert(false && "do not call this function");
-        static const openvrml::sfbool value;
-        return value;
-    }
+/**
+ * @brief Back texture.
+ *
+ * @return the back texture.
+ */
+openvrml::texture_node * openvrml_node_vrml97::background_node::do_back() const
+    OPENVRML_NOTHROW
+{
+    return this->back.get();
+}
 
-    void null_texture_node::do_process_event(const std::string &,
-                                             const openvrml::field_value &,
-                                             double)
-        OPENVRML_NOTHROW
-    {
-        assert(false && "do not call this function");
-    }
+/**
+ * @brief Left texture.
+ *
+ * @return the left texture.
+ */
+openvrml::texture_node * openvrml_node_vrml97::background_node::do_left() const
+    OPENVRML_NOTHROW
+{
+    return this->left.get();
+}
 
-    const openvrml::field_value &
-    null_texture_node::do_eventout(const std::string &) const
-        OPENVRML_NOTHROW
-    {
-        assert(false && "do not call this function");
-        static const openvrml::sfbool value;
-        return value;
-    }
+/**
+ * @brief Right texture.
+ *
+ * @return the right texture.
+ */
+openvrml::texture_node * openvrml_node_vrml97::background_node::do_right() const
+    OPENVRML_NOTHROW
+{
+    return this->right.get();
+}
 
-    openvrml::event_listener &
-    null_texture_node::do_event_listener(const std::string & id)
-        OPENVRML_THROW1(openvrml::unsupported_interface)
-    {
-        assert(false && "do not call this function");
-        throw openvrml::unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_listener *>(0);
-    }
+/**
+ * @brief Top texture.
+ *
+ * @return the top texture.
+ */
+openvrml::texture_node * openvrml_node_vrml97::background_node::do_top() const
+    OPENVRML_NOTHROW
+{
+    return this->top.get();
+}
 
-    openvrml::event_emitter &
-    null_texture_node::do_event_emitter(const std::string & id)
-        OPENVRML_THROW1(openvrml::unsupported_interface)
-    {
-        assert(false && "do not call this function");
-        throw openvrml::unsupported_interface(this->node::type(), id);
-        return *static_cast<openvrml::event_emitter *>(0);
-    }
-
-    const openvrml::image & null_texture_node::do_image() const OPENVRML_NOTHROW
-    {
-        static const openvrml::image img;
-        return img;
-    }
-
-    bool null_texture_node::do_repeat_s() const OPENVRML_NOTHROW
-    {
-        return false;
-    }
-
-    bool null_texture_node::do_repeat_t() const OPENVRML_NOTHROW
-    {
-        return false;
-    }
+/**
+ * @brief Bottom texture.
+ *
+ * @return the bottom texture.
+ */
+openvrml::texture_node *
+openvrml_node_vrml97::background_node::do_bottom() const OPENVRML_NOTHROW
+{
+    return this->bottom.get();
 }

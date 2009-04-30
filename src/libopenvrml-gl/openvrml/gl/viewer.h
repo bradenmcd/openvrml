@@ -199,19 +199,7 @@ namespace openvrml {
             virtual void do_end_object();
 
             // Insert objects into the display list
-            virtual
-            void
-            do_insert_background(const std::vector<float> & groundAngle,
-                                 const std::vector<color> & groundColor,
-                                 const std::vector<float> & skyAngle,
-                                 const std::vector<color> & skyColor,
-                                 texture_node & front,
-                                 texture_node & back,
-                                 texture_node & left,
-                                 texture_node & right,
-                                 texture_node & top,
-                                 texture_node & bottom);
-
+            virtual void do_insert_background(const background_node & n);
 
             virtual void do_insert_box(const geometry_node & n,
                                        const vec3f & size);

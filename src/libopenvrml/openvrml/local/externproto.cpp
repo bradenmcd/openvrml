@@ -660,6 +660,18 @@ openvrml::local::externproto_node::to_appearance() OPENVRML_NOTHROW
 }
 
 /**
+ * @brief Cast to a @c background_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a @c background_node, or 0 otherwise.
+ */
+openvrml::background_node *
+openvrml::local::externproto_node::to_background() OPENVRML_NOTHROW
+{
+    return node_cast<background_node *>(this->proto_node_.get());
+}
+
+/**
  * @brief Cast to a @c bounded_volume_node.
  *
  * @return a pointer to the first node in the implementation if that node

@@ -243,6 +243,8 @@ namespace openvrml {
             virtual openvrml::script_node * to_script() OPENVRML_NOTHROW;
             virtual openvrml::appearance_node * to_appearance()
                 OPENVRML_NOTHROW;
+            virtual openvrml::background_node * to_background()
+                OPENVRML_NOTHROW;
             virtual openvrml::bounded_volume_node * to_bounded_volume()
                 OPENVRML_NOTHROW;
             virtual openvrml::child_node * to_child() OPENVRML_NOTHROW;

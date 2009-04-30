@@ -30,6 +30,7 @@ namespace openvrml {
 
     class browser;
     class node;
+    class background_node;
     class geometry_node;
     class texture_node;
 
@@ -70,24 +71,13 @@ namespace openvrml {
         void begin_object(const char * id, bool retain = false);
         void end_object();
 
-        void insert_background(const std::vector<float> & ground_angle,
-                               const std::vector<color> & ground_color,
-                               const std::vector<float> & sky_angle,
-                               const std::vector<color> & sky_color,
-                               texture_node & front,
-                               texture_node & back,
-                               texture_node & left,
-                               texture_node & right,
-                               texture_node & top,
-                               texture_node & bottom);
-
+        void insert_background(const background_node & n);
         void insert_box(const geometry_node & n, const vec3f & size);
         void insert_cone(const geometry_node & n,
-                         float height, float radius, bool bottom,
-                         bool side);
+                         float height, float radius, bool bottom, bool side);
         void insert_cylinder(const geometry_node & n,
-                             float height, float radius, bool bottom,
-                             bool side, bool top);
+                             float height, float radius,
+                             bool bottom, bool side, bool top);
         void insert_elevation_grid(const geometry_node & n,
                                    unsigned int mask,
                                    const std::vector<float> & height,
@@ -214,18 +204,7 @@ namespace openvrml {
         virtual void do_begin_object(const char * id, bool retain = false) = 0;
         virtual void do_end_object() = 0;
 
-        virtual
-        void
-        do_insert_background(const std::vector<float> & ground_angle,
-                             const std::vector<color> & ground_color,
-                             const std::vector<float> & sky_angle,
-                             const std::vector<color> & sky_color,
-                             texture_node & front,
-                             texture_node & back,
-                             texture_node & left,
-                             texture_node & right,
-                             texture_node & top,
-                             texture_node & bottom) = 0;
+        virtual void do_insert_background(const background_node & n) = 0;
 
         virtual
         void do_insert_box(const geometry_node & n, const vec3f & size) = 0;

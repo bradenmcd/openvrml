@@ -1,3 +1,123 @@
+2009-04-30 Braden McDaniel  <braden@endoframe.com>
+
+	Added abstract node type openvrml::background_node.
+
+	* src/libopenvrml/openvrml/local/externproto.cpp
+	(openvrml::local::externproto_node::to_background()): Added
+	implementation of openvrml::node::to_background.
+	* src/libopenvrml/openvrml/local/externproto.h
+	(openvrml::local::externproto): Override
+	openvrml::node::to_background.
+	* src/libopenvrml/openvrml/local/proto.cpp
+	(openvrml::local::proto): Override openvrml::node::to_background.
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node::to_background()): Added downcast function;
+	default implementation returns 0.
+	(openvrml::background_node::background_node(const node_type &,
+	const boost::shared_ptr<openvrml::scope> &)): Construct a
+	background_node.
+	(openvrml::background_node::~background_node()): Destroy a
+	background_node.
+	(openvrml::background_node::to_background()): Return this.
+	(openvrml::background_node::ground_angle() const): Delegate to
+	do_ground_angle.
+	(openvrml::background_node::ground_color() const): Delegate to
+	do_ground_color.
+	(openvrml::background_node::sky_angle() const): Delegate to
+	do_sky_angle.
+	(openvrml::background_node::sky_color() const): Delegate to
+	do_sky_color.
+	(openvrml::background_node::front() const): Delegate to do_front.
+	(openvrml::background_node::back() const): Delegate to do_back.
+	(openvrml::background_node::left() const): Delegate to do_left.
+	(openvrml::background_node::right() const): Delegate to do_right.
+	(openvrml::background_node::top() const): Delegate to do_top.
+	(openvrml::background_node::bottom() const): Delegate to
+	do_bottom.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Added polymorphic "cast" function used by
+	node_cast.
+	(openvrml::node_cast<background_node *>(node *)): Specialize for
+	background_node.
+	(openvrml::background_node): Added background_node abstract node
+	type.
+	* src/libopenvrml/openvrml/viewer.cpp
+	(openvrml::viewer::insert_background(const background_node &)):
+	Just take a background_node.
+	* src/libopenvrml/openvrml/viewer.h
+	(openvrml::viewer): Changed insert_background and
+	do_insert_background just to take a background_node.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::do_insert_background(const
+	background_node&)): Get data from the background_node.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	(openvrml::gl::viewer): Changed do_insert_background to take a
+	background_node.
+	* src/node/vrml97/background.cpp
+	(openvrml_node_vrml97::background_metatype::background_metatype(openvrml::browser&)):
+	Initialize the node_metatype and node_type for the default
+	background node.
+	(null_texture_node): Removed.
+	(openvrml_node_vrml97::background_metatype::do_render(openvrml::viewer&)
+	const): Use a background_node instance for the default background.
+	(openvrml_node_vrml97::background_node::background_node(const
+	openvrml::node_type &, const
+	boost::shared_ptr<openvrml::scope>&)): Don't bother to set up the
+	texture nodes for the default background.
+	(openvrml_node_vrml97::background_node::do_ground_angle() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_ground_color() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_sky_angle() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_sky_color() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_front() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_back() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_left() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_right() const):
+	Implement openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_top() const): Implement
+	openvrml::background_node.
+	(openvrml_node_vrml97::background_node::do_bottom() const):
+	Implement openvrml::background_node.
+	* src/node/vrml97/background.h
+	(openvrml_node_vrml97::background_metatype): Provide a
+	null_node_metatype and a null_node_type for the default
+	background.
+	(openvrml_node_vrml97::background_node): Inherit
+	openvrml::background_node; override openvrml::node::do_modified.
+	* src/node/x3d-environmental-effects/texture_background.cpp
+	(texture_background_node): Inherit openvrml::background_node.
+	(texture_background_node::texture_background_node(const
+	node_type&, const boost::shared_ptr<openvrml::scope> &)):
+	Initialize the base openvrml::background_node.
+	(texture_background_node::do_modified() const): Check the modified
+	states of the texture nodes.
+	(texture_background_node::do_ground_angle() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_ground_color() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_sky_angle() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_sky_color() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_front() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_back() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_left() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_right() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_top() const): Implement
+	openvrml::background_node.
+	(texture_background_node::do_bottom() const): Implement
+	openvrml::background_node.
+
 2009-04-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp

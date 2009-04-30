@@ -359,6 +359,7 @@ namespace openvrml {
     class bounding_volume;
     class script_node;
     class appearance_node;
+    class background_node;
     class bounded_volume_node;
     class child_node;
     class color_node;
@@ -409,6 +410,8 @@ namespace openvrml {
         friend script_node * node_cast<script_node *>(node * n)
             OPENVRML_NOTHROW;
         friend appearance_node * node_cast<appearance_node *>(node * n)
+            OPENVRML_NOTHROW;
+        friend background_node * node_cast<background_node *>(node * n)
             OPENVRML_NOTHROW;
         friend bounded_volume_node *
         node_cast<bounded_volume_node *>(node * n) OPENVRML_NOTHROW;
@@ -611,6 +614,7 @@ namespace openvrml {
 
         virtual script_node * to_script() OPENVRML_NOTHROW;
         virtual appearance_node * to_appearance() OPENVRML_NOTHROW;
+        virtual background_node * to_background() OPENVRML_NOTHROW;
         virtual bounded_volume_node * to_bounded_volume() OPENVRML_NOTHROW;
         virtual child_node * to_child() OPENVRML_NOTHROW;
         virtual color_node * to_color() OPENVRML_NOTHROW;
@@ -723,6 +727,15 @@ namespace openvrml {
     {
         return n
             ? n->to_appearance()
+            : 0;
+    }
+
+    template <>
+    inline background_node * node_cast<background_node *>(node * n)
+        OPENVRML_NOTHROW
+    {
+        return n
+            ? n->to_background()
             : 0;
     }
 
@@ -983,6 +996,46 @@ namespace openvrml {
         virtual void do_relocate() OPENVRML_THROW1(std::bad_alloc);
         virtual void do_render_child(viewer & v,
                                      rendering_context context);
+    };
+
+
+    class OPENVRML_API background_node : public virtual child_node {
+    public:
+        virtual ~background_node() OPENVRML_NOTHROW = 0;
+
+        const std::vector<float> & ground_angle() const OPENVRML_NOTHROW;
+        const std::vector<color> & ground_color() const OPENVRML_NOTHROW;
+        const std::vector<float> & sky_angle() const OPENVRML_NOTHROW;
+        const std::vector<color> & sky_color() const OPENVRML_NOTHROW;
+        texture_node * front() const OPENVRML_NOTHROW;
+        texture_node * back() const OPENVRML_NOTHROW;
+        texture_node * left() const OPENVRML_NOTHROW;
+        texture_node * right() const OPENVRML_NOTHROW;
+        texture_node * top() const OPENVRML_NOTHROW;
+        texture_node * bottom() const OPENVRML_NOTHROW;
+
+    protected:
+        background_node(const node_type & type,
+                        const boost::shared_ptr<openvrml::scope> & scope)
+            OPENVRML_NOTHROW;
+
+    private:
+        virtual background_node * to_background() OPENVRML_NOTHROW;
+
+        virtual const std::vector<float> & do_ground_angle() const
+            OPENVRML_NOTHROW = 0;
+        virtual const std::vector<color> & do_ground_color() const
+            OPENVRML_NOTHROW = 0;
+        virtual const std::vector<float> & do_sky_angle() const
+            OPENVRML_NOTHROW = 0;
+        virtual const std::vector<color> & do_sky_color() const
+            OPENVRML_NOTHROW = 0;
+        virtual texture_node * do_front() const OPENVRML_NOTHROW = 0;
+        virtual texture_node * do_back() const OPENVRML_NOTHROW = 0;
+        virtual texture_node * do_left() const OPENVRML_NOTHROW = 0;
+        virtual texture_node * do_right() const OPENVRML_NOTHROW = 0;
+        virtual texture_node * do_top() const OPENVRML_NOTHROW = 0;
+        virtual texture_node * do_bottom() const OPENVRML_NOTHROW = 0;
     };
 
 

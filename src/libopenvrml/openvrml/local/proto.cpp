@@ -179,6 +179,8 @@ namespace openvrml {
                 OPENVRML_NOTHROW;
             virtual openvrml::bounded_volume_node * to_bounded_volume()
                 OPENVRML_NOTHROW;
+            virtual openvrml::background_node * to_background()
+                OPENVRML_NOTHROW;
             virtual openvrml::child_node * to_child() OPENVRML_NOTHROW;
             virtual openvrml::color_node * to_color() OPENVRML_NOTHROW;
             virtual openvrml::color_rgba_node * to_color_rgba()
@@ -1462,6 +1464,21 @@ openvrml::local::proto_node::to_appearance()
     assert(!this->impl_nodes_.empty());
     assert(this->impl_nodes_[0]);
     return node_cast<appearance_node *>(this->impl_nodes_[0].get());
+}
+
+/**
+ * @brief Cast to a @c background_node.
+ *
+ * @return a pointer to the first node in the implementation if that node
+ *         is a @c background_node, or 0 otherwise.
+ */
+openvrml::background_node *
+openvrml::local::proto_node::to_background()
+    OPENVRML_NOTHROW
+{
+    assert(!this->impl_nodes_.empty());
+    assert(this->impl_nodes_[0]);
+    return node_cast<background_node *>(this->impl_nodes_[0].get());
 }
 
 /**

@@ -1156,39 +1156,20 @@ void openvrml::gl::viewer::do_reset_user_navigation()
 /**
  * @brief Insert a background into a display list.
  *
- * @param[in] groundAngle   ground angles.
- * @param[in] groundColor   ground colors.
- * @param[in] skyAngle      sky angles.
- * @param[in] skyColor      sky colors.
- * @param[in] front         front texture.
- * @param[in] back          back texture.
- * @param[in] left          left texture.
- * @param[in] right         right texture.
- * @param[in] top           top texture.
- * @param[in] bottom        bottom texture.
+ * @param[in] n a @c background_node.
  */
-void
-openvrml::gl::viewer::
-do_insert_background(const std::vector<float> & groundAngle,
-                     const std::vector<color> & groundColor,
-                     const std::vector<float> & skyAngle,
-                     const std::vector<color> & skyColor,
-                     texture_node & front,
-                     texture_node & back,
-                     texture_node & left,
-                     texture_node & right,
-                     texture_node & top,
-                     texture_node & bottom)
+void openvrml::gl::viewer::do_insert_background(const background_node & n)
 {
     using std::vector;
 
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
 
     // Clear to last sky color
-    if (!skyColor.empty()) {
-        r = skyColor.back().r();
-        g = skyColor.back().g();
-        b = skyColor.back().b();
+    if (!n.sky_color().empty()) {
+        const color & last_sky_color = n.sky_color().back();
+        r = last_sky_color.r();
+        g = last_sky_color.g();
+        b = last_sky_color.b();
     }
 
     GLuint glid = 0;
@@ -1196,14 +1177,15 @@ do_insert_background(const std::vector<float> & groundAngle,
     // Need to separate the geometry from the transformation so the
     // dlist doesn't have to get rebuilt for every mouse movement...
     // Don't bother with a dlist if we aren't drawing anything
-    if (!this->select_mode && (!skyAngle.empty()
-                               || !groundAngle.empty()
-                               || !front.image().array().empty()
-                               || !back.image().array().empty()
-                               || !left.image().array().empty()
-                               || !right.image().array().empty()
-                               || !top.image().array().empty()
-                               || !bottom.image().array().empty())) {
+    if (!this->select_mode
+        && (!n.sky_angle().empty()
+            || !n.ground_angle().empty()
+            || (n.front() && !n.front()->image().array().empty())
+            || (n.back() && !n.back()->image().array().empty())
+            || (n.left() && !n.left()->image().array().empty())
+            || (n.right() && !n.right()->image().array().empty())
+            || (n.top() && !n.top()->image().array().empty())
+            || (n.bottom() && !n.bottom()->image().array().empty()))) {
         glid = glGenLists(1);
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
@@ -1217,7 +1199,8 @@ do_insert_background(const std::vector<float> & groundAngle,
     glClear(mask);
 
     // Draw the background as big spheres centered at the view position
-    if (!this->select_mode && (!skyAngle.empty() || !groundAngle.empty())) {
+    if (!this->select_mode
+        && (!n.sky_angle().empty() || !n.ground_angle().empty())) {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
@@ -1230,10 +1213,10 @@ do_insert_background(const std::vector<float> & groundAngle,
         static const double cd = 2.0 * pi / nCirc;
 
         double heightAngle0, heightAngle1 = 0.0;
-        vector<color>::const_iterator c0, c1 = skyColor.begin();
+        vector<color>::const_iterator c0, c1 = n.sky_color().begin();
 
-        for (vector<float>::const_iterator angle = skyAngle.begin();
-             angle != skyAngle.end();
+        for (vector<float>::const_iterator angle = n.sky_angle().begin();
+             angle != n.sky_angle().end();
              ++angle) {
             heightAngle0 = heightAngle1;
             heightAngle1 = *angle;
@@ -1275,10 +1258,10 @@ do_insert_background(const std::vector<float> & groundAngle,
 
         // Ground
         heightAngle1 = pi;
-        c1 = groundColor.begin();
+        c1 = n.ground_color().begin();
 
-        for (vector<float>::const_iterator angle = groundAngle.begin();
-             angle != groundAngle.end();
+        for (vector<float>::const_iterator angle = n.ground_angle().begin();
+             angle != n.ground_angle().end();
              ++angle) {
             heightAngle0 = heightAngle1;
             heightAngle1 = pi - *angle;
@@ -1324,84 +1307,102 @@ do_insert_background(const std::vector<float> & groundAngle,
             glEnable(GL_TEXTURE_2D);
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-            front.render_texture(*this);
-            if (!front.image().array().empty()) {
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, 0);
-                glVertex3f(-1, -1, -1);
-                glTexCoord2f(1, 0);
-                glVertex3f(1, -1, -1);
-                glTexCoord2f(1, 1);
-                glVertex3f(1, 1, -1);
-                glTexCoord2f(0, 1);
-                glVertex3f(-1, 1, -1);
-                glEnd(); // GL_QUADS
+            if (n.front()) {
+                n.front()->render_texture(*this);
+                if (!n.front()->image().array().empty()) {
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 0);
+                    glVertex3f(-1, -1, -1);
+                    glTexCoord2f(1, 0);
+                    glVertex3f(1, -1, -1);
+                    glTexCoord2f(1, 1);
+                    glVertex3f(1, 1, -1);
+                    glTexCoord2f(0, 1);
+                    glVertex3f(-1, 1, -1);
+                    glEnd(); // GL_QUADS
+                }
             }
-            back.render_texture(*this);
-            if (!back.image().array().empty()) {
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, 0);
-                glVertex3f(1, -1, 1);
-                glTexCoord2f(1, 0);
-                glVertex3f(-1, -1, 1);
-                glTexCoord2f(1, 1);
-                glVertex3f(-1, 1, 1);
-                glTexCoord2f(0, 1);
-                glVertex3f(1, 1, 1);
-                glEnd(); // GL_QUADS
+
+            if (n.back()) {
+                n.back()->render_texture(*this);
+                if (!n.back()->image().array().empty()) {
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 0);
+                    glVertex3f(1, -1, 1);
+                    glTexCoord2f(1, 0);
+                    glVertex3f(-1, -1, 1);
+                    glTexCoord2f(1, 1);
+                    glVertex3f(-1, 1, 1);
+                    glTexCoord2f(0, 1);
+                    glVertex3f(1, 1, 1);
+                    glEnd(); // GL_QUADS
+                }
             }
-            left.render_texture(*this);
-            if (!left.image().array().empty()) {
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, 0);
-                glVertex3f(-1, -1, 1);
-                glTexCoord2f(1, 0);
-                glVertex3f(-1, -1, -1);
-                glTexCoord2f(1, 1);
-                glVertex3f(-1, 1, -1);
-                glTexCoord2f(0, 1);
-                glVertex3f(-1, 1, 1);
-                glEnd(); // GL_QUADS
+
+            if (n.left()) {
+                n.left()->render_texture(*this);
+                if (!n.left()->image().array().empty()) {
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 0);
+                    glVertex3f(-1, -1, 1);
+                    glTexCoord2f(1, 0);
+                    glVertex3f(-1, -1, -1);
+                    glTexCoord2f(1, 1);
+                    glVertex3f(-1, 1, -1);
+                    glTexCoord2f(0, 1);
+                    glVertex3f(-1, 1, 1);
+                    glEnd(); // GL_QUADS
+                }
             }
-            right.render_texture(*this);
-            if (!right.image().array().empty()) {
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, 0);
-                glVertex3f(1, -1, -1);
-                glTexCoord2f(1, 0);
-                glVertex3f(1, -1, 1);
-                glTexCoord2f(1, 1);
-                glVertex3f(1, 1, 1);
-                glTexCoord2f(0, 1);
-                glVertex3f(1, 1, -1);
-                glEnd(); // GL_QUADS
+
+            if (n.right()) {
+                n.right()->render_texture(*this);
+                if (!n.right()->image().array().empty()) {
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 0);
+                    glVertex3f(1, -1, -1);
+                    glTexCoord2f(1, 0);
+                    glVertex3f(1, -1, 1);
+                    glTexCoord2f(1, 1);
+                    glVertex3f(1, 1, 1);
+                    glTexCoord2f(0, 1);
+                    glVertex3f(1, 1, -1);
+                    glEnd(); // GL_QUADS
+                }
             }
-            top.render_texture(*this);
-            if (!top.image().array().empty()) {
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, 0);
-                glVertex3f(-1, 1, -1);
-                glTexCoord2f(1, 0);
-                glVertex3f(1, 1, -1);
-                glTexCoord2f(1, 1);
-                glVertex3f(1, 1, 1);
-                glTexCoord2f(0, 1);
-                glVertex3f(-1, 1, 1);
-                glEnd(); // GL_QUADS
+
+            if (n.top()) {
+                n.top()->render_texture(*this);
+                if (!n.top()->image().array().empty()) {
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 0);
+                    glVertex3f(-1, 1, -1);
+                    glTexCoord2f(1, 0);
+                    glVertex3f(1, 1, -1);
+                    glTexCoord2f(1, 1);
+                    glVertex3f(1, 1, 1);
+                    glTexCoord2f(0, 1);
+                    glVertex3f(-1, 1, 1);
+                    glEnd(); // GL_QUADS
+                }
             }
-            bottom.render_texture(*this);
-            if (!bottom.image().array().empty()) {
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, 0);
-                glVertex3f(-1, -1, 1);
-                glTexCoord2f(1, 0);
-                glVertex3f(1, -1, 1);
-                glTexCoord2f(1, 1);
-                glVertex3f(1, -1, -1);
-                glTexCoord2f(0, 1);
-                glVertex3f(-1, -1, -1);
-                glEnd(); // GL_QUADS
+
+            if (n.bottom()) {
+                n.bottom()->render_texture(*this);
+                if (!n.bottom()->image().array().empty()) {
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 0);
+                    glVertex3f(-1, -1, 1);
+                    glTexCoord2f(1, 0);
+                    glVertex3f(1, -1, 1);
+                    glTexCoord2f(1, 1);
+                    glVertex3f(1, -1, -1);
+                    glTexCoord2f(0, 1);
+                    glVertex3f(-1, -1, -1);
+                    glEnd(); // GL_QUADS
+                }
             }
+
             glDisable(GL_TEXTURE_2D);
         }
 

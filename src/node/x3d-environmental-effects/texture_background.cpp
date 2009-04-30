@@ -34,7 +34,7 @@ namespace {
 
     class OPENVRML_LOCAL texture_background_node :
         public abstract_node<texture_background_node>,
-        public child_node {
+        public background_node {
 
         friend
         class openvrml_node_x3d_environmental_effects::texture_background_metatype;
@@ -73,6 +73,25 @@ namespace {
             const node_type & type,
             const boost::shared_ptr<openvrml::scope> & scope);
         virtual ~texture_background_node() OPENVRML_NOTHROW;
+
+    private:
+        virtual bool do_modified() const
+            OPENVRML_THROW1(boost::thread_resource_error);
+
+        virtual const std::vector<float> & do_ground_angle() const
+            OPENVRML_NOTHROW;
+        virtual const std::vector<openvrml::color> & do_ground_color() const
+            OPENVRML_NOTHROW;
+        virtual const std::vector<float> & do_sky_angle() const
+            OPENVRML_NOTHROW;
+        virtual const std::vector<openvrml::color> & do_sky_color() const
+            OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_front() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_back() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_left() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_right() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_top() const OPENVRML_NOTHROW;
+        virtual openvrml::texture_node * do_bottom() const OPENVRML_NOTHROW;
     };
 
 
@@ -214,8 +233,9 @@ namespace {
                             const boost::shared_ptr<openvrml::scope> & scope):
         node(type, scope),
         bounded_volume_node(type, scope),
-        abstract_node<self_t>(type, scope),
         child_node(type, scope),
+        abstract_node<self_t>(type, scope),
+        background_node(type, scope),
         set_bind_listener_(*this),
         ground_angle_(*this),
         ground_color_(*this),
@@ -237,6 +257,133 @@ namespace {
      */
     texture_background_node::~texture_background_node() OPENVRML_NOTHROW
     {}
+
+    bool texture_background_node::do_modified() const
+        OPENVRML_THROW1(boost::thread_resource_error)
+    {
+        return (this->front_texture_.value()
+                && this->front_texture_.value()->modified())
+            || (this->back_texture_.value()
+                && this->back_texture_.value()->modified())
+            || (this->left_texture_.value()
+                && this->left_texture_.value()->modified())
+            || (this->right_texture_.value()
+                && this->right_texture_.value()->modified())
+            || (this->top_texture_.value()
+                && this->top_texture_.value()->modified())
+            || (this->bottom_texture_.value()
+                && this->bottom_texture_.value()->modified());
+    }
+
+    /**
+     * @brief Ground angles.
+     *
+     * @return a vector of angles corresponding to ground colors.
+     */
+    const std::vector<float> &
+    texture_background_node::do_ground_angle() const OPENVRML_NOTHROW
+    {
+        return this->ground_angle_.value();
+    }
+
+    /**
+     * @brief Ground colors.
+     *
+     * @return a vector of ground colors.
+     */
+    const std::vector<openvrml::color> &
+    texture_background_node::do_ground_color() const OPENVRML_NOTHROW
+    {
+        return this->ground_color_.value();
+    }
+
+    /**
+     * @brief Sky angles.
+     *
+     * @return a vector of angles corresponding to sky colors.
+     */
+    const std::vector<float> &
+    texture_background_node::do_sky_angle() const OPENVRML_NOTHROW
+    {
+        return this->sky_angle_.value();
+    }
+
+    /**
+     * @brief Sky colors.
+     *
+     * @return a vector of sky colors.
+     */
+    const std::vector<openvrml::color> &
+    texture_background_node::do_sky_color() const OPENVRML_NOTHROW
+    {
+        return this->sky_color_.value();
+    }
+
+    /**
+     * @brief Front texture.
+     *
+     * @return the front texture.
+     */
+    openvrml::texture_node * texture_background_node::do_front() const
+        OPENVRML_NOTHROW
+    {
+        return dynamic_cast<texture_node *>(this->front_texture_.value().get());
+    }
+
+    /**
+     * @brief Back texture.
+     *
+     * @return the back texture.
+     */
+    openvrml::texture_node * texture_background_node::do_back() const
+        OPENVRML_NOTHROW
+    {
+        return dynamic_cast<texture_node *>(this->back_texture_.value().get());
+    }
+
+    /**
+     * @brief Left texture.
+     *
+     * @return the left texture.
+     */
+    openvrml::texture_node * texture_background_node::do_left() const
+        OPENVRML_NOTHROW
+    {
+        return dynamic_cast<texture_node *>(this->left_texture_.value().get());
+    }
+
+    /**
+     * @brief Right texture.
+     *
+     * @return the right texture.
+     */
+    openvrml::texture_node * texture_background_node::do_right() const
+        OPENVRML_NOTHROW
+    {
+        return dynamic_cast<texture_node *>(this->right_texture_.value().get());
+    }
+
+    /**
+     * @brief Top texture.
+     *
+     * @return the top texture.
+     */
+    openvrml::texture_node * texture_background_node::do_top() const
+        OPENVRML_NOTHROW
+    {
+        return dynamic_cast<texture_node *>(this->top_texture_.value().get());
+    }
+
+    /**
+     * @brief Bottom texture.
+     *
+     * @return the bottom texture.
+     */
+    openvrml::texture_node *
+    texture_background_node::do_bottom() const OPENVRML_NOTHROW
+    {
+        return dynamic_cast<texture_node *>(this->bottom_texture_.value().get());
+    }
 }
 
 

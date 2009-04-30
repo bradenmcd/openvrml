@@ -230,49 +230,19 @@ void openvrml::viewer::end_object()
  *
  * This function delegates to @c viewer::do_insert_background.
  *
- * @param[in] ground_angle  ground angles.
- * @param[in] ground_color  ground colors.
- * @param[in] sky_angle     sky angles.
- * @param[in] sky_color     sky colors.
- * @param[in] front         front texture.
- * @param[in] back          back texture.
- * @param[in] left          left texture.
- * @param[in] right         right texture.
- * @param[in] top           top texture.
- * @param[in] bottom        bottom texture.
+ * @param[in] n a @c background_node.
  */
-void
-openvrml::viewer::insert_background(const std::vector<float> & ground_angle,
-                                    const std::vector<color> & ground_color,
-                                    const std::vector<float> & sky_angle,
-                                    const std::vector<color> & sky_color,
-                                    texture_node & front,
-                                    texture_node & back,
-                                    texture_node & left,
-                                    texture_node & right,
-                                    texture_node & top,
-                                    texture_node & bottom)
+void openvrml::viewer::insert_background(const background_node & n)
 {
-    return this->do_insert_background(ground_angle, ground_color,
-                                      sky_angle, sky_color,
-                                      front, back, left, right, top, bottom);
+    return this->do_insert_background(n);
 }
 
 /**
- * @fn void openvrml::viewer::do_insert_background(const std::vector<float> & ground_angle, const std::vector<color> & ground_color, const std::vector<float> & sky_angle, const std::vector<color> & sky_color, texture_node & front, texture_node & back, texture_node & left, texture_node & right, texture_node & top, texture_node & bottom)
+ * @fn void openvrml::viewer::do_insert_background(const background_node & n)
  *
  * @brief Insert a background into a display list.
  *
- * @param[in] ground_angle  ground angles.
- * @param[in] ground_color  ground colors.
- * @param[in] sky_angle     sky angles.
- * @param[in] sky_color     sky colors.
- * @param[in] front         front texture.
- * @param[in] back          back texture.
- * @param[in] left          left texture.
- * @param[in] right         right texture.
- * @param[in] top           top texture.
- * @param[in] bottom        bottom texture.
+ * @param[in] n a @c background_node.
  */
 
 /**

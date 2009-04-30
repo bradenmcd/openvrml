@@ -2380,6 +2380,21 @@ openvrml::appearance_node * openvrml::node::to_appearance() OPENVRML_NOTHROW
 /**
  * @internal
  *
+ * @brief Cast to a @c background_node.
+ *
+ * Default implementation returns 0.
+ *
+ * @return 0
+ */
+openvrml::background_node * openvrml::node::to_background()
+    OPENVRML_NOTHROW
+{
+    return 0;
+}
+
+/**
+ * @internal
+ *
  * @brief Cast to a @c bounded_volume_node.
  *
  * Default implementation returns 0.
@@ -3638,6 +3653,255 @@ openvrml::child_node * openvrml::child_node::to_child() OPENVRML_NOTHROW
  */
 void openvrml::child_node::do_relocate() OPENVRML_THROW1(std::bad_alloc)
 {}
+
+
+/**
+ * @class openvrml::background_node openvrml/node.h
+ *
+ * @brief Abstract base class for background nodes.
+ */
+
+/**
+ * @brief Construct.
+ *
+ * @param[in] type  the @c node_type associated with the node.
+ * @param[in] scope the scope the node belongs to.
+ */
+openvrml::background_node::
+background_node(const node_type & type,
+                const boost::shared_ptr<openvrml::scope> & scope)
+    OPENVRML_NOTHROW:
+    node(type, scope),
+    bounded_volume_node(type, scope),
+    child_node(type, scope)
+{}
+
+/**
+ * @brief Destroy.
+ */
+openvrml::background_node::~background_node() OPENVRML_NOTHROW
+{}
+
+/**
+ * @brief Cast to a @c background_node.
+ *
+ * @return a pointer to this @c background_node.
+ */
+openvrml::background_node * openvrml::background_node::to_background()
+    OPENVRML_NOTHROW
+{
+    return this;
+}
+
+/**
+ * @brief Ground angles.
+ *
+ * This function delegates to @c #do_ground_angle.
+ *
+ * @return a vector of angles corresponding to ground colors.
+ */
+const std::vector<float> &
+openvrml::background_node::ground_angle() const OPENVRML_NOTHROW
+{
+    return this->do_ground_angle();
+}
+
+/**
+ * @fn const std::vector<float> & openvrml::background_node::do_ground_angle() const
+ *
+ * @brief Ground angles.
+ *
+ * @return a vector of angles corresponding to ground colors.
+ */
+
+/**
+ * @brief Ground colors.
+ *
+ * This function delegates to @c #do_ground_color.
+ *
+ * @return a vector of ground colors.
+ */
+const std::vector<openvrml::color> &
+openvrml::background_node::ground_color() const OPENVRML_NOTHROW
+{
+    return this->do_ground_color();
+}
+
+/**
+ * @fn const std::vector<openvrml::color> & openvrml::background_node::do_ground_color() const
+ *
+ * @brief Ground colors.
+ *
+ * @return a vector of ground colors.
+ */
+
+/**
+ * @brief Sky angles.
+ *
+ * This function delegates to @c #do_sky_angle.
+ *
+ * @return a vector of angles corresponding to sky colors.
+ */
+const std::vector<float> &
+openvrml::background_node::sky_angle() const OPENVRML_NOTHROW
+{
+    return this->do_sky_angle();
+}
+
+/**
+ * @fn const std::vector<float> & openvrml::background_node::do_sky_angle() const
+ *
+ * @brief Sky angles.
+ *
+ * @return a vector of angles corresponding to sky colors.
+ */
+
+/**
+ * @brief Sky colors.
+ *
+ * This function delegates to @c #do_sky_color.
+ *
+ * @return a vector of sky colors.
+ */
+const std::vector<openvrml::color> &
+openvrml::background_node::sky_color() const OPENVRML_NOTHROW
+{
+    return this->do_sky_color();
+}
+
+/**
+ * @fn const std::vector<openvrml::color> & openvrml::background_node::do_sky_color() const
+ *
+ * @brief Sky colors.
+ *
+ * @return a vector of sky colors.
+ */
+
+/**
+ * @brief Front texture.
+ *
+ * This function delegates to @c #do_front.
+ *
+ * @return the front texture.
+ */
+openvrml::texture_node * openvrml::background_node::front() const
+    OPENVRML_NOTHROW
+{
+    return this->do_front();
+}
+
+/**
+ * @fn openvrml::texture_node * openvrml::background_node::do_front() const
+ *
+ * @brief Front texture.
+ *
+ * @return the front texture.
+ */
+
+/**
+ * @brief Back texture.
+ *
+ * This function delegates to @c #do_back.
+ *
+ * @return the back texture.
+ */
+openvrml::texture_node * openvrml::background_node::back() const
+    OPENVRML_NOTHROW
+{
+    return this->do_back();
+}
+
+/**
+ * @fn openvrml::texture_node * openvrml::background_node::do_back() const
+ *
+ * @brief Back texture.
+ *
+ * @return the back texture.
+ */
+
+/**
+ * @brief Left texture.
+ *
+ * This function delegates to @c #do_left.
+ *
+ * @return the left texture.
+ */
+openvrml::texture_node * openvrml::background_node::left() const
+    OPENVRML_NOTHROW
+{
+    return this->do_left();
+}
+
+/**
+ * @fn openvrml::texture_node * openvrml::background_node::do_left() const
+ *
+ * @brief Left texture.
+ *
+ * @return the left texture.
+ */
+
+/**
+ * @brief Right texture.
+ *
+ * This function delegates to @c @do_right.
+ *
+ * @return the right texture.
+ */
+openvrml::texture_node * openvrml::background_node::right() const
+    OPENVRML_NOTHROW
+{
+    return this->do_right();
+}
+
+/**
+ * @fn openvrml::texture_node * openvrml::background_node::do_right() const
+ *
+ * @brief Right texture.
+ *
+ * @return the right texture.
+ */
+
+/**
+ * @brief Top texture.
+ *
+ * This function delegates to @c #do_top.
+ *
+ * @return the top texture.
+ */
+openvrml::texture_node * openvrml::background_node::top() const
+    OPENVRML_NOTHROW
+{
+    return this->do_top();
+}
+
+/**
+ * @fn openvrml::texture_node * openvrml::background_node::do_top() const
+ *
+ * @brief Top texture.
+ *
+ * @return the top texture.
+ */
+
+/**
+ * @brief Bottom texture.
+ *
+ * This function delegates to @c #do_bottom.
+ *
+ * @return the bottom texture.
+ */
+openvrml::texture_node * openvrml::background_node::bottom() const
+    OPENVRML_NOTHROW
+{
+    return this->do_bottom();
+}
+
+/**
+ * @fn openvrml::texture_node * openvrml::background_node::do_bottom() const
+ *
+ * @brief Bottom texture.
+ *
+ * @return the bottom texture.
+ */
 
 
 /**
