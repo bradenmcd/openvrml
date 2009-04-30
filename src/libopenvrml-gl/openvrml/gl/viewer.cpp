@@ -1180,7 +1180,6 @@ do_insert_background(const std::vector<float> & groundAngle,
                      texture_node & top,
                      texture_node & bottom)
 {
-    std::cout << "do_insert_background" << std::endl;
     using std::vector;
 
     float r = 0.0, g = 0.0, b = 0.0, a = 1.0;

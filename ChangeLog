@@ -1,3 +1,12 @@
+2009-04-29 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::do_insert_background(const
+	std::vector<float> &, const std::vector<color> &, const
+	std::vector<float> &, const std::vector<color> &, texture_node &,
+	texture_node &, texture_node &, texture_node &, texture_node &,
+	texture_node &)): Removed erroneously committed debugging output.
+
 2009-04-27 Braden McDaniel  <braden@endoframe.com>
 
 	Override do_modified for background_node; set the initial value of
