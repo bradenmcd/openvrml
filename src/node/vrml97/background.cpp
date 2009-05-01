@@ -214,6 +214,28 @@ do_render(openvrml::viewer & v) const
 
         if (background.modified()) {
             v.remove_object(background);
+
+            //
+            // This could be a bit more surgical; but for now don't bother.
+            //
+            if (background.front()) {
+                v.remove_texture_object(*background.front());
+            }
+            if (background.back()) {
+                v.remove_texture_object(*background.back());
+            }
+            if (background.left()) {
+                v.remove_texture_object(*background.left());
+            }
+            if (background.right()) {
+                v.remove_texture_object(*background.right());
+            }
+            if (background.top()) {
+                v.remove_texture_object(*background.top());
+            }
+            if (background.bottom()) {
+                v.remove_texture_object(*background.bottom());
+            }
         }
 
         v.insert_background(background);
@@ -645,17 +667,17 @@ background_node(const openvrml::node_type & type,
         scope->find_type("ImageTexture");
     assert(image_texture_type);
 
-    this->front =
+    this->front_ =
         node_cast<texture_node *>(image_texture_type->create_node(scope).get());
-    this->back =
+    this->back_ =
         node_cast<texture_node *>(image_texture_type->create_node(scope).get());
-    this->left =
+    this->left_ =
         node_cast<texture_node *>(image_texture_type->create_node(scope).get());
-    this->right =
+    this->right_ =
         node_cast<texture_node *>(image_texture_type->create_node(scope).get());
-    this->top =
+    this->top_ =
         node_cast<texture_node *>(image_texture_type->create_node(scope).get());
-    this->bottom =
+    this->bottom_ =
         node_cast<texture_node *>(image_texture_type->create_node(scope).get());
 
     //
@@ -663,12 +685,12 @@ background_node(const openvrml::node_type & type,
     // know more about image_texture_node's internals.  But it's probably okay
     // if background_node is a little heavy.
     //
-    this->front_url_.add(this->front->event_listener<mfstring>("url"));
-    this->back_url_.add(this->back->event_listener<mfstring>("url"));
-    this->left_url_.add(this->left->event_listener<mfstring>("url"));
-    this->right_url_.add(this->right->event_listener<mfstring>("url"));
-    this->top_url_.add(this->top->event_listener<mfstring>("url"));
-    this->bottom_url_.add(this->bottom->event_listener<mfstring>("url"));
+    this->front_url_.add(this->front_->event_listener<mfstring>("url"));
+    this->back_url_.add(this->back_->event_listener<mfstring>("url"));
+    this->left_url_.add(this->left_->event_listener<mfstring>("url"));
+    this->right_url_.add(this->right_->event_listener<mfstring>("url"));
+    this->top_url_.add(this->top_->event_listener<mfstring>("url"));
+    this->bottom_url_.add(this->bottom_->event_listener<mfstring>("url"));
 }
 
 /**
@@ -720,19 +742,19 @@ void
 openvrml_node_vrml97::background_node::do_initialize(const double timestamp)
     OPENVRML_NOTHROW
 {
-    set_url(*this->front, this->front_url_, timestamp);
-    set_url(*this->back, this->back_url_, timestamp);
-    set_url(*this->left, this->left_url_, timestamp);
-    set_url(*this->right, this->right_url_, timestamp);
-    set_url(*this->top, this->top_url_, timestamp);
-    set_url(*this->bottom, this->bottom_url_, timestamp);
+    set_url(*this->front_, this->front_url_, timestamp);
+    set_url(*this->back_, this->back_url_, timestamp);
+    set_url(*this->left_, this->left_url_, timestamp);
+    set_url(*this->right_, this->right_url_, timestamp);
+    set_url(*this->top_, this->top_url_, timestamp);
+    set_url(*this->bottom_, this->bottom_url_, timestamp);
 
-    this->front->initialize(*this->scene(), timestamp);
-    this->back->initialize(*this->scene(), timestamp);
-    this->left->initialize(*this->scene(), timestamp);
-    this->right->initialize(*this->scene(), timestamp);
-    this->top->initialize(*this->scene(), timestamp);
-    this->bottom->initialize(*this->scene(), timestamp);
+    this->front_->initialize(*this->scene(), timestamp);
+    this->back_->initialize(*this->scene(), timestamp);
+    this->left_->initialize(*this->scene(), timestamp);
+    this->right_->initialize(*this->scene(), timestamp);
+    this->top_->initialize(*this->scene(), timestamp);
+    this->bottom_->initialize(*this->scene(), timestamp);
 
     using boost::polymorphic_downcast;
     background_metatype & nodeClass =
@@ -765,12 +787,12 @@ openvrml_node_vrml97::background_node::do_shutdown(const double timestamp)
 bool openvrml_node_vrml97::background_node::do_modified() const
     OPENVRML_THROW1(boost::thread_resource_error)
 {
-    return (this->front && this->front->modified())
-        || (this->back && this->back->modified())
-        || (this->left && this->left->modified())
-        || (this->right && this->right->modified())
-        || (this->top && this->top->modified())
-        || (this->bottom && this->bottom->modified());
+    return (this->front_ && this->front_->modified())
+        || (this->back_ && this->back_->modified())
+        || (this->left_ && this->left_->modified())
+        || (this->right_ && this->right_->modified())
+        || (this->top_ && this->top_->modified())
+        || (this->bottom_ && this->bottom_->modified());
 }
 
 /**
@@ -825,7 +847,7 @@ openvrml_node_vrml97::background_node::do_sky_color() const OPENVRML_NOTHROW
 openvrml::texture_node * openvrml_node_vrml97::background_node::do_front() const
     OPENVRML_NOTHROW
 {
-    return this->front.get();
+    return this->front_.get();
 }
 
 /**
@@ -836,7 +858,7 @@ openvrml::texture_node * openvrml_node_vrml97::background_node::do_front() const
 openvrml::texture_node * openvrml_node_vrml97::background_node::do_back() const
     OPENVRML_NOTHROW
 {
-    return this->back.get();
+    return this->back_.get();
 }
 
 /**
@@ -847,7 +869,7 @@ openvrml::texture_node * openvrml_node_vrml97::background_node::do_back() const
 openvrml::texture_node * openvrml_node_vrml97::background_node::do_left() const
     OPENVRML_NOTHROW
 {
-    return this->left.get();
+    return this->left_.get();
 }
 
 /**
@@ -858,7 +880,7 @@ openvrml::texture_node * openvrml_node_vrml97::background_node::do_left() const
 openvrml::texture_node * openvrml_node_vrml97::background_node::do_right() const
     OPENVRML_NOTHROW
 {
-    return this->right.get();
+    return this->right_.get();
 }
 
 /**
@@ -869,7 +891,7 @@ openvrml::texture_node * openvrml_node_vrml97::background_node::do_right() const
 openvrml::texture_node * openvrml_node_vrml97::background_node::do_top() const
     OPENVRML_NOTHROW
 {
-    return this->top.get();
+    return this->top_.get();
 }
 
 /**
@@ -880,5 +902,5 @@ openvrml::texture_node * openvrml_node_vrml97::background_node::do_top() const
 openvrml::texture_node *
 openvrml_node_vrml97::background_node::do_bottom() const OPENVRML_NOTHROW
 {
-    return this->bottom.get();
+    return this->bottom_.get();
 }

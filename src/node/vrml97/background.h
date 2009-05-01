@@ -93,12 +93,12 @@ namespace openvrml_node_vrml97 {
         openvrml::sftime bind_time_;
         sftime_emitter bind_time_emitter_;
 
-        boost::intrusive_ptr<openvrml::texture_node> front;
-        boost::intrusive_ptr<openvrml::texture_node> back;
-        boost::intrusive_ptr<openvrml::texture_node> left;
-        boost::intrusive_ptr<openvrml::texture_node> right;
-        boost::intrusive_ptr<openvrml::texture_node> top;
-        boost::intrusive_ptr<openvrml::texture_node> bottom;
+        boost::intrusive_ptr<openvrml::texture_node> front_;
+        boost::intrusive_ptr<openvrml::texture_node> back_;
+        boost::intrusive_ptr<openvrml::texture_node> left_;
+        boost::intrusive_ptr<openvrml::texture_node> right_;
+        boost::intrusive_ptr<openvrml::texture_node> top_;
+        boost::intrusive_ptr<openvrml::texture_node> bottom_;
 
     public:
         background_node(const openvrml::node_type & type,
