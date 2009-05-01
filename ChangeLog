@@ -1,3 +1,9 @@
+2009-05-01 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::do_insert_background(const
+	background_node&)): Store/retrieve the display list.
+
 2009-04-30 Braden McDaniel  <braden@endoframe.com>
 
 	Added abstract node type openvrml::background_node.

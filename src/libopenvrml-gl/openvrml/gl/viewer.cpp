@@ -1160,16 +1160,10 @@ void openvrml::gl::viewer::do_reset_user_navigation()
  */
 void openvrml::gl::viewer::do_insert_background(const background_node & n)
 {
-    using std::vector;
-
-    float r = 0.0, g = 0.0, b = 0.0, a = 1.0;
-
-    // Clear to last sky color
-    if (!n.sky_color().empty()) {
-        const color & last_sky_color = n.sky_color().back();
-        r = last_sky_color.r();
-        g = last_sky_color.g();
-        b = last_sky_color.b();
+    const list_map_t::const_iterator list = this->list_map_.find(&n);
+    if (list != this->list_map_.end()) {
+        glCallList(list->second);
+        return;
     }
 
     GLuint glid = 0;
@@ -1190,7 +1184,18 @@ void openvrml::gl::viewer::do_insert_background(const background_node & n)
         glNewList(glid, GL_COMPILE_AND_EXECUTE);
     }
 
+    GLclampf r = 0.0, g = 0.0, b = 0.0, a = 1.0;
+
+    // Clear to last sky color
+    if (!n.sky_color().empty()) {
+        const color & last_sky_color = n.sky_color().back();
+        r = last_sky_color.r();
+        g = last_sky_color.g();
+        b = last_sky_color.b();
+    }
+
     glClearColor(r, g, b, a);
+
     GLuint mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 # if USE_STENCIL_SHAPE
     mask |= GL_STENCIL_BUFFER_BIT;
@@ -1201,6 +1206,8 @@ void openvrml::gl::viewer::do_insert_background(const background_node & n)
     // Draw the background as big spheres centered at the view position
     if (!this->select_mode
         && (!n.sky_angle().empty() || !n.ground_angle().empty())) {
+        using std::vector;
+
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_LIGHTING);
 
@@ -1212,31 +1219,31 @@ void openvrml::gl::viewer::do_insert_background(const background_node & n)
         static const size_t nCirc = 8; // number of circumferential slices
         static const double cd = 2.0 * pi / nCirc;
 
-        double heightAngle0, heightAngle1 = 0.0;
+        double height_angle0, height_angle1 = 0.0;
         vector<color>::const_iterator c0, c1 = n.sky_color().begin();
 
         for (vector<float>::const_iterator angle = n.sky_angle().begin();
              angle != n.sky_angle().end();
              ++angle) {
-            heightAngle0 = heightAngle1;
-            heightAngle1 = *angle;
+            height_angle0 = height_angle1;
+            height_angle1 = *angle;
             c0 = c1;
             ++c1;
 
-            double circAngle0, circAngle1 = 0.0;
-            double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
-            double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
+            double circ_angle0, circ_angle1 = 0.0;
+            double sha0 = sin(height_angle0), cha0 = cos(height_angle0);
+            double sha1 = sin(height_angle1), cha1 = cos(height_angle1);
             double sca0, cca0;
-            double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
+            double sca1 = sin(circ_angle1), cca1 = cos(circ_angle1);
 
             glBegin(GL_QUADS);
             for (size_t nc = 0; nc < nCirc; ++nc) {
-                circAngle0 = circAngle1;
-                circAngle1 = (nc + 1) * cd;
+                circ_angle0 = circ_angle1;
+                circ_angle1 = (nc + 1) * cd;
                 sca0 = sca1;
-                sca1 = sin(circAngle1);
+                sca1 = sin(circ_angle1);
                 cca0 = cca1;
-                cca1 = cos(circAngle1);
+                cca1 = cos(circ_angle1);
 
                 glColor3fv(&(*c1)[0]);
                 glVertex3f(GLfloat(sha1 * cca0),
@@ -1257,31 +1264,31 @@ void openvrml::gl::viewer::do_insert_background(const background_node & n)
         }
 
         // Ground
-        heightAngle1 = pi;
+        height_angle1 = pi;
         c1 = n.ground_color().begin();
 
         for (vector<float>::const_iterator angle = n.ground_angle().begin();
              angle != n.ground_angle().end();
              ++angle) {
-            heightAngle0 = heightAngle1;
-            heightAngle1 = pi - *angle;
+            height_angle0 = height_angle1;
+            height_angle1 = pi - *angle;
             c0 = c1;
             ++c1;
 
-            double circAngle0, circAngle1 = 0.0;
-            double sha0 = sin(heightAngle0), cha0 = cos(heightAngle0);
-            double sha1 = sin(heightAngle1), cha1 = cos(heightAngle1);
+            double circ_angle0, circ_angle1 = 0.0;
+            double sha0 = sin(height_angle0), cha0 = cos(height_angle0);
+            double sha1 = sin(height_angle1), cha1 = cos(height_angle1);
             double sca0, cca0;
-            double sca1 = sin(circAngle1), cca1 = cos(circAngle1);
+            double sca1 = sin(circ_angle1), cca1 = cos(circ_angle1);
 
             glBegin(GL_QUADS);
             for (size_t nc = 0; nc < nCirc; ++nc) {
-                circAngle0 = circAngle1;
-                circAngle1 = (nc + 1) * cd;
+                circ_angle0 = circ_angle1;
+                circ_angle1 = (nc + 1) * cd;
                 sca0 = sca1;
-                sca1 = sin(circAngle1);
+                sca1 = sin(circ_angle1);
                 cca0 = cca1;
-                cca1 = cos(circAngle1);
+                cca1 = cos(circ_angle1);
 
                 glColor3fv(&(*c1)[0]);
                 glVertex3f(GLfloat(sha1 * cca1),
@@ -1415,7 +1422,10 @@ void openvrml::gl::viewer::do_insert_background(const background_node & n)
 
 # endif // USE_STENCIL_SHAPE
 
-    if (glid) { glEndList(); }
+    if (glid) {
+        glEndList();
+        this->list_map_.insert(list_map_t::value_type(&n, glid));
+    }
 
     // Save bg color so we can choose a fg color (doesn't help bg textures...)
     this->background.r(r);
