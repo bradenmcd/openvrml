@@ -1,3 +1,14 @@
+2009-05-03 Braden McDaniel  <braden@endoframe.com>
+
+	Improved lod_node::do_modified only to check the currently
+	applicable child node(s).
+
+	* src/node/vrml97/lod.cpp
+	(lod_node::do_modified() const): Just check current_children_.
+	(lod_node::do_render_child(openvrml::viewer &,
+	openvrml::rendering_context)): Update current_children_ with the
+	currently appropriate "level".
+
 2009-05-01 Braden McDaniel  <braden@endoframe.com>
 
 	* src/node/vrml97/background.cpp

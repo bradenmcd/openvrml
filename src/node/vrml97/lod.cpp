@@ -120,11 +120,8 @@ namespace {
     bool lod_node::do_modified() const
         OPENVRML_THROW1(boost::thread_resource_error)
     {
-        // This should really check which range is being rendered...
-        for (size_t i = 0; i < this->children_.value().size(); ++i) {
-            if (this->children_.value()[i]->modified()) { return true; }
-        }
-        return false;
+        return !this->current_children_.value().empty()
+            && this->current_children_.value()[0]->modified();
     }
 
     /**
@@ -132,53 +129,51 @@ namespace {
      *
      * Render one of the children.
      *
-     * @param viewer    a Viewer.
+     * @param viewer    a @c viewer.
      * @param context   a rendering context.
      */
-    void
-    lod_node::
-    do_render_child(openvrml::viewer & viewer,
-                    const openvrml::rendering_context context)
+    void lod_node::do_render_child(openvrml::viewer & viewer,
+                                   const openvrml::rendering_context context)
     {
-        this->node::modified(false);
-        if (this->children_.mfnode::value().empty()) { return; }
+        using openvrml::mat4f;
+        using openvrml::vec3f;
+        using openvrml::make_vec3f;
+        using openvrml::node;
+        using boost::intrusive_ptr;
+        using std::vector;
 
-        float x, y, z;
+        if (this->children_.value().empty()) { return; }
 
-        openvrml::mat4f MV = context.matrix();
-        MV = MV.inverse();
-        x = MV[3][0]; y = MV[3][1]; z = MV[3][2];
-        float dx = x - this->center_.value().x();
-        float dy = y - this->center_.value().y();
-        float dz = z - this->center_.value().z();
-        float d2 = dx * dx + dy * dy + dz * dz;
+        const mat4f modelview = context.matrix().inverse();
+        vec3f v = make_vec3f(modelview[3][0], modelview[3][1], modelview[3][2]);
+        v -= this->center_.value();
+        const float d2 = v.dot(v);
 
         size_t i;
-        for (i = 0; i < this->range_.value().size(); ++i) {
-            if (d2 < this->range_.value()[i] * this->range_.value()[i]) {
-                break;
+        if (this->range_.value().empty()) {
+            i = this->children_.value().size() - 1;
+        } else {
+            for (i = 0; i < this->range_.value().size(); ++i) {
+                if (d2 < this->range_.value()[i] * this->range_.value()[i]) {
+                    break;
+                }
             }
         }
 
-        // Should choose an "optimal" level...
-        if (this->range_.value().empty()) {
-            i = this->children_.mfnode::value().size() - 1;
+        // Not enough levels...
+        if (i >= this->children_.value().size()) {
+            i = this->children_.value().size() - 1;
         }
 
-        // Not enough levels...
-        if (i >= this->children_.mfnode::value().size()) {
-            i = this->children_.mfnode::value().size() - 1;
-        }
+        vector<intrusive_ptr<node> > current_child(1);
+        current_child[0] = this->children_.value()[i];
+        this->current_children_.value(current_child);
 
         child_node * const child =
-            openvrml::node_cast<child_node *>(
-                this->children_.mfnode::value()[i].get());
+            openvrml::node_cast<child_node *>(current_child[0].get());
         if (child) { child->render_child(viewer, context); }
 
-        // Don't re-render on their accounts
-        for (i = 0; i < this->children_.mfnode::value().size(); ++i) {
-            this->children_.mfnode::value()[i]->modified(false);
-        }
+        current_child[0]->modified(false);
     }
 
     /**
