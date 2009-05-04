@@ -944,6 +944,8 @@ openvrml::gl::viewer::~viewer() OPENVRML_NOTHROW
  */
 void openvrml::gl::viewer::initialize()
 {
+    if (this->gl_initialized) { return; }
+
     assert(!this->tesselator);
     this->tesselator = gluNewTess();
 
@@ -3978,7 +3980,7 @@ void openvrml::gl::viewer::redraw()
 {
     assert(this->browser());
 
-    if (!this->gl_initialized) { initialize(); }
+    this->initialize();
 
     double start = browser::current_time();
 
@@ -4432,6 +4434,8 @@ bool openvrml::gl::viewer::checkSensitive(const int x,
                                           const event_type mouseEvent)
 {
     assert(this->browser());
+
+    this->initialize();
 
     double timeNow = browser::current_time();
     GLint viewport[4];

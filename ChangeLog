@@ -1,3 +1,15 @@
+2009-05-04 Braden McDaniel  <braden@endoframe.com>
+
+	Initialize the viewer in openvrml::gl::viewer::checkSensitive.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	(openvrml::gl::viewer::initialize()): Return if the viewer has
+	already been initialized.
+	(openvrml::gl::viewer::redraw()): Moved "already-initialized"
+	check to the initialize function.
+	(openvrml::gl::viewer::checkSensitive(int, int, event_type)): Call
+	viewer::initialize.
+
 2009-05-03 Braden McDaniel  <braden@endoframe.com>
 
 	Improved lod_node::do_modified only to check the currently
