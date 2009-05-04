@@ -5815,13 +5815,14 @@ openvrml::node_traverser::traverse(const boost::intrusive_ptr<node> & node)
  *                      branch to traverse.
  */
 void
-openvrml::node_traverser::traverse(
-    const std::vector<boost::intrusive_ptr<node> > & nodes)
+openvrml::node_traverser::
+traverse(const std::vector<boost::intrusive_ptr<node> > & nodes)
 {
     assert(this->traversed_nodes.empty());
     try {
         typedef std::vector<boost::intrusive_ptr<node> > nodes_t;
-        for (nodes_t::const_iterator node(nodes.begin()); node != nodes.end();
+        for (nodes_t::const_iterator node(nodes.begin());
+             node != nodes.end() && !this->halt;
              ++node) {
             if (*node) {
                 if (this->traversed_nodes.find(node->get())

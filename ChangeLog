@@ -1,5 +1,12 @@
 2009-05-04 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp
+	(openvrml::node_traverser::traverse(const
+	std::vector<boost::intrusive_ptr<node> > &)): Break out of the
+	loop if the traversal has been halted.
+
+2009-05-04 Braden McDaniel  <braden@endoframe.com>
+
 	Initialize the viewer in openvrml::gl::viewer::checkSensitive.
 
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
