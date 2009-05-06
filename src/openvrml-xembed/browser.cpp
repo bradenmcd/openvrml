@@ -120,7 +120,7 @@ struct OpenvrmlXembedBrowserPrivate_ {
     browser_listener * listener;
     OpenvrmlXembedBrowserPlug * browser_plug;
     GMutex * browser_plug_mutex;
-    GCond * browser_plug_set_cond;
+    GCond * browser_plug_realized_cond;
     bool expect_initial_stream;
 };
 
@@ -237,9 +237,9 @@ openvrml_xembed_browser_constructor(
         browser->priv->listener = new browser_listener(*browser);
         browser->priv->browser_control->add_listener(*browser->priv->listener);
 
-        browser->priv->browser_plug          = 0;
-        browser->priv->browser_plug_mutex    = g_mutex_new();
-        browser->priv->browser_plug_set_cond = g_cond_new();
+        browser->priv->browser_plug               = 0;
+        browser->priv->browser_plug_mutex         = g_mutex_new();
+        browser->priv->browser_plug_realized_cond = g_cond_new();
     } catch (std::exception & ex) {
         //
         // ex is most likely std::bad_alloc.
@@ -253,7 +253,7 @@ openvrml_xembed_browser_constructor(
 void openvrml_xembed_browser_finalize(GObject * const obj)
 {
     OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
-    g_cond_free(browser->priv->browser_plug_set_cond);
+    g_cond_free(browser->priv->browser_plug_realized_cond);
     g_mutex_free(browser->priv->browser_plug_mutex);
     browser->priv->browser_control->remove_listener(*browser->priv->listener);
     delete browser->priv->listener;
@@ -448,11 +448,13 @@ guint64 openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser * const browser)
     g_assert(browser);
     g_mutex_lock(browser->priv->browser_plug_mutex);
     while (!browser->priv->browser_plug) {
-        g_cond_wait(browser->priv->browser_plug_set_cond,
+        g_cond_wait(browser->priv->browser_plug_realized_cond,
                     browser->priv->browser_plug_mutex);
     }
     g_assert(browser->priv->browser_plug);
+    gdk_threads_enter();
     const guint64 id = gtk_plug_get_id(GTK_PLUG(browser->priv->browser_plug));
+    gdk_threads_leave();
     g_mutex_unlock(browser->priv->browser_plug_mutex);
     return id;
 }
@@ -1269,12 +1271,14 @@ gboolean openvrml_xembed_browser_ready_dispatch(GSource * const source,
     g_mutex_lock(browser_ready_source->ready_browser->priv->browser_plug_mutex);
     browser_ready_source->ready_browser->priv->browser_plug =
         OPENVRML_XEMBED_BROWSER_PLUG(browser_plug);
+
+    gtk_widget_realize(browser_plug);
+
     g_cond_signal(
-        browser_ready_source->ready_browser->priv->browser_plug_set_cond);
+        browser_ready_source->ready_browser->priv->browser_plug_realized_cond);
     g_mutex_unlock(
         browser_ready_source->ready_browser->priv->browser_plug_mutex);
 
-    gtk_widget_realize(browser_plug);
     gtk_widget_show_all(browser_plug);
 
     g_source_destroy(source);

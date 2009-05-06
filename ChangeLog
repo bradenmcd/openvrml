@@ -1,3 +1,18 @@
+2009-05-06 Braden McDaniel  <braden@endoframe.com>
+
+	Fixed race condition when realizing the OpenvrmlXembedBrowserPlug.
+
+	* src/openvrml-xembed/browser.cpp
+	(OpenvrmlXembedBrowserPrivate_): Changed browser_plug_set_cond to
+	browser_plug_realized_cond to reflect that the condition variable
+	will be signaled after the plug has been realized.
+	(openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser *)):
+	Surround call to gtk_plug_get_id with
+	gdk_threads_enter/gdk_threads_leave.
+	(openvrml_xembed_browser_ready_dispatch(GSource *, GSourceFunc,
+	gpointer)): Realize the browser_plug before signaling the
+	condition variable.
+
 2009-05-04 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.cpp
