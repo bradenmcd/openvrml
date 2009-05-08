@@ -447,11 +447,13 @@ guint64 openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser * const browser)
 {
     g_assert(browser);
     g_mutex_lock(browser->priv->browser_plug_mutex);
-    while (!browser->priv->browser_plug) {
+    while (!(browser->priv->browser_plug
+             && GTK_WIDGET(browser->priv->browser_plug)->window)) {
         g_cond_wait(browser->priv->browser_plug_realized_cond,
                     browser->priv->browser_plug_mutex);
     }
     g_assert(browser->priv->browser_plug);
+    g_assert(GTK_WIDGET(browser->priv->browser_plug)->window);
     gdk_threads_enter();
     const guint64 id = gtk_plug_get_id(GTK_PLUG(browser->priv->browser_plug));
     gdk_threads_leave();

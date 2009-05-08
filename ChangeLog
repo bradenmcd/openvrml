@@ -1,3 +1,9 @@
+2009-05-08 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-xembed/browser.cpp
+	(openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser *)): Make
+	sure the plug's window pointer is nonnull.
+
 2009-05-06 Braden McDaniel  <braden@endoframe.com>
 
 	Fixed race condition when realizing the OpenvrmlXembedBrowserPlug.
