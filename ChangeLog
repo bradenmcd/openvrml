@@ -1,3 +1,12 @@
+2009-05-09 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/local/parse_vrml.h
+	(openvrml::local::vrml97_parse_actions::on_externproto_t::operator()(const
+	std::string &, const node_interface_set &, const
+	std::vector<std::string> &) const): Catch (and swallow) any
+	invalid_url exceptions thrown when encountering bad URIs for
+	EXTERNPROTO implementations.
+
 2009-05-08 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-xembed/browser.cpp

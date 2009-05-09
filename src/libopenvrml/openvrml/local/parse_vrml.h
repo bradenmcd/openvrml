@@ -181,15 +181,15 @@ namespace openvrml {
                     const uri base_uri =
                         anonymous_stream_id(uri(this->actions_.uri_))
                         ? this->actions_.scene_.browser().world_url().empty()
-                        ? create_file_url(uri())
-                        : uri(this->actions_.scene_.browser().world_url())
+                            ? create_file_url(uri())
+                            : uri(this->actions_.scene_.browser().world_url())
                         : uri(this->actions_.uri_);
 
                     shared_ptr<node_type> node_type;
                     for (vector<string>::const_iterator resource_id =
                              uri_list.begin();
                          resource_id != uri_list.end();
-                         ++resource_id) {
+                         ++resource_id) try {
                         const uri absolute_uri = relative(uri(*resource_id))
                             ? resolve_against(uri(*resource_id), base_uri)
                             : uri(*resource_id);
@@ -202,6 +202,8 @@ namespace openvrml {
                                                                    interfaces);
                             break;
                         }
+                    } catch (invalid_url &) {
+                        // If a URI is bogus, ignore it and move on.
                     }
 
                     if (!node_type) {
@@ -223,7 +225,7 @@ namespace openvrml {
                         for (vector<string>::const_iterator resource_id =
                                  uri_list.begin();
                              resource_id != uri_list.end();
-                             ++resource_id) {
+                             ++resource_id) try {
                             const uri absolute_uri = relative(uri(*resource_id))
                                 ? resolve_against(uri(*resource_id), base_uri)
                                 : uri(*resource_id);
@@ -231,6 +233,9 @@ namespace openvrml {
                                 .add_node_metatype(
                                     node_metatype_id(absolute_uri),
                                     externproto_class);
+                        } catch (invalid_url &) {
+                            // We don't want to register node_types under bogus
+                            // URIs; ignore the bad ones and move on.
                         }
 
                         node_type = externproto_class->create_type(node_type_id,
