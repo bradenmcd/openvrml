@@ -1,3 +1,9 @@
+2009-05-13 Braden McDaniel  <braden@endoframe.com>
+
+	* src/node/vrml97/image_texture.cpp
+	(image_texture_node::update_texture()): Make sure the stream is
+	valid before reading it.
+
 2009-05-09 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/local/parse_vrml.h

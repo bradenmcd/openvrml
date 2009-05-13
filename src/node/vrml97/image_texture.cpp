@@ -245,14 +245,16 @@ namespace {
             try {
                 if (!this->url_.value().empty()) {
                     using std::auto_ptr;
-                    auto_ptr<openvrml::resource_istream> in(
-                        this->scene()->get_resource(this->url_.value()));
-                    auto_ptr<openvrml::stream_listener> listener(
-                        new image_stream_listener(in->url(),
-                                                  this->image_,
-                                                  *this,
-                                                  this->image_mutex_));
-                    this->scene()->read_stream(in, listener);
+                    auto_ptr<openvrml::resource_istream> in =
+                        this->scene()->get_resource(this->url_.value());
+                    if (*in) {
+                        auto_ptr<openvrml::stream_listener> listener(
+                            new image_stream_listener(in->url(),
+                                                      this->image_,
+                                                      *this,
+                                                      this->image_mutex_));
+                        this->scene()->read_stream(in, listener);
+                    }
                 }
             } catch (std::exception & ex) {
                 this->scene()->browser().err(ex.what());
