@@ -716,17 +716,33 @@ openvrml_player_curl_browser_host_curl_source_callback(const gpointer data)
                                         msg->easy_handle));
             g_assert(stream_data);
             //
-            // If the stream data was never initialized, then new-stream was
-            // never sent for it.  In that case, we shouldn't send
-            // destroy-stream.
+            // If the stream data was never initialized, we need to call
+            // NewStream before calling DestroyStream below.
             //
-            if (stream_data->initialized()) {
+            if (!stream_data->initialized()) {
+                const char * type = 0;
+                CURLcode result = curl_easy_getinfo(msg->easy_handle,
+                                                    CURLINFO_CONTENT_TYPE,
+                                                    &type);
+                if (!type) { type = "application/octet-stream"; }
+                const char * url = 0;
+                result = curl_easy_getinfo(msg->easy_handle,
+                                           CURLINFO_EFFECTIVE_URL,
+                                           &url);
                 dbus_g_proxy_call_no_reply(
                     browser_host->priv->browser,
-                    "DestroyStream",
-                    G_TYPE_UINT64, guint64(msg->easy_handle),
+                    "NewStream",
+                    G_TYPE_UINT64, reinterpret_cast<guint64>(msg->easy_handle),
+                    G_TYPE_STRING, type,
+                    G_TYPE_STRING, url,
                     G_TYPE_INVALID);
             }
+
+            dbus_g_proxy_call_no_reply(
+                browser_host->priv->browser,
+                "DestroyStream",
+                G_TYPE_UINT64, reinterpret_cast<guint64>(msg->easy_handle),
+                G_TYPE_INVALID);
 
             g_hash_table_remove(browser_host->priv->stream_data,
                                 msg->easy_handle);
