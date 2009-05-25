@@ -138,7 +138,6 @@ namespace {
         using openvrml::mat4f;
         using openvrml::vec3f;
         using openvrml::make_vec3f;
-        using openvrml::node;
         using boost::intrusive_ptr;
         using std::vector;
 
@@ -165,7 +164,7 @@ namespace {
             i = this->children_.value().size() - 1;
         }
 
-        vector<intrusive_ptr<node> > current_child(1);
+        vector<intrusive_ptr<openvrml::node> > current_child(1);
         current_child[0] = this->children_.value()[i];
         this->current_children_.value(current_child);
 

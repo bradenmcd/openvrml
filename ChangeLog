@@ -1,3 +1,10 @@
+2009-05-25 Braden McDaniel  <braden@endoframe.com>
+
+	* src/node/vrml97/lod.cpp
+	(lod_node::do_render_child(openvrml::viewer &, const
+	openvrml::rendering_context)): The Microsoft compiler doesn't like
+	"using openvrml::node" here for some reason.
+
 2009-05-13 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/curlbrowserhost.cpp
