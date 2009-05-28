@@ -22,6 +22,7 @@
 # include "script.h"
 # include "browser.h"
 # include "scene.h"
+# include <openvrml/local/conf.h>
 # include <openvrml/local/dl.h>
 # include <openvrml/local/uri.h>
 # include <openvrml/local/field_value_types.h>
@@ -360,15 +361,6 @@ openvrml::script_factory::~script_factory() OPENVRML_NOTHROW
  *        instantiate @c script_factory_registry.
  */
 
-namespace {
-
-# ifdef _WIN32
-    const char pathsep_char = ';';
-# else
-    const char pathsep_char = ':';
-# endif
-}
-
 extern "C" int openvrml_get_script_factory(const char * filename, void * data);
 
 /**
@@ -450,14 +442,9 @@ openvrml::script_factory_registry::impl::impl()
         throw std::runtime_error("dlinit failure");
     }
 
-    std::ostringstream script_path;
-    script_path << OPENVRML_PKGLIBDIR_ "/script";
-    const char * const script_path_env = getenv("OPENVRML_SCRIPT_PATH");
-    if (script_path_env) {
-        script_path << pathsep_char << script_path_env;
-    }
+    const std::string script_path = local::conf::script_path();
 
-    result = dl::foreachfile(script_path.str().c_str(),
+    result = dl::foreachfile(script_path.c_str(),
                              openvrml_get_script_factory,
                              this);
     assert(result == 0); // We always return 0 from the callback.

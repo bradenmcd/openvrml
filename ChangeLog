@@ -1,3 +1,24 @@
+2009-05-27 Braden McDaniel  <braden@endoframe.com>
+
+	On Windows, use the registry to get the default data directory,
+	script module path, and node module path.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Added conf.{cpp,h}.
+	* src/libopenvrml/openvrml/local/component.cpp
+	(openvrml::local::component_registry::component_registry()):
+	Delegate to openvrml::local::conf::datadir to get the data
+	directory.
+	* src/libopenvrml/openvrml/local/conf.cpp: Added file.
+	* src/libopenvrml/openvrml/local/conf.h: Added file.
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
+	(openvrml::local::node_metatype_registry_impl::node_metatype_registry_impl(openvrml::browser&)):
+	Delegate to openvrml::local::conf::node_path to get the node
+	module path.
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script_factory_registry::impl::impl()): Delegate to
+	openvrml::local::conf::script_path to get the script module path.
+
 2009-05-25 Braden McDaniel  <braden@endoframe.com>
 
 	* src/node/vrml97/lod.cpp

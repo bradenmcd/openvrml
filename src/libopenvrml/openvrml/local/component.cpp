@@ -20,6 +20,7 @@
 
 # include "component.h"
 # include "xml_reader.h"
+# include "conf.h"
 # include <private.h>
 # include <openvrml/browser.h>
 # include <openvrml/scope.h>
@@ -307,14 +308,14 @@ void openvrml::local::component::add_to_scope(const openvrml::browser & b,
                  this->levels_[i].begin();
              node != this->levels_[i].end();
              ++node) try {
-                this->add_scope_entry(b,
-                                      node->first.c_str(),
-                                      node->second.interfaces,
-                                      node->second.metatype_id.c_str(),
-                                      scope);
-            } catch (openvrml::unsupported_interface & ex) {
-                b.err(node->second.metatype_id + ": " + ex.what());
-            }
+            this->add_scope_entry(b,
+                                  node->first.c_str(),
+                                  node->second.interfaces,
+                                  node->second.metatype_id.c_str(),
+                                  scope);
+        } catch (openvrml::unsupported_interface & ex) {
+            b.err(node->second.metatype_id + ": " + ex.what());
+        }
     }
 }
 
@@ -350,25 +351,21 @@ openvrml::local::component_registry::component_registry()
     std::string key;
     bool succeeded;
 
-    path data_path;
-    const char * datadir_env = getenv("OPENVRML_DATADIR");
-    data_path = datadir_env
-        ? datadir_env
-        : OPENVRML_PKGDATADIR_;
+    path data_path = conf::datadir();
 
     const path component_path = data_path / "component";
     for (directory_iterator entry(component_path);
          entry != directory_iterator();
          ++entry) {
         if (!is_directory(entry->path())) try {
-                auto_ptr<component>
-                    c(new component(entry->path().file_string()));
-                std::string key = c->id();
-                succeeded = this->insert(key, c.release()).second;
-                assert(succeeded);
-            } catch (const std::runtime_error & ex) {
-                std::cerr << ex.what() << std::endl;
-            }
+            auto_ptr<component>
+                c(new component(entry->path().file_string()));
+            std::string key = c->id();
+            succeeded = this->insert(key, c.release()).second;
+            assert(succeeded);
+        } catch (const std::runtime_error & ex) {
+            std::cerr << ex.what() << std::endl;
+        }
     }
 }
 
@@ -403,15 +400,13 @@ openvrml::local::profile::create_root_scope(const openvrml::browser & browser,
     std::auto_ptr<scope> root_scope(new scope(uri));
     for (map_t::const_iterator entry = this->components_.begin();
          entry != this->components_.end();
-         ++entry) {
-        try {
-            const component & c = local::component_registry_.at(entry->first);
-            c.add_to_scope(browser, *root_scope, entry->second);
-        } catch (boost::bad_ptr_container_operation & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        } catch (std::invalid_argument & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
+         ++entry) try {
+        const component & c = local::component_registry_.at(entry->first);
+        c.add_to_scope(browser, *root_scope, entry->second);
+    } catch (boost::bad_ptr_container_operation & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    } catch (std::invalid_argument & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
     }
     return root_scope;
 }
@@ -425,15 +420,13 @@ openvrml::local::profile::create_node_type_desc_map() const
     std::auto_ptr<node_type_decls> node_type_descs(new node_type_decls);
     for (map_t::const_iterator entry = this->components_.begin();
          entry != this->components_.end();
-         ++entry) {
-        try {
-            const component & c = local::component_registry_.at(entry->first);
-            c.add_to_node_type_desc_map(*node_type_descs, entry->second);
-        } catch (boost::bad_ptr_container_operation & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        } catch (std::invalid_argument & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-        }
+         ++entry) try {
+        const component & c = local::component_registry_.at(entry->first);
+        c.add_to_node_type_desc_map(*node_type_descs, entry->second);
+    } catch (boost::bad_ptr_container_operation & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
+    } catch (std::invalid_argument & ex) {
+        OPENVRML_PRINT_EXCEPTION_(ex);
     }
     return node_type_descs;
 }

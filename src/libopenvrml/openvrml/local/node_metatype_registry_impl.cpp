@@ -19,6 +19,7 @@
 //
 
 # include "node_metatype_registry_impl.h"
+# include "conf.h"
 # include <openvrml/browser.h>
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <iostream>
@@ -57,15 +58,6 @@ int openvrml_open_node_module(const char * const filename, void * const data)
     return 0;
 }
 
-namespace {
-
-# ifdef _WIN32
-    const char pathsep_char = ';';
-# else
-    const char pathsep_char = ':';
-# endif
-}
-
 /**
  * @internal
  *
@@ -83,14 +75,9 @@ node_metatype_registry_impl(openvrml::browser & b):
         throw std::runtime_error("dlinit_failure");
     }
 
-    std::ostringstream node_path;
-    node_path << OPENVRML_PKGLIBDIR_ "/node";
-    const char * const node_path_env = getenv("OPENVRML_NODE_PATH");
-    if (node_path_env) {
-        node_path << pathsep_char << node_path_env;
-    }
+    const std::string node_path = conf::node_path();
 
-    result = dl::foreachfile(node_path.str().c_str(),
+    result = dl::foreachfile(node_path.c_str(),
                              openvrml_open_node_module,
                              this);
     assert(result == 0); // We always return 0 from the callback.
