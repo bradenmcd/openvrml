@@ -27,7 +27,6 @@
 # else
 #   include <cstdlib>
 # endif
-# include <exception>
 
 using namespace boost::multi_index::detail;  // for scope_guard
 

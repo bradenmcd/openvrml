@@ -1,5 +1,17 @@
 2009-05-27 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes to the conf refactoring to build with gcc on Linux.
+
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_SOURCES): Added entries for
+	conf.{cpp,h}.
+	* src/libopenvrml/openvrml/local/conf.cpp: Don't include
+	<exception>.
+	* src/libopenvrml/openvrml/local/conf.h: Include <stdexcept>;
+	added exception specifications.
+
+2009-05-27 Braden McDaniel  <braden@endoframe.com>
+
 	On Windows, use the registry to get the default data directory,
 	script module path, and node module path.
 

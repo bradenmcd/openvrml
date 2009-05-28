@@ -96,6 +96,8 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/rendering_context.cpp \
         libopenvrml/openvrml/frustum.cpp \
         libopenvrml/openvrml/node_impl_util.cpp \
+        libopenvrml/openvrml/local/conf.cpp \
+        libopenvrml/openvrml/local/conf.h \
         libopenvrml/openvrml/local/dl.cpp \
         libopenvrml/openvrml/local/dl.h \
         libopenvrml/openvrml/local/uri.cpp \
