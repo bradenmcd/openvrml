@@ -672,6 +672,9 @@ void openvrml_control::browser::new_stream(const uint64_t stream_id,
                                            const std::string & uri)
     OPENVRML_THROW1(unknown_stream)
 {
+    assert(!type.empty());
+    assert(!uri.empty());
+
     using boost::shared_ptr;
 
     shared_ptr<plugin_streambuf> streambuf =
