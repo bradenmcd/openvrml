@@ -1,3 +1,10 @@
+2009-05-28 Braden McDaniel  <braden@endoframe.com>
+
+	Link with the /MD variant of FreeType.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+
 2009-05-27 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml-control/openvrml_control/browser.cpp

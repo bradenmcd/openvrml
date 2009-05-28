@@ -63,9 +63,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="libpngd.lib zlibd.lib freetype239MT_D.lib"
+				AdditionalDependencies="libpngd.lib zlibd.lib freetype239_D.lib"
 				OutputFile="$(OutDir)\bin\node\$(ProjectName).dll"
-				IgnoreDefaultLibraryNames="libcmtd"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 			/>
 			<Tool
@@ -138,7 +138,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="libpng.lib zlib.lib freetype239MT.lib"
+				AdditionalDependencies="libpng.lib zlib.lib freetype239.lib"
 				OutputFile="$(OutDir)\bin\node\$(ProjectName).dll"
 				GenerateDebugInformation="true"
 			/>
