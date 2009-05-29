@@ -107,6 +107,11 @@ namespace {
         return std::string(&data.front(), &data.front() + size - 1);
     }
 
+    class no_registry_key : public std::runtime_error {
+    public:
+        no_registry_key(): std::runtime_error("no registry key") {}
+    };
+
     const std::string get_registry_setting(const std::string & name)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
@@ -118,6 +123,7 @@ namespace {
                                    KEY_READ,
                                    &key);
         if (result != ERROR_SUCCESS) {
+            if (result == ERROR_FILE_NOT_FOUND) { throw no_registry_key(); }
             throw_runtime_error(result);
         }
 
@@ -171,7 +177,9 @@ const std::string openvrml::local::conf::node_path()
 
     std::string system_path;
 # ifdef _WIN32
-    system_path = get_registry_setting("NodePath");
+    try {
+        system_path = get_registry_setting("NodePath");
+    } catch (no_registry_key &) {}
 # else
     system_path = OPENVRML_PKGLIBDIR_ "/node";
 # endif
@@ -191,7 +199,9 @@ const std::string openvrml::local::conf::script_path()
 
     std::string system_path;
 # ifdef _WIN32
-    system_path = get_registry_setting("ScriptPath");
+    try {
+        system_path = get_registry_setting("ScriptPath");
+    } catch (no_registry_key &) {}
 # else
     system_path = OPENVRML_PKGLIBDIR_ "/script";
 # endif

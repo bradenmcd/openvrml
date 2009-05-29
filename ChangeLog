@@ -1,5 +1,18 @@
 2009-05-28 Braden McDaniel  <braden@endoframe.com>
 
+	Don't propagate an exception if OpenVRML's registry key has not
+	been set.
+
+	* src/libopenvrml/openvrml/local/conf.cpp
+	(no_registry_key): Exception to indicate that a registry key was
+	not found.
+	(get_registry_setting(const std::string &): Throw no_registry_key
+	if OpenVRML's key is not found.
+	(openvrml::local::conf::node_path()): Swallow no_registry_key.
+	(openvrml::local::conf::script_path()): Swallow no_registry_key.
+
+2009-05-28 Braden McDaniel  <braden@endoframe.com>
+
 	Link with the /MD variant of FreeType.
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj
