@@ -391,7 +391,7 @@ NPError NP_GetValue(void *, NPPVariable variable, void * value)
 char * NPP_GetMIMEDescription()
 {
     static const char mimeDescription[] =
-        "model/x3d+vrml:x3dv:X3D world;"
+        "model/x3d-vrml:x3dv:X3D world;"
         "model/vrml:wrl:VRML world;"
         "x-world/x-vrml:wrl:VRML world";
     return const_cast<char *>(&mimeDescription[0]);
