@@ -174,7 +174,7 @@ AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
 #
 PKG_CHECK_MODULES([GTKGL],
                   [gtkglext-1.0 gtk+-2.0 >= 2.12 gthread-2.0 glib-2.0 >= 2.6], ,
-                  [have_gtk=no])
+                  [have_gtkgl=no])
 #
 # openvrml-player uses GNOME_PARAM_GOPTION_CONTEXT, which was
 # introduced in libgnome 2.14.
@@ -406,8 +406,8 @@ AC_ARG_ENABLE([xembed],
 AS_IF([test X$enable_xembed != Xno],
       [AS_IF([test X$have_dbus_glib = Xno],
              [AC_MSG_FAILURE([D-Bus GLib bindings are required to build the XEmbed control])])
-       AS_IF([test X$have_gtk = Xno],
-             [AC_MSG_FAILURE([GTK+ is required to build the XEmbed control])])
+       AS_IF([test X$have_gtkgl = Xno],
+             [AC_MSG_FAILURE([GtkGLExt is required to build the XEmbed control])])
        AS_IF([test X$enable_gl_renderer = Xno],
              [AC_MSG_FAILURE([the XEmbed control cannot be built without the GL renderer])])])
 AM_CONDITIONAL([ENABLE_XEMBED], [test X$enable_xembed != Xno])
