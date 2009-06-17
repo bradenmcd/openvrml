@@ -1,3 +1,7 @@
+2009-06-17 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Added check for ltdl.h.
+
 2009-06-07 Braden McDaniel  <braden@endoframe.com>
 
 	* src/mozilla-plugin/openvrml.cpp

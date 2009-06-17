@@ -87,6 +87,7 @@ AC_DEFINE_UNQUOTED([OPENVRML_JAVA_LOCAL], [$OPENVRML_JAVA_LOCAL],
 # Checks for libraries/headers.
 #
 ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
+AC_CHECK_HEADER([ltdl.h], , [AC_MSG_FAILURE([ltdl.h not found])])
 AC_CHECK_HEADER([jni.h], [have_jni=yes])
 
 #
