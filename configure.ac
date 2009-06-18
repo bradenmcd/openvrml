@@ -88,19 +88,19 @@ AC_DEFINE_UNQUOTED([OPENVRML_JAVA_LOCAL], [$OPENVRML_JAVA_LOCAL],
 #
 ACX_PTHREAD(, [AC_MSG_FAILURE([pthread support not found])])
 AC_CHECK_HEADER([ltdl.h], , [AC_MSG_FAILURE([ltdl.h not found])])
-AC_CHECK_HEADER([jni.h], [have_jni=yes])
+AC_CHECK_HEADER([jni.h], [have_jni=yes], [have_jni=no])
 
 #
 # Some jni.h implementations (well, GCJ, at least), don't apply const
 # in function signatures.
 #
-AS_IF([test X$have_jni != Xno],
+AS_IF([test X$have_jni = Xyes],
       [AC_MSG_CHECKING([if JNI function signatures use const])
        AC_CACHE_VAL([ov_cv_jni_const],
 [AC_LANG_PUSH([C++])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
                   [#include <jni.h>],
-                  [void (*fn)(jfloatArray, jsize, jsize, const jfloat *) = &JNIEnv::SetFloatArrayRegion])],
+                  [void (JNIEnv::*fn)(jfloatArray, jsize, jsize, const jfloat *) = &JNIEnv::SetFloatArrayRegion])],
                   [ov_cv_jni_const=const],
                   [ov_cv_jni_const= ])
 AC_LANG_POP])

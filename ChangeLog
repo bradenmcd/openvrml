@@ -1,5 +1,9 @@
 2009-06-18 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Fixed JNI const test.
+
+2009-06-18 Braden McDaniel  <braden@endoframe.com>
+
 	Build the Mozilla plug-in with XULRunner 1.9.1.  Removed the NPN_*
 	function implementations in favor of directly using the function
 	pointers provided by the browser.
