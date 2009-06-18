@@ -31,7 +31,7 @@
 # include <boost/noncopyable.hpp>
 # include <boost/ref.hpp>
 # include <boost/scoped_ptr.hpp>
-# include <npupp.h>
+# include <npfunctions.h>
 # if defined MOZ_X11
 #   include <dbus/dbus-glib-bindings.h>
 # else
@@ -149,6 +149,8 @@ void openvrml_np_browser_host_init(OpenvrmlNpBrowserHost * const host)
 }
 
 namespace {
+    NPNetscapeFuncs mozillaFuncs;
+
     enum np_host_signal_id {
         shutdown_id,
         last_signal_id
@@ -207,7 +209,7 @@ int openvrml_np_browser_host_get_url(OpenvrmlNpBrowserHost * const host,
                                      const char * const url,
                                      GError ** /* error */)
 {
-    return NPN_GetURL(host->npp, url, 0);
+    return mozillaFuncs.geturl(host->npp, url, 0);
 }
 
 void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * /* host */,
@@ -219,10 +221,6 @@ void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * /* host */,
 char * NP_GetMIMEDescription()
 {
     return NPP_GetMIMEDescription();
-}
-
-namespace {
-    NPNetscapeFuncs mozillaFuncs;
 }
 
 /**
@@ -340,10 +338,7 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     // Make sure the browser supports XEmbed plug-ins.
     //
     PRBool supportsXEmbed = PR_FALSE;
-    err = CallNPN_GetValueProc(mozillaFuncs.getvalue,
-                               0,
-                               NPNVSupportsXEmbedBool,
-                               &supportsXEmbed);
+    err = mozillaFuncs.getvalue(0, NPNVSupportsXEmbedBool, &supportsXEmbed);
 
     if (err != NPERR_NO_ERROR || !supportsXEmbed) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
@@ -353,10 +348,7 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     // Make sure the browser tookit is Gtk2.
     //
     NPNToolkitType toolkit = NPNToolkitType();
-    err = CallNPN_GetValueProc(mozillaFuncs.getvalue,
-                               0,
-                               NPNVToolkit,
-                               &toolkit);
+    err = mozillaFuncs.getvalue(0, NPNVToolkit, &toolkit);
 
     if (err != NPERR_NO_ERROR || toolkit != NPNVGtk2) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
@@ -692,7 +684,7 @@ NPError NPP_GetValue(const NPP npp,
     case NPPVpluginScriptableNPObject:
         assert(npp->pdata);
         instance = static_cast<plugin_instance *>(npp->pdata);
-        NPN_RetainObject(instance->npobj);
+        mozillaFuncs.retainobject(instance->npobj);
         *static_cast<NPObject **>(value) = instance->npobj;
         break;
     default:
@@ -704,307 +696,6 @@ NPError NPP_GetValue(const NPP npp,
 NPError NPP_SetValue(NPP, NPNVariable, void * /* value */)
 {
     return NPERR_NO_ERROR;
-}
-
-void NPN_Version(int * plugin_major,
-                 int * plugin_minor,
-                 int * mozilla_major,
-                 int * mozilla_minor)
-{
-    *plugin_major = NP_VERSION_MAJOR;
-    *plugin_minor = NP_VERSION_MINOR;
-    *mozilla_major = mozillaFuncs.version >> 8;
-    *mozilla_minor = mozillaFuncs.version & 0xff;
-}
-
-NPError NPN_GetURLNotify(NPP instance,
-                         const char * url,
-                         const char * target,
-                         void * notifyData)
-{
-    const int navMinorVers = mozillaFuncs.version & 0xFF;
-    return (navMinorVers >= NPVERS_HAS_NOTIFICATION)
-        ? CallNPN_GetURLNotifyProc(mozillaFuncs.geturlnotify,
-                                   instance,
-                                   url,
-                                   target,
-                                   notifyData)
-        : NPERR_INCOMPATIBLE_VERSION_ERROR;
-}
-
-NPError NPN_GetURL(NPP instance, const char * url, const char * target)
-{
-    return CallNPN_GetURLProc(mozillaFuncs.geturl, instance, url, target);
-}
-
-NPError NPN_PostURLNotify(NPP instance,
-                          const char * url,
-                          const char * window,
-                          uint32 len,
-                          const char * buf,
-                          NPBool file,
-                          void * notifyData)
-{
-    const int navMinorVers = mozillaFuncs.version & 0xFF;
-    return (navMinorVers >= NPVERS_HAS_NOTIFICATION)
-        ? CallNPN_PostURLNotifyProc(mozillaFuncs.posturlnotify,
-                                    instance,
-                                    url,
-                                    window,
-                                    len,
-                                    buf,
-                                    file,
-                                    notifyData)
-        : NPERR_INCOMPATIBLE_VERSION_ERROR;
-}
-
-NPError NPN_PostURL(NPP instance,
-                    const char * url,
-                    const char * window,
-                    uint32 len,
-                    const char * buf,
-                    NPBool file)
-{
-    return CallNPN_PostURLProc(mozillaFuncs.posturl,
-                               instance,
-                               url,
-                               window,
-                               len,
-                               buf,
-                               file);
-}
-
-NPError NPN_RequestRead(NPStream * stream, NPByteRange * rangeList)
-{
-    return CallNPN_RequestReadProc(mozillaFuncs.requestread,
-                                   stream,
-                                   rangeList);
-}
-
-NPError NPN_NewStream(NPP instance,
-                      NPMIMEType type,
-                      const char * target,
-                      NPStream ** stream)
-{
-    const int navMinorVersion = mozillaFuncs.version & 0xFF;
-    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
-        ? CallNPN_NewStreamProc(mozillaFuncs.newstream,
-                                instance,
-                                type,
-                                target,
-                                stream)
-        : NPERR_INCOMPATIBLE_VERSION_ERROR;
-}
-
-int32 NPN_Write(NPP instance, NPStream * stream, int32 len, void * buffer)
-{
-    const int navMinorVersion = mozillaFuncs.version & 0xFF;
-    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
-        ? CallNPN_WriteProc(mozillaFuncs.write, instance, stream, len, buffer)
-        : -1;
-}
-
-NPError NPN_DestroyStream(NPP instance, NPStream* stream, NPError reason)
-{
-    const int navMinorVersion = mozillaFuncs.version & 0xFF;
-    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
-        ? CallNPN_DestroyStreamProc(mozillaFuncs.destroystream,
-                                    instance,
-                                    stream,
-                                    reason)
-        : NPERR_INCOMPATIBLE_VERSION_ERROR;
-}
-
-void NPN_Status(NPP instance, const char * message)
-{
-    CallNPN_StatusProc(mozillaFuncs.status, instance, message);
-}
-
-const char * NPN_UserAgent(NPP instance)
-{
-    return CallNPN_UserAgentProc(mozillaFuncs.uagent, instance);
-}
-
-void * NPN_MemAlloc(uint32 size)
-{
-    return CallNPN_MemAllocProc(mozillaFuncs.memalloc, size);
-}
-
-void NPN_MemFree(void * ptr)
-{
-    CallNPN_MemFreeProc(mozillaFuncs.memfree, ptr);
-}
-
-uint32 NPN_MemFlush(uint32 size)
-{
-    return CallNPN_MemFlushProc(mozillaFuncs.memflush, size);
-}
-
-void NPN_ReloadPlugins(NPBool reloadPages)
-{
-    CallNPN_ReloadPluginsProc(mozillaFuncs.reloadplugins, reloadPages);
-}
-
-JRIEnv * NPN_GetJavaEnv()
-{
-    return CallNPN_GetJavaEnvProc(mozillaFuncs.getJavaEnv);
-}
-
-jref NPN_GetJavaPeer(NPP instance)
-{
-    return CallNPN_GetJavaPeerProc(mozillaFuncs.getJavaPeer, instance);
-}
-
-NPError NPN_GetValue(NPP instance, NPNVariable variable, void * value)
-{
-    return CallNPN_GetValueProc(mozillaFuncs.getvalue,
-                                instance,
-                                variable,
-                                value);
-}
-
-NPError NPN_SetValue(NPP instance, NPPVariable variable, void * value)
-{
-    return CallNPN_SetValueProc(mozillaFuncs.setvalue,
-                                instance,
-                                variable,
-                                value);
-}
-
-void NPN_InvalidateRect(NPP instance, NPRect * invalidRect)
-{
-    CallNPN_InvalidateRectProc(mozillaFuncs.invalidaterect,
-                               instance,
-                               invalidRect);
-}
-
-void NPN_InvalidateRegion(NPP instance, NPRegion invalidRegion)
-{
-    CallNPN_InvalidateRegionProc(mozillaFuncs.invalidateregion,
-                                 instance,
-                                 invalidRegion);
-}
-
-void NPN_ForceRedraw(NPP instance)
-{
-    CallNPN_ForceRedrawProc(mozillaFuncs.forceredraw, instance);
-}
-
-void NPN_ReleaseVariantValue(NPVariant * variant)
-{
-    CallNPN_ReleaseVariantValueProc(mozillaFuncs.releasevariantvalue, variant);
-}
-
-NPIdentifier NPN_GetStringIdentifier(const NPUTF8 * name)
-{
-    return CallNPN_GetStringIdentifierProc(mozillaFuncs.getstringidentifier,
-                                           name);
-}
-
-void NPN_GetStringIdentifiers(const NPUTF8 ** names,
-                              int32_t nameCount,
-                              NPIdentifier * identifiers)
-{
-    CallNPN_GetStringIdentifiersProc(mozillaFuncs.getstringidentifiers,
-                                     names,
-                                     nameCount,
-                                     identifiers);
-}
-
-NPIdentifier NPN_GetIntIdentifier(int32_t intid)
-{
-    return CallNPN_GetIntIdentifierProc(mozillaFuncs.getintidentifier, intid);
-}
-
-bool NPN_IdentifierIsString(NPIdentifier * identifier)
-{
-    return CallNPN_IdentifierIsStringProc(mozillaFuncs.identifierisstring,
-                                          identifier);
-}
-
-NPUTF8 * NPN_UTF8FromIdentifier(NPIdentifier identifier)
-{
-    return CallNPN_UTF8FromIdentifierProc(mozillaFuncs.utf8fromidentifier,
-                                          identifier);
-}
-
-int32_t NPN_IntFromIdentifier(NPIdentifier identifier)
-{
-    return CallNPN_IntFromIdentifierProc(mozillaFuncs.intfromidentifier,
-                                         identifier);
-}
-
-NPObject * NPN_CreateObject(NPP npp, NPClass * aClass)
-{
-    return CallNPN_CreateObjectProc(mozillaFuncs.createobject, npp, aClass);
-}
-
-NPObject * NPN_RetainObject(NPObject * npobj)
-{
-    return CallNPN_RetainObjectProc(mozillaFuncs.retainobject, npobj);
-}
-
-void NPN_ReleaseObject(NPObject * npobj)
-{
-    CallNPN_ReleaseObjectProc(mozillaFuncs.releaseobject, npobj);
-}
-
-bool NPN_Invoke(NPP npp, NPObject * npobj, NPIdentifier methodName,
-                const NPVariant * args, uint32_t argCount, NPVariant * result)
-{
-    return CallNPN_InvokeProc(mozillaFuncs.invoke,
-                              npp, npobj, methodName, args, argCount, result);
-}
-
-bool NPN_InvokeDefault(NPP npp, NPObject * npobj, const NPVariant * args,
-                       uint32_t argCount, NPVariant * result)
-{
-    return CallNPN_InvokeDefaultProc(mozillaFuncs.invokeDefault,
-                                     npp, npobj, args, argCount, result);
-}
-
-bool NPN_Evaluate(NPP npp, NPObject * npobj, NPString * script,
-                  NPVariant * result)
-{
-    return CallNPN_EvaluateProc(mozillaFuncs.evaluate, npp, npobj, script,
-                                result);
-}
-
-bool NPN_GetProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName,
-                     NPVariant * result)
-{
-    return CallNPN_GetPropertyProc(mozillaFuncs.getproperty,
-                                   npp, npobj, propertyName, result);
-}
-
-bool NPN_SetProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName,
-                     const NPVariant * result)
-{
-    return CallNPN_SetPropertyProc(mozillaFuncs.setproperty,
-                                   npp, npobj, propertyName, result);
-}
-
-bool NPN_RemoveProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName)
-{
-    return CallNPN_RemovePropertyProc(mozillaFuncs.removeproperty,
-                                      npp, npobj, propertyName);
-}
-
-bool NPN_HasProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName)
-{
-    return CallNPN_HasPropertyProc(mozillaFuncs.hasproperty,
-                                   npp, npobj, propertyName);
-}
-
-bool NPN_HasMethod(NPP npp, NPObject * npobj, NPIdentifier methodName)
-{
-    return CallNPN_HasMethodProc(mozillaFuncs.hasmethod,
-                                 npp, npobj, methodName);
-}
-
-void NPN_SetException(NPObject * npobj, const NPUTF8 * message)
-{
-    return CallNPN_SetExceptionProc(mozillaFuncs.setexception, npobj, message);
 }
 
 namespace {

@@ -1,5 +1,70 @@
 2009-06-18 Braden McDaniel  <braden@endoframe.com>
 
+	Build the Mozilla plug-in with XULRunner 1.9.1.  Removed the NPN_*
+	function implementations in favor of directly using the function
+	pointers provided by the browser.
+
+	* configure.ac: Require mozilla-plugin.pc version 1.9.1.
+	* src/mozilla-plugin/openvrml.cpp
+	(openvrml_np_browser_host_get_url(OpenvrmlNpBrowserHost *, const
+	char *, GError **)): Call mozillaFuncs.geturl directly.
+	(NP_Initialize(NPNetscapeFuncs *, NPPluginFuncs *)): Call
+	mozillaFuncs.getvalue directly.
+	(NPP_GetValue(NPP, NPPVariable, void *)): Call
+	mozillaFuncs.retainobject directly.
+	(NPN_Version(int *, int *, int *, int *)): Removed.
+	(NPN_GetURLNotify(NPP, const char *, const char *, void *)):
+	Removed.
+	(NPN_GetURL(NPP, const char *, const char *)): Removed.
+	(NPN_PostURLNotify(NPP, const char *, const char *, uint32, const
+	char *, NPBool, void *)): Removed.
+	(NPN_PostURL(NPP, const char *, const char *, uint32, const
+	char *, NPBool)): Removed.
+	(NPN_RequestRead(NPStream *, NPByteRange *)): Removed.
+	(NPN_NewStream(NPP, NPMIMEType, const char *, NPStream **)):
+	Removed.
+	(NPN_Write(NPP, NPStream *, int32, void *)): Removed.
+	(NPN_DestryStream(NPP, NPStream *, NPError)): Removed.
+	(NPN_Status(NPP, const char *)): Removed.
+	(NPN_UserAgent(NPP)): Removed.
+	(NPN_MemAlloc(uint32)): Removed.
+	(NPN_MemFree(void *)): Removed.
+	(NPN_MemFlush(uint32)): Removed.
+	(NPN_ReloadPlugins(NPBool)): Removed.
+	(NPN_GetJavaEnv()): Removed.
+	(NPN_GetJavaPeer(NPP)): Removed.
+	(NPN_GetValue(NPP, NPNVariable, void *)): Removed.
+	(NPN_SetValue(NPP, NPPVariable, void *)): Removed.
+	(NPN_InvalidateRect(NPP, NPRect *)): Removed.
+	(NPN_InvalidateRegion(NPP, NPRegion)): Removed.
+	(NPN_ForceRedraw(NPP)): Removed.
+	(NPN_ReleaseVariantValue(NPVariant *)): Removed.
+	(NPN_GetStringIdentifier(const NPUTF8 *)): Removed.
+	(NPN_GetStringIdentifiers(const NPUTF8 **, int32_t,
+	NPIdentifier *)): Removed.
+	(NPN_GetIdentifier(int32_t)): Removed.
+	(NPN_IdentifierIsString(NPIdentifier *)): Removed.
+	(NPN_UTF8FromIdentifier(NPIdentifier)): Removed.
+	(NPN_IntFromIdentifier(NPIdentifier)): Removed.
+	(NPN_CreateObject(NPP, NPClass *)): Removed.
+	(NPN_RetainObject(NPObject *)): Removed.
+	(NPN_ReleaseObject(NPObject *)): Removed.
+	(NPN_Invoke(NPP, NPObject *, NPIdentifier, const NPVariant *,
+	uint32_t, NPVariant *)): Removed.
+	(NPN_InvokeDefault(NPP, NPObject *, const NPVariant *, uint32_t,
+	NPVariant *)): Removed.
+	(NPN_Evaluate(NPP, NPObject *, NPString *, NPVariant *)): Removed.
+	(NPN_GetProperty(NPP, NPObject *, NPIdentifier, NPVariant *)):
+	Removed.
+	(NPN_SetProperty(NPP, NPObject *, NPIdentifier, const
+	NPVariant *)): Removed.
+	(NPN_RemoveProperty(NPP, NPObject *, NPIdentifier)): Removed.
+	(NPN_HasProperty(NPP, NPObject *, NPIdentifier)): Removed.
+	(NPN_HasMethod(NPP, NPObject *, NPIdentifier)): Removed.
+	(NPN_SetException(NPObject *, const NPUTF8 *)): Removed.
+
+2009-06-18 Braden McDaniel  <braden@endoframe.com>
+
 	Conditionally apply "const" when using the JNI functions
 	SetFloatArrayRegion and SetDoubleArrayRegion.
 

@@ -201,15 +201,13 @@ PKG_CHECK_MODULES([GTKGL],
 PKG_CHECK_MODULES([GNOMEUI], [libgnomeui-2.0 libgnome-2.0 >= 2.14], ,
                   [have_gnomeui=no])
 PKG_CHECK_MODULES([CURL], [libcurl], , [have_libcurl=no])
-PKG_CHECK_MODULES([MOZILLA_PLUGIN], [xulrunner-plugin],
-                  [mozilla_plugin_pkg=xulrunner-plugin],
-                  [PKG_CHECK_MODULES([MOZILLA_PLUGIN], [firefox-plugin],
-                                     [mozilla_plugin_pkg=firefox-plugin],
-                                     [PKG_CHECK_MODULES([MOZILLA_PLUGIN], [seamonkey-plugin],
-                                                        [mozilla_plugin_pkg=seamonkey-plugin],
-                                                        [PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.6],
-                                                                           [mozilla_plugin_pkg=mozilla-plugin],
-                                                                           [have_mozilla_plugin=no])])])])
+#
+# The Mozilla plug-in uses the npfunctions.h header introduced in
+# XULRunner 1.9.1.
+#
+PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.9.1],
+                  [have_mozilla_plugin=yes],
+                  [have_mozilla_plugin=no])
 
 AC_PATH_XTRA
 AX_CHECK_GLU
@@ -460,7 +458,7 @@ AC_ARG_ENABLE([mozilla-plugin],
 AS_IF([test X$enable_mozilla_plugin != Xno],
       [AS_IF([test X$enable_xembed = Xno],
              [AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the XEmbed control])])
-       AS_IF([test "X$have_mozilla_plugin" = "Xno"],
+       AS_IF([test X$have_mozilla_plugin = Xno],
              [AC_MSG_FAILURE([Mozilla plug-in development headers are required to build the Mozilla plug-in.])])
        AS_IF([test "X$have_dbus_glib" = "Xno"],
              [AC_MSG_FAILURE([The D-Bus GLib binding is required to build the Mozilla plug-in])])])
