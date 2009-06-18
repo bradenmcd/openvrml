@@ -1,3 +1,14 @@
+2009-06-18 Braden McDaniel  <braden@endoframe.com>
+
+	Conditionally apply "const" when using the JNI functions
+	SetFloatArrayRegion and SetDoubleArrayRegion.
+
+	* configure.ac: Check to see whether JNI function signatures use
+	"const".
+	* src/script/java.cpp: Use OPENVRML_JNI_CONST to conditionally
+	apply "const" when using SetFloatArrayRegion and
+	SetDoubleArrayRegion.
+
 2009-06-17 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Fixed error message to note missing GtkGLExt

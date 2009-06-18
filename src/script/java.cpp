@@ -4492,20 +4492,22 @@ namespace {
 
     template <> struct set_array_region_t<jfloat> {
         static void (JNIEnv::* const value)(
-            array_type<jfloat>::type, jsize, jsize, const jfloat *);
+            array_type<jfloat>::type, jsize, jsize,
+            OPENVRML_JNI_CONST jfloat *);
     };
 
     void (JNIEnv::* const set_array_region_t<jfloat>::value)(
-        array_type<jfloat>::type, jsize, jsize, const jfloat *) =
+        array_type<jfloat>::type, jsize, jsize, OPENVRML_JNI_CONST jfloat *) =
         &JNIEnv::SetFloatArrayRegion;
 
     template <> struct set_array_region_t<jdouble> {
         static void (JNIEnv::* const value)(
-            array_type<jdouble>::type, jsize, jsize, const jdouble *);
+            array_type<jdouble>::type, jsize, jsize,
+            OPENVRML_JNI_CONST jdouble *);
     };
 
     void (JNIEnv::* const set_array_region_t<jdouble>::value)(
-        array_type<jdouble>::type, jsize, jsize, const jdouble *) =
+        array_type<jdouble>::type, jsize, jsize, OPENVRML_JNI_CONST jdouble *) =
         &JNIEnv::SetDoubleArrayRegion;
 
     template <typename T>

@@ -91,6 +91,25 @@ AC_CHECK_HEADER([ltdl.h], , [AC_MSG_FAILURE([ltdl.h not found])])
 AC_CHECK_HEADER([jni.h], [have_jni=yes])
 
 #
+# Some jni.h implementations (well, GCJ, at least), don't apply const
+# in function signatures.
+#
+AS_IF([test X$have_jni != Xno],
+      [AC_MSG_CHECKING([if JNI function signatures use const])
+       AC_CACHE_VAL([ov_cv_jni_const],
+[AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+                  [#include <jni.h>],
+                  [void (*fn)(jfloatArray, jsize, jsize, const jfloat *) = &JNIEnv::SetFloatArrayRegion])],
+                  [ov_cv_jni_const=const],
+                  [ov_cv_jni_const= ])
+AC_LANG_POP])
+       AS_IF([test -n "$ov_cv_jni_const"],
+             [AC_MSG_RESULT([yes])],
+             [AC_MSG_RESULT([no])])
+])
+
+#
 # Allow users to specify any Boost library name suffix
 #
 AC_ARG_VAR([BOOST_LIB_SUFFIX], [Boost library name suffix])
@@ -365,6 +384,8 @@ AC_SUBST([OPENVRML_JVM_ARCH])
 AS_IF([test X$enable_script_node_java != Xno],
 [AS_IF([test X$have_jni != Xyes],
        [AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])])
+AC_DEFINE_UNQUOTED([OPENVRML_JNI_CONST], [$ov_cv_jni_const],
+                   [const for JNI function signatures.])
 AS_IF([test -z "$JAVA_HOME"],
 [AC_MSG_WARN([JAVA_HOME has not been set.  JAVA_HOME must be set at run time to locate libjvm.])],
 [ov_save_LDFLAGS=$LDFLAGS
