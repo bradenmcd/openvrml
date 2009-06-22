@@ -307,15 +307,15 @@ bool openvrml::operator!=(const color & lhs, const color & rhs)
 
 namespace {
     typedef std::istream::char_type char_t;
-    typedef boost::spirit::multi_pass<std::istreambuf_iterator<char_t> >
+    typedef boost::spirit::classic::multi_pass<std::istreambuf_iterator<char_t> >
         iterator_t;
 
-    typedef boost::spirit::skip_parser_iteration_policy<openvrml::vrml97_space_parser>
+    typedef boost::spirit::classic::skip_parser_iteration_policy<openvrml::vrml97_space_parser>
         iter_policy_t;
-    typedef boost::spirit::scanner_policies<iter_policy_t> scanner_policies_t;
-    typedef boost::spirit::scanner<iterator_t, scanner_policies_t> scanner_t;
+    typedef boost::spirit::classic::scanner_policies<iter_policy_t> scanner_policies_t;
+    typedef boost::spirit::classic::scanner<iterator_t, scanner_policies_t> scanner_t;
 
-    typedef boost::spirit::rule<scanner_t> rule_t;
+    typedef boost::spirit::classic::rule<scanner_t> rule_t;
 }
 
 /**
@@ -338,8 +338,8 @@ namespace {
 std::istream & openvrml::operator>>(std::istream & in, color & c)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -620,8 +620,8 @@ bool openvrml::operator!=(const color_rgba & lhs, const color_rgba & rhs)
 std::istream & openvrml::operator>>(std::istream & in, color_rgba & c)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -1036,8 +1036,8 @@ bool openvrml::operator!=(const vec2f & lhs, const vec2f & rhs)
 std::istream & openvrml::operator>>(std::istream & in, vec2f & v)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -1451,9 +1451,9 @@ bool openvrml::operator!=(const vec2d & lhs, const vec2d & rhs)
 std::istream & openvrml::operator>>(std::istream & in, vec2d & v)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
-    using boost::spirit::real_p;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
+    using boost::spirit::classic::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -1995,8 +1995,8 @@ bool openvrml::operator!=(const vec3f & lhs, const vec3f & rhs)
 std::istream & openvrml::operator>>(std::istream & in, vec3f & v)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -2538,9 +2538,9 @@ bool openvrml::operator!=(const vec3d & lhs, const vec3d & rhs)
 std::istream & openvrml::operator>>(std::istream & in, vec3d & v)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
-    using boost::spirit::real_p;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
+    using boost::spirit::classic::real_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -3058,14 +3058,14 @@ namespace {
 
     OPENVRML_LOCAL struct OPENVRML_LOCAL null_error_handler {
         template <typename ScannerT, typename ErrorT>
-        boost::spirit::error_status<> operator()(ScannerT, ErrorT) const
+        boost::spirit::classic::error_status<> operator()(ScannerT, ErrorT) const
         {
-            using boost::spirit::error_status;
+            using boost::spirit::classic::error_status;
             return error_status<>(error_status<>::fail);
         }
     } error_handler;
 
-    const boost::spirit::functor_parser<
+    const boost::spirit::classic::functor_parser<
         openvrml::rotation_parser<null_error_handler> >
         rotation_p(error_handler);
 }
@@ -3090,10 +3090,10 @@ namespace {
 std::istream & openvrml::operator>>(std::istream & in, rotation & rot)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
-    using boost::spirit::eps_p;
-    using boost::spirit::guard;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
+    using boost::spirit::classic::eps_p;
+    using boost::spirit::classic::guard;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -3980,8 +3980,8 @@ float openvrml::mat4f::det() const OPENVRML_NOTHROW
 std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::ch_p;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::ch_p;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -4023,7 +4023,7 @@ std::istream & openvrml::operator>>(std::istream & in, mat4f & m)
             >> !ch_p(']')[var(row4_bracket_count) -= 1]
         ;
 
-    boost::spirit::match<> match = r.parse(scan);
+    boost::spirit::classic::match<> match = r.parse(scan);
 
     if (!match || row1_bracket_count != 0 || row2_bracket_count != 0
         || row3_bracket_count != 0 || row4_bracket_count != 0) {
@@ -4581,8 +4581,8 @@ const openvrml::quatf openvrml::quatf::normalize() const OPENVRML_NOTHROW
 std::istream & openvrml::operator>>(std::istream & in, quatf & q)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
     using phoenix::arg1;
     using phoenix::var;
 
@@ -4993,10 +4993,10 @@ bool openvrml::operator!=(const image & lhs, const image & rhs)
 std::istream & openvrml::operator>>(std::istream & in, image & img)
 {
     using std::istreambuf_iterator;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::match;
-    using boost::spirit::eps_p;
-    using boost::spirit::guard;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::match;
+    using boost::spirit::classic::eps_p;
+    using boost::spirit::classic::guard;
     using phoenix::arg1;
     using phoenix::var;
 

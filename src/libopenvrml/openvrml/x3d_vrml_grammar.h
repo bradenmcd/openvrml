@@ -88,12 +88,12 @@ namespace openvrml {
         {}
 
         template <typename ScannerT, typename ErrorT>
-        boost::spirit::error_status<> operator()(const ScannerT & scan,
+        boost::spirit::classic::error_status<> operator()(const ScannerT & scan,
                                                  const ErrorT & err) const
         {
             using std::endl;
-            using boost::spirit::error_status;
-            using boost::spirit::file_position;
+            using boost::spirit::classic::error_status;
+            using boost::spirit::classic::file_position;
 
             const file_position fpos = err.where.get_position();
             if (err.descriptor >= vrml_parse_error_end) {
@@ -125,7 +125,7 @@ namespace openvrml {
 
 
     template <>
-    struct get_mftype_parse_error<boost::spirit::functor_parser<bool_parser> > {
+    struct get_mftype_parse_error<boost::spirit::classic::functor_parser<bool_parser> > {
         static const vrml_parse_error element_or_lbracket_value =
             bool_or_lbracket_expected;
         static const vrml_parse_error element_or_rbracket_value =
@@ -133,7 +133,7 @@ namespace openvrml {
     };
 
     template <>
-    struct get_mftype_parse_error<boost::spirit::functor_parser<image_parser> > {
+    struct get_mftype_parse_error<boost::spirit::classic::functor_parser<image_parser> > {
         static const vrml_parse_error element_or_lbracket_value =
             int32_or_lbracket_expected;
         static const vrml_parse_error element_or_rbracket_value =
@@ -149,10 +149,10 @@ namespace openvrml {
         std::ptrdiff_t operator()(const ScannerT & scan,
                                   result_t & result) const
         {
-            using boost::spirit::match_result;
+            using boost::spirit::classic::match_result;
             using phoenix::arg1;
             using phoenix::var;
-            typedef typename boost::spirit::rule<ScannerT> rule_t;
+            typedef typename boost::spirit::classic::rule<ScannerT> rule_t;
             typedef typename match_result<ScannerT, result_t>::type match_t;
 
             rule_t rule
@@ -166,10 +166,10 @@ namespace openvrml {
         }
     };
 
-    const boost::spirit::functor_parser<color_rgba_parser> color_rgba_p;
+    const boost::spirit::classic::functor_parser<color_rgba_parser> color_rgba_p;
 
     template <>
-    struct get_mftype_parse_error<boost::spirit::functor_parser<color_rgba_parser> > {
+    struct get_mftype_parse_error<boost::spirit::classic::functor_parser<color_rgba_parser> > {
         static const vrml_parse_error element_or_lbracket_value =
             color_rgba_or_lbracket_expected;
         static const vrml_parse_error element_or_rbracket_value =
@@ -185,11 +185,11 @@ namespace openvrml {
         std::ptrdiff_t operator()(const ScannerT & scan,
                                   result_t & result) const
         {
-            using boost::spirit::match_result;
-            using boost::spirit::real_p;
+            using boost::spirit::classic::match_result;
+            using boost::spirit::classic::real_p;
             using phoenix::arg1;
             using phoenix::var;
-            typedef typename boost::spirit::rule<ScannerT> rule_t;
+            typedef typename boost::spirit::classic::rule<ScannerT> rule_t;
             typedef typename match_result<ScannerT, result_t>::type match_t;
             rule_t rule
                 =   real_p[var(result.vec[0]) = arg1]
@@ -200,10 +200,10 @@ namespace openvrml {
         }
     };
 
-    const boost::spirit::functor_parser<vec2d_parser> vec2d_p;
+    const boost::spirit::classic::functor_parser<vec2d_parser> vec2d_p;
 
     template <>
-    struct get_mftype_parse_error<boost::spirit::functor_parser<vec2d_parser> > {
+    struct get_mftype_parse_error<boost::spirit::classic::functor_parser<vec2d_parser> > {
         static const vrml_parse_error element_or_lbracket_value =
             vec2_or_lbracket_expected;
         static const vrml_parse_error element_or_rbracket_value =
@@ -219,11 +219,11 @@ namespace openvrml {
         std::ptrdiff_t operator()(const ScannerT & scan,
                                   result_t & result) const
         {
-            using boost::spirit::match_result;
-            using boost::spirit::real_p;
+            using boost::spirit::classic::match_result;
+            using boost::spirit::classic::real_p;
             using phoenix::arg1;
             using phoenix::var;
-            typedef typename boost::spirit::rule<ScannerT> rule_t;
+            typedef typename boost::spirit::classic::rule<ScannerT> rule_t;
             typedef typename match_result<ScannerT, result_t>::type match_t;
             rule_t rule
                 =   real_p[var(result.vec[0]) = arg1]
@@ -235,10 +235,10 @@ namespace openvrml {
         }
     };
 
-    const boost::spirit::functor_parser<vec3d_parser> vec3d_p;
+    const boost::spirit::classic::functor_parser<vec3d_parser> vec3d_p;
 
     template <>
-    struct get_mftype_parse_error<boost::spirit::functor_parser<vec3d_parser> > {
+    struct get_mftype_parse_error<boost::spirit::classic::functor_parser<vec3d_parser> > {
         static const vrml_parse_error element_or_lbracket_value =
             vec3_or_lbracket_expected;
         static const vrml_parse_error element_or_rbracket_value =
@@ -325,13 +325,13 @@ namespace openvrml {
 
 
     struct profile_statement_closure :
-        boost::spirit::closure<profile_statement_closure,
+        boost::spirit::classic::closure<profile_statement_closure,
                                std::string> {
         member1 profile;
     };
 
     struct component_statement_closure :
-        boost::spirit::closure<component_statement_closure,
+        boost::spirit::classic::closure<component_statement_closure,
                                std::pair<std::string, int32> > {
         member1 component;
     };
@@ -368,7 +368,7 @@ namespace openvrml {
     const phoenix::function<set_component_level_function> set_component_level;
 
     struct meta_statement_closure :
-        boost::spirit::closure<meta_statement_closure,
+        boost::spirit::classic::closure<meta_statement_closure,
                                std::pair<std::string, std::string> > {
         member1 metadata;
     };
@@ -404,7 +404,7 @@ namespace openvrml {
     const phoenix::function<set_meta_value_function> set_meta_value;
 
     struct import_statement_closure :
-        boost::spirit::closure<import_statement_closure,
+        boost::spirit::classic::closure<import_statement_closure,
                                const defs_t::value_type *,
                                std::string,
                                std::string> {
@@ -414,7 +414,7 @@ namespace openvrml {
     };
 
     struct export_statement_closure :
-        boost::spirit::closure<export_statement_closure,
+        boost::spirit::classic::closure<export_statement_closure,
                                const defs_t::value_type *,
                                std::string> {
         member1 node_name_id;
@@ -424,7 +424,7 @@ namespace openvrml {
     template <typename Actions = null_x3d_vrml_parse_actions,
               typename ErrorHandler = x3d_vrml_parse_error_handler>
     struct x3d_vrml_grammar :
-        boost::spirit::grammar<x3d_vrml_grammar<Actions, ErrorHandler> > {
+        boost::spirit::classic::grammar<x3d_vrml_grammar<Actions, ErrorHandler> > {
 
         template <typename ScannerT>
         struct definition :
@@ -438,23 +438,23 @@ namespace openvrml {
             typedef typename base_t::rule_type rule_type;
             typedef typename base_t::chset chset;
 
-            typedef boost::spirit::rule<ScannerT,
+            typedef boost::spirit::classic::rule<ScannerT,
                                         profile_statement_closure::context_t>
                 profile_statement_rule_type;
 
-            typedef boost::spirit::rule<ScannerT,
+            typedef boost::spirit::classic::rule<ScannerT,
                                         component_statement_closure::context_t>
                 component_statement_rule_type;
 
-            typedef boost::spirit::rule<ScannerT,
+            typedef boost::spirit::classic::rule<ScannerT,
                                         meta_statement_closure::context_t>
                 meta_statement_rule_type;
 
-            typedef boost::spirit::rule<ScannerT,
+            typedef boost::spirit::classic::rule<ScannerT,
                                         import_statement_closure::context_t>
                 import_statement_rule_type;
 
-            typedef boost::spirit::rule<ScannerT,
+            typedef boost::spirit::classic::rule<ScannerT,
                                         export_statement_closure::context_t>
                 export_statement_rule_type;
 
@@ -470,7 +470,7 @@ namespace openvrml {
                     try {
                         node_types = profile(std::string(first, last));
                     } catch (std::invalid_argument &) {
-                        boost::spirit::throw_(first, unrecognized_profile_id);
+                        boost::spirit::classic::throw_(first, unrecognized_profile_id);
                     }
                     this->scope_stack.top().node_body_repo = *node_types;
                 }
@@ -500,7 +500,7 @@ namespace openvrml {
                                       component_id,
                                       level);
                     } catch (std::invalid_argument &) {
-                        boost::spirit::throw_(
+                        boost::spirit::classic::throw_(
                             first,
                             unrecognized_component_id_or_level);
                     }
@@ -633,42 +633,42 @@ namespace openvrml {
 
             explicit definition(const x3d_vrml_grammar & self);
 
-            const boost::spirit::rule<ScannerT> & start() const
+            const boost::spirit::classic::rule<ScannerT> & start() const
             {
                 return this->vrml_scene;
             }
 
             using base_t::mftype_parser;
 
-            static const boost::spirit::functor_parser<
+            static const boost::spirit::classic::functor_parser<
                 typename base_t::template mftype_parser<
-                    boost::spirit::functor_parser<openvrml::color_rgba_parser> > >
+                    boost::spirit::classic::functor_parser<openvrml::color_rgba_parser> > >
                 mfcolorrgba_p;
 
-            static const boost::spirit::functor_parser<
+            static const boost::spirit::classic::functor_parser<
                 typename base_t::template mftype_parser<
-                    boost::spirit::functor_parser<openvrml::bool_parser> > >
+                    boost::spirit::classic::functor_parser<openvrml::bool_parser> > >
                 mfbool_p;
 
-            static const boost::spirit::functor_parser<
+            static const boost::spirit::classic::functor_parser<
                 typename base_t::template mftype_parser<
-                    boost::spirit::functor_parser<openvrml::image_parser> > >
+                    boost::spirit::classic::functor_parser<openvrml::image_parser> > >
                 mfimage_p;
 
-            static const boost::spirit::functor_parser<
+            static const boost::spirit::classic::functor_parser<
                 typename base_t::template mftype_parser<
-                    boost::spirit::functor_parser<openvrml::vec2d_parser> > >
+                    boost::spirit::classic::functor_parser<openvrml::vec2d_parser> > >
                 mfvec2d_p;
 
-            static const boost::spirit::functor_parser<
+            static const boost::spirit::classic::functor_parser<
                 typename base_t::template mftype_parser<
-                    boost::spirit::functor_parser<openvrml::vec3d_parser> > >
+                    boost::spirit::classic::functor_parser<openvrml::vec3d_parser> > >
                 mfvec3d_p;
 
-            virtual const boost::spirit::stored_rule<ScannerT>
+            virtual const boost::spirit::classic::stored_rule<ScannerT>
             get_field_value_parser(const field_value::type_id field_type) const
             {
-                boost::spirit::stored_rule<ScannerT> r;
+                boost::spirit::classic::stored_rule<ScannerT> r;
                 switch (field_type) {
                 case field_value::sfcolorrgba_id:
                     r = expect_color_rgba(color_rgba_p)[
@@ -676,7 +676,7 @@ namespace openvrml {
                         ];
                     break;
                 case field_value::sfdouble_id:
-                    r = expect_float(boost::spirit::real_p)[
+                    r = expect_float(boost::spirit::classic::real_p)[
                             base_t::self.actions.on_sfdouble
                         ];
                     break;
@@ -720,57 +720,57 @@ namespace openvrml {
 
     template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
-    const boost::spirit::functor_parser<
+    const boost::spirit::classic::functor_parser<
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
-        template mftype_parser<boost::spirit::functor_parser<openvrml::bool_parser> > >
+        template mftype_parser<boost::spirit::classic::functor_parser<openvrml::bool_parser> > >
     x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfbool_p =
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
-            boost::spirit::functor_parser<openvrml::bool_parser>
+            boost::spirit::classic::functor_parser<openvrml::bool_parser>
         >(bool_p);
 
     template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
-    const boost::spirit::functor_parser<
+    const boost::spirit::classic::functor_parser<
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
-        template mftype_parser<boost::spirit::functor_parser<openvrml::color_rgba_parser> > >
+        template mftype_parser<boost::spirit::classic::functor_parser<openvrml::color_rgba_parser> > >
     x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfcolorrgba_p =
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
-            boost::spirit::functor_parser<openvrml::color_rgba_parser>
+            boost::spirit::classic::functor_parser<openvrml::color_rgba_parser>
         >(color_rgba_p);
 
     template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
-    const boost::spirit::functor_parser<
+    const boost::spirit::classic::functor_parser<
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
-        template mftype_parser<boost::spirit::functor_parser<openvrml::image_parser> > >
+        template mftype_parser<boost::spirit::classic::functor_parser<openvrml::image_parser> > >
     x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfimage_p =
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
-            boost::spirit::functor_parser<openvrml::image_parser>
+            boost::spirit::classic::functor_parser<openvrml::image_parser>
         >(image_p);
 
     template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
-    const boost::spirit::functor_parser<
+    const boost::spirit::classic::functor_parser<
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
-        template mftype_parser<boost::spirit::functor_parser<openvrml::vec2d_parser> > >
+        template mftype_parser<boost::spirit::classic::functor_parser<openvrml::vec2d_parser> > >
     x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfvec2d_p =
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
-            boost::spirit::functor_parser<openvrml::vec2d_parser>
+            boost::spirit::classic::functor_parser<openvrml::vec2d_parser>
         >(vec2d_p);
 
     template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
-    const boost::spirit::functor_parser<
+    const boost::spirit::classic::functor_parser<
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
-        template mftype_parser<boost::spirit::functor_parser<openvrml::vec3d_parser> > >
+        template mftype_parser<boost::spirit::classic::functor_parser<openvrml::vec3d_parser> > >
     x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfvec3d_p =
         typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
         template mftype_parser<
-            boost::spirit::functor_parser<openvrml::vec3d_parser>
+            boost::spirit::classic::functor_parser<openvrml::vec3d_parser>
         >(vec3d_p);
 
     template <typename Actions, typename ErrorHandler>
@@ -789,7 +789,7 @@ namespace openvrml {
         invalid_id_first_char(base_t::invalid_id_first_char | ':')
     {
         using std::string;
-        using namespace boost::spirit;
+        using namespace boost::spirit::classic;
         using namespace phoenix;
 
         BOOST_SPIRIT_DEBUG_NODE(profile_statement);

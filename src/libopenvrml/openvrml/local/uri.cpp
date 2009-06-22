@@ -70,7 +70,7 @@ openvrml::local::uri::uri(const std::string & str)
     fragment_end(this->str_.begin())
 {
     using std::string;
-    using namespace boost::spirit;
+    using namespace boost::spirit::classic;
 
     actions a(*this);
     uri_grammar<actions> g(a);

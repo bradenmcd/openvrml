@@ -595,11 +595,11 @@ std::istream & openvrml::operator>>(std::istream & in,
 namespace {
 
     struct OPENVRML_LOCAL node_metatype_id_grammar :
-        public boost::spirit::grammar<node_metatype_id_grammar> {
+        public boost::spirit::classic::grammar<node_metatype_id_grammar> {
 
         template <typename ScannerT>
         struct definition {
-            typedef boost::spirit::rule<ScannerT> rule_type;
+            typedef boost::spirit::classic::rule<ScannerT> rule_type;
 
             rule_type node_metatype_id;
             openvrml::local::absolute_uri_grammar<> absolute_uri;
@@ -607,7 +607,7 @@ namespace {
 
             definition(const node_metatype_id_grammar & self);
 
-            const boost::spirit::rule<ScannerT> & start() const;
+            const boost::spirit::classic::rule<ScannerT> & start() const;
         };
     };
 
@@ -621,7 +621,7 @@ namespace {
     }
 
     template <typename ScannerT>
-    const boost::spirit::rule<ScannerT> &
+    const boost::spirit::classic::rule<ScannerT> &
     node_metatype_id_grammar::definition<ScannerT>::start() const
     {
         return this->node_metatype_id;
@@ -643,7 +643,7 @@ openvrml::node_metatype_id::node_metatype_id(const char * id)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc):
     id_(id)
 {
-    using namespace boost::spirit;
+    using namespace boost::spirit::classic;
 
     node_metatype_id_grammar g;
     if (!parse(this->id_.begin(), this->id_.end(), g, space_p).full) {
@@ -667,7 +667,7 @@ openvrml::node_metatype_id::node_metatype_id(const std::string & id)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc):
     id_(id)
 {
-    using namespace boost::spirit;
+    using namespace boost::spirit::classic;
 
     node_metatype_id_grammar g;
     if (!parse(this->id_.begin(), this->id_.end(), g, space_p).full) {

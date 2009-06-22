@@ -1,5 +1,17 @@
 2009-06-22 Braden McDaniel  <braden@endoframe.com>
 
+	Use Spirit Classic in the boost::spirit::classic namespace.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/vrml97_grammar.h
+	* src/libopenvrml/openvrml/x3d_vrml_grammar.h
+	* src/libopenvrml/openvrml/local/parse_vrml.cpp
+	* src/libopenvrml/openvrml/local/uri.cpp
+	* src/libopenvrml/openvrml/local/uri.h
+
+2009-06-22 Braden McDaniel  <braden@endoframe.com>
+
 	Use GIO instead of GnomeVFS in openvrml-player.
 
 	* configure.ac: Check for GIO.

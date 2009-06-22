@@ -22,8 +22,8 @@
 #   define OPENVRML_LOCAL_URI_H
 
 #   include <openvrml/bad_url.h>
-#   include <boost/spirit.hpp>
-#   include <boost/spirit/phoenix.hpp>
+#   include <boost/spirit/include/classic.hpp>
+#   include <boost/spirit/include/phoenix1.hpp>
 
 namespace openvrml {
 
@@ -88,7 +88,7 @@ namespace openvrml {
 
 
         struct OPENVRML_LOCAL uri_reserved_parser :
-            public boost::spirit::char_parser<uri_reserved_parser> {
+            public boost::spirit::classic::char_parser<uri_reserved_parser> {
 
             typedef uri_reserved_parser self_t;
 
@@ -112,7 +112,7 @@ namespace openvrml {
 
 
         struct OPENVRML_LOCAL uri_unreserved_parser :
-            public boost::spirit::char_parser<uri_unreserved_parser> {
+            public boost::spirit::classic::char_parser<uri_unreserved_parser> {
 
             typedef uri_unreserved_parser self_t;
 
@@ -137,24 +137,24 @@ namespace openvrml {
 
 
         struct OPENVRML_LOCAL uric_grammar :
-            public boost::spirit::grammar<uric_grammar> {
+            public boost::spirit::classic::grammar<uric_grammar> {
 
             template <typename ScannerT>
                 struct definition {
-                typedef boost::spirit::rule<ScannerT> rule_type;
+                typedef boost::spirit::classic::rule<ScannerT> rule_type;
 
                 rule_type uric, escaped;
 
                 definition(const uric_grammar & self);
 
-                const boost::spirit::rule<ScannerT> & start() const;
+                const boost::spirit::classic::rule<ScannerT> & start() const;
             };
         };
 
         template <typename ScannerT>
         uric_grammar::definition<ScannerT>::definition(const uric_grammar &)
         {
-            using namespace boost::spirit;
+            using namespace boost::spirit::classic;
 
             uric
                 =   uri_reserved_p
@@ -168,7 +168,7 @@ namespace openvrml {
         }
 
         template <typename ScannerT>
-        const boost::spirit::rule<ScannerT> &
+        const boost::spirit::classic::rule<ScannerT> &
         uric_grammar::definition<ScannerT>::start() const
         {
             return this->uric;
@@ -177,20 +177,20 @@ namespace openvrml {
 
         template <typename Actions = null_actions>
         struct uri_authority_grammar :
-            public boost::spirit::grammar<uri_authority_grammar<Actions> > {
+            public boost::spirit::classic::grammar<uri_authority_grammar<Actions> > {
 
             template <typename ScannerT>
             struct definition {
                 struct server_closure :
-                    boost::spirit::closure<server_closure,
+                    boost::spirit::classic::closure<server_closure,
                                            typename ScannerT::iterator_t,
                                            typename ScannerT::iterator_t> {
                     typename server_closure::member1 userinfo_begin;
                     typename server_closure::member2 userinfo_end;
                 };
 
-                typedef boost::spirit::rule<ScannerT> rule_type;
-                typedef boost::spirit::rule<ScannerT,
+                typedef boost::spirit::classic::rule<ScannerT> rule_type;
+                typedef boost::spirit::classic::rule<ScannerT,
                                             typename server_closure::context_t>
                 server_rule_type;
 
@@ -209,7 +209,7 @@ namespace openvrml {
 
                 explicit definition(const uri_authority_grammar & self);
 
-                const boost::spirit::rule<ScannerT> & start() const;
+                const boost::spirit::classic::rule<ScannerT> & start() const;
             };
 
             const Actions & actions;
@@ -222,7 +222,7 @@ namespace openvrml {
         uri_authority_grammar<Actions>::definition<ScannerT>::
         definition(const uri_authority_grammar & self)
         {
-            using namespace boost::spirit;
+            using namespace boost::spirit::classic;
             using namespace phoenix;
 
             authority
@@ -308,7 +308,7 @@ namespace openvrml {
 
         template <typename Actions>
         template <typename ScannerT>
-        const boost::spirit::rule<ScannerT> &
+        const boost::spirit::classic::rule<ScannerT> &
         uri_authority_grammar<Actions>::definition<ScannerT>::start() const
         {
             return this->authority;
@@ -322,11 +322,11 @@ namespace openvrml {
 
         template <typename Actions>
         struct uri_abs_path_grammar :
-            public boost::spirit::grammar<uri_abs_path_grammar<Actions> > {
+            public boost::spirit::classic::grammar<uri_abs_path_grammar<Actions> > {
 
             template <typename ScannerT>
             struct definition {
-                typedef boost::spirit::rule<ScannerT> rule_type;
+                typedef boost::spirit::classic::rule<ScannerT> rule_type;
 
                 rule_type abs_path;
                 rule_type path_segments;
@@ -338,7 +338,7 @@ namespace openvrml {
 
                 explicit definition(const uri_abs_path_grammar & self);
 
-                const boost::spirit::rule<ScannerT> & start() const;
+                const boost::spirit::classic::rule<ScannerT> & start() const;
             };
 
             const Actions & actions;
@@ -351,7 +351,7 @@ namespace openvrml {
         uri_abs_path_grammar<Actions>::definition<ScannerT>::
         definition(const uri_abs_path_grammar & self)
         {
-            using namespace boost::spirit;
+            using namespace boost::spirit::classic;
             using namespace phoenix;
 
             abs_path
@@ -389,7 +389,7 @@ namespace openvrml {
 
         template <typename Actions>
         template <typename ScannerT>
-        const boost::spirit::rule<ScannerT> &
+        const boost::spirit::classic::rule<ScannerT> &
         uri_abs_path_grammar<Actions>::definition<ScannerT>::start() const
         {
             return this->abs_path;
@@ -404,12 +404,12 @@ namespace openvrml {
 
         template <typename Actions = null_actions>
         struct absolute_uri_grammar :
-            public boost::spirit::grammar<absolute_uri_grammar<Actions> > {
+            public boost::spirit::classic::grammar<absolute_uri_grammar<Actions> > {
 
             template <typename ScannerT>
             struct definition {
                 struct absolute_uri_closure :
-                    boost::spirit::closure<absolute_uri_closure,
+                    boost::spirit::classic::closure<absolute_uri_closure,
                                            typename ScannerT::iterator_t,
                                            typename ScannerT::iterator_t> {
                     typename absolute_uri_closure::member1 scheme_begin;
@@ -417,19 +417,19 @@ namespace openvrml {
                 };
 
                 struct server_closure :
-                    boost::spirit::closure<server_closure,
+                    boost::spirit::classic::closure<server_closure,
                                            typename ScannerT::iterator_t,
                                            typename ScannerT::iterator_t> {
                     typename server_closure::member1 userinfo_begin;
                     typename server_closure::member2 userinfo_end;
                 };
 
-                typedef boost::spirit::rule<ScannerT> rule_type;
-                typedef boost::spirit::rule<
+                typedef boost::spirit::classic::rule<ScannerT> rule_type;
+                typedef boost::spirit::classic::rule<
                     ScannerT,
                     typename absolute_uri_closure::context_t>
                 absolute_uri_rule_type;
-                typedef boost::spirit::rule<ScannerT,
+                typedef boost::spirit::classic::rule<ScannerT,
                                             typename server_closure::context_t>
                 server_rule_type;
 
@@ -461,7 +461,7 @@ namespace openvrml {
             abs_path(self.actions),
             authority(self.actions)
         {
-            using namespace boost::spirit;
+            using namespace boost::spirit::classic;
             using namespace phoenix;
 
             absolute_uri
@@ -523,11 +523,11 @@ namespace openvrml {
 
         template <typename Actions = null_actions>
         struct uri_grammar :
-            public boost::spirit::grammar<uri_grammar<Actions> > {
+            public boost::spirit::classic::grammar<uri_grammar<Actions> > {
 
             template <typename ScannerT>
             struct definition {
-                typedef boost::spirit::rule<ScannerT> rule_type;
+                typedef boost::spirit::classic::rule<ScannerT> rule_type;
 
                 rule_type uri_reference;
                 absolute_uri_grammar<Actions> absolute_uri;
@@ -544,7 +544,7 @@ namespace openvrml {
 
                 explicit definition(const uri_grammar & self);
 
-                const boost::spirit::rule<ScannerT> & start() const;
+                const boost::spirit::classic::rule<ScannerT> & start() const;
             };
 
             const Actions & actions;
@@ -566,7 +566,7 @@ namespace openvrml {
             abs_path(self.actions),
             authority(self.actions)
         {
-            using namespace boost::spirit;
+            using namespace boost::spirit::classic;
             using namespace phoenix;
 
             BOOST_SPIRIT_DEBUG_NODE(uri_reference);
@@ -624,7 +624,7 @@ namespace openvrml {
 
         template <typename Actions>
         template <typename ScannerT>
-        const boost::spirit::rule<ScannerT> &
+        const boost::spirit::classic::rule<ScannerT> &
         uri_grammar<Actions>::definition<ScannerT>::start() const
         {
             return this->uri_reference;

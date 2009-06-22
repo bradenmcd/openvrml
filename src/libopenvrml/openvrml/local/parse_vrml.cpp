@@ -47,13 +47,13 @@ namespace {
         {}
 
         template <typename ScannerT, typename ErrorT>
-        boost::spirit::error_status<> operator()(const ScannerT & scan,
+        boost::spirit::classic::error_status<> operator()(const ScannerT & scan,
                                                  const ErrorT & err) const
         {
             using std::endl;
             using std::string;
-            using boost::spirit::error_status;
-            using boost::spirit::file_position;
+            using boost::spirit::classic::error_status;
+            using boost::spirit::classic::file_position;
 
             const file_position fpos = err.where.get_position();
 
@@ -119,9 +119,9 @@ parse_vrml(std::istream & in,
     using std::istream;
     using std::istreambuf_iterator;
     using boost::algorithm::iequals;
-    using boost::spirit::multi_pass;
-    using boost::spirit::make_multi_pass;
-    using boost::spirit::position_iterator;
+    using boost::spirit::classic::multi_pass;
+    using boost::spirit::classic::make_multi_pass;
+    using boost::spirit::classic::position_iterator;
 
     typedef multi_pass<istreambuf_iterator<char> > multi_pass_iterator_t;
     typedef istream::char_type char_t;
