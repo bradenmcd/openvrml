@@ -1,3 +1,60 @@
+2009-06-21 Braden McDaniel  <braden@endoframe.com>
+
+	The Web browser still wants the plug-in to have the NPN_* entry
+	points.
+
+	* src/mozilla-plugin/openvrml.cpp
+	(NPN_Version(int *, int *, int *, int *)): Replaced.
+	(NPN_GetURLNotify(NPP, const char *, const char *, void *)):
+	Replaced.
+	(NPN_GetURL(NPP, const char *, const char *)): Replaced.
+	(NPN_PostURLNotify(NPP, const char *, const char *, uint32, const
+	char *, NPBool, void *)): Replaced.
+	(NPN_PostURL(NPP, const char *, const char *, uint32, const
+	char *, NPBool)): Replaced.
+	(NPN_RequestRead(NPStream *, NPByteRange *)): Replaced.
+	(NPN_NewStream(NPP, NPMIMEType, const char *, NPStream **)):
+	Replaced.
+	(NPN_Write(NPP, NPStream *, int32, void *)): Replaced.
+	(NPN_DestryStream(NPP, NPStream *, NPError)): Replaced.
+	(NPN_Status(NPP, const char *)): Replaced.
+	(NPN_UserAgent(NPP)): Replaced.
+	(NPN_MemAlloc(uint32)): Replaced.
+	(NPN_MemFree(void *)): Replaced.
+	(NPN_MemFlush(uint32)): Replaced.
+	(NPN_ReloadPlugins(NPBool)): Replaced.
+	(NPN_GetJavaEnv()): Replaced.
+	(NPN_GetJavaPeer(NPP)): Replaced.
+	(NPN_GetValue(NPP, NPNVariable, void *)): Replaced.
+	(NPN_SetValue(NPP, NPPVariable, void *)): Replaced.
+	(NPN_InvalidateRect(NPP, NPRect *)): Replaced.
+	(NPN_InvalidateRegion(NPP, NPRegion)): Replaced.
+	(NPN_ForceRedraw(NPP)): Replaced.
+	(NPN_ReleaseVariantValue(NPVariant *)): Replaced.
+	(NPN_GetStringIdentifier(const NPUTF8 *)): Replaced.
+	(NPN_GetStringIdentifiers(const NPUTF8 **, int32_t,
+	NPIdentifier *)): Replaced.
+	(NPN_GetIdentifier(int32_t)): Replaced.
+	(NPN_IdentifierIsString(NPIdentifier *)): Replaced.
+	(NPN_UTF8FromIdentifier(NPIdentifier)): Replaced.
+	(NPN_IntFromIdentifier(NPIdentifier)): Replaced.
+	(NPN_CreateObject(NPP, NPClass *)): Replaced.
+	(NPN_RetainObject(NPObject *)): Replaced.
+	(NPN_ReleaseObject(NPObject *)): Replaced.
+	(NPN_Invoke(NPP, NPObject *, NPIdentifier, const NPVariant *,
+	uint32_t, NPVariant *)): Replaced.
+	(NPN_InvokeDefault(NPP, NPObject *, const NPVariant *, uint32_t,
+	NPVariant *)): Replaced.
+	(NPN_Evaluate(NPP, NPObject *, NPString *, NPVariant *)): Replaced.
+	(NPN_GetProperty(NPP, NPObject *, NPIdentifier, NPVariant *)):
+	Replaced.
+	(NPN_SetProperty(NPP, NPObject *, NPIdentifier, const
+	NPVariant *)): Replaced.
+	(NPN_RemoveProperty(NPP, NPObject *, NPIdentifier)): Replaced.
+	(NPN_HasProperty(NPP, NPObject *, NPIdentifier)): Replaced.
+	(NPN_HasMethod(NPP, NPObject *, NPIdentifier)): Replaced.
+	(NPN_SetException(NPObject *, const NPUTF8 *)): Replaced.
+
 2009-06-18 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Fixed JNI const test.

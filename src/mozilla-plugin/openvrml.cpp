@@ -149,8 +149,6 @@ void openvrml_np_browser_host_init(OpenvrmlNpBrowserHost * const host)
 }
 
 namespace {
-    NPNetscapeFuncs mozillaFuncs;
-
     enum np_host_signal_id {
         shutdown_id,
         last_signal_id
@@ -209,7 +207,7 @@ int openvrml_np_browser_host_get_url(OpenvrmlNpBrowserHost * const host,
                                      const char * const url,
                                      GError ** /* error */)
 {
-    return mozillaFuncs.geturl(host->npp, url, 0);
+    return NPN_GetURL(host->npp, url, 0);
 }
 
 void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * /* host */,
@@ -221,6 +219,10 @@ void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * /* host */,
 char * NP_GetMIMEDescription()
 {
     return NPP_GetMIMEDescription();
+}
+
+namespace {
+    NPNetscapeFuncs mozillaFuncs;
 }
 
 /**
@@ -338,7 +340,7 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     // Make sure the browser supports XEmbed plug-ins.
     //
     PRBool supportsXEmbed = PR_FALSE;
-    err = mozillaFuncs.getvalue(0, NPNVSupportsXEmbedBool, &supportsXEmbed);
+    err = NPN_GetValue(0, NPNVSupportsXEmbedBool, &supportsXEmbed);
 
     if (err != NPERR_NO_ERROR || !supportsXEmbed) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
@@ -348,7 +350,7 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     // Make sure the browser tookit is Gtk2.
     //
     NPNToolkitType toolkit = NPNToolkitType();
-    err = mozillaFuncs.getvalue(0, NPNVToolkit, &toolkit);
+    err = NPN_GetValue(0, NPNVToolkit, &toolkit);
 
     if (err != NPERR_NO_ERROR || toolkit != NPNVGtk2) {
         return NPERR_INCOMPATIBLE_VERSION_ERROR;
@@ -684,7 +686,7 @@ NPError NPP_GetValue(const NPP npp,
     case NPPVpluginScriptableNPObject:
         assert(npp->pdata);
         instance = static_cast<plugin_instance *>(npp->pdata);
-        mozillaFuncs.retainobject(instance->npobj);
+        NPN_RetainObject(instance->npobj);
         *static_cast<NPObject **>(value) = instance->npobj;
         break;
     default:
@@ -696,6 +698,262 @@ NPError NPP_GetValue(const NPP npp,
 NPError NPP_SetValue(NPP, NPNVariable, void * /* value */)
 {
     return NPERR_NO_ERROR;
+}
+
+void NPN_Version(int * plugin_major,
+                 int * plugin_minor,
+                 int * mozilla_major,
+                 int * mozilla_minor)
+{
+    *plugin_major = NP_VERSION_MAJOR;
+    *plugin_minor = NP_VERSION_MINOR;
+    *mozilla_major = mozillaFuncs.version >> 8;
+    *mozilla_minor = mozillaFuncs.version & 0xff;
+}
+
+NPError NPN_GetURLNotify(NPP instance,
+                         const char * url,
+                         const char * target,
+                         void * notifyData)
+{
+    const int navMinorVers = mozillaFuncs.version & 0xFF;
+    return (navMinorVers >= NPVERS_HAS_NOTIFICATION)
+        ? mozillaFuncs.geturlnotify(instance, url, target, notifyData)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+NPError NPN_GetURL(NPP instance, const char * url, const char * target)
+{
+    return mozillaFuncs.geturl(instance, url, target);
+}
+
+NPError NPN_PostURLNotify(NPP instance,
+                          const char * url,
+                          const char * window,
+                          uint32 len,
+                          const char * buf,
+                          NPBool file,
+                          void * notifyData)
+{
+    const int navMinorVers = mozillaFuncs.version & 0xFF;
+    return (navMinorVers >= NPVERS_HAS_NOTIFICATION)
+        ? mozillaFuncs.posturlnotify(instance,
+                                     url,
+                                     window,
+                                     len,
+                                     buf,
+                                     file,
+                                     notifyData)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+NPError NPN_PostURL(NPP instance,
+                    const char * url,
+                    const char * window,
+                    uint32 len,
+                    const char * buf,
+                    NPBool file)
+{
+    return mozillaFuncs.posturl(instance, url, window, len, buf, file);
+}
+
+NPError NPN_RequestRead(NPStream * stream, NPByteRange * rangeList)
+{
+    return mozillaFuncs.requestread(stream, rangeList);
+}
+
+NPError NPN_NewStream(NPP instance,
+                      NPMIMEType type,
+                      const char * target,
+                      NPStream ** stream)
+{
+    const int navMinorVersion = mozillaFuncs.version & 0xFF;
+    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
+        ? mozillaFuncs.newstream(instance, type, target, stream)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+int32 NPN_Write(NPP instance, NPStream * stream, int32 len, void * buffer)
+{
+    const int navMinorVersion = mozillaFuncs.version & 0xFF;
+    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
+        ? mozillaFuncs.write(instance, stream, len, buffer)
+        : -1;
+}
+
+NPError NPN_DestroyStream(NPP instance, NPStream* stream, NPError reason)
+{
+    const int navMinorVersion = mozillaFuncs.version & 0xFF;
+    return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
+        ? mozillaFuncs.destroystream(instance, stream, reason)
+        : NPERR_INCOMPATIBLE_VERSION_ERROR;
+}
+
+void NPN_Status(NPP instance, const char * message)
+{
+    mozillaFuncs.status(instance, message);
+}
+
+const char * NPN_UserAgent(NPP instance)
+{
+    return mozillaFuncs.uagent(instance);
+}
+
+void * NPN_MemAlloc(uint32 size)
+{
+    return mozillaFuncs.memalloc(size);
+}
+
+void NPN_MemFree(void * ptr)
+{
+    mozillaFuncs.memfree(ptr);
+}
+
+uint32 NPN_MemFlush(uint32 size)
+{
+    return mozillaFuncs.memflush(size);
+}
+
+void NPN_ReloadPlugins(NPBool reloadPages)
+{
+    mozillaFuncs.reloadplugins(reloadPages);
+}
+
+JRIEnv * NPN_GetJavaEnv()
+{
+    return static_cast<JRIEnv *>(mozillaFuncs.getJavaEnv());
+}
+
+jref NPN_GetJavaPeer(NPP instance)
+{
+    return static_cast<jref>(mozillaFuncs.getJavaPeer(instance));
+}
+
+NPError NPN_GetValue(NPP instance, NPNVariable variable, void * value)
+{
+    return mozillaFuncs.getvalue(instance, variable, value);
+}
+
+NPError NPN_SetValue(NPP instance, NPPVariable variable, void * value)
+{
+    return mozillaFuncs.setvalue(instance, variable, value);
+}
+
+void NPN_InvalidateRect(NPP instance, NPRect * invalidRect)
+{
+    mozillaFuncs.invalidaterect(instance, invalidRect);
+}
+
+void NPN_InvalidateRegion(NPP instance, NPRegion invalidRegion)
+{
+    mozillaFuncs.invalidateregion(instance, invalidRegion);
+}
+
+void NPN_ForceRedraw(NPP instance)
+{
+    mozillaFuncs.forceredraw(instance);
+}
+
+void NPN_ReleaseVariantValue(NPVariant * variant)
+{
+    mozillaFuncs.releasevariantvalue(variant);
+}
+
+NPIdentifier NPN_GetStringIdentifier(const NPUTF8 * name)
+{
+    return mozillaFuncs.getstringidentifier(name);
+}
+
+void NPN_GetStringIdentifiers(const NPUTF8 ** names,
+                              int32_t nameCount,
+                              NPIdentifier * identifiers)
+{
+    mozillaFuncs.getstringidentifiers(names, nameCount, identifiers);
+}
+
+NPIdentifier NPN_GetIntIdentifier(int32_t intid)
+{
+    return mozillaFuncs.getintidentifier(intid);
+}
+
+bool NPN_IdentifierIsString(NPIdentifier * identifier)
+{
+    return mozillaFuncs.identifierisstring(identifier);
+}
+
+NPUTF8 * NPN_UTF8FromIdentifier(NPIdentifier identifier)
+{
+    return mozillaFuncs.utf8fromidentifier(identifier);
+}
+
+int32_t NPN_IntFromIdentifier(NPIdentifier identifier)
+{
+    return mozillaFuncs.intfromidentifier(identifier);
+}
+
+NPObject * NPN_CreateObject(NPP npp, NPClass * aClass)
+{
+    return mozillaFuncs.createobject(npp, aClass);
+}
+
+NPObject * NPN_RetainObject(NPObject * npobj)
+{
+    return mozillaFuncs.retainobject(npobj);
+}
+
+void NPN_ReleaseObject(NPObject * npobj)
+{
+    mozillaFuncs.releaseobject(npobj);
+}
+
+bool NPN_Invoke(NPP npp, NPObject * npobj, NPIdentifier methodName,
+                const NPVariant * args, uint32_t argCount, NPVariant * result)
+{
+    return mozillaFuncs.invoke(npp, npobj, methodName, args, argCount, result);
+}
+
+bool NPN_InvokeDefault(NPP npp, NPObject * npobj, const NPVariant * args,
+                       uint32_t argCount, NPVariant * result)
+{
+    return mozillaFuncs.invokeDefault(npp, npobj, args, argCount, result);
+}
+
+bool NPN_Evaluate(NPP npp, NPObject * npobj, NPString * script,
+                  NPVariant * result)
+{
+    return mozillaFuncs.evaluate(npp, npobj, script, result);
+}
+
+bool NPN_GetProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName,
+                     NPVariant * result)
+{
+    return mozillaFuncs.getproperty(npp, npobj, propertyName, result);
+}
+
+bool NPN_SetProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName,
+                     const NPVariant * result)
+{
+    return mozillaFuncs.setproperty(npp, npobj, propertyName, result);
+}
+
+bool NPN_RemoveProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName)
+{
+    return mozillaFuncs.removeproperty(npp, npobj, propertyName);
+}
+
+bool NPN_HasProperty(NPP npp, NPObject * npobj, NPIdentifier propertyName)
+{
+    return mozillaFuncs.hasproperty(npp, npobj, propertyName);
+}
+
+bool NPN_HasMethod(NPP npp, NPObject * npobj, NPIdentifier methodName)
+{
+    return mozillaFuncs.hasmethod(npp, npobj, methodName);
+}
+
+void NPN_SetException(NPObject * npobj, const NPUTF8 * message)
+{
+    return mozillaFuncs.setexception(npobj, message);
 }
 
 namespace {
