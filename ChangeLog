@@ -1,3 +1,30 @@
+2009-06-22 Braden McDaniel  <braden@endoframe.com>
+
+	Use boost::shared_mutex instead of openvrml::read_write_mutex.
+
+	* src/Makefile.am
+	(openvrml_include_HEADERS): Removed read_write_mutex.h.
+	(libopenvrml_libopenvrml_la_SOURCES): Removed read_write_mutex.cpp.
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/browser.h
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/event.h
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/field_value.h
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/node.h
+	* src/libopenvrml/openvrml/read_write_mutex.cpp: Removed.
+	* src/libopenvrml/openvrml/read_write_mutex.h: Removed.
+	* src/libopenvrml/openvrml/scene.cpp
+	* src/libopenvrml/openvrml/scene.h
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.h
+	* src/libopenvrml-control/openvrml_control/browser.cpp
+	* src/libopenvrml-control/openvrml_control/browser.h
+	* src/node/vrml97/image_stream_listener.cpp
+	* src/node/vrml97/image_stream_listener.h
+	* src/node/vrml97/image_texture.cpp
+
 2009-06-21 Braden McDaniel  <braden@endoframe.com>
 
 	The Web browser still wants the plug-in to have the NPN_* entry
@@ -16,7 +43,7 @@
 	(NPN_NewStream(NPP, NPMIMEType, const char *, NPStream **)):
 	Replaced.
 	(NPN_Write(NPP, NPStream *, int32, void *)): Replaced.
-	(NPN_DestryStream(NPP, NPStream *, NPError)): Replaced.
+	(NPN_DestroyStream(NPP, NPStream *, NPError)): Replaced.
 	(NPN_Status(NPP, const char *)): Replaced.
 	(NPN_UserAgent(NPP)): Replaced.
 	(NPN_MemAlloc(uint32)): Replaced.
@@ -85,7 +112,7 @@
 	(NPN_NewStream(NPP, NPMIMEType, const char *, NPStream **)):
 	Removed.
 	(NPN_Write(NPP, NPStream *, int32, void *)): Removed.
-	(NPN_DestryStream(NPP, NPStream *, NPError)): Removed.
+	(NPN_DestroyStream(NPP, NPStream *, NPError)): Removed.
 	(NPN_Status(NPP, const char *)): Removed.
 	(NPN_UserAgent(NPP)): Removed.
 	(NPN_MemAlloc(uint32)): Removed.

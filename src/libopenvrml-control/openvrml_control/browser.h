@@ -42,7 +42,7 @@ namespace openvrml_control {
         class uninitialized_plugin_streambuf_map : boost::noncopyable {
             struct map_entry_matches_streambuf;
 
-            mutable openvrml::read_write_mutex mutex_;
+            mutable boost::shared_mutex mutex_;
             typedef std::multimap<std::string,
                                   boost::shared_ptr<plugin_streambuf> >
                 map_t;
@@ -60,7 +60,7 @@ namespace openvrml_control {
         };
 
         class plugin_streambuf_map : boost::noncopyable {
-            mutable openvrml::read_write_mutex mutex_;
+            mutable boost::shared_mutex mutex_;
             typedef std::map<size_t, boost::shared_ptr<plugin_streambuf> >
                 map_t;
             map_t map_;

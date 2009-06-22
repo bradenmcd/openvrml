@@ -175,11 +175,14 @@ register_node_metatype(const std::string & id,
                        const boost::shared_ptr<node_metatype> & metatype)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
+    using boost::unique_lock;
+    using boost::shared_mutex;
+
     if (!metatype.get()) {
         throw std::invalid_argument(
             "cannot register null node_metatype pointer");
     }
-    read_write_mutex::scoped_write_lock lock(this->mutex_);
+    unique_lock<shared_mutex> lock(this->mutex_);
     this->node_metatype_map_[id] = metatype;
 }
 
@@ -221,7 +224,9 @@ void
 openvrml::local::node_metatype_registry_impl::
 init(viewpoint_node * initial_viewpoint, const double timestamp)
 {
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     std::for_each(this->node_metatype_map_.begin(),
                   this->node_metatype_map_.end(),
                   init_node_metatype(initial_viewpoint, timestamp));
@@ -238,7 +243,9 @@ init(viewpoint_node * initial_viewpoint, const double timestamp)
 const boost::shared_ptr<openvrml::node_metatype>
 openvrml::local::node_metatype_registry_impl::find(const std::string & id) const
 {
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     const node_metatype_map_t::const_iterator pos =
         this->node_metatype_map_.find(id);
     return (pos != this->node_metatype_map_.end())
@@ -258,7 +265,9 @@ openvrml::local::node_metatype_registry_impl::
 node_metatype_ids(const openvrml::node_metatype & node_metatype) const
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     std::vector<node_metatype_id> ids;
     for (node_metatype_map_t::const_iterator entry =
              this->node_metatype_map_.begin();
@@ -297,7 +306,9 @@ namespace {
 void openvrml::local::node_metatype_registry_impl::
 render(openvrml::viewer & v)
 {
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     std::for_each(this->node_metatype_map_.begin(),
                   this->node_metatype_map_.end(),
                   render_node_metatype(v));
@@ -330,7 +341,9 @@ void
 openvrml::local::node_metatype_registry_impl::shutdown(const double timestamp)
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     std::for_each(this->node_metatype_map_.begin(),
                   this->node_metatype_map_.end(),
                   shutdown_node_metatype(timestamp));

@@ -57,7 +57,7 @@ namespace openvrml_node_vrml97 {
 
     class image_stream_listener : public openvrml::stream_listener {
         const std::string uri_;
-        openvrml::read_write_mutex & image_mutex_;
+        boost::shared_mutex & image_mutex_;
         openvrml::image & image_;
         openvrml::node & node_;
 
@@ -160,7 +160,7 @@ namespace openvrml_node_vrml97 {
         image_stream_listener(const std::string & uri,
                               openvrml::image & image,
                               openvrml::node & node,
-                              openvrml::read_write_mutex & image_mutex);
+                              boost::shared_mutex & image_mutex);
         virtual ~image_stream_listener() OPENVRML_NOTHROW;
 
     private:

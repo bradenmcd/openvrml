@@ -31,8 +31,8 @@
 #   include <boost/scoped_ptr.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>
+#   include <boost/thread/shared_mutex.hpp>
 #   include <openvrml/basetypes.h>
-#   include <openvrml/read_write_mutex.h>
 
 namespace openvrml {
 
@@ -59,7 +59,7 @@ namespace openvrml {
 
         template <typename ValueType>
         class counted_impl : public counted_impl_base {
-            mutable read_write_mutex mutex_;
+            mutable boost::shared_mutex mutex_;
             boost::shared_ptr<ValueType> value_;
 
         public:
@@ -175,7 +175,9 @@ namespace openvrml {
     counted_impl(const counted_impl<ValueType> & ci) OPENVRML_NOTHROW:
         counted_impl_base()
     {
-        read_write_mutex::scoped_read_lock lock(ci.mutex_);
+        using boost::shared_lock;
+        using boost::shared_mutex;
+        shared_lock<shared_mutex> lock(ci.mutex_);
         value_ = ci.value_;
     }
 
@@ -187,7 +189,9 @@ namespace openvrml {
     const ValueType & field_value::counted_impl<ValueType>::value() const
         OPENVRML_NOTHROW
     {
-        read_write_mutex::scoped_read_lock lock(this->mutex_);
+        using boost::shared_lock;
+        using boost::shared_mutex;
+        shared_lock<shared_mutex> lock(this->mutex_);
         assert(this->value_);
         return *this->value_;
     }
@@ -196,7 +200,9 @@ namespace openvrml {
     void field_value::counted_impl<ValueType>::value(const ValueType & val)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        read_write_mutex::scoped_write_lock lock(this->mutex_);
+        using boost::unique_lock;
+        using boost::shared_mutex;
+        unique_lock<shared_mutex> lock(this->mutex_);
         assert(this->value_);
         if (!this->value_.unique()) {
             this->value_.reset(new ValueType(val));

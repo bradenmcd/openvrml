@@ -114,9 +114,9 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  */
 
 /**
- * @var boost::mutex openvrml::field_value::counted_impl::mutex_
+ * @var boost::shared_mutex openvrml::field_value::counted_impl::mutex_
  *
- * @brief Mutex protecting @a value_.
+ * @brief Mutex protecting @c #value_.
  */
 
 /**

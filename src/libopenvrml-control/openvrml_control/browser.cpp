@@ -21,6 +21,7 @@
 # include "browser.h"
 # include <boost/enable_shared_from_this.hpp>
 # include <boost/lexical_cast.hpp>
+# include <boost/thread/condition.hpp>
 # include <iostream>
 
 openvrml_control::unknown_stream::unknown_stream(const std::string & uri):
@@ -361,7 +362,9 @@ const boost::shared_ptr<openvrml_control::browser::plugin_streambuf>
 openvrml_control::browser::uninitialized_plugin_streambuf_map::
 find(const std::string & url) const
 {
-    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     map_t::const_iterator pos = this->map_.find(url);
     return pos == this->map_.end()
         ? boost::shared_ptr<plugin_streambuf>()
@@ -373,7 +376,9 @@ openvrml_control::browser::uninitialized_plugin_streambuf_map::
 insert(const std::string & url,
        const boost::shared_ptr<plugin_streambuf> & streambuf)
 {
-    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->mutex_);
     this->map_.insert(make_pair(url, streambuf));
 }
 
@@ -397,12 +402,15 @@ bool
 openvrml_control::browser::uninitialized_plugin_streambuf_map::
 erase(const plugin_streambuf & streambuf)
 {
-    openvrml::read_write_mutex::scoped_read_write_lock lock(this->mutex_);
+    using boost::upgrade_lock;
+    using boost::upgrade_to_unique_lock;
+    using boost::shared_mutex;
+    upgrade_lock<shared_mutex> lock(this->mutex_);
     const map_t::iterator pos =
         std::find_if(this->map_.begin(), this->map_.end(),
                      map_entry_matches_streambuf(&streambuf));
     if (pos == this->map_.end()) { return false; }
-    lock.promote();
+    upgrade_to_unique_lock<shared_mutex> upgraded_lock(lock);
     this->map_.erase(pos);
     return true;
 }
@@ -410,21 +418,27 @@ erase(const plugin_streambuf & streambuf)
 size_t
 openvrml_control::browser::uninitialized_plugin_streambuf_map::size() const
 {
-    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     return this->map_.size();
 }
 
 bool
 openvrml_control::browser::uninitialized_plugin_streambuf_map::empty() const
 {
-    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     return this->map_.empty();
 }
 
 const boost::shared_ptr<openvrml_control::browser::plugin_streambuf>
 openvrml_control::browser::uninitialized_plugin_streambuf_map::front() const
 {
-    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     assert(!this->map_.empty());
     return this->map_.begin()->second;
 }
@@ -433,7 +447,9 @@ openvrml_control::browser::uninitialized_plugin_streambuf_map::front() const
 const boost::shared_ptr<openvrml_control::browser::plugin_streambuf>
 openvrml_control::browser::plugin_streambuf_map::find(const size_t id) const
 {
-    openvrml::read_write_mutex::scoped_read_lock lock(this->mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->mutex_);
     map_t::const_iterator pos = this->map_.find(id);
     return pos == this->map_.end()
         ? boost::shared_ptr<plugin_streambuf>()
@@ -445,7 +461,9 @@ openvrml_control::browser::plugin_streambuf_map::
 insert(const size_t id,
        const boost::shared_ptr<plugin_streambuf> & streambuf)
 {
-    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->mutex_);
     return this->map_.insert(make_pair(id, streambuf)).second;
 }
 
@@ -456,7 +474,9 @@ insert(const size_t id,
  */
 bool openvrml_control::browser::plugin_streambuf_map::erase(const size_t id)
 {
-    openvrml::read_write_mutex::scoped_write_lock lock(this->mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->mutex_);
     return this->map_.erase(id) > 0;
 }
 

@@ -522,10 +522,10 @@ namespace openvrml {
         const node_type & type_;
         const boost::shared_ptr<openvrml::scope> scope_;
 
-        mutable read_write_mutex scene_mutex_;
+        mutable boost::shared_mutex scene_mutex_;
         openvrml::scene * scene_;
 
-        mutable read_write_mutex modified_mutex_;
+        mutable boost::shared_mutex modified_mutex_;
         bool modified_;
 
     public:
@@ -590,7 +590,7 @@ namespace openvrml {
              const boost::shared_ptr<openvrml::scope> & scope)
             OPENVRML_NOTHROW;
 
-        read_write_mutex & scene_mutex();
+        boost::shared_mutex & scene_mutex();
 
     private:
         virtual
@@ -955,7 +955,7 @@ namespace openvrml {
 
 
     class OPENVRML_API bounded_volume_node : public virtual node {
-        mutable read_write_mutex bounding_volume_dirty_mutex_;
+        mutable boost::shared_mutex bounding_volume_dirty_mutex_;
         mutable bool bounding_volume_dirty_;
 
     public:

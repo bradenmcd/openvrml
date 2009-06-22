@@ -62,7 +62,7 @@
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::scene::nodes_mutex_
+ * @var boost::shared_mutex openvrml::scene::nodes_mutex_
  *
  * @brief Mutex protecting @a nodes_.
  */
@@ -78,7 +78,7 @@
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::scene::url_mutex_
+ * @var boost::shared_mutex openvrml::scene::url_mutex_
  *
  * @brief Mutex protecting @a url_.
  */
@@ -96,7 +96,7 @@
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::scene::meta_mutex_
+ * @var boost::shared_mutex openvrml::scene::meta_mutex_
  *
  * @brief Mutex protecting @c #meta_.
  */
@@ -171,7 +171,9 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
 void openvrml::scene::load(resource_istream & in)
 {
     {
-        read_write_mutex::scoped_write_lock
+        using boost::unique_lock;
+        using boost::shared_mutex;
+        unique_lock<shared_mutex>
             nodes_lock(this->nodes_mutex_),
             url_lock(this->url_mutex_),
             meta_lock(this->meta_mutex_);
@@ -195,7 +197,9 @@ void openvrml::scene::load(resource_istream & in)
 void openvrml::scene::initialize(const double timestamp)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->nodes_mutex_);
     for (std::vector<boost::intrusive_ptr<node> >::iterator node(
              this->nodes_.begin());
          node != this->nodes_.end();
@@ -222,7 +226,9 @@ void openvrml::scene::initialize(const double timestamp)
 const std::string openvrml::scene::meta(const std::string & key) const
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->meta_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->meta_mutex_);
 
     using std::map;
     using std::string;
@@ -246,7 +252,9 @@ const std::string openvrml::scene::meta(const std::string & key) const
 void openvrml::scene::meta(const std::string & key, const std::string & value)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_write_lock lock(this->meta_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->meta_mutex_);
     this->meta_[key] = value;
 }
 
@@ -258,7 +266,9 @@ void openvrml::scene::meta(const std::string & key, const std::string & value)
 const std::vector<std::string> openvrml::scene::meta_keys() const
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->meta_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->meta_mutex_);
 
     using std::map;
     using std::string;
@@ -283,7 +293,9 @@ const std::vector<std::string> openvrml::scene::meta_keys() const
 const std::vector<boost::intrusive_ptr<openvrml::node> >
 openvrml::scene::nodes() const OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->nodes_mutex_);
     return this->nodes_;
 }
 
@@ -302,6 +314,9 @@ openvrml::scene::nodes() const OPENVRML_THROW1(std::bad_alloc)
 void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
+    using boost::unique_lock;
+    using boost::shared_mutex;
+
     class check_uninitialized_traverser : public node_traverser {
     private:
         virtual void on_entering(node & n)
@@ -313,7 +328,7 @@ void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
     } check_uninitialized;
     check_uninitialized.traverse(n);
 
-    read_write_mutex::scoped_write_lock lock(this->nodes_mutex_);
+    unique_lock<shared_mutex> lock(this->nodes_mutex_);
     const double now = browser::current_time();
     this->shutdown(now);
     this->nodes_ = n;
@@ -327,7 +342,9 @@ void openvrml::scene::nodes(const std::vector<boost::intrusive_ptr<node> > & n)
 const openvrml::scope * openvrml::scene::root_scope() const
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->nodes_mutex_);
     return this->nodes_.empty()
         ? 0
         : &this->nodes_.front()->scope();
@@ -342,7 +359,9 @@ const openvrml::scope * openvrml::scene::root_scope() const
  */
 const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->url_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->url_mutex_);
     using std::string;
     using local::uri;
     return (this->parent_ && !this->url_.empty() && relative(uri(this->url_)))
@@ -359,7 +378,9 @@ const std::string openvrml::scene::url() const OPENVRML_THROW1(std::bad_alloc)
 void openvrml::scene::render(openvrml::viewer & viewer,
                              rendering_context context)
 {
-    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->nodes_mutex_);
     for (std::vector<boost::intrusive_ptr<node> >::iterator n(
              this->nodes_.begin());
          n != this->nodes_.end();
@@ -646,7 +667,9 @@ openvrml::scene::get_resource(const std::vector<std::string> & url) const
  */
 void openvrml::scene::shutdown(const double timestamp) OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->nodes_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->nodes_mutex_);
     for (std::vector<boost::intrusive_ptr<node> >::iterator n(
              this->nodes_.begin());
          n != this->nodes_.end();

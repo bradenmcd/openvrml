@@ -55,7 +55,7 @@ namespace {
 
         url_exposedfield url_;
 
-        openvrml::read_write_mutex image_mutex_;
+        boost::shared_mutex image_mutex_;
         openvrml::image image_;
         bool texture_needs_update;
 

@@ -1107,7 +1107,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::load_root_scene_thread_mutex_
+ * @var boost::shared_mutex openvrml::browser::load_root_scene_thread_mutex_
  *
  * @brief Mutex protecting @c #load_root_scene_thread_.
  */
@@ -1153,7 +1153,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::scene_mutex_
+ * @var boost::shared_mutex openvrml::browser::scene_mutex_
  *
  * @brief Mutex protecting @c #scene_.
  */
@@ -1178,7 +1178,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::active_viewpoint_mutex_
+ * @var boost::shared_mutex openvrml::browser::active_viewpoint_mutex_
  *
  * @brief Mutex protecting @c #active_viewpoint_.
  */
@@ -1203,7 +1203,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::active_navigation_info_mutex_
+ * @var boost::shared_mutex openvrml::browser::active_navigation_info_mutex_
  *
  * @brief Mutex protecting @c #active_navigation_info_.
  */
@@ -1219,7 +1219,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::viewpoint_list_mutex_
+ * @var boost::shared_mutex openvrml::browser::viewpoint_list_mutex_
  *
  * @brief Mutex protecting @c #viewpoint_list_.
  */
@@ -1235,7 +1235,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::scoped_lights_mutex_
+ * @var boost::shared_mutex openvrml::browser::scoped_lights_mutex_
  *
  * @brief Mutex protecting @c #scoped_lights_.
  */
@@ -1251,7 +1251,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::scripts_mutex_
+ * @var boost::shared_mutex openvrml::browser::scripts_mutex_
  *
  * @brief Mutex protecting @c #scripts_.
  */
@@ -1267,7 +1267,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::timers_mutex_
+ * @var boost::shared_mutex openvrml::browser::timers_mutex_
  *
  * @brief Mutex protecting @c #timers_.
  */
@@ -1307,7 +1307,7 @@ openvrml::node_metatype_registry::register_node_metatype(
  */
 
 /**
- * @var openvrml::read_write_mutex openvrml::browser::modified_mutex_
+ * @var boost::shared_mutex openvrml::browser::modified_mutex_
  *
  * @brief Mutex protecting @c #modified_.
  */
@@ -1323,7 +1323,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::delta_time_mutex_
+ * @var boost::shared_mutex openvrml::browser::delta_time_mutex_
  *
  * @brief Mutex protecting @c #delta_time.
  */
@@ -1339,7 +1339,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::viewer_mutex_
+ * @var boost::shared_mutex openvrml::browser::viewer_mutex_
  *
  * @brief Mutex protecting @c #viewer_.
  */
@@ -1355,7 +1355,7 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::browser::frame_rate_mutex_
+ * @var boost::shared_mutex openvrml::browser::frame_rate_mutex_
  *
  * @brief Mutex protecting @c #frame_rate_.
  */
@@ -1468,8 +1468,10 @@ openvrml::browser::browser(resource_fetcher & fetcher,
  */
 openvrml::browser::~browser() OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock
-        lock(this->load_root_scene_thread_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+
+    shared_lock<shared_mutex> lock(this->load_root_scene_thread_mutex_);
     if (this->load_root_scene_thread_) {
         this->load_root_scene_thread_->join();
     }
@@ -1478,7 +1480,7 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
 
     const double now = browser::current_time();
 
-    read_write_mutex::scoped_read_lock scene_lock(this->scene_mutex_);
+    shared_lock<shared_mutex> scene_lock(this->scene_mutex_);
     if (this->scene_) { this->scene_->shutdown(now); }
 
     this->node_metatype_registry_->impl_->shutdown(now);
@@ -1536,7 +1538,9 @@ openvrml::browser::node_metatype(const node_metatype_id & id) const
  */
 openvrml::scene * openvrml::browser::root_scene() const OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex_);
     return this->scene_.get();
 }
 
@@ -1554,7 +1558,9 @@ openvrml::scene * openvrml::browser::root_scene() const OPENVRML_NOTHROW
 const openvrml::node_path openvrml::browser::find_node(const node & n) const
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex_);
     assert(this->scene_);
 
     class FindNodeTraverser : public node_traverser {
@@ -1600,7 +1606,9 @@ const openvrml::node_path openvrml::browser::find_node(const node & n) const
 openvrml::viewpoint_node & openvrml::browser::active_viewpoint() const
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->active_viewpoint_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->active_viewpoint_mutex_);
     return *this->active_viewpoint_;
 }
 
@@ -1614,8 +1622,11 @@ openvrml::viewpoint_node & openvrml::browser::active_viewpoint() const
 void openvrml::browser::active_viewpoint(viewpoint_node & viewpoint)
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock scene_lock(this->scene_mutex_);
-    read_write_mutex::scoped_write_lock
+    using boost::unique_lock;
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> scene_lock(this->scene_mutex_);
+    unique_lock<shared_mutex>
         active_viewpoint_lock(this->active_viewpoint_mutex_);
 # ifndef NDEBUG
     scene * root_scene = 0;
@@ -1633,7 +1644,9 @@ void openvrml::browser::active_viewpoint(viewpoint_node & viewpoint)
  */
 void openvrml::browser::reset_default_viewpoint() OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_write_lock lock(this->active_viewpoint_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->active_viewpoint_mutex_);
     assert(this->default_viewpoint_);
     this->active_viewpoint_ =
         node_cast<viewpoint_node *>(this->default_viewpoint_.get());
@@ -1651,8 +1664,9 @@ void openvrml::browser::reset_default_viewpoint() OPENVRML_NOTHROW
 openvrml::navigation_info_node &
 openvrml::browser::active_navigation_info() const OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock
-        lock(this->active_navigation_info_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->active_navigation_info_mutex_);
     return *this->active_navigation_info_;
 }
 
@@ -1666,8 +1680,11 @@ openvrml::browser::active_navigation_info() const OPENVRML_NOTHROW
 void openvrml::browser::active_navigation_info(navigation_info_node & nav_info)
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock scene_lock(this->scene_mutex_);
-    read_write_mutex::scoped_write_lock
+    using boost::unique_lock;
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> scene_lock(this->scene_mutex_);
+    unique_lock<shared_mutex>
         active_navigation_info_lock(this->active_navigation_info_mutex_);
 # ifndef NDEBUG
     scene * root_scene = 0;
@@ -1685,8 +1702,9 @@ void openvrml::browser::active_navigation_info(navigation_info_node & nav_info)
  */
 void openvrml::browser::reset_default_navigation_info() OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_write_lock
-        lock(this->active_navigation_info_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->active_navigation_info_mutex_);
     assert(this->default_navigation_info_);
     this->active_navigation_info_ =
         node_cast<navigation_info_node *>(
@@ -1708,7 +1726,9 @@ void openvrml::browser::reset_default_navigation_info() OPENVRML_NOTHROW
 void openvrml::browser::add_viewpoint(viewpoint_node & viewpoint)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_write_lock lock(this->viewpoint_list_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->viewpoint_list_mutex_);
     assert(std::find(this->viewpoint_list_.begin(), this->viewpoint_list_.end(),
                      &viewpoint) == this->viewpoint_list_.end());
     this->viewpoint_list_.push_back(&viewpoint);
@@ -1725,7 +1745,9 @@ void openvrml::browser::add_viewpoint(viewpoint_node & viewpoint)
 void openvrml::browser::remove_viewpoint(viewpoint_node & viewpoint)
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_write_lock lock(this->viewpoint_list_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->viewpoint_list_mutex_);
     assert(!this->viewpoint_list_.empty());
     typedef std::list<viewpoint_node *> viewpoint_list_t;
     const viewpoint_list_t::iterator end = this->viewpoint_list_.end();
@@ -1743,7 +1765,9 @@ void openvrml::browser::remove_viewpoint(viewpoint_node & viewpoint)
 const std::list<openvrml::viewpoint_node *>
 openvrml::browser::viewpoints() const OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->viewpoint_list_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->viewpoint_list_mutex_);
     return this->viewpoint_list_;
 }
 
@@ -1758,7 +1782,9 @@ openvrml::browser::viewpoints() const OPENVRML_NOTHROW
 void openvrml::browser::viewer(openvrml::viewer * v)
     OPENVRML_THROW1(viewer_in_use)
 {
-    read_write_mutex::scoped_write_lock lock(this->viewer_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->viewer_mutex_);
     if (v && v->browser_) { throw viewer_in_use(); }
     if (this->viewer_) { this->viewer_->browser_ = 0; }
     this->viewer_ = v;
@@ -1772,7 +1798,9 @@ void openvrml::browser::viewer(openvrml::viewer * v)
  */
 openvrml::viewer * openvrml::browser::viewer() const OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->viewer_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->viewer_mutex_);
     return this->viewer_;
 }
 
@@ -1807,8 +1835,9 @@ const char * openvrml::browser::version() const OPENVRML_NOTHROW
  */
 float openvrml::browser::current_speed()
 {
-    read_write_mutex::scoped_read_lock
-        lock(this->active_navigation_info_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->active_navigation_info_mutex_);
     navigation_info_node & nav_info = this->active_navigation_info();
     return nav_info.speed();
 }
@@ -1821,7 +1850,9 @@ float openvrml::browser::current_speed()
 const std::string openvrml::browser::world_url() const
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex_);
     assert(this->scene_);
     return this->scene_->url(); // Throws std::bad_alloc.
 }
@@ -1838,11 +1869,15 @@ const std::string openvrml::browser::world_url() const
 void openvrml::browser::set_world(resource_istream & in)
 {
     using std::for_each;
+    using boost::shared_lock;
+    using boost::shared_mutex;
     {
-        read_write_mutex::scoped_read_write_lock scene_lock(this->scene_mutex_);
-
         using std::string;
+        using boost::upgrade_lock;
+        using boost::upgrade_to_unique_lock;
         using local::uri;
+
+        upgrade_lock<shared_mutex> scene_lock(this->scene_mutex_);
 
         //
         // Clear out the current scene.
@@ -1851,28 +1886,28 @@ void openvrml::browser::set_world(resource_istream & in)
         double now = browser::current_time();
         if (this->scene_) { this->scene_->shutdown(now); }
         this->node_metatype_registry_->impl_->shutdown(now);
-        read_write_mutex::scoped_read_lock
-            listeners_lock(this->listeners_mutex_);
+        shared_lock<shared_mutex> listeners_lock(this->listeners_mutex_);
         for_each(this->listeners_.begin(), this->listeners_.end(),
                  boost::bind2nd(
                      boost::mem_fun(&browser_listener::browser_changed),
                      browser_event(*this, browser_event::shutdown)));
 
-        scene_lock.promote();
+        {
+            upgrade_to_unique_lock<shared_mutex> scene_write_lock(scene_lock);
 
-        this->scene_.reset();
-        assert(this->viewpoint_list_.empty());
-        assert(this->scoped_lights_.empty());
-        assert(this->scripts_.empty());
-        assert(this->timers_.empty());
+            this->scene_.reset();
+            assert(this->viewpoint_list_.empty());
+            assert(this->scoped_lights_.empty());
+            assert(this->scripts_.empty());
+            assert(this->timers_.empty());
 
-        //
-        // Create the new scene.
-        //
-        this->node_metatype_registry_.reset(new node_metatype_registry(*this));
-        this->scene_.reset(new scene(*this));
-
-        scene_lock.demote();
+            //
+            // Create the new scene.
+            //
+            this->node_metatype_registry_.reset(
+                new node_metatype_registry(*this));
+            this->scene_.reset(new scene(*this));
+        }
 
         this->scene_->load(in);
 
@@ -1904,8 +1939,8 @@ void openvrml::browser::set_world(resource_istream & in)
         this->node_metatype_registry_->impl_->init(initial_viewpoint, now);
 
         if (!this->active_viewpoint_) {
-            read_write_mutex::scoped_write_lock
-                lock(this->active_viewpoint_mutex_);
+            using boost::unique_lock;
+            unique_lock<shared_mutex> lock(this->active_viewpoint_mutex_);
             this->active_viewpoint_ = this->default_viewpoint_.get();
         }
 
@@ -1913,8 +1948,7 @@ void openvrml::browser::set_world(resource_istream & in)
         this->new_view = true; // Force resetUserNav
     } // unlock this->scene_mutex_, this->active_viewpoint_mutex_
 
-    read_write_mutex::scoped_read_lock
-        listeners_lock(this->listeners_mutex_);
+    shared_lock<shared_mutex> listeners_lock(this->listeners_mutex_);
     for_each(this->listeners_.begin(), this->listeners_.end(),
              boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
                             browser_event(*this, browser_event::initialized)));
@@ -1929,7 +1963,9 @@ void
 openvrml::browser::replace_world(
     const std::vector<boost::intrusive_ptr<node> > & nodes)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex_);
     const double now = browser::current_time();
     this->scene_->nodes(nodes);
     this->scene_->initialize(now);
@@ -1959,8 +1995,9 @@ struct OPENVRML_LOCAL openvrml::browser::root_scene_loader {
             try {
                 std::auto_ptr<resource_istream> in;
                 {
-                    read_write_mutex::scoped_read_lock
-                        lock(browser.scene_mutex_);
+                    using boost::shared_lock;
+                    using boost::shared_mutex;
+                    shared_lock<shared_mutex> lock(browser.scene_mutex_);
                     in = browser.scene_->get_resource(this->url_);
                 }
                 if (!(*in)) { throw unreachable_url(); }
@@ -2008,9 +2045,12 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
     OPENVRML_THROW2(std::bad_alloc, boost::thread_resource_error)
 {
+    using boost::unique_lock;
+    using boost::shared_mutex;
+
     {
-        read_write_mutex::scoped_read_lock
-            lock(this->load_root_scene_thread_mutex_);
+        using boost::shared_lock;
+        shared_lock<shared_mutex> lock(this->load_root_scene_thread_mutex_);
         if (this->load_root_scene_thread_) {
             this->load_root_scene_thread_->join();
         }
@@ -2018,8 +2058,7 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
 
     boost::function0<void> f = root_scene_loader(*this, url);
 
-    read_write_mutex::scoped_write_lock
-        lock(this->load_root_scene_thread_mutex_);
+    unique_lock<shared_mutex> lock(this->load_root_scene_thread_mutex_);
     this->load_root_scene_thread_.reset(new boost::thread(f));
 }
 
@@ -2086,7 +2125,9 @@ openvrml::browser::create_vrml_from_stream(std::istream & in,
 
     std::vector<boost::intrusive_ptr<node> > nodes;
     try {
-        read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+        using boost::shared_lock;
+        using boost::shared_mutex;
+        shared_lock<shared_mutex> lock(this->scene_mutex_);
         assert(this->scene_);
         std::map<string, string> meta;
         local::parse_vrml(in, stream_id.str(), type,
@@ -2125,7 +2166,9 @@ create_vrml_from_url(const std::vector<std::string> & url,
     OPENVRML_THROW3(unsupported_interface, std::bad_cast,
                     boost::thread_resource_error)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex_);
     assert(this->scene_);
     this->scene_->create_vrml_from_url(url, node, event);
 }
@@ -2144,7 +2187,9 @@ create_vrml_from_url(const std::vector<std::string> & url,
 bool openvrml::browser::add_listener(browser_listener & listener)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_write_lock lock(this->listeners_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->listeners_mutex_);
     return this->listeners_.insert(&listener).second;
 }
 
@@ -2160,7 +2205,9 @@ bool openvrml::browser::add_listener(browser_listener & listener)
 bool openvrml::browser::remove_listener(browser_listener & listener)
     OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_write_lock lock(this->listeners_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->listeners_mutex_);
     return this->listeners_.erase(&listener) > 0;
 }
 
@@ -2171,7 +2218,9 @@ bool openvrml::browser::remove_listener(browser_listener & listener)
  */
 double openvrml::browser::frame_rate() const
 {
-    read_write_mutex::scoped_read_lock lock(this->frame_rate_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->frame_rate_mutex_);
     return this->frame_rate_;
 }
 
@@ -2216,8 +2265,10 @@ void openvrml::browser::sensitive_event(node * const n,
 bool openvrml::browser::update(double current_time)
 {
     using std::for_each;
+    using boost::shared_lock;
+    using boost::shared_mutex;
 
-    read_write_mutex::scoped_read_lock
+    shared_lock<shared_mutex>
         timers_lock(this->timers_mutex_),
         scripts_lock(this->scripts_mutex_);
 
@@ -2259,7 +2310,10 @@ bool openvrml::browser::headlight_on()
  */
 void openvrml::browser::render()
 {
-    read_write_mutex::scoped_read_lock
+    using boost::shared_lock;
+    using boost::shared_mutex;
+
+    shared_lock<shared_mutex>
         scene_lock(this->scene_mutex_),
         active_viewpoint_lock_(this->active_viewpoint_mutex_);
 
@@ -2322,7 +2376,7 @@ void openvrml::browser::render()
     // Do the browser-level lights (Points and Spots)
     {
         using std::for_each;
-        read_write_mutex::scoped_read_lock
+        shared_lock<shared_mutex>
             scoped_lights_lock(this->scoped_lights_mutex_);
         for_each(this->scoped_lights_.begin(), this->scoped_lights_.end(),
                  boost::bind2nd(
@@ -2340,8 +2394,7 @@ void openvrml::browser::render()
     this->viewer_->end_object();
 
     // This is actually one frame late...
-    read_write_mutex::scoped_write_lock
-        frame_rate_lock(this->frame_rate_mutex_);
+    boost::unique_lock<shared_mutex> frame_rate_lock(this->frame_rate_mutex_);
     this->frame_rate_ = this->viewer_->frame_rate();
 
     this->modified(false);
@@ -2356,7 +2409,9 @@ void openvrml::browser::render()
  */
 void openvrml::browser::modified(const bool value)
 {
-    read_write_mutex::scoped_write_lock lock(this->modified_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->modified_mutex_);
     this->modified_ = value;
 }
 
@@ -2367,7 +2422,9 @@ void openvrml::browser::modified(const bool value)
  */
 bool openvrml::browser::modified() const
 {
-    read_write_mutex::scoped_read_lock lock(this->modified_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->modified_mutex_);
     return this->modified_;
 }
 
@@ -2378,7 +2435,9 @@ bool openvrml::browser::modified() const
  */
 void openvrml::browser::delta(const double d)
 {
-    read_write_mutex::scoped_write_lock lock(this->delta_time_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->delta_time_mutex_);
     if (d < this->delta_time) { this->delta_time = d; }
 }
 
@@ -2389,7 +2448,9 @@ void openvrml::browser::delta(const double d)
  */
 double openvrml::browser::delta() const
 {
-    read_write_mutex::scoped_read_lock lock(this->delta_time_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->delta_time_mutex_);
     return this->delta_time;
 }
 
@@ -2403,7 +2464,9 @@ double openvrml::browser::delta() const
 void
 openvrml::browser::add_scoped_light(scoped_light_node & light)
 {
-    read_write_mutex::scoped_write_lock lock(this->scoped_lights_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->scoped_lights_mutex_);
     assert(std::find(this->scoped_lights_.begin(), this->scoped_lights_.end(),
                      &light) == this->scoped_lights_.end());
     this->scoped_lights_.push_back(&light);
@@ -2419,7 +2482,9 @@ openvrml::browser::add_scoped_light(scoped_light_node & light)
 void
 openvrml::browser::remove_scoped_light(scoped_light_node & light)
 {
-    read_write_mutex::scoped_write_lock lock(this->scoped_lights_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->scoped_lights_mutex_);
     assert(!this->scoped_lights_.empty());
     const std::list<scoped_light_node *>::iterator end =
         this->scoped_lights_.end();
@@ -2438,7 +2503,9 @@ openvrml::browser::remove_scoped_light(scoped_light_node & light)
  */
 void openvrml::browser::add_script(script_node & script)
 {
-    read_write_mutex::scoped_write_lock lock(this->scripts_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->scripts_mutex_);
     assert(std::find(this->scripts_.begin(), this->scripts_.end(), &script)
             == this->scripts_.end());
     this->scripts_.push_back(&script);
@@ -2453,7 +2520,9 @@ void openvrml::browser::add_script(script_node & script)
  */
 void openvrml::browser::remove_script(script_node & script)
 {
-    read_write_mutex::scoped_write_lock lock(this->scripts_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->scripts_mutex_);
     assert(!this->scripts_.empty());
     typedef std::list<script_node *> script_node_list_t;
     const script_node_list_t::iterator end = this->scripts_.end();
@@ -2472,7 +2541,9 @@ void openvrml::browser::remove_script(script_node & script)
  */
 void openvrml::browser::add_time_dependent(time_dependent_node & n)
 {
-    read_write_mutex::scoped_write_lock lock(this->timers_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->timers_mutex_);
     assert(std::find(this->timers_.begin(), this->timers_.end(), &n)
            == this->timers_.end());
     this->timers_.push_back(&n);
@@ -2488,7 +2559,9 @@ void openvrml::browser::add_time_dependent(time_dependent_node & n)
 void
 openvrml::browser::remove_time_dependent(time_dependent_node & n)
 {
-    read_write_mutex::scoped_write_lock lock(this->timers_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->timers_mutex_);
     assert(!this->timers_.empty());
     const std::list<time_dependent_node *>::iterator end = this->timers_.end();
     const std::list<time_dependent_node *>::iterator pos =

@@ -38,7 +38,7 @@ namespace openvrml {
         class OPENVRML_LOCAL node_metatype_registry_impl : boost::noncopyable {
             friend int (::openvrml_open_node_module)(const char * filename,
                                                      void * data);
-            mutable read_write_mutex mutex_;
+            mutable boost::shared_mutex mutex_;
 
             openvrml::browser & browser_;
 

@@ -39,13 +39,13 @@ namespace openvrml {
         openvrml::browser * const browser_;
         scene * const parent_;
 
-        mutable read_write_mutex nodes_mutex_;
+        mutable boost::shared_mutex nodes_mutex_;
         std::vector<boost::intrusive_ptr<node> > nodes_;
 
-        mutable read_write_mutex url_mutex_;
+        mutable boost::shared_mutex url_mutex_;
         std::string url_;
 
-        mutable read_write_mutex meta_mutex_;
+        mutable boost::shared_mutex meta_mutex_;
         std::map<std::string, std::string> meta_;
 
         boost::thread_group stream_reader_threads_;

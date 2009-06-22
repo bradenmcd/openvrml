@@ -163,10 +163,10 @@ namespace openvrml {
         const field_value & value_;
 
         std::set<event_listener *> listeners_;
-        mutable read_write_mutex listeners_mutex_;
+        mutable boost::shared_mutex listeners_mutex_;
 
         double last_time_;
-        mutable read_write_mutex last_time_mutex_;
+        mutable boost::shared_mutex last_time_mutex_;
 
     public:
         typedef std::set<event_listener *> listener_set;
@@ -200,7 +200,9 @@ namespace openvrml {
     bool event_emitter::add(field_value_listener<FieldValue> & listener)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        read_write_mutex::scoped_write_lock lock(this->listeners_mutex_);
+        using boost::unique_lock;
+        using boost::shared_mutex;
+        unique_lock<shared_mutex> lock(this->listeners_mutex_);
         return this->listeners_.insert(&listener).second;
     }
 
@@ -208,7 +210,9 @@ namespace openvrml {
     bool event_emitter::remove(field_value_listener<FieldValue> & listener)
         OPENVRML_NOTHROW
     {
-        read_write_mutex::scoped_write_lock lock(this->listeners_mutex_);
+        using boost::unique_lock;
+        using boost::shared_mutex;
+        unique_lock<shared_mutex> lock(this->listeners_mutex_);
         return (this->listeners_.erase(&listener) > 0);
     }
 
@@ -216,10 +220,10 @@ namespace openvrml {
     void event_emitter::emit_event(const double timestamp)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        read_write_mutex::scoped_read_lock
-            listeners_lock(this->listeners_mutex_);
-        read_write_mutex::scoped_write_lock
-            last_time_lock(this->last_time_mutex_);
+        using boost::shared_lock;
+        using boost::shared_mutex;
+        shared_lock<shared_mutex> listeners_lock(this->listeners_mutex_);
+        shared_lock<shared_mutex> last_time_lock(this->last_time_mutex_);
         for (typename listener_set::iterator listener =
                  this->listeners_.begin();
              listener != this->listeners_.end();

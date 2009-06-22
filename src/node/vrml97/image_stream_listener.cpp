@@ -41,13 +41,15 @@ read(const std::vector<unsigned char> & data)
 # ifdef OPENVRML_ENABLE_PNG_TEXTURES
 void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
 {
+    using boost::shared_lock;
+    using boost::shared_mutex;
+
     typedef openvrml_node_vrml97::image_stream_listener::png_reader
         png_reader_t;
     png_reader_t & reader =
         *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
 
-    openvrml::read_write_mutex::scoped_write_lock
-        lock(reader.stream_listener.image_mutex_);
+    shared_lock<shared_mutex> lock(reader.stream_listener.image_mutex_);
 
     openvrml::image & image = reader.stream_listener.image_;
 
@@ -142,6 +144,9 @@ void openvrml_png_row_callback(png_structp png_ptr,
                                png_uint_32 row_num,
                                int /* pass */)
 {
+    using boost::unique_lock;
+    using boost::shared_mutex;
+
     if (!new_row) { return; }
 
     typedef openvrml_node_vrml97::image_stream_listener::png_reader
@@ -149,8 +154,7 @@ void openvrml_png_row_callback(png_structp png_ptr,
     png_reader_t & reader =
         *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
 
-    openvrml::read_write_mutex::scoped_write_lock
-        lock(reader.stream_listener.image_mutex_);
+    unique_lock<shared_mutex> lock(reader.stream_listener.image_mutex_);
 
     openvrml::image & image = reader.stream_listener.image_;
 
@@ -410,8 +414,9 @@ void
 openvrml_node_vrml97::image_stream_listener::jpeg_reader::
 do_read(const std::vector<unsigned char> & data)
 {
-    openvrml::read_write_mutex::scoped_write_lock
-        lock(this->stream_listener.image_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->stream_listener.image_mutex_);
 
     if (data.size() > this->buffer.size()) {
         this->buffer.resize(data.size());
@@ -590,7 +595,7 @@ openvrml_node_vrml97::image_stream_listener::
 image_stream_listener(const std::string & uri,
                       openvrml::image & image,
                       openvrml::node & node,
-                      openvrml::read_write_mutex & image_mutex):
+                      boost::shared_mutex & image_mutex):
     uri_(uri),
     image_mutex_(image_mutex),
     image_(image),

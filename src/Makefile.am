@@ -23,7 +23,6 @@ openvrml_include_HEADERS = \
         libopenvrml/openvrml/basetypes.h \
         libopenvrml/openvrml/vrml97_grammar.h \
         libopenvrml/openvrml/x3d_vrml_grammar.h \
-        libopenvrml/openvrml/read_write_mutex.h \
         libopenvrml/openvrml/field_value.h \
         libopenvrml/openvrml/event.h \
         libopenvrml/openvrml/exposedfield.h \
@@ -81,7 +80,6 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/bad_url.cpp \
         libopenvrml/openvrml/vrml97_grammar.cpp \
         libopenvrml/openvrml/x3d_vrml_grammar.cpp \
-        libopenvrml/openvrml/read_write_mutex.cpp \
         libopenvrml/openvrml/basetypes.cpp \
         libopenvrml/openvrml/field_value.cpp \
         libopenvrml/openvrml/event.cpp \

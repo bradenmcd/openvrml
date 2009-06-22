@@ -437,7 +437,7 @@ const std::string openvrml::node_event_listener::eventin_id() const
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::event_emitter::listeners_mutex_
+ * @var boost::shared_mutex openvrml::event_emitter::listeners_mutex_
  *
  * @brief Mutex guarding @c #listeners_.
  */
@@ -453,7 +453,7 @@ const std::string openvrml::node_event_listener::eventin_id() const
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::event_emitter::last_time_mutex_
+ * @var boost::shared_mutex openvrml::event_emitter::last_time_mutex_
  *
  * @brief Mutex guarding @c #last_time_.
  */
@@ -516,7 +516,9 @@ const std::string openvrml::event_emitter::eventout_id() const
  */
 double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->last_time_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->last_time_mutex_);
     return this->last_time_;
 }
 

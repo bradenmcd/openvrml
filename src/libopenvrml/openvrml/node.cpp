@@ -1890,7 +1890,7 @@ openvrml::node::self_tag(new self_ref_node);
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::node::scene_mutex_
+ * @var boost::shared_mutex openvrml::node::scene_mutex_
  *
  * @brief Mutex protecting @c #scene_.
  */
@@ -1906,7 +1906,7 @@ openvrml::node::self_tag(new self_ref_node);
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::node::modified_mutex_
+ * @var boost::shared_mutex openvrml::node::modified_mutex_
  *
  * @brief Mutex protecting @c #modified_.
  */
@@ -2118,7 +2118,9 @@ const std::string & openvrml::node::id() const OPENVRML_NOTHROW
  */
 openvrml::scene * openvrml::node::scene() const OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex_);
     return this->scene_;
 }
 
@@ -2169,11 +2171,16 @@ void openvrml::node::initialize(openvrml::scene & scene,
                                 const double timestamp)
     OPENVRML_THROW1(std::bad_alloc)
 {
-    read_write_mutex::scoped_read_write_lock lock(this->scene_mutex_);
+    using boost::upgrade_lock;
+    using boost::shared_mutex;
+
+    upgrade_lock<shared_mutex> lock(this->scene_mutex_);
+
     if (!this->scene_) {
-        lock.promote();
-        this->scene_ = &scene;
-        lock.demote();
+        {
+            boost::upgrade_to_unique_lock<shared_mutex> upgraded_lock(lock);
+            this->scene_ = &scene;
+        }
         this->do_initialize(timestamp);
 
         const node_interface_set & interfaces = this->type_.interfaces();
@@ -2312,12 +2319,17 @@ openvrml::event_emitter & openvrml::node::event_emitter(const std::string & id)
  */
 void openvrml::node::shutdown(const double timestamp) OPENVRML_NOTHROW
 {
-    read_write_mutex::scoped_read_write_lock lock(this->scene_mutex_);
+    using boost::upgrade_lock;
+    using boost::shared_mutex;
+
+    upgrade_lock<shared_mutex> lock(this->scene_mutex_);
+
     if (this->scene_) {
         this->do_shutdown(timestamp);
-        lock.promote();
-        this->scene_ = 0;
-        lock.demote();
+        {
+            boost::upgrade_to_unique_lock<shared_mutex> upgraded_lock(lock);
+            this->scene_ = 0;
+        }
 
         const node_interface_set & interfaces = this->type_.interfaces();
         for (node_interface_set::const_iterator interface_(interfaces.begin());
@@ -2705,7 +2717,9 @@ openvrml::viewpoint_node * openvrml::node::to_viewpoint() OPENVRML_NOTHROW
 void openvrml::node::modified(const bool value)
     OPENVRML_THROW1(boost::thread_resource_error)
 {
-    read_write_mutex::scoped_write_lock lock(this->modified_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->modified_mutex_);
     this->modified_ = value;
     if (this->modified_) { this->type_.metatype().browser().modified(true); }
 }
@@ -2725,7 +2739,9 @@ void openvrml::node::modified(const bool value)
 bool openvrml::node::modified() const
     OPENVRML_THROW1(boost::thread_resource_error)
 {
-    read_write_mutex::scoped_read_lock lock(this->modified_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->modified_mutex_);
     return this->modified_ || this->do_modified();
 }
 
@@ -2766,7 +2782,7 @@ void openvrml::node::emit_event(openvrml::event_emitter & emitter,
  *
  * @return the @c scene mutex.
  */
-openvrml::read_write_mutex & openvrml::node::scene_mutex()
+boost::shared_mutex & openvrml::node::scene_mutex()
 {
     return this->scene_mutex_;
 }
@@ -3309,7 +3325,9 @@ openvrml::appearance_node::~appearance_node() OPENVRML_NOTHROW
 void openvrml::appearance_node::render_appearance(viewer & v,
                                                   rendering_context context)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_appearance(v, context);
         this->modified(false);
@@ -3407,7 +3425,7 @@ openvrml::appearance_node::texture_transform() const OPENVRML_NOTHROW
 /**
  * @internal
  *
- * @var openvrml::read_write_mutex openvrml::bounded_volume_node::bounding_volume_dirty_mutex_
+ * @var boost::shared_mutex openvrml::bounded_volume_node::bounding_volume_dirty_mutex_
  *
  * @brief Mutex protecting @c #bounding_volume_dirty_.
  */
@@ -3457,9 +3475,10 @@ openvrml::bounded_volume_node::~bounded_volume_node() OPENVRML_NOTHROW
 const openvrml::bounding_volume &
 openvrml::bounded_volume_node::bounding_volume() const
 {
+    using boost::unique_lock;
+    using boost::shared_mutex;
     const openvrml::bounding_volume & bv = this->do_bounding_volume();
-    read_write_mutex::scoped_write_lock
-        lock(this->bounding_volume_dirty_mutex_);
+    unique_lock<shared_mutex> lock(this->bounding_volume_dirty_mutex_);
     this->bounding_volume_dirty_ = false;
     return bv;
 }
@@ -3497,8 +3516,9 @@ openvrml::bounded_volume_node::do_bounding_volume() const
  */
 void openvrml::bounded_volume_node::bounding_volume_dirty(const bool value)
 {
-    read_write_mutex::scoped_write_lock
-        lock(this->bounding_volume_dirty_mutex_);
+    using boost::unique_lock;
+    using boost::shared_mutex;
+    unique_lock<shared_mutex> lock(this->bounding_volume_dirty_mutex_);
     this->bounding_volume_dirty_ = value;
     if (value) { // only if dirtying, not clearing
         this->type().metatype().browser().flags_need_updating = true;
@@ -3513,8 +3533,9 @@ void openvrml::bounded_volume_node::bounding_volume_dirty(const bool value)
  */
 bool openvrml::bounded_volume_node::bounding_volume_dirty() const
 {
-    read_write_mutex::scoped_read_lock
-        lock(this->bounding_volume_dirty_mutex_);
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->bounding_volume_dirty_mutex_);
     if (this->type().metatype().browser().flags_need_updating) {
         this->type().metatype().browser().update_flags();
         this->type().metatype().browser().flags_need_updating = false;
@@ -3611,7 +3632,9 @@ void openvrml::child_node::relocate() OPENVRML_THROW1(std::bad_alloc)
 void openvrml::child_node::render_child(viewer & v,
                                         const rendering_context context)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_child(v, context);
         this->modified(false);
@@ -4354,7 +4377,9 @@ openvrml::geometry_node * openvrml::geometry_node::to_geometry()
 void openvrml::geometry_node::render_geometry(viewer & v,
                                               rendering_context context)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex());
 
     if (!this->scene()) { return; }
 
@@ -5112,7 +5137,9 @@ openvrml::scoped_light_node::~scoped_light_node() OPENVRML_NOTHROW
  */
 void openvrml::scoped_light_node::render_scoped_light(viewer & v)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_scoped_light(v);
     }
@@ -5207,7 +5234,9 @@ openvrml::texture_node::~texture_node() OPENVRML_NOTHROW
  */
 void openvrml::texture_node::render_texture(viewer & v)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex());
 
     if (!this->scene()) { return; }
 
@@ -5397,7 +5426,9 @@ openvrml::texture_transform_node::~texture_transform_node() OPENVRML_NOTHROW
  */
 void openvrml::texture_transform_node::render_texture_transform(viewer & v)
 {
-    read_write_mutex::scoped_read_lock lock(this->scene_mutex());
+    using boost::shared_lock;
+    using boost::shared_mutex;
+    shared_lock<shared_mutex> lock(this->scene_mutex());
     if (this->scene()) {
         this->do_render_texture_transform(v);
         this->modified(false);
