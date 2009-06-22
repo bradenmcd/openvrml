@@ -19,7 +19,7 @@
 
 # include "curlbrowserhost.h"
 # include <curl/curl.h>
-# include <libgnomevfs/gnome-vfs.h>
+# include <gio/gio.h>
 # include <browser-host-server-glue.h>
 # include <browser-factory-client-glue.h>
 # include <browser-client-glue.h>
@@ -788,25 +788,35 @@ size_t openvrml_player_curl_browser_host_curl_write(void * ptr,
                                                     &type);
         CURL_BROWSER_HOST_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result, 0);
 
-        GnomeVFSFileInfo * info = 0;
-        scope_guard info_guard = make_guard(gnome_vfs_file_info_unref,
-                                            ref(info));
+        GError * error = 0;
+        GFile * file = 0;
+        scope_guard file_guard = make_guard(g_object_unref, ref(file));
+        GFileInfo * info = 0;
+        scope_guard info_guard = make_guard(g_object_unref, ref(info));
         if (!type) {
-            info = gnome_vfs_file_info_new();
-            GnomeVFSResult get_file_info_result =
-                gnome_vfs_get_file_info(stream_data.url(),
-                                        info,
-                                        GNOME_VFS_FILE_INFO_GET_MIME_TYPE);
-            if (get_file_info_result != GNOME_VFS_OK) {
-                g_critical("%s",
-                           gnome_vfs_result_to_string(get_file_info_result));
+            file = g_file_new_for_uri(stream_data.url());
+            static GCancellable * const cancellable = 0;
+            info = g_file_query_info(file,
+                                     G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+                                     G_FILE_QUERY_INFO_NONE,
+                                     cancellable,
+                                     &error);
+            if (error) {
+                g_warning(error->message);
+                g_error_free(error);
+                error = 0;
             }
-            type = gnome_vfs_file_info_get_mime_type(info);
+            if (info) {
+                type =
+                    g_file_info_get_attribute_string(
+                        info,
+                        G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
+            }
         } else {
             info_guard.dismiss();
+            file_guard.dismiss();
         }
 
-        GError * error = 0;
         scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
         gboolean new_stream_result =
             org_openvrml_Browser_new_stream(

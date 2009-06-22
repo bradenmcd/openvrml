@@ -24,7 +24,6 @@
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
 # include <dbus/dbus-glib.h>
-# include <libgnomevfs/gnome-vfs.h>
 # include <libgnomeui/libgnomeui.h>
 # include <gtk/gtkbuilder.h>
 # include <openvrml-config.h>
@@ -83,11 +82,6 @@ int main(int argc, char * argv[])
     using boost::ref;
 
     g_set_application_name(app_name);
-
-    if (!gnome_vfs_init()) {
-        g_critical("GnomeVFS initialization failed");
-        return EXIT_FAILURE;
-    }
 
     if (curl_global_init(CURL_GLOBAL_ALL) != 0) {
         g_critical("libcurl initialization failed");

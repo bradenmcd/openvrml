@@ -188,18 +188,19 @@ PKG_CHECK_MODULES([DBUS_G], [dbus-glib-1 glib-2.0 >= 2.6], ,
 AC_ARG_VAR([DBUS_BINDING_TOOL], [Generate stub code for dbus-glib])
 AC_PATH_PROG([DBUS_BINDING_TOOL], [dbus-binding-tool])
 
-#
-# openvrml-player uses GtkBuilder, which was introduced in GTK+ 2.12.
-#
 PKG_CHECK_MODULES([GTKGL],
-                  [gtkglext-1.0 gtk+-2.0 >= 2.12 gthread-2.0 glib-2.0 >= 2.6], ,
+                  [gtkglext-1.0 gthread-2.0], ,
                   [have_gtkgl=no])
 #
 # openvrml-player uses GNOME_PARAM_GOPTION_CONTEXT, which was
 # introduced in libgnome 2.14.
 #
-PKG_CHECK_MODULES([GNOMEUI], [libgnomeui-2.0 libgnome-2.0 >= 2.14], ,
+# openvrml-player uses GtkBuilder, which was introduced in GTK+ 2.12.
+#
+PKG_CHECK_MODULES([GNOMEUI],
+                  [libgnomeui-2.0 libgnome-2.0 >= 2.14 gtk+-2.0 >= 2.12], ,
                   [have_gnomeui=no])
+PKG_CHECK_MODULES([GIO], [gio-2.0], , [have_gio=no])
 PKG_CHECK_MODULES([CURL], [libcurl], , [have_libcurl=no])
 #
 # The Mozilla plug-in uses the npfunctions.h header introduced in
@@ -440,8 +441,8 @@ AC_ARG_ENABLE([player],
 AS_IF([test X$enable_player != Xno],
       [AS_IF([test X$enable_xembed = Xno],
              [AC_MSG_FAILURE([OpenVRML Player cannot be built without the XEmbed control])])
-       AS_IF([test X$have_libglade = Xno],
-             [AC_MSG_FAILURE([libglade is required to build OpenVRML Player])])
+       AS_IF([test X$have_gio = Xno],
+             [AC_MSG_FAILURE([GIO is required to build OpenVRML Player])])
        AS_IF([test X$have_gnomeui = Xno],
              [AC_MSG_FAILURE([libgnomeui is required to build OpenVRML Player])])
        AS_IF([test X$have_libcurl = Xno],

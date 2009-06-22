@@ -820,12 +820,14 @@ openvrml_player_openvrml_player_CPPFLAGS = \
         -Ilibopenvrml \
         -I$(srcdir)/libopenvrml
 openvrml_player_openvrml_player_CXXFLAGS = \
-        $(DBUS_G_CFLAGS) \
         $(GNOMEUI_CFLAGS) \
+        $(GIO_CFLAGS) \
+        $(DBUS_G_CFLAGS) \
         $(CURL_CFLAGS)
 openvrml_player_openvrml_player_LDFLAGS = \
         -export-dynamic \
         $(GNOMEUI_LIBS) \
+        $(GIO_LIBS) \
         $(DBUS_G_LIBS) \
         $(CURL_LIBS)
 

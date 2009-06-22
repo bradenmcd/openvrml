@@ -1,5 +1,19 @@
 2009-06-22 Braden McDaniel  <braden@endoframe.com>
 
+	Use GIO instead of GnomeVFS in openvrml-player.
+
+	* configure.ac: Check for GIO.
+	* src/Makefile.am
+	(openvrml_player_openvrml_player_CXXFLAGS): Pass GIO_CFLAGS.
+	(openvrml_player_openvrml_player_LDFLAGS): Pass GIO_LIBS.
+	* src/openvrml-player/curlbrowserhost.cpp
+	(openvrml_player_curl_browser_host_curl_write(void *, size_t,
+	size_t, void *)): Use GIO to get the MIME media type.
+	* src/openvrml-player/player.cpp
+	(main(int, char *[])): Don't need to initialize GnomeVFS anymore.
+
+2009-06-22 Braden McDaniel  <braden@endoframe.com>
+
 	Use boost::shared_mutex instead of openvrml::read_write_mutex.
 
 	* src/Makefile.am
