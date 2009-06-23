@@ -21,7 +21,7 @@
 # include <openvrml/vrml97_grammar.h>
 
 using namespace std;
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 using namespace openvrml;
 
 int main(int argc, char * argv[])

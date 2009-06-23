@@ -27,7 +27,7 @@
 # include <fstream>
 
 using namespace std;
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 using namespace openvrml;
 
 class indent;

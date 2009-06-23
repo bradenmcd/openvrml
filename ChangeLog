@@ -1,5 +1,13 @@
 2009-06-22 Braden McDaniel  <braden@endoframe.com>
 
+	Use Spirit Classic in the boost::spirit::classic namespace.
+
+	* tests/parse_x3dvrml.cpp
+	* tests/parse_vrml97.cpp
+	* examples/pretty_print.cpp
+
+2009-06-22 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/browser.cpp: Current Boost no longer provides
 	<boost/thread.hpp>.
 
