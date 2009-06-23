@@ -1,5 +1,11 @@
 2009-06-22 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Check to see whether the pertinent precious
+	variables have been set by the user before failing due to a
+	missing dependency.
+
+2009-06-22 Braden McDaniel  <braden@endoframe.com>
+
 	Use Spirit Classic in the boost::spirit::classic namespace.
 
 	* tests/parse_x3dvrml.cpp
