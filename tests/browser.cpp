@@ -24,7 +24,7 @@
 # include <sstream>
 # include <boost/filesystem/operations.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
-# include <boost/thread.hpp>
+# include <boost/thread/condition.hpp>
 # include <boost/test/unit_test.hpp>
 # include "test_resource_fetcher.h"
 

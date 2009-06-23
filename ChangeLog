@@ -1,5 +1,10 @@
 2009-06-22 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/browser.cpp: Current Boost no longer provides
+	<boost/thread.hpp>.
+
+2009-06-22 Braden McDaniel  <braden@endoframe.com>
+
 	Use Spirit Classic in the boost::spirit::classic namespace.
 
 	* src/libopenvrml/openvrml/basetypes.cpp
