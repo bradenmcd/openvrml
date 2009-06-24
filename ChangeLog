@@ -1,3 +1,13 @@
+2009-06-23 Braden McDaniel  <braden@endoframe.com>
+
+	Set OPENVRML_NODE_PATH and OPENVRML_SCRIPT_PATH when running the
+	test programs.
+
+	* tests/Makefile.am
+	(TESTS_ENVIRONMENT): Set OPENVRML_NODE_PATH and
+	OPENVRML_SCRIPT_PATH.
+	(check-local): Reuse TESTS_ENVIRONMENT.
+
 2009-06-22 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Check to see whether the pertinent precious

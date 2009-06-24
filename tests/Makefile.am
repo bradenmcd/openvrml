@@ -5,7 +5,12 @@ AM_CPPFLAGS = \
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = $(OPENVRML_RPATH)
 
-TESTS_ENVIRONMENT = BOOST_TEST_REPORT_LEVEL=no OPENVRML_DATADIR=$(abs_top_srcdir)/data
+TESTS_ENVIRONMENT = \
+        BOOST_TEST_REPORT_LEVEL=no \
+        OPENVRML_DATADIR=$(abs_top_srcdir)/data \
+        OPENVRML_NODE_PATH=$(abs_top_builddir)/src/node \
+        OPENVRML_SCRIPT_PATH=$(abs_top_builddir)/src/script
+
 TESTS = color \
         rotation \
         mat4f \
@@ -122,7 +127,7 @@ EXTRA_DIST = \
 
 TESTSUITE = $(srcdir)/testsuite
 check-local: atconfig atlocal $(TESTSUITE)
-	$(SHELL) $(TESTSUITE) OPENVRML_DATADIR=$(abs_top_srcdir)/data
+	$(SHELL) $(TESTSUITE) $(TESTS_ENVIRONMENT)
 
 AUTOTEST = autom4te --language=autotest
 $(TESTSUITE): $(srcdir)/package.m4 $(srcdir)/testsuite.at
