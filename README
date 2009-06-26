@@ -75,6 +75,7 @@ GPL can be found in the file "COPYING".
 
 Package directory layout
 ========================
+
    /data
      /component                    :  XML component definitions.
    /doc
@@ -148,8 +149,8 @@ binaries; refer to the output of "configure --help".
 
    Building OpenVRML is fairly demanding of system resources;
 especially, it seems, with modern versions of the GNU C++ compiler.  It
-is recommended that 32-bit build hosts have at least 1.5 GB of system
-memory; the recommended minimum for 64-bit build hosts is 3 GB.
+is recommended that 32-bit build hosts have at least 1 GB of system
+memory; the recommended minimum for 64-bit build hosts is 2 GB.
 
 
 Optional dependencies
