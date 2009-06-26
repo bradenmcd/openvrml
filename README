@@ -75,19 +75,54 @@ GPL can be found in the file "COPYING".
 
 Package directory layout
 ========================
+   /data
+     /component                    :  XML component definitions.
    /doc
-     /manual            :  API documentation.
-   /examples            :  Example programs.
+     /manual                       :  API documentation.
+   /examples                       :  Example programs.
    /ide-projects
      /Windows
-       /VisualC9_0      :  Microsoft Visual C++ 9.0 project files.
-   /lib                 :  3rd party library sources.
-   /m4                  :  m4 macros used by the GNU build system.
-   /models              :  Sample VRML models.
-   /mozilla-plugin      :  Mozilla plug-in sources.
+       /VisualC9_0                 :  Microsoft Visual C++ 9.0 project files.
+   /m4                             :  m4 macros used by the GNU build system.
+   /models                         :  Sample VRML models.
    /src
-     /libopenvrml       :  Runtime library sources.
-     /libopenvrml-gl    :  OpenGL renderer library sources.
+     /libopenvrml                  :  Runtime library sources.
+     /libopenvrml-gl               :  OpenGL renderer library sources.
+     /mozilla-plugin               :  Mozilla plug-in sources.
+     /node
+       /vrml97                     :  VRML97 node implementation sources.
+       /x3d-cad-geometry           :  X3D CAD Geometry component node
+                                      implementation sources.
+       /x3d-core                   :  X3D Core component node implementation
+                                      sources.
+       /x3d-dis                    :  X3D DIS component node implementation
+                                      sources.
+       /x3d-environmental-effects  :  X3D Environmental Effects component node
+                                      implementation sources.
+       /x3d-event-utilities        :  X3D Event Utilities component node
+                                      implementation sources.
+       /x3d-geometry2d             :  X3D Geometry2D component node
+                                      implementation sources.
+       /x3d-geospatial             :  X3D Geospatial component node
+                                      implementation sources.
+       /x3d-grouping               :  X3D Grouping component node
+                                      implementation sources.
+       /x3d-h-anim                 :  X3D H-Anim component node implementation
+                                      sources.
+       /x3d-interpolation          :  X3D Interpolation component node
+                                      implementation sources.
+       /x3d-key-device-sensor      :  X3D Key Device Sensor component node
+                                      implementation sources.
+       /x3d-networking             :  X3D Networking component node
+                                      implementation sources.
+       /x3d-nurbs                  :  X3D NURBS component node implementation
+                                      sources.
+       /x3d-rendering              :  X3D Rendering component node
+                                      implementation sources.
+       /x3d-shape                  :  X3D Shape component node implementation
+                                      sources.
+       /x3d-texturing              :  X3D Texturing component node
+                                      implementation sources.
      /openvrml-xembed   :  XEmbed control application sources.
      /openvrml-player   :  OpenVRML Player application sources.
      /script            :  Scripting engine module sources.
@@ -98,10 +133,11 @@ Package directory layout
 Prerequisites
 =============
 
-   OpenVRML requires the Boost C++ libraries to build.  Boost is
-packaged for many systems; so you should consult your operating system
-vendor if Boost is not already installed on your system.  Otherwise, you
-can obtain Boost from <http://boost.org>.
+   OpenVRML requires the Boost C++ libraries to build, at least
+version 1.37.  Boost is packaged for many systems; so you should
+consult your operating system vendor if Boost is not already installed
+on your system.  Otherwise, you can obtain Boost from
+<http://boost.org>.
 
    Note that Boost binaries built from the boost.org distribution, as
 well as some other distributions, apply a suffix to the library

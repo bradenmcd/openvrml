@@ -1,3 +1,8 @@
+2009-06-26 Braden McDaniel  <braden@endoframe.com>
+
+	* README: Updated the directory layout; note that at least Boost
+	1.37 is required.
+
 2009-06-25 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/parsing.doc: Updated to reflect use of the
