@@ -1,3 +1,8 @@
+2009-06-25 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/parsing.doc: Updated to reflect use of the
+	boost::spirit::classic namespace.
+
 2009-06-23 Braden McDaniel  <braden@endoframe.com>
 
 	Set OPENVRML_NODE_PATH and OPENVRML_SCRIPT_PATH when running the

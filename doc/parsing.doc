@@ -45,12 +45,14 @@
  * @code
  * namespace boost {
  *   namespace spirit {
- *     template <typename IteratorT, typename ParserT, typename SkipT>
- *     parse_info<IteratorT>
- *     parse(const IteratorT &       first,
- *           const IteratorT &       last,
- *           const parser<ParserT> & p,
- *           const parser<SkipT> &   skip);
+ *     namespace classic {
+ *       template <typename IteratorT, typename ParserT, typename SkipT>
+ *       parse_info<IteratorT>
+ *       parse(const IteratorT &       first,
+ *             const IteratorT &       last,
+ *             const parser<ParserT> & p,
+ *             const parser<SkipT> &   skip);
+ *     }
  *   }
  * }
  * @endcode
@@ -60,7 +62,7 @@
  * operate on.  This function is used as follows:
  *
  * @code
- * using boost::spirit::parse;
+ * using boost::spirit::classic::parse;
  *
  * std::vector<char> my_data;
  * my_skip_parser my_skip;
@@ -91,7 +93,7 @@
  * something that actually parses VRML:
  *
  * @code
- * using boost::spirit::parse;
+ * using boost::spirit::classic::parse;
  *
  * std::string my_data = "#VRML 2.0 utf8\n"
  *                       "Group {}\n";
@@ -118,8 +120,8 @@
  *
  * int main()
  * {
- *     using boost::spirit::parse;
- *     using boost::spirit::position_iterator;
+ *     using boost::spirit::classic::parse;
+ *     using boost::spirit::classic::position_iterator;
  *
  *     std::string my_data = "#VRML 2.0 utf8\n"
  *                           "Group {}\n";
@@ -161,13 +163,12 @@
  * int main()
  * {
  *     using std::istreambuf_iterator;
- *     using boost::spirit::parse;
- *     using boost::spirit::position_iterator;
- *     using boost::spirit::multi_pass;
- *     using boost::spirit::make_multi_pass;
+ *     using boost::spirit::classic::parse;
+ *     using boost::spirit::classic::position_iterator;
+ *     using boost::spirit::classic::multi_pass;
+ *     using boost::spirit::classic::make_multi_pass;
  *
- *     typedef multi_pass<std::istreambuf_iterator<char> >
- *         multi_pass_iterator_t;
+ *     typedef multi_pass<istreambuf_iterator<char> > multi_pass_iterator_t;
  *
  *     multi_pass_iterator_t
  *         in_begin(make_multi_pass(istreambuf_iterator<char>(std::cin))),
@@ -235,13 +236,12 @@
  * int main()
  * {
  *     using std::istreambuf_iterator;
- *     using boost::spirit::parse;
- *     using boost::spirit::position_iterator;
- *     using boost::spirit::multi_pass;
- *     using boost::spirit::make_multi_pass;
+ *     using boost::spirit::classic::parse;
+ *     using boost::spirit::classic::position_iterator;
+ *     using boost::spirit::classic::multi_pass;
+ *     using boost::spirit::classic::make_multi_pass;
  *
- *     typedef multi_pass<std::istreambuf_iterator<char> >
- *         multi_pass_iterator_t;
+ *     typedef multi_pass<istreambuf_iterator<char> > multi_pass_iterator_t;
  *
  *     multi_pass_iterator_t
  *         in_begin(make_multi_pass(istreambuf_iterator<char>(std::cin))),
