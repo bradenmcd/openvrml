@@ -1,3 +1,7 @@
+2009-06-29 Braden McDaniel  <braden@endoframe.com>
+
+	* README: Updated dependency list.
+
 2009-06-26 Braden McDaniel  <braden@endoframe.com>
 
 	* README: Back off the system memory recommendation a bit.
