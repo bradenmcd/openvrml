@@ -340,10 +340,10 @@ continue to get better.
 Bug reports
 ===========
 
-   Please report any bugs you encounter via the SourceForge bug tracking
+   Please report any bugs you encounter using OpenVRML's bug tracking
 system:
 
-     <http://sf.net/bugs/?group_id=7151>
+     <https://sourceforge.net/apps/trac/openvrml/newticket>
 
    Note that you will need to log into SourceForge before reporting a
 bug.
@@ -371,13 +371,13 @@ Get involved
 ============
 
    We're always grateful for help in improving OpenVRML.  Consult the
-SourceForge Task Manager for a list of planned improvements:
+list of active tickets:
 
-     <http://sf.net/pm/task.php?group_project_id=2579&group_id=7151&func=browse>
+     <https://sourceforge.net/apps/trac/openvrml/report/1>
 
-   Unassigned tasks are up for grabs, but please post to the
-openvrml-develop mailing list to alert others of your intention to take
-a task.  This helps avoid duplicated effort.  If you do not see the task
-you'd like to pursue listed in the Task Manager, but you think the
-library could benefit from your contribution, post a proposal to the
+   Unassigned tasks are up for grabs; but please post to the
+openvrml-develop mailing list to alert others of your intention to
+take a task.  This helps avoid duplicated effort.  If you do not see
+the task you'd like to pursue listed, but you think the library could
+benefit from your contribution, post a proposal to the
 openvrml-develop mailing list.
