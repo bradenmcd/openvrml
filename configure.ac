@@ -62,26 +62,9 @@ AC_PATH_PROG([REZ], [Rez], , [$PATH:/Developer/Tools])
 #
 OV_CXX_VISIBILITY(
 [OPENVRML_API="__attribute__((visibility(\"default\")))"
-OPENVRML_LOCAL="__attribute__((visibility(\"hidden\")))"
-OPENVRML_GL_API="__attribute__((visibility(\"default\")))"
-OPENVRML_GL_LOCAL="__attribute__((visibility(\"hidden\")))"
-OPENVRML_JAVASCRIPT_API="__attribute__((visibility(\"default\")))"
-OPENVRML_JAVASCRIPT_LOCAL="__attribute__((visibility(\"hidden\")))"
-OPENVRML_JAVA_API="__attribute__((visibility(\"default\")))"
-OPENVRML_JAVA_LOCAL="__attribute__((visibility(\"hidden\")))"])
+OPENVRML_LOCAL="__attribute__((visibility(\"hidden\")))"])
 AC_SUBST([OPENVRML_API])
 AC_SUBST([OPENVRML_LOCAL])
-AC_SUBST([OPENVRML_GL_API])
-AC_SUBST([OPENVRML_GL_LOCAL])
-
-AC_DEFINE_UNQUOTED([OPENVRML_JAVASCRIPT_API], [$OPENVRML_JAVASCRIPT_API],
-                   [Exported symbol])
-AC_DEFINE_UNQUOTED([OPENVRML_JAVASCRIPT_LOCAL], [$OPENVRML_JAVASCRIPT_LOCAL],
-                   [Library-local symbol])
-AC_DEFINE_UNQUOTED([OPENVRML_JAVA_API], [$OPENVRML_JAVA_API],
-                   [Exported symbol])
-AC_DEFINE_UNQUOTED([OPENVRML_JAVA_LOCAL], [$OPENVRML_JAVA_LOCAL],
-                   [Library-local symbol])
 
 #
 # Checks for libraries/headers.

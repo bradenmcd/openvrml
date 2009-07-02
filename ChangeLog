@@ -1,5 +1,17 @@
 2009-07-02 Braden McDaniel  <braden@endoframe.com>
 
+	Use OPENVRML_API and OPENVRML_LOCAL everywhere instead of defining
+	module-specific macros.
+
+	* configure.ac
+	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.h
+	* src/script/java.cpp
+	* src/script/javascript.cpp
+
+2009-07-02 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Removed obsolete AC_DEFINE of
 	OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT.
 

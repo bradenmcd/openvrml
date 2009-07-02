@@ -44,23 +44,23 @@ namespace {
     class MFNode;
 
     namespace Browser {
-        OPENVRML_JAVASCRIPT_LOCAL
+        OPENVRML_LOCAL
         JSBool createVrmlFromURL(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv,
                                  jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL
+        OPENVRML_LOCAL
         JSBool addRoute(JSContext * cx, JSObject * obj,
                         uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL
+        OPENVRML_LOCAL
         JSBool deleteRoute(JSContext * cx, JSObject * obj,
                            uintN argc, jsval * argv,
                            jsval * rval)
             OPENVRML_NOTHROW;
     }
 
-    class OPENVRML_JAVASCRIPT_LOCAL script : public openvrml::script {
+    class OPENVRML_LOCAL script : public openvrml::script {
 
         friend class SFNode;
         friend class MFNode;
@@ -118,7 +118,7 @@ namespace {
     };
 
 
-    class OPENVRML_JAVASCRIPT_LOCAL script_factory : public openvrml::script_factory {
+    class OPENVRML_LOCAL script_factory : public openvrml::script_factory {
     public:
         virtual ~script_factory() OPENVRML_NOTHROW;
 
@@ -129,7 +129,7 @@ namespace {
     };
 } // namespace
 
-extern "C" OPENVRML_JAVASCRIPT_API void
+extern "C" OPENVRML_API void
 openvrml_script_LTX_register_factory(
     openvrml::script_factory_registry & registry)
 {
@@ -166,16 +166,16 @@ namespace {
     const long MAX_HEAP_BYTES = 4L * 1024L * 1024L;
     const long STACK_CHUNK_BYTES = 4024L;
 
-    class OPENVRML_JAVASCRIPT_LOCAL bad_conversion : public std::runtime_error {
+    class OPENVRML_LOCAL bad_conversion : public std::runtime_error {
     public:
         bad_conversion(const std::string & msg): runtime_error(msg) {}
         virtual ~bad_conversion() throw () {}
     };
 
-    OPENVRML_JAVASCRIPT_LOCAL JSBool floatsToJSArray(size_t numFloats,
+    OPENVRML_LOCAL JSBool floatsToJSArray(size_t numFloats,
                                           const float * floats,
                                           JSContext * cx, jsval * rval);
-    OPENVRML_JAVASCRIPT_LOCAL std::auto_ptr<openvrml::field_value>
+    OPENVRML_LOCAL std::auto_ptr<openvrml::field_value>
     createFieldValueFromJsval(JSContext * cx, jsval val,
                               openvrml::field_value::type_id fieldType)
         OPENVRML_THROW2(bad_conversion, std::bad_alloc);
@@ -225,73 +225,73 @@ namespace {
             0,                // mark
             0                 // spare
         };
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getName(JSContext * cx,
+        OPENVRML_LOCAL JSBool getName(JSContext * cx,
                                       JSObject * obj,
                                       uintN argc,
                                       jsval * argv,
                                       jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getVersion(JSContext * cx,
+        OPENVRML_LOCAL JSBool getVersion(JSContext * cx,
                                          JSObject * obj,
                                          uintN argc,
                                          jsval * argv,
                                          jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getCurrentSpeed(JSContext * cx,
+        OPENVRML_LOCAL JSBool getCurrentSpeed(JSContext * cx,
                                               JSObject * obj,
                                               uintN argc,
                                               jsval * argv,
                                               jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getCurrentFrameRate(JSContext * cx,
+        OPENVRML_LOCAL JSBool getCurrentFrameRate(JSContext * cx,
                                                   JSObject * obj,
                                                   uintN argc,
                                                   jsval * argv,
                                                   jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getWorldURL(JSContext * cx,
+        OPENVRML_LOCAL JSBool getWorldURL(JSContext * cx,
                                           JSObject * obj,
                                           uintN argc,
                                           jsval * argv,
                                           jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool replaceWorld(JSContext * cx,
+        OPENVRML_LOCAL JSBool replaceWorld(JSContext * cx,
                                            JSObject * obj,
                                            uintN argc,
                                            jsval * argv,
                                            jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool createVrmlFromString(JSContext * cx,
+        OPENVRML_LOCAL JSBool createVrmlFromString(JSContext * cx,
                                                    JSObject * obj,
                                                    uintN argc,
                                                    jsval * argv,
                                                    jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool createVrmlFromURL(JSContext * cx,
+        OPENVRML_LOCAL JSBool createVrmlFromURL(JSContext * cx,
                                                 JSObject * obj,
                                                 uintN argc,
                                                 jsval * argv,
                                                 jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool addRoute(JSContext * cx,
+        OPENVRML_LOCAL JSBool addRoute(JSContext * cx,
                                        JSObject * obj,
                                        uintN argc,
                                        jsval * argv,
                                        jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool deleteRoute(JSContext * cx,
+        OPENVRML_LOCAL JSBool deleteRoute(JSContext * cx,
                                           JSObject * obj,
                                           uintN argc,
                                           jsval * argv,
                                           jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool loadURL(JSContext * cx,
+        OPENVRML_LOCAL JSBool loadURL(JSContext * cx,
                                       JSObject * obj,
                                       uintN argc,
                                       jsval * argv,
                                       jsval * rval)
             OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool setDescription(JSContext * cx,
+        OPENVRML_LOCAL JSBool setDescription(JSContext * cx,
                                              JSObject * obj,
                                              uintN argc,
                                              jsval * argv,
@@ -306,7 +306,7 @@ namespace {
     // the object, if any, and whether or not the object corresponds to
     // an eventOut.
     //
-    class OPENVRML_JAVASCRIPT_LOCAL field_data : boost::noncopyable {
+    class OPENVRML_LOCAL field_data : boost::noncopyable {
     public:
         bool changed;
 
@@ -316,7 +316,7 @@ namespace {
         field_data();
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL sfield {
+    class OPENVRML_LOCAL sfield {
     public:
         /**
          * The sfdata class takes ownership of the field_value and deletes it
@@ -341,7 +341,7 @@ namespace {
         sfield();
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFColor : public sfield {
+    class OPENVRML_LOCAL SFColor : public sfield {
     public:
         static JSClass jsclass;
 
@@ -373,7 +373,7 @@ namespace {
             OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFImage : public sfield {
+    class OPENVRML_LOCAL SFImage : public sfield {
     public:
         static JSClass jsclass;
 
@@ -400,7 +400,7 @@ namespace {
                                   jsval * vp) OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFNode : public sfield {
+    class OPENVRML_LOCAL SFNode : public sfield {
     public:
         static JSClass jsclass;
         static JSClass direct_output_jsclass;
@@ -428,7 +428,7 @@ namespace {
             OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFRotation : public sfield {
+    class OPENVRML_LOCAL SFRotation : public sfield {
     public:
         static JSClass jsclass;
 
@@ -517,7 +517,7 @@ namespace {
             OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFVec2f : public sfvec2_jsobject<SFVec2f> {
+    class OPENVRML_LOCAL SFVec2f : public sfvec2_jsobject<SFVec2f> {
     public:
         typedef ::openvrml::sfvec2f field_type;
         typedef field_type::value_type value_type;
@@ -532,7 +532,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFVec2d : public sfvec2_jsobject<SFVec2f> {
+    class OPENVRML_LOCAL SFVec2d : public sfvec2_jsobject<SFVec2f> {
     public:
         typedef ::openvrml::sfvec2d field_type;
         typedef field_type::value_type value_type;
@@ -591,7 +591,7 @@ namespace {
             OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFVec3f : public sfvec3_jsobject<SFVec3f> {
+    class OPENVRML_LOCAL SFVec3f : public sfvec3_jsobject<SFVec3f> {
     public:
         typedef ::openvrml::sfvec3f field_type;
         typedef field_type::value_type value_type;
@@ -606,7 +606,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL SFVec3d : public sfvec3_jsobject<SFVec3d> {
+    class OPENVRML_LOCAL SFVec3d : public sfvec3_jsobject<SFVec3d> {
     public:
         typedef ::openvrml::sfvec3d field_type;
         typedef field_type::value_type value_type;
@@ -621,7 +621,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MField {
+    class OPENVRML_LOCAL MField {
     public:
         typedef std::vector<jsval> JsvalArray;
 
@@ -653,7 +653,7 @@ namespace {
      *        SFVec2f, SFVec3f.
      */
     template <typename Subclass>
-    class OPENVRML_JAVASCRIPT_LOCAL MFJSObject : public MField {
+    class OPENVRML_LOCAL MFJSObject : public MField {
     public:
         static JSObject * initClass(JSContext * cx, JSObject * obj)
             OPENVRML_NOTHROW;
@@ -682,7 +682,7 @@ namespace {
      * In JavaScript, all floating point values are treated as doubles.
      */
     template <typename Subclass>
-    class OPENVRML_JAVASCRIPT_LOCAL MFJSDouble : public MField {
+    class OPENVRML_LOCAL MFJSDouble : public MField {
     public:
         static JSObject * initClass(JSContext * cx, JSObject * obj)
             OPENVRML_NOTHROW;
@@ -705,7 +705,7 @@ namespace {
                                  uintN argc, jsval * argv) OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFBool : public MField {
+    class OPENVRML_LOCAL MFBool : public MField {
     public:
         static JSClass jsclass;
 
@@ -731,7 +731,7 @@ namespace {
         static void finalize(JSContext * cx, JSObject * obj);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFColor : public MFJSObject<MFColor> {
+    class OPENVRML_LOCAL MFColor : public MFJSObject<MFColor> {
     public:
         static JSClass jsclass;
         static JSClass & sfjsclass;
@@ -744,7 +744,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFFloat : public MFJSDouble<MFFloat> {
+    class OPENVRML_LOCAL MFFloat : public MFJSDouble<MFFloat> {
     public:
         static JSClass jsclass;
 
@@ -768,7 +768,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFInt32 : public MField {
+    class OPENVRML_LOCAL MFInt32 : public MField {
     public:
         static JSClass jsclass;
 
@@ -799,7 +799,7 @@ namespace {
     // We can't use the MFJSObject<> template to implement MFNode, since
     // the SFNode constructor requires an argument.
     //
-    class OPENVRML_JAVASCRIPT_LOCAL MFNode : public MField {
+    class OPENVRML_LOCAL MFNode : public MField {
     public:
         static JSClass jsclass;
 
@@ -829,7 +829,7 @@ namespace {
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFRotation : public MFJSObject<MFRotation> {
+    class OPENVRML_LOCAL MFRotation : public MFJSObject<MFRotation> {
     public:
         static JSClass jsclass;
         static JSClass & sfjsclass;
@@ -843,7 +843,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFString : public MField {
+    class OPENVRML_LOCAL MFString : public MField {
     public:
         static JSClass jsclass;
 
@@ -872,7 +872,7 @@ namespace {
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFTime : public MFJSDouble<MFTime> {
+    class OPENVRML_LOCAL MFTime : public MFJSDouble<MFTime> {
     public:
         static JSClass jsclass;
 
@@ -884,7 +884,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFVec2f : public MFJSObject<MFVec2f> {
+    class OPENVRML_LOCAL MFVec2f : public MFJSObject<MFVec2f> {
     public:
         static JSClass jsclass;
         static JSClass & sfjsclass;
@@ -910,7 +910,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL MFVec3f : public MFJSObject<MFVec3f> {
+    class OPENVRML_LOCAL MFVec3f : public MFJSObject<MFVec3f> {
     public:
         static JSClass jsclass;
         static JSClass & sfjsclass;
@@ -936,7 +936,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
     };
 
-    class OPENVRML_JAVASCRIPT_LOCAL VrmlMatrix {
+    class OPENVRML_LOCAL VrmlMatrix {
     public:
         //
         // The VrmlMatrixRow_ class is returned when using the [] operator
@@ -1018,13 +1018,13 @@ namespace {
     JSRuntime * script::rt = 0; // Javascript runtime singleton object
     size_t script::nInstances = 0; // Number of distinct script objects
 
-    OPENVRML_JAVASCRIPT_LOCAL JSBool eventOut_setProperty(JSContext * cx,
+    OPENVRML_LOCAL JSBool eventOut_setProperty(JSContext * cx,
                                                JSObject * obj,
                                                jsval id,
                                                jsval * val)
         OPENVRML_NOTHROW;
 
-    OPENVRML_JAVASCRIPT_LOCAL void errorReporter(JSContext * cx,
+    OPENVRML_LOCAL void errorReporter(JSContext * cx,
                                       const char * message,
                                       JSErrorReport * report);
 
@@ -3627,7 +3627,7 @@ namespace {
         return initObject(cx, obj, rot);
     }
 
-    OPENVRML_JAVASCRIPT_LOCAL bool normalized(const openvrml::vec3f & v)
+    OPENVRML_LOCAL bool normalized(const openvrml::vec3f & v)
     {
         return openvrml::local::fequal(v.length(), 1.0f);
     }

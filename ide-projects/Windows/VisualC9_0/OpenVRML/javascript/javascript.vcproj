@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\openvrml;..\..\..\..\..\src\libopenvrml"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_SCL_SECURE_NO_WARNINGS;OPENVRML_USE_DLL;XP_WIN;JS_THREADSAFE;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_JAVASCRIPT_API=__declspec(dllexport);OPENVRML_JAVASCRIPT_LOCAL="
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_SCL_SECURE_NO_WARNINGS;OPENVRML_USE_DLL;XP_WIN;JS_THREADSAFE;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

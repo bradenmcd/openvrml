@@ -75,12 +75,12 @@ namespace {
     const double inv_pi = 0.31830988618379067154;
 
     template <typename Float>
-    OPENVRML_GL_LOCAL inline Float fabs(const Float f)
+    OPENVRML_LOCAL inline Float fabs(const Float f)
     {
         return f < 0.0 ? -f : f;
     }
 
-    struct OPENVRML_GL_LOCAL fequal_t {
+    struct OPENVRML_LOCAL fequal_t {
         template <typename Float>
         bool operator()(Float a, Float b) const
         {
@@ -96,7 +96,7 @@ namespace {
 
     const fequal_t fequal = fequal_t();
 
-    class OPENVRML_GL_LOCAL gl_capabilities {
+    class OPENVRML_LOCAL gl_capabilities {
     public:
         GLint max_modelview_stack_depth;
         GLint max_texture_size;
@@ -130,7 +130,7 @@ namespace {
     }
 
 
-    struct OPENVRML_GL_LOCAL vertex_data {
+    struct OPENVRML_LOCAL vertex_data {
         GLdouble coord[3];
         const openvrml::color * color;
         const openvrml::vec3f * normal;
@@ -146,14 +146,14 @@ namespace {
     {}
 
 
-    struct OPENVRML_GL_LOCAL combined_vertex_data_ {
+    struct OPENVRML_LOCAL combined_vertex_data_ {
         openvrml::color color;
         openvrml::vec3f normal;
         openvrml::vec2f tex_coord;
     };
 
 
-    struct OPENVRML_GL_LOCAL shell_tess_user_data {
+    struct OPENVRML_LOCAL shell_tess_user_data {
         size_t face_index;
         const std::vector<openvrml::color> * face_color;
         const std::vector<openvrml::int32> * face_color_index;
@@ -177,7 +177,7 @@ namespace {
     /**
      * @internal
      */
-    struct OPENVRML_GL_LOCAL ShellData {
+    struct OPENVRML_LOCAL ShellData {
         unsigned int mask;
         const std::vector<openvrml::vec3f> & coord;
         const std::vector<openvrml::int32> & coordIndex;
@@ -232,7 +232,7 @@ namespace {
     {}
 
     // Generate a normal from 3 indexed points.
-    OPENVRML_GL_LOCAL const openvrml::vec3f
+    OPENVRML_LOCAL const openvrml::vec3f
     indexFaceNormal(const size_t i1,
                     const size_t i2,
                     const size_t i3,
@@ -811,7 +811,7 @@ namespace {
     // Project an x, y pair onto a sphere of radius r OR a hyperbolic sheet
     // if we are away from the center of the sphere.
     //
-    OPENVRML_GL_LOCAL float tb_project_to_sphere(float r, float x, float y)
+    OPENVRML_LOCAL float tb_project_to_sphere(float r, float x, float y)
     {
         static const double sqrt2 = sqrt(2.0);
         static const double sqrt2_2 = sqrt2 / 2.0;
@@ -839,10 +839,10 @@ namespace {
     // It is assumed that the arguments to this routine are in the range
     // (-1.0 ... 1.0)
     //
-    OPENVRML_GL_LOCAL const openvrml::rotation trackball(float p1x,
-                                                         float p1y,
-                                                         float p2x,
-                                                         float p2y)
+    OPENVRML_LOCAL const openvrml::rotation trackball(float p1x,
+                                                      float p1y,
+                                                      float p2x,
+                                                      float p2y)
     {
         using openvrml::rotation;
         using openvrml::make_rotation;
@@ -1007,7 +1007,7 @@ void openvrml::gl::viewer::shutdown()
 namespace {
 
     // Call this after each frame for debugging...
-    OPENVRML_GL_LOCAL void checkErrors(const std::string & s)
+    OPENVRML_LOCAL void checkErrors(const std::string & s)
     {
         GLenum glerr;
         while ((glerr = glGetError()) != GL_NO_ERROR) {
@@ -1534,12 +1534,12 @@ namespace {
      * It might be smarter to do just one, and reference it with scaling (but
      * the world creator could just as easily do that with DEF/USE ...).
      */
-    OPENVRML_GL_LOCAL void computeCylinder(const double height,
-                                           const double radius,
-                                           const int numFacets,
-                                           float (*c)[3],
-                                           float (*tc)[3],
-                                           int * faces)
+    OPENVRML_LOCAL void computeCylinder(const double height,
+                                        const double radius,
+                                        const int numFacets,
+                                        float (*c)[3],
+                                        float (*tc)[3],
+                                        int * faces)
     {
         double angle, x, y;
         int i, polyIndex;
@@ -1785,7 +1785,7 @@ namespace {
 
     // Compute a normal at vert i,j of an ElevationGrid.
 
-    OPENVRML_GL_LOCAL const openvrml::vec3f elevationVertexNormal(
+    OPENVRML_LOCAL const openvrml::vec3f elevationVertexNormal(
             const int i, const int j,
             const int nx, const int nz,
             const float dx, const float dz,
@@ -1974,7 +1974,7 @@ namespace {
 
     // Extrusion cap tessellation for non-convex shapes
 
-    struct OPENVRML_GL_LOCAL TessExtrusion {
+    struct OPENVRML_LOCAL TessExtrusion {
         const float * c; // coordinates array [nVerts * 3]
         const float * crossSection; // crossSection coordinates [nCrossSection * 2]
         float tcDeltaU, tcDeltaV;
@@ -2050,7 +2050,7 @@ extern "C" {
 
 namespace {
 
-    OPENVRML_GL_LOCAL void
+    OPENVRML_LOCAL void
     insertExtrusionCaps(GLUtesselator & tesselator,
                         const unsigned int mask,
                         const size_t nSpine,
@@ -2197,7 +2197,7 @@ namespace {
      * @return the length of the Extrusion spine described by @p spine; or 1.0
      *         if the length is 0.
      */
-    OPENVRML_GL_LOCAL
+    OPENVRML_LOCAL
     float get_spine_length(const std::vector<openvrml::vec3f> & spine)
     {
         using std::vector;
@@ -2227,7 +2227,7 @@ namespace {
      * @return the length of the Extrusion cross-section described by
      *         @p cross_section; or 1.0 if the length is 0.
      */
-    OPENVRML_GL_LOCAL
+    OPENVRML_LOCAL
     float
     get_cross_section_length(
         const std::vector<openvrml::vec2f> & cross_section)
@@ -2255,7 +2255,7 @@ namespace {
      * @return the <var>y</var>-axis of the spine-aligned cross-section plane
      *         at @p point.
      */
-    OPENVRML_GL_LOCAL
+    OPENVRML_LOCAL
     const openvrml::vec3f
     compute_scp_y_axis(
         const std::vector<openvrml::vec3f>::const_iterator & point,
@@ -2302,7 +2302,7 @@ namespace {
      * @return the <var>z</var>axis of the spine-aligned cross-section plane
      *         at @p point.
      */
-    OPENVRML_GL_LOCAL
+    OPENVRML_LOCAL
     const openvrml::vec3f
     compute_scp_z_axis(
         const std::vector<openvrml::vec3f>::const_iterator & point,
@@ -2372,7 +2372,7 @@ namespace {
      * @return @c true if the points in @p spine are collinear; @c false
      *         otherwise.
      */
-    OPENVRML_GL_LOCAL
+    OPENVRML_LOCAL
     bool
     check_spine_points_collinear(const std::vector<openvrml::vec3f> & spine,
                                  openvrml::vec3f & scp_x,
@@ -2466,7 +2466,7 @@ namespace {
      * @param[out] coord
      * @param[out] texcoord
      */
-    OPENVRML_GL_LOCAL void
+    OPENVRML_LOCAL void
     compute_extrusion_coords_(
         const std::vector<openvrml::vec2f> & cross_section,
         const std::vector<openvrml::vec3f> & spine,
@@ -2794,9 +2794,9 @@ openvrml::gl::viewer::do_insert_point_set(const geometry_node & n,
 
 namespace {
 
-    OPENVRML_GL_LOCAL void computeBounds(size_t npoints,
-                                         const float * points,
-                                         float (&bounds)[6])
+    OPENVRML_LOCAL void computeBounds(size_t npoints,
+                                      const float * points,
+                                      float (&bounds)[6])
     {
         if (npoints == 0) {
             std::fill(bounds, bounds + 6, 0.0f);
@@ -2817,9 +2817,9 @@ namespace {
         }
     }
 
-    OPENVRML_GL_LOCAL void texGenParams(float (&bounds)[6],  // xmin,xmax, ymin,ymax, zmin,zmax
-                                        int (&axes)[2],     // s, t
-                                        float (&params)[4]) // s0, 1/sSize, t0, 1/tSize
+    OPENVRML_LOCAL void texGenParams(float (&bounds)[6],  // xmin,xmax, ymin,ymax, zmin,zmax
+                                     int (&axes)[2],     // s, t
+                                     float (&params)[4]) // s0, 1/sSize, t0, 1/tSize
     {
         axes[0] = 0;
         axes[1] = 1;
@@ -2848,7 +2848,7 @@ namespace {
         params[3] = float(1.0 / params[3]);
     }
 
-    OPENVRML_GL_LOCAL void insertShellConvex(ShellData * const s)
+    OPENVRML_LOCAL void insertShellConvex(ShellData * const s)
     {
         using openvrml::vec3f;
         using openvrml::gl::viewer;
@@ -2951,7 +2951,7 @@ namespace {
         }
     }
 
-    OPENVRML_GL_LOCAL void
+    OPENVRML_LOCAL void
     insertShellTess(GLUtesselator & tessobj,
                     const std::vector<vertex_data> & vertices,
                     const std::vector<openvrml::int32> & coord_index,
@@ -3202,11 +3202,11 @@ do_insert_shell(const geometry_node & n,
 
 namespace {
 
-    OPENVRML_GL_LOCAL void computeSphere(const double radius,
-                                         const int numLatLong,
-                                         float (*c)[3],
-                                         float (*tc)[3],
-                                         int *faces)
+    OPENVRML_LOCAL void computeSphere(const double radius,
+                                      const int numLatLong,
+                                      float (*c)[3],
+                                      float (*tc)[3],
+                                      int *faces)
     {
         double r, angle, x, y, z;
         int i, j, polyIndex;
@@ -3669,7 +3669,7 @@ void openvrml::gl::viewer::do_set_sensitive(node * object)
 
 namespace {
 
-    OPENVRML_GL_LOCAL inline bool power_of_2(unsigned long n)
+    OPENVRML_LOCAL inline bool power_of_2(unsigned long n)
     {
         return !(n & (n - 1));
     }
@@ -3863,11 +3863,11 @@ namespace {
     /**
      * Compute a target and up vector from position/orientation/distance.
      */
-    OPENVRML_GL_LOCAL void computeView(const openvrml::vec3f & position,
-                                       const openvrml::rotation & orientation,
-                                       const float distance,
-                                       openvrml::vec3f & target,
-                                       openvrml::vec3f & up)
+    OPENVRML_LOCAL void computeView(const openvrml::vec3f & position,
+                                    const openvrml::rotation & orientation,
+                                    const float distance,
+                                    openvrml::vec3f & target,
+                                    openvrml::vec3f & up)
     {
         // Graphics Gems, p 466. Convert between axis/angle and rotation matrix
 
