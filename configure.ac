@@ -343,8 +343,6 @@ AS_IF([test X$enable_script_node_javascript = Xno],
         AS_IF([test -z "$JS_LIBS"], [JS_LIBS="-ljs"])])
 AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "$JS_LIBS" \) -o X$have_jsapi_h != Xyes],
       [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])
-AC_DEFINE([OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT], [1],
-          [Defined if Script node JavaScript support is enabled.])
 #
 # Figure out whether we need to add -DJS_THREADSAFE to JS_CFLAGS.
 #

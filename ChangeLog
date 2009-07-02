@@ -1,5 +1,10 @@
 2009-07-02 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Removed obsolete AC_DEFINE of
+	OPENVRML_ENABLE_SCRIPT_NODE_JAVASCRIPT.
+
+2009-07-02 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Point to trac resources rather than the old SourceForge
 	ones.
 
