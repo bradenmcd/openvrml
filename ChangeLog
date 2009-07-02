@@ -1,3 +1,7 @@
+2009-07-02 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/intro.doc: Note componentization features in the introduction.
+
 2009-06-29 Braden McDaniel  <braden@endoframe.com>
 
 	* README: Updated dependency list.

@@ -3,11 +3,18 @@
 /**
  * @page intro 1. Introduction
  *
- * The OpenVRML development toolkit consists of the following parts:
+ * The OpenVRML libraries provide an extensible run-time for rendering and
+ * playing VRML and X3D.  OpenVRML includes two libraries:
  *
- * - the VRML97 and X3D-VRML parsing interfaces
- * - libopenvrml, a runtime library for VRML97 and X3D worlds
- * - libopenvrml-gl, an OpenGL renderer
+ * - @c libopenvrml, the core run-time for VRML97 and X3D worlds
+ * - @c libopenvrml-gl, an OpenGL renderer
+ *
+ * @c libopenvrml provides the following functionality:
+ *
+ * - parsing interfaces for VRML97 and VRML-format X3D.
+ * - a pluggable scripting engine interface for adding behavior to VRML/X3D
+ *   via the @c Script node.
+ * - a pluggable node component framework.
  *
  * @section license 1.1 Terms of use
  *
