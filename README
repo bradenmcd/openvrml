@@ -306,6 +306,14 @@ to compile OpenVRML without the GNU build tools.
      Include support for rendering text using the Text node.  Requires
      fontconfig and FreeType.
 
+ OPENVRML_FT_CONST
+     Define to "const" if "const" should be used in FreeType callback
+     function signatures; define to empty otherwise.
+
+ OPENVRML_JNI_CONST
+     Define to "const" if "const" should be used in JNI function
+     signatures; define to empty otherwise.
+
 
 Installation
 ============
@@ -319,6 +327,32 @@ Usage
    To write programs that use the OpenVRML libraries, refer to the API
 documentation in the "doc/manual" subdirectory of the distribution and
 the example programs in the "examples" subdirectory.
+
+   libopenvrml loads data files and plug-ins from known locations once
+it is installed.  If they are defined, libopenvrml will prefer the
+locations specified by these environment variables:
+
+ OPENVRML_DATADIR
+     Directory where libopenvrml looks for architecture-independent
+     data.
+
+ OPENVRML_NODE_PATH
+     A search path where libopenvrml looks for node implementations.
+
+ OPENVRML_SCRIPT_PATH
+     A search path where libopenvrml looks for scripting engine
+     implementations.
+
+   The most common use case for setting these environment variables is
+running sdl-viewer or openvrml-xembed from the build directories.  For
+example, if running a Bash shell and building in a subdirectory
+"build" where the current directory is the root of the OpenVRML
+distribution:
+
+   $ OPENVRML_DATADIR=$(pwd)/data \
+   OPENVRML_NODE_PATH=$(pwd)/build/src/node \
+   OPENVRML_SCRIPT_PATH=$(pwd)/build/src/script \
+   ./build/examples/sdl-viewer models/rotation_toy.wrl
 
    If OpenVRML is configured to be installed to the same prefix as a
 Mozilla-based browser is installed on the system, "make install" will
@@ -334,6 +368,13 @@ openvrml-xembed has been installed, D-Bus will start it automatically
 as needed.  Additionally, to run the plug-in from the build
 directories, a symbolic link to the plug-in module "openvrml.so" must
 be made in the Mozilla plug-in directory.
+
+   When running openvrml-player from the build directories, you must
+specify the location of the GTK+ UI XML files using environment
+variable OPENVRML_PLAYER_UIDIR; e.g.:
+
+   $ OPENVRML_PLAYER_UIDIR=$(pwd)/src/openvrml-player \
+   ./build/src/openvrml-player/openvrml-player
 
 
 Conformance
