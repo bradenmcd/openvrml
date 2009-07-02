@@ -134,11 +134,15 @@ Package directory layout
 Prerequisites
 =============
 
-   OpenVRML requires the Boost C++ libraries to build, at least
-version 1.37.  Boost is packaged for many systems; so you should
-consult your operating system vendor if Boost is not already installed
-on your system.  Otherwise, you can obtain Boost from
-<http://boost.org>.
+   At a minimum, OpenVRML requires these libraries to build:
+
+     Boost (at least 1.37)      <http://boost.org>
+     libxml (non-Windows only)  <http://xmlsoft.org>
+
+   These libraries are packaged for many systems; so you should
+consult your operating system vendor if any of them is not already
+installed on your system.  Otherwise, you can obtain them at the above
+URIs.
 
    Note that Boost binaries built from the boost.org distribution, as
 well as some other distributions, apply a suffix to the library
@@ -146,6 +150,10 @@ name that depends on the particular build configuration.  When
 building OpenVRML with such binaries it will be necessary to set the
 variable BOOST_LIB_SUFFIX to match the suffix applied to the Boost
 binaries; refer to the output of "configure --help".
+
+   libxml is not required on Microsoft Windows platforms.  On Windows,
+OpenVRML uses the XmlLite library for XML parsing.  XmlLite is
+included with recent versions of the Microsoft Windows SDK.
 
    Building OpenVRML is fairly demanding of system resources;
 especially, it seems, with modern versions of the GNU C++ compiler.  It
@@ -165,7 +173,6 @@ below.
      libjpeg                <http://www.ijg.org>
      FreeType               <http://freetype.org>
      Fontconfig             <http://fontconfig.org>
-     libxml                 <http://xmlsoft.org>
      XULRunner              <https://developer.mozilla.org/En/XULRunner>
      Java Development Kit   <http://java.sun.com/j2se/>
      OpenGL/Mesa            <http://mesa3d.org>

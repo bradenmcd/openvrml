@@ -1,5 +1,10 @@
 2009-07-02 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Note libxml as a required dependency on non-Windows
+	platforms.
+
+2009-07-02 Braden McDaniel  <braden@endoframe.com>
+
 	Use OPENVRML_API and OPENVRML_LOCAL everywhere instead of defining
 	module-specific macros.
 
