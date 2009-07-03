@@ -370,7 +370,7 @@ directories, a symbolic link to the plug-in module "openvrml.so" must
 be made in the Mozilla plug-in directory.
 
    When running openvrml-player from the build directories, you must
-specify the location of the GTK+ UI XML files using environment
+specify the location of the GTK+ UI XML files using the environment
 variable OPENVRML_PLAYER_UIDIR; e.g.:
 
    $ OPENVRML_PLAYER_UIDIR=$(pwd)/src/openvrml-player \
@@ -405,12 +405,12 @@ Mailing lists
  * <openvrml-announce@lists.sourceforge.net> is a low-traffic list for
    announcments, typically regarding new releases.  Subscription
    instructions are at
-     <http://lists.sf.net/mailman/listinfo/openvrml-announce>
+     <https://lists.sourceforge.net/lists/listinfo/openvrml-announce>
 
  * <openvrml-develop@lists.sourceforge.net> is a forum for developers using
    and working on the libraries.  User feedback is welcome in this
    channel.  Subscription instructions are at
-     <http://lists.sf.net/mailman/listinfo/openvrml-develop>
+     <https://lists.sourceforge.net/lists/listinfo/openvrml-develop>
 
       In order to curb unsolicited commercial e-mail, openvrml-develop
    permits posting only by subscribers.

@@ -1,3 +1,7 @@
+2009-07-03 Braden McDaniel  <braden@endoframe.com>
+
+	* README: Use "sourceforge.net" in URIs instead of "sf.net".
+
 2009-07-02 Braden McDaniel  <braden@endoframe.com>
 
 	* README: Document the OPENVRML_FT_CONST and OPENVRML_JNI_CONST
