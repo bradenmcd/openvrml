@@ -12,5 +12,3 @@ endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = openvrml.pc $(OPENVRML_GL_PC)
-
-DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
