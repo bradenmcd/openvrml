@@ -95,7 +95,8 @@ AC_LANG_POP])
 #
 # Allow users to specify any Boost library name suffix
 #
-AC_ARG_VAR([BOOST_LIB_SUFFIX], [Boost library name suffix])
+AS_IF([test $BOOST_LIB_SUFFIX], , [BOOST_LIB_SUFFIX=-mt])
+AC_ARG_VAR([BOOST_LIB_SUFFIX], [Boost library name suffix [default=-mt]])
 
 AC_CACHE_CHECK([for boost_thread$BOOST_LIB_SUFFIX library],
 [ov_cv_boost_thread],

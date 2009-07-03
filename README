@@ -147,7 +147,7 @@ URIs.
    Note that Boost binaries built from the boost.org distribution, as
 well as some other distributions, apply a suffix to the library
 name that depends on the particular build configuration.  When
-building OpenVRML with such binaries it will be necessary to set the
+building OpenVRML with such binaries it may be necessary to set the
 variable BOOST_LIB_SUFFIX to match the suffix applied to the Boost
 binaries; refer to the output of "configure --help".
 

@@ -1,5 +1,12 @@
 2009-07-03 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Make BOOST_LIB_SUFFIX default to "-mt" if it is
+	undefined.
+	* README: Change wording documenting BOOST_LIB_SUFFIX to indicate
+	that setting this variable may not be required.
+
+2009-07-03 Braden McDaniel  <braden@endoframe.com>
+
 	* README: Use "sourceforge.net" in URIs instead of "sf.net".
 
 2009-07-02 Braden McDaniel  <braden@endoframe.com>
