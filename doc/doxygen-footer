@@ -2,5 +2,17 @@
 <address class="footer"><span class="images"><a href="http://web3d.org/x3d/"><img src="x3d-white-on-black.png" width="43" height="32" border="0" alt="X3D"></a><a href="http://opengl.org"><img src="OGL_sm_wht.png" width="68" height="32" border="0" alt="OpenGL"></a><a href="http://sourceforge.net/projects/openvrml"><img src="http://sourceforge.net/sflogo.php?group_id=7151&amp;type=11" width="120" height="30" border="0" alt="SourceForge.net"></a></span><a href="https://sourceforge.net/apps/trac/openvrml/newticket">Report error</a><br>Generated $datetime by Doxygen $doxygenversion</address>
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
 <script type="text/javascript">_uacct = "UA-446379-2"; urchinTracker();</script>
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://sourceforge.net/apps/piwik/openvrml/" : "http://sourceforge.net/apps/piwik/openvrml/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+piwik_action_name = '';
+piwik_idsite = 1;
+piwik_url = pkBaseURL + "piwik.php";
+piwik_log(piwik_action_name, piwik_idsite, piwik_url);
+</script>
+<object><noscript><p><img src="http://sourceforge.net/apps/piwik/openvrml/piwik.php?idsite=1" alt="piwik"/></p></noscript></object>
+<!-- End Piwik Tag -->
 </body>
 </html>
