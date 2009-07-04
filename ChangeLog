@@ -1,5 +1,20 @@
 2009-07-04 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.18.0 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Updated to 9:0:0.
+	(LIBOPENVRML_GL_LIBRARY_VERSION): Updated to 8:0:0.
+
+2009-07-04 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-footer: Added Piwik script.
 
 2009-07-04 Braden McDaniel  <braden@endoframe.com>

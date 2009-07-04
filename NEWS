@@ -1,3 +1,16 @@
+Changes new in version 0.18.0, 4 July, 2009
+========================================================================
+
+- Experimental support for Java in the Script node.
+
+- Scripting engines are now loaded as binary plug-in components.
+
+- Node implementations are now loaded as binary plug-in components.
+
+- Refactored code into more files to reduce memory usage during
+  compilation and improve performance of parallel builds.
+
+
 Changes new in version 0.17.12, 16 March, 2009
 ========================================================================
 

@@ -11,8 +11,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 7,4,0,0
- PRODUCTVERSION 0,17,99,0
+ FILEVERSION 8,0,0,0
+ PRODUCTVERSION 0,18,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -28,12 +28,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "OpenVRML OpenGL Renderer Library"
-            VALUE "FileVersion", "7, 4, 0, 0"
+            VALUE "FileVersion", "8, 0, 0, 0"
             VALUE "InternalName", "openvrml-gl"
             VALUE "LegalCopyright", "Copyright (C) 2009"
             VALUE "OriginalFilename", "openvrml-gl.dll"
             VALUE "ProductName", "OpenVRML Library"
-            VALUE "ProductVersion", "0.17.99"
+            VALUE "ProductVersion", "0.18.0"
         END
     END
     BLOCK "VarFileInfo"
