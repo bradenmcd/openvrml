@@ -1,3 +1,17 @@
+2009-07-05 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.18.1 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Updated to 9:1:0.
+
 2009-07-04 Braden McDaniel  <braden@endoframe.com>
 
 	Applied OPENVRML_API to event listener/emitter class templates.

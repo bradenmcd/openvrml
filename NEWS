@@ -1,3 +1,10 @@
+Changes new in version 0.18.1, 5 July, 2009
+========================================================================
+
+- Fixed an issue with symbol visibility for the event emitter/listener
+  class templates.
+
+
 Changes new in version 0.18.0, 4 July, 2009
 ========================================================================
 

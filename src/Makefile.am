@@ -46,7 +46,7 @@ noinst_HEADERS = \
         libopenvrml/private.h \
         openvrml-player/filechooserdialog.h
 
-LIBOPENVRML_LIBRARY_VERSION =    9:0:0
+LIBOPENVRML_LIBRARY_VERSION =    9:1:0
 LIBOPENVRML_GL_LIBRARY_VERSION = 8:0:0
 #                                | | |
 #                         +------+ | +---+
