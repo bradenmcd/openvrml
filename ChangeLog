@@ -1,5 +1,14 @@
 2009-07-04 Braden McDaniel  <braden@endoframe.com>
 
+	Applied OPENVRML_API to event listener/emitter class templates.
+
+	* src/libopenvrml/openvrml/event.h
+	(field_value_listener): Applied OPENVRML_API.
+	(node_field_value_listener): Applied OPENVRML_API.
+	(field_value_emitter): Applied OPENVRML_API.
+
+2009-07-04 Braden McDaniel  <braden@endoframe.com>
+
 	Updates for 0.18.0 release.
 
 	* README
