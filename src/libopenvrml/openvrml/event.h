@@ -57,7 +57,7 @@ namespace openvrml {
 
 
     template <typename FieldValue>
-    class field_value_listener : public virtual event_listener {
+    class OPENVRML_API field_value_listener : public virtual event_listener {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:
@@ -133,7 +133,7 @@ namespace openvrml {
 
 
     template <typename FieldValue>
-    class node_field_value_listener :
+    class OPENVRML_API node_field_value_listener :
         public virtual node_event_listener,
         public field_value_listener<FieldValue> {
     public:
@@ -240,7 +240,7 @@ namespace openvrml {
 
 
     template <typename FieldValue>
-    class field_value_emitter : public virtual event_emitter {
+    class OPENVRML_API field_value_emitter : public virtual event_emitter {
         BOOST_CLASS_REQUIRE(FieldValue, openvrml, FieldValueConcept);
 
     public:
