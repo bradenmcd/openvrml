@@ -359,9 +359,11 @@ AC_ARG_ENABLE([script-node-java],
               [AC_HELP_STRING([--disable-script-node-java],
                               [disable Script node Java support])])
 case $target_cpu in
-     x86_64) OPENVRML_JVM_ARCH=amd64 ;;
-     i?86)   OPENVRML_JVM_ARCH=i386 ;;
-     *)      OPENVRML_JVM_ARCH=$target_cpu ;;
+     x86_64)    OPENVRML_JVM_ARCH=amd64 ;;
+     i?86)      OPENVRML_JVM_ARCH=i386 ;;
+     powerpc64) OPENVRML_JVM_ARCH=ppc64 ;;
+     powerpc)   OPENVRML_JVM_ARCH=ppc ;;
+     *)         OPENVRML_JVM_ARCH=$target_cpu ;;
 esac
 AC_SUBST([OPENVRML_JVM_ARCH])
 AS_IF([test X$enable_script_node_java != Xno],
