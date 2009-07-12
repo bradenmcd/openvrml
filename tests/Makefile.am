@@ -3,7 +3,6 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml \
         -DBOOST_TEST_DYN_LINK
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
-AM_LDFLAGS = $(OPENVRML_RPATH)
 
 TESTS_ENVIRONMENT = \
         BOOST_TEST_REPORT_LEVEL=no \
