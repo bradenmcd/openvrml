@@ -1,5 +1,13 @@
 2009-07-12 Braden McDaniel  <braden@endoframe.com>
 
+	Remove obsolete configuration code supporting linking with
+	libjvm.  (We don't do that anymore.)
+
+	* examples/Makefile.am: Removed obsolete use of JNI_LIBS.
+	* m4/jdk.m4: Removed unused OV_CHECK_JNI macro.
+
+2009-07-12 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/Makefile.am: Removed obsolete use of OPENVRML_RPATH.
 
 2009-07-12 Braden McDaniel  <braden@endoframe.com>

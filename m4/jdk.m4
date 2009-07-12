@@ -15,38 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#
-# OV_CHECK_JNI
-# ------------
-# Check for a Java Native Interface implementation.  If one is found, the
-# required linker flags are included in the output variable "JNI_LIBS";
-# otherwise, the shell variable "no_jni" is set to "yes".
-#
-AC_DEFUN([OV_CHECK_JNI],
-[AC_MSG_CHECKING([for JNI library])
-AC_CACHE_VAL([ov_cv_check_jni_libjvm],
-[ov_cv_check_jni_libjvm=no
-AC_LANG_PUSH(C)
-ov_save_LIBS="${LIBS}"
-LIBS=""
-ov_check_libs="-ljvm -lgcj"
-for ov_lib in ${ov_check_libs}; do
-  LIBS="${ov_lib} ${ov_save_libs}"
-  AC_TRY_LINK([#include <jni.h>], [JNI_CreateJavaVM(0, 0, 0)],
-              [ov_cv_check_jni_libjvm=${ov_lib}; break])
-done
-LIBS="${ov_save_LIBS}"
-AC_LANG_POP(C)])
-AC_MSG_RESULT([$ov_cv_check_jni_libjvm])
-if test "X${ov_cv_check_jni_libjvm}" = "Xno"; then
-  no_jni=yes
-else
-  JNI_LIBS="${ov_cv_check_jni_libjvm}"
-fi
-AC_SUBST([JNI_LIBS])
-])
-
-
 AC_DEFUN([OV_PROG_JAVA],
 [AC_ARG_VAR([JAVA], [Java interpreter command])dnl
 AC_ARG_VAR([JAVAFLAGS], [Java interpreter flags])dnl
