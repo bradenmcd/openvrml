@@ -1,3 +1,11 @@
+2009-07-13 Braden McDaniel  <braden@endoframe.com>
+
+	Apply OPENVRML_API to *_get_type functions for GTK+ widgets.
+	GtkBuilder needs to see these symbols when reading UI XML.
+
+	* src/openvrml-player/filechooserdialog.h
+	* src/openvrml-player/curlbrowserhost.h
+
 2009-07-12 Braden McDaniel  <braden@endoframe.com>
 
 	Remove obsolete configuration code supporting linking with
