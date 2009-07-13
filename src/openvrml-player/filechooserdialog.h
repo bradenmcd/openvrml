@@ -21,6 +21,7 @@
 #   define OPENVRML_PLAYER_FILE_CHOOSER_DIALOG_H
 
 #   include <gtk/gtkfilechooserdialog.h>
+#   include <openvrml-config.h>
 
 G_BEGIN_DECLS
 
@@ -42,7 +43,7 @@ struct OpenvrmlPlayerFileChooserDialog_ {
     GtkFileChooserDialog parent_instance;
 };
 
-GType openvrml_player_file_chooser_dialog_get_type() G_GNUC_CONST;
+OPENVRML_API GType openvrml_player_file_chooser_dialog_get_type() G_GNUC_CONST;
 
 G_END_DECLS
 

@@ -21,6 +21,7 @@
 
 #   include <dbus/dbus-glib.h>
 #   include <gtk/gtksocket.h>
+#   include <openvrml-config.h>
 
 #   define OPENVRML_PLAYER_TYPE_CURL_BROWSER_HOST (openvrml_player_curl_browser_host_get_type())
 #   define OPENVRML_PLAYER_CURL_BROWSER_HOST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), OPENVRML_PLAYER_TYPE_CURL_BROWSER_HOST, OpenvrmlPlayerCurlBrowserHost))
@@ -46,7 +47,7 @@ struct OpenvrmlPlayerCurlBrowserHostClass_ {
     gchar * host_name;
 };
 
-GType openvrml_player_curl_browser_host_get_type();
+OPENVRML_API GType openvrml_player_curl_browser_host_get_type();
 
 void
 openvrml_player_curl_browser_host_load_url(OpenvrmlPlayerCurlBrowserHost * host,
