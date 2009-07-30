@@ -43,7 +43,7 @@ namespace openvrml {
 
     namespace gl {
 
-        class OPENVRML_API viewer : public openvrml::viewer {
+        class OPENVRML_GL_API viewer : public openvrml::viewer {
             typedef std::map<const node *, GLuint> list_map_t;
             struct delete_list;
             list_map_t list_map_;
