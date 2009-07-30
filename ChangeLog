@@ -1,3 +1,36 @@
+2009-07-30 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for building on windows.  Revert change that removed
+	OPENVRML_JAVASCRIPT_API, OPENVRML_JAVASCRIPT_LOCAL,
+	OPENVRML_JAVA_API, OPENVRML_JAVA_LOCAL, OPENVRML_GL_API, and
+	OPENVRML_GL_LOCAL preprocessor definitions.  Include Boost headers
+	that appear to be necessary on Windows.
+
+	* configure.ac: Revert change that removed
+	OPENVRML_JAVASCRIPT_API, OPENVRML_JAVASCRIPT_LOCAL,
+	OPENVRML_JAVA_API, and OPENVRML_JAVA_LOCAL preprocessor
+	definitions.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj:
+	Define preprocessor symbols OPENVRML_JAVASCRIPT_API and
+	OPENVRML_JAVASCRIPT_LOCAL.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Removed references to obsolete files
+	src/libopenvrml/openvrml/read_write_mutex.{cpp,h}.
+	* src/libopenvrml/openvrml/event.h: Do not apply OPENVRML_API to
+	node_field_value_listener; the Microsoft compiler does not like
+	__declspec(dllimport) applied to class templates.
+	* src/libopenvrml/openvrml/field_value.h: Include
+	<boost/thread/locks.hpp>.
+	* src/libopenvrml/openvrml/node.h: Include
+	<boost/thread/mutex.hpp>.
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp: Apply
+	OPENVRML_GL_LOCAL.
+	* src/libopenvrml-gl/openvrml/gl/viewer.h: Apply OPENVRML_GL_API.
+	* src/script/java.cpp: Apply OPENVRML_JAVA_API and
+	OPENVRML_JAVA_LOCAL.
+	* src/script/javascript.cpp: Apply OPENVRML_JAVASCRIPT_API and
+	OPENVRML_JAVASCRIPT_LOCAL.
+
 2009-07-13 Braden McDaniel  <braden@endoframe.com>
 
 	Apply OPENVRML_API to *_get_type functions for GTK+ widgets.

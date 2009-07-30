@@ -276,10 +276,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\read_write_mutex.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\rendering_context.cpp"
 				>
 			</File>
@@ -398,10 +394,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\proto.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\read_write_mutex.h"
 				>
 			</File>
 			<File

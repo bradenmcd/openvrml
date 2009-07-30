@@ -133,7 +133,7 @@ namespace openvrml {
 
 
     template <typename FieldValue>
-    class OPENVRML_API node_field_value_listener :
+    class node_field_value_listener :
         public virtual node_event_listener,
         public field_value_listener<FieldValue> {
     public:

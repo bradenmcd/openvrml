@@ -107,18 +107,18 @@ using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
-    OPENVRML_LOCAL lt_dlhandle libjvm_handle;
-    OPENVRML_LOCAL jint (*CreateJavaVM)(JavaVM **, void **, void *);
+    OPENVRML_JAVA_LOCAL lt_dlhandle libjvm_handle;
+    OPENVRML_JAVA_LOCAL jint (*CreateJavaVM)(JavaVM **, void **, void *);
 
-    OPENVRML_LOCAL JavaVM * vm;
+    OPENVRML_JAVA_LOCAL JavaVM * vm;
 
-    OPENVRML_LOCAL class OPENVRML_LOCAL load_libjvm {
+    OPENVRML_JAVA_LOCAL class OPENVRML_JAVA_LOCAL load_libjvm {
     public:
         load_libjvm();
         ~load_libjvm();
     } load_libjvm_;
 
-    OPENVRML_LOCAL const std::string
+    OPENVRML_JAVA_LOCAL const std::string
     create_searchpath_from_java_home(const std::string & java_home)
     {
         assert(!java_home.empty());
@@ -192,7 +192,7 @@ namespace {
     /**
      * @brief Subclass of @c openvrml::script for JSAI.
      */
-    class OPENVRML_LOCAL script : public openvrml::script {
+    class OPENVRML_JAVA_LOCAL script : public openvrml::script {
 
         friend void JNICALL (::Java_vrml_node_Script_updateField)(
             JNIEnv * env,
@@ -245,7 +245,7 @@ namespace {
     };
 
 
-    class OPENVRML_LOCAL script_factory : public openvrml::script_factory {
+    class OPENVRML_JAVA_LOCAL script_factory : public openvrml::script_factory {
     public:
         virtual ~script_factory() OPENVRML_NOTHROW;
 
@@ -257,7 +257,7 @@ namespace {
 
 } // namespace
 
-extern "C" OPENVRML_API void
+extern "C" OPENVRML_JAVA_API void
 openvrml_script_LTX_register_factory(
     openvrml::script_factory_registry & registry)
 {
@@ -304,7 +304,7 @@ void JNICALL JNI_OnUnload(JavaVM *, void *)
 
 namespace {
 
-    OPENVRML_LOCAL jint create_java_vm(JavaVM *& vm, JNIEnv *& env)
+    OPENVRML_JAVA_LOCAL jint create_java_vm(JavaVM *& vm, JNIEnv *& env)
     {
         using std::ostringstream;
 
@@ -331,7 +331,7 @@ namespace {
         return CreateJavaVM(&vm, reinterpret_cast<void **>(&env), &args);
     }
 
-    OPENVRML_LOCAL jobject create_url(JNIEnv & env, const char * const url)
+    OPENVRML_JAVA_LOCAL jobject create_url(JNIEnv & env, const char * const url)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
         using boost::ref;
@@ -398,7 +398,7 @@ namespace {
         return result;
     }
 
-    OPENVRML_LOCAL jobject create_class_loader(JNIEnv & env,
+    OPENVRML_JAVA_LOCAL jobject create_class_loader(JNIEnv & env,
                                                     const std::string & url_str)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
@@ -707,7 +707,7 @@ namespace {
     // This function simply returns 0 if any Java exceptions are thrown.  It
     // does not clear the exception state.
     //
-    OPENVRML_LOCAL jobject
+    OPENVRML_JAVA_LOCAL jobject
     clone_Field(JNIEnv & env,
                 const openvrml::field_value & value,
                 const bool const_ = false)
@@ -774,7 +774,7 @@ namespace {
     // This function simply returns 0 if any Java exceptions are thrown.  It
     // does not clear the exception state.
     //
-    OPENVRML_LOCAL jobject
+    OPENVRML_JAVA_LOCAL jobject
     create_Field(JNIEnv & env,
                  const openvrml::field_value::type_id type,
                  const bool const_ = false)
@@ -834,7 +834,7 @@ namespace {
         return result;
     }
 
-    OPENVRML_LOCAL void
+    OPENVRML_JAVA_LOCAL void
     init_script_fields(
         JNIEnv & env,
         const jclass script_class,
@@ -883,7 +883,7 @@ namespace {
         }
     }
 
-    OPENVRML_LOCAL jobject
+    OPENVRML_JAVA_LOCAL jobject
     clone_NodeField(JNIEnv & env,
                     const openvrml::field_value & value)
         OPENVRML_THROW1(std::bad_alloc)
@@ -940,7 +940,7 @@ namespace {
         return result;
     }
 
-    OPENVRML_LOCAL void
+    OPENVRML_JAVA_LOCAL void
     init_script_eventouts(
         JNIEnv & env,
         const jclass script_class,
@@ -1233,7 +1233,7 @@ namespace {
     // This function simply returns 0 if any Java exceptions are thrown.  It
     // does not clear the exception state.
     //
-    OPENVRML_LOCAL jobject
+    OPENVRML_JAVA_LOCAL jobject
     clone_ConstField(JNIEnv & env, const openvrml::field_value & value)
         OPENVRML_THROW1(std::bad_alloc)
     {
@@ -1507,7 +1507,7 @@ namespace {
      * @c long member named &ldquo;peer&rdquo;.
      */
     template <typename FieldValue>
-    OPENVRML_LOCAL FieldValue & get_Field_peer(JNIEnv & env,
+    OPENVRML_JAVA_LOCAL FieldValue & get_Field_peer(JNIEnv & env,
                                                     const jobject obj)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
@@ -1545,7 +1545,7 @@ namespace {
         return *peer;
     }
 
-    OPENVRML_LOCAL openvrml::browser &
+    OPENVRML_JAVA_LOCAL openvrml::browser &
     get_Browser_peer(JNIEnv & env, const jobject obj)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
@@ -1695,7 +1695,7 @@ void JNICALL Java_vrml_Browser_replaceWorld(JNIEnv * /* env */,
 
 namespace {
 
-    OPENVRML_LOCAL jobject
+    OPENVRML_JAVA_LOCAL jobject
     create_Node(JNIEnv & env, const boost::intrusive_ptr<openvrml::node> & node)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
@@ -1757,7 +1757,7 @@ namespace {
         return result;
     }
 
-    OPENVRML_LOCAL jobjectArray
+    OPENVRML_JAVA_LOCAL jobjectArray
     create_BaseNode_array(
         JNIEnv & env,
         std::vector<boost::intrusive_ptr<openvrml::node> > & nodes)
@@ -1892,7 +1892,7 @@ void JNICALL Java_vrml_Browser_createVrmlFromURL(JNIEnv * /* env */,
 
 namespace {
 
-    OPENVRML_LOCAL script &
+    OPENVRML_JAVA_LOCAL script &
     get_Script_peer(JNIEnv & env, const jobject obj)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
@@ -1926,7 +1926,7 @@ namespace {
         return *peer;
     }
 
-    OPENVRML_LOCAL const boost::intrusive_ptr<openvrml::node> &
+    OPENVRML_JAVA_LOCAL const boost::intrusive_ptr<openvrml::node> &
     get_BaseNode_peer(JNIEnv & env, const jobject obj)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
