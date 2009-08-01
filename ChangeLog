@@ -1,3 +1,7 @@
+2009-08-01 Braden McDaniel  <braden@endoframe.com>
+
+	* src/script/java.cpp: Removed obsolete path separator definition.
+
 2009-07-30 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for building on windows.  Revert change that removed
