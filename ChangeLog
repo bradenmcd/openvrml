@@ -1,5 +1,13 @@
 2009-08-02 Braden McDaniel  <braden@endoframe.com>
 
+	Removed obsolete -I flags when building libopenvrml.
+
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_CPPFLAGS): Removed obsolete -I flags.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+
+2009-08-02 Braden McDaniel  <braden@endoframe.com>
+
 	Moved libltdl/LoadLibrary wrapper to its own static library.
 
 	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln

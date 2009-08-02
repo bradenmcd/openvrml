@@ -66,8 +66,6 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -I$(top_srcdir)/src/local/libopenvrml-dl \
-        -I$(srcdir)/node \
-        -I$(srcdir)/node/vrml97 \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
         -DOPENVRML_PKGLIBDIR_=\"$(pkglibdir)\" \
