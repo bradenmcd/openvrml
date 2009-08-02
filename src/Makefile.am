@@ -719,7 +719,7 @@ libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
 libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 
 if ENABLE_XEMBED
-noinst_LTLIBRARIES = libopenvrml-control/libopenvrml-control.la
+noinst_LTLIBRARIES = local/libopenvrml-control.la
 libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
 session_bus_servicesdir = $(datadir)/dbus-1/services
 session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
@@ -728,18 +728,18 @@ BUILT_SOURCES += \
         openvrml-xembed/browser-factory-server-glue.h \
         openvrml-xembed/browser-host-client-glue.h
 endif
-libopenvrml_control_libopenvrml_control_la_SOURCES = \
-        libopenvrml-control/openvrml_control/browser.cpp \
-        libopenvrml-control/openvrml_control/browser.h
-libopenvrml_control_libopenvrml_control_la_CPPFLAGS = \
+local_libopenvrml_control_la_SOURCES = \
+        local/libopenvrml-control/openvrml_control/browser.cpp \
+        local/libopenvrml-control/openvrml_control/browser.h
+local_libopenvrml_control_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-libopenvrml_control_libopenvrml_control_la_LIBADD = \
+local_libopenvrml_control_la_LIBADD = \
         libopenvrml/libopenvrml.la
 
 openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_builddir)/src/openvrml-xembed \
-        -I$(top_srcdir)/src/libopenvrml-control \
+        -I$(top_srcdir)/src/local/libopenvrml-control \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -I$(top_builddir)/src/libopenvrml-gl \
@@ -761,7 +761,7 @@ openvrml_xembed_openvrml_xembed_LDFLAGS = \
         $(DBUS_G_LIBS) \
         $(GTKGL_LIBS)
 openvrml_xembed_openvrml_xembed_LDADD = \
-        libopenvrml-control/libopenvrml-control.la \
+        local/libopenvrml-control.la \
         libopenvrml-gl/libopenvrml-gl.la
 
 openvrml_xembed_datadir = $(datadir)/openvrml-xembed
