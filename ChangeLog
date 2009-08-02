@@ -1,3 +1,24 @@
+2009-08-02 Braden McDaniel  <braden@endoframe.com>
+
+	Moved libltdl/LoadLibrary wrapper to its own convenience library.
+
+	* src/Makefile.am
+	(noinst_LTLIBRARIES): Added local/libopenvrml-dl.la.
+	(libopenvrml_libopenvrml_la_CPPFLAGS): Add libopenvrml-dl source
+	directory to the include path.
+	(libopenvrml_libopenvrml_la_SOURCES): Removed
+	libopenvrml/openvrml/local/dl.{cpp,h}.
+	(libopenvrml_libopenvrml_la_LIBADD): Added libopenvrml-dl.la;
+	removed -lltdl.
+	(local_libopenvrml_dl_la_SOURCES): Added.
+	(local_libopenvrml_dl_la_CPPFLAGS): Add libopenvrml build source
+	directories to the include path.
+	(local_libopenvrml_dl_la_LIBADD): Link with libltdl.
+	* src/libopenvrml/openvrml/local/dl.cpp: Removed.
+	* src/libopenvrml/openvrml/local/dl.h: Removed.
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp: Added.
+	* src/local/libopenvrml-dl/openvrml/local/dl.h: Added.
+
 2009-08-01 Braden McDaniel  <braden@endoframe.com>
 
 	Moved src/libopenvrml-control to src/local/libopenvrml-control.

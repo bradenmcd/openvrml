@@ -6,6 +6,7 @@ lib_LTLIBRARIES = libopenvrml/libopenvrml.la
 if ENABLE_GL_RENDERER
 lib_LTLIBRARIES += libopenvrml-gl/libopenvrml-gl.la
 endif
+noinst_LTLIBRARIES = local/libopenvrml-dl.la
 
 pkginclude_HEADERS = \
         libopenvrml/openvrml-config.h \
@@ -64,6 +65,7 @@ LIBOPENVRML_GL_LIBRARY_VERSION = 8:0:0
 libopenvrml_libopenvrml_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
+        -I$(top_srcdir)/src/local/libopenvrml-dl \
         -I$(srcdir)/node \
         -I$(srcdir)/node/vrml97 \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
@@ -96,8 +98,6 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/node_impl_util.cpp \
         libopenvrml/openvrml/local/conf.cpp \
         libopenvrml/openvrml/local/conf.h \
-        libopenvrml/openvrml/local/dl.cpp \
-        libopenvrml/openvrml/local/dl.h \
         libopenvrml/openvrml/local/uri.cpp \
         libopenvrml/openvrml/local/uri.h \
         libopenvrml/openvrml/local/xml_reader.cpp \
@@ -122,9 +122,17 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
         $(PTHREAD_LIBS)
 
 libopenvrml_libopenvrml_la_LIBADD = \
+        local/libopenvrml-dl.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
-        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
-	-lltdl
+        -lboost_filesystem$(BOOST_LIB_SUFFIX)
+
+local_libopenvrml_dl_la_SOURCES = \
+        local/libopenvrml-dl/openvrml/local/dl.cpp \
+        local/libopenvrml-dl/openvrml/local/dl.h
+local_libopenvrml_dl_la_CPPFLAGS = \
+        -I$(top_builddir)/src/libopenvrml \
+        -I$(top_srcdir)/src/libopenvrml
+local_libopenvrml_dl_la_LIBADD = -lltdl
 
 openvrmlscriptdir = $(pkglibdir)/script
 
@@ -719,7 +727,7 @@ libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
 libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
 
 if ENABLE_XEMBED
-noinst_LTLIBRARIES = local/libopenvrml-control.la
+noinst_LTLIBRARIES += local/libopenvrml-control.la
 libexec_PROGRAMS = openvrml-xembed/openvrml-xembed
 session_bus_servicesdir = $(datadir)/dbus-1/services
 session_bus_services_DATA = openvrml-xembed/org.openvrml.BrowserControl.service
