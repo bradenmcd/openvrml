@@ -97,12 +97,6 @@
 #   include <config.h>
 # endif
 
-# ifdef _WIN32
-#   define PATH_SEPARATOR ";"
-# else /* UNIX and macintosh */
-#   define PATH_SEPARATOR ":"
-# endif
-
 using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
