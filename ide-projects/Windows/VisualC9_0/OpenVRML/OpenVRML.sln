@@ -1,6 +1,9 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml", "openvrml\openvrml.vcproj", "{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{95FA0E9B-DF2F-48C3-B07D-AB3A93E44E5C} = {95FA0E9B-DF2F-48C3-B07D-AB3A93E44E5C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml-gl", "openvrml-gl\openvrml-gl.vcproj", "{141F90C2-6630-4D7A-834F-D5D57C6CFC24}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -119,6 +122,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x3d-cad-geometry", "x3d-cad
 		{E5287CD2-4BAC-4341-AF28-A1F9C0F5949C} = {E5287CD2-4BAC-4341-AF28-A1F9C0F5949C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvrml-dl", "openvrml-dl\openvrml-dl.vcproj", "{95FA0E9B-DF2F-48C3-B07D-AB3A93E44E5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -221,6 +226,10 @@ Global
 		{D9D29F52-CFE0-42A1-A150-47CBAAE89030}.Debug|Win32.Build.0 = Debug|Win32
 		{D9D29F52-CFE0-42A1-A150-47CBAAE89030}.Release|Win32.ActiveCfg = Release|Win32
 		{D9D29F52-CFE0-42A1-A150-47CBAAE89030}.Release|Win32.Build.0 = Release|Win32
+		{95FA0E9B-DF2F-48C3-B07D-AB3A93E44E5C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{95FA0E9B-DF2F-48C3-B07D-AB3A93E44E5C}.Debug|Win32.Build.0 = Debug|Win32
+		{95FA0E9B-DF2F-48C3-B07D-AB3A93E44E5C}.Release|Win32.ActiveCfg = Release|Win32
+		{95FA0E9B-DF2F-48C3-B07D-AB3A93E44E5C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
