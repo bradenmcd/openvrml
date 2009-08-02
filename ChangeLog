@@ -1,5 +1,15 @@
 2009-08-02 Braden McDaniel  <braden@endoframe.com>
 
+	Moved libltdl/LoadLibrary wrapper to its own static library.
+
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Use openvrml-dl static library.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-dl/openvrml-dl.vcproj:
+	Added.
+
+2009-08-02 Braden McDaniel  <braden@endoframe.com>
+
 	Moved libltdl/LoadLibrary wrapper to its own convenience library.
 
 	* src/Makefile.am

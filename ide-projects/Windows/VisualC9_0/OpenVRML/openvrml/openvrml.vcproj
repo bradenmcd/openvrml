@@ -232,10 +232,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\dl.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\event.cpp"
 				>
 			</File>
@@ -338,10 +334,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\conf.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\dl.h"
 				>
 			</File>
 			<File
