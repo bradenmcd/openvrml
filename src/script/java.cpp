@@ -79,10 +79,10 @@
 # include <vrml_node_Node.h>
 # include <vrml_node_Script.h>
 
+# include <openvrml/local/dl.h>
 # include <openvrml/browser.h>
 # include <openvrml/scene.h>
 # include <private.h>
-# include <ltdl.h>
 # include <boost/array.hpp>
 # include <boost/filesystem/path.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
@@ -101,7 +101,7 @@ using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
-    OPENVRML_JAVA_LOCAL lt_dlhandle libjvm_handle;
+    OPENVRML_JAVA_LOCAL openvrml::local::dl::handle libjvm_handle;
     OPENVRML_JAVA_LOCAL jint (*CreateJavaVM)(JavaVM **, void **, void *);
 
     OPENVRML_JAVA_LOCAL JavaVM * vm;
@@ -112,54 +112,78 @@ namespace {
         ~load_libjvm();
     } load_libjvm_;
 
-    OPENVRML_JAVA_LOCAL const std::string
-    create_searchpath_from_java_home(const std::string & java_home)
+    OPENVRML_JAVA_LOCAL
+    int
+    prepend_java_home_libdirs_to_searchpath(const std::string & java_home)
     {
         assert(!java_home.empty());
-        std::ostringstream searchpath;
-        searchpath << java_home << "/lib/" << OPENVRML_JVM_ARCH << "/client:"
-                   << java_home << "/lib/" << OPENVRML_JVM_ARCH << "/server";
-        return searchpath.str();
+
+        using std::ostringstream;
+        using namespace openvrml::local;
+
+        static const ostringstream::iostate exceptions = ostringstream::eofbit
+                                                       | ostringstream::failbit
+                                                       | ostringstream::badbit;
+        int result = 0;
+        {
+            ostringstream libdir;
+            libdir.exceptions(exceptions);
+            libdir << java_home << "/lib/" << OPENVRML_JVM_ARCH << "/client";
+            result = dl::prepend_to_searchpath(libdir.str().c_str());
+            if (result != 0) { return result; }
+        }
+        {
+            ostringstream libdir;
+            libdir.exceptions(exceptions);
+            libdir << java_home << "/lib/" << OPENVRML_JVM_ARCH << "/server";
+            result = dl::prepend_to_searchpath(libdir.str().c_str());
+            if (result != 0) { return result; }
+        }
+        return result;
     }
 
     load_libjvm::load_libjvm()
     {
-        int result = lt_dlinit();
+        using namespace openvrml::local;
+
+        int result = dl::init();
         if (result != 0) {
-            std::cerr << lt_dlerror() << std::endl;
+            std::cerr << dl::error() << std::endl;
             return;
-        }
-        std::ostringstream jvm_searchpath;
-        const char * const java_home_env = getenv("JAVA_HOME");
-        if (java_home_env) {
-            jvm_searchpath << create_searchpath_from_java_home(java_home_env);
         }
         const std::string java_home = JAVA_HOME;
-        if (!java_home.empty()
-            && (!java_home_env || java_home != java_home_env)) {
-            if (!jvm_searchpath.str().empty()) { jvm_searchpath << ':'; }
-            jvm_searchpath << create_searchpath_from_java_home(java_home);
+        if (!java_home.empty()) {
+            result = prepend_java_home_libdirs_to_searchpath(java_home);
+            if (result != 0) {
+                std::cerr << dl::error() << std::endl;
+                return;
+            }
         }
-        result = lt_dlsetsearchpath(jvm_searchpath.str().c_str());
-        if (result != 0) {
-            std::cerr << lt_dlerror() << std::endl;
-            return;
+        const char * const java_home_env = getenv("JAVA_HOME");
+        if (java_home_env && (java_home_env != java_home)) {
+            result = prepend_java_home_libdirs_to_searchpath(java_home_env);
+            if (result != 0) {
+                std::cerr << dl::error() << std::endl;
+                return;
+            }
         }
-        libjvm_handle = lt_dlopen("libjvm.so");
+        libjvm_handle = dl::open("libjvm");
         if (!libjvm_handle) {
             std::cerr << lt_dlerror() << std::endl;
             return;
         }
         CreateJavaVM =
             reinterpret_cast<jint (*)(JavaVM **, void **, void *)>(
-                lt_dlsym(libjvm_handle, "JNI_CreateJavaVM"));
+                dl::sym(libjvm_handle, "JNI_CreateJavaVM"));
         if (!CreateJavaVM) {
-            std::cerr << lt_dlerror() << std::endl;
+            std::cerr << dl::error() << std::endl;
         }
     }
 
     load_libjvm::~load_libjvm()
     {
+        using namespace openvrml::local;
+
         //
         // The Java VM doesn't seem to play very nicely with DestroyJavaVM; it
         // seems to wait for some internal threads to finish; and they never
@@ -173,13 +197,13 @@ namespace {
         //     vm->DestroyJavaVM();
         // }
         if (libjvm_handle) {
-            int result = lt_dlclose(libjvm_handle);
+            int result = dl::close(libjvm_handle);
             if (result != 0) {
-                std::cerr << lt_dlerror() << std::endl;
+                std::cerr << dl::error() << std::endl;
                 return;
             }
         }
-        lt_dlexit();
+        dl::exit();
     }
 
 

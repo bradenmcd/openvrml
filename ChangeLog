@@ -1,3 +1,27 @@
+2009-08-03 Braden McDaniel  <braden@endoframe.com>
+
+	Converted Java scripting backend to use libopenvrml-dl to load
+	libjvm rather than using libltdl directly.
+
+	* src/Makefile.am
+	(script_java_la_CPPFLAGS): Add the libopenvrml-dl source directory
+	to the include path.
+	(script_java_la_LIBADD): Added libopenvrml-dl.
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp: Added function
+	openvrml::local::dl::prepend_to_searchpath.
+	* src/local/libopenvrml-dl/openvrml/local/dl.h: Added function
+	openvrml::local::dl::prepend_to_searchpath.
+	* src/script/java.cpp
+	(create_searchpath_from_java_home(const std::string &)): Removed;
+	replaced with prepend_java_home_libdirs_to_searchpath.
+	(prepend_java_home_libdirs_to_searchpath(const std::string &)):
+	Given a location for the Java Runtime Environment, prepend the
+	possible locations of libjvm to the runtime library search path.
+	(load_libjvm::load_libjvm()): Use libopenvrml-dl functions instead
+	of libltdl ones.
+	(load_libjvm::~load_libjvm()): Use libopenvrml-dl functions instead
+	of libltdl ones.
+
 2009-08-02 Braden McDaniel  <braden@endoframe.com>
 
 	Removed obsolete -I flags when building libopenvrml.

@@ -163,6 +163,7 @@ script_java_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -I$(top_builddir)/src/script/java \
+        -I$(top_srcdir)/src/local/libopenvrml-dl \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
         -DJAVA_HOME=\"$(JAVA_HOME)\" \
@@ -174,7 +175,8 @@ script_java_la_LDFLAGS = \
         -no-undefined \
         -avoid-version
 script_java_la_LIBADD = \
-        libopenvrml/libopenvrml.la
+        libopenvrml/libopenvrml.la \
+        local/libopenvrml-dl.la
 
 openvrmlnodedir = $(pkglibdir)/node
 openvrmlnode_LTLIBRARIES = \
