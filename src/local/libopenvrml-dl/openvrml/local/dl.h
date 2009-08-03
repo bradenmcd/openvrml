@@ -44,6 +44,8 @@ namespace openvrml {
                             int (*func)(const char * filename, void * data),
                             void * data);
 
+            OPENVRML_LOCAL int prepend_to_searchpath(const char * dir);
+
 #   ifdef _WIN32
             typedef HMODULE handle;
 #   else

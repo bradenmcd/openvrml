@@ -117,6 +117,21 @@ openvrml::local::dl::foreachfile(const char * search_path,
 # endif
 }
 
+/**
+ * @internal
+ *
+ * @brief Prepend @p dir to the dynamic library search path.
+ */
+int openvrml::local::dl::prepend_to_searchpath(const char * const dir)
+{
+# ifdef _WIN32
+    return SetDllDirectory(dir);
+# else
+    const char * const before = lt_dlgetsearchpath();
+    return lt_dlinsertsearchdir(before, dir);
+# endif
+}
+
 openvrml::local::dl::handle openvrml::local::dl::open(const char * filename)
 {
 # ifdef _WIN32
