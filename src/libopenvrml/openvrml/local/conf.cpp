@@ -21,6 +21,7 @@
 # include "conf.h"
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
+# include <boost/tokenizer.hpp>
 # ifdef _WIN32
 #   include <windows.h>
 #   include <vector>
@@ -132,10 +133,10 @@ namespace {
 # endif
 }
 
-const std::string openvrml::local::conf::datadir()
+const boost::filesystem::path openvrml::local::conf::datadir()
     OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
 {
-    std::string result;
+    boost::filesystem::path result;
     try {
         result = get_env("OPENVRML_DATADIR");
     } catch (const no_environment_var &) {
@@ -156,24 +157,55 @@ namespace {
         ':';
 # endif
 
-    OPENVRML_LOCAL void append_to_path(std::string & path,
-                                       const std::string & appended_part)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        if (!path.empty() && !appended_part.empty()) {
-            path += path_separator;
+    struct OPENVRML_LOCAL search_path_tokenizer {
+        template <typename Iterator, typename Token>
+            bool operator()(Iterator & next, Iterator end, Token & tok)
+        {
+            while (next != end) {
+                if (*next == path_separator) {
+                    ++next;
+                    break;
+                }
+                this->tok_.push_back(*next);
+                ++next;
+            }
+            if (!this->tok_.empty()) {
+                tok = this->tok_;
+                this->tok_.clear();
+                return true;
+            }
+            return false;
         }
-        path += appended_part;
-    }
+
+        void reset()
+        {
+            this->tok_.clear();
+        }
+
+    private:
+        std::string tok_;
+    };
 }
 
-const std::string openvrml::local::conf::node_path()
+const std::vector<boost::filesystem::path> openvrml::local::conf::node_path()
     OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
 {
+    using std::back_inserter;
+    using std::copy;
+    using boost::filesystem::path;
+    typedef boost::tokenizer<search_path_tokenizer> tokenizer_t;
+
+    std::vector<path> result;
+    search_path_tokenizer tokenizer_func;
+
     std::string env_path;
     try {
         env_path = get_env("OPENVRML_NODE_PATH");
     } catch (const no_environment_var &) {}
+
+    tokenizer_t env_path_tokenizer(env_path, tokenizer_func);
+    copy(env_path_tokenizer.begin(), env_path_tokenizer.end(),
+         back_inserter(result));
 
     std::string system_path;
 # ifdef _WIN32
@@ -184,18 +216,32 @@ const std::string openvrml::local::conf::node_path()
     system_path = OPENVRML_PKGLIBDIR_ "/node";
 # endif
 
-    std::string result = env_path;
-    append_to_path(result, system_path);
+    tokenizer_t system_path_tokenizer(system_path, tokenizer_func);
+    copy(system_path_tokenizer.begin(), system_path_tokenizer.end(),
+         back_inserter(result));
+
     return result;
 }
 
-const std::string openvrml::local::conf::script_path()
+const std::vector<boost::filesystem::path> openvrml::local::conf::script_path()
     OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
 {
+    using std::back_inserter;
+    using std::copy;
+    using boost::filesystem::path;
+    typedef boost::tokenizer<search_path_tokenizer> tokenizer_t;
+
+    std::vector<path> result;
+    search_path_tokenizer tokenizer_func;
+
     std::string env_path;
     try {
         env_path = get_env("OPENVRML_SCRIPT_PATH");
     } catch (const no_environment_var &) {}
+
+    tokenizer_t env_path_tokenizer(env_path, tokenizer_func);
+    copy(env_path_tokenizer.begin(), env_path_tokenizer.end(),
+         back_inserter(result));
 
     std::string system_path;
 # ifdef _WIN32
@@ -206,7 +252,9 @@ const std::string openvrml::local::conf::script_path()
     system_path = OPENVRML_PKGLIBDIR_ "/script";
 # endif
 
-    std::string result = env_path;
-    append_to_path(result, system_path);
+    tokenizer_t system_path_tokenizer(system_path, tokenizer_func);
+    copy(system_path_tokenizer.begin(), system_path_tokenizer.end(),
+         back_inserter(result));
+
     return result;
 }

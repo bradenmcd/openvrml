@@ -1,3 +1,57 @@
+2009-08-07 Braden McDaniel  <braden@endoframe.com>
+
+	Modified openvrml::local::dl interface to use
+	boost::filesystem::path and std::string.
+
+	* src/Makefile.am
+	(local_libopenvrml_dl_la_LIBADD): Added libboost_filesystem
+	dependency.
+	* src/libopenvrml/openvrml/local/conf.cpp
+	(openvrml::local::conf::datadir()): Return a
+	boost::filesystem::path.
+	(openvrml::local::conf::node_path()): Return a std::vector of
+	boost::filesystem::path to represent the node module search path.
+	(openvrml::local::conf::script_path()): Return a std::vector of
+	boost::filesystem::path to represent the script module search
+	path.
+	* src/libopenvrml/openvrml/local/conf.h
+	(openvrml::local::conf::datadir()): Return a
+	boost::filesystem::path.
+	(openvrml::local::conf::node_path()): Return a std::vector of
+	boost::filesystem::path to represent the node module search path.
+	(openvrml::local::conf::script_path()): Return a std::vector of
+	boost::filesystem::path to represent the script module search
+	path.
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
+	(openvrml_open_node_module(const std::string &, void *)): Changed
+	signature to use std::string.
+	(openvrml::local::node_metatype_registry_impl::node_metatype_registry_impl(openvrml::browser&)):
+	Use a std::vector of boost::filesystem::path to represent the node
+	module search path.
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.h
+	(node_metatype_registry_impl): Use std::string in the signature of
+	openvrml_open_node_module; changed type of sym to std::string.
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
+	(openvrml::local::dl::foreachfile(const
+	std::vector<boost::filesystem::path> &, int (*)(const
+	std::string&, void *), void *)): Use boost::filesystem::path and
+	std::string.
+	(openvrml::local::dl::prepend_to_searchpath(const
+	boost::filesystem::path &)): Use boost::filesystem::path.
+	(openvrml::local::dl::open(const std::string &)): Use std::string.
+	(openvrml::local::dl::sym(handle, const std::string &)): Use
+	std::string.
+	* src/local/libopenvrml-dl/openvrml/local/dl.h
+	(openvrml::local::dl::foreachfile(const
+	std::vector<boost::filesystem::path> &, int (*)(const
+	std::string&, void *), void *)): Use boost::filesystem::path and
+	std::string.
+	(openvrml::local::dl::prepend_to_searchpath(const
+	boost::filesystem::path &)): Use boost::filesystem::path.
+	(openvrml::local::dl::open(const std::string &)): Use std::string.
+	(openvrml::local::dl::sym(handle, const std::string &)): Use
+	std::string.
+
 2009-08-03 Braden McDaniel  <braden@endoframe.com>
 
 	Converted Java scripting backend to use libopenvrml-dl to load

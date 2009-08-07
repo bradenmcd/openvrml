@@ -130,7 +130,9 @@ local_libopenvrml_dl_la_SOURCES = \
 local_libopenvrml_dl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
-local_libopenvrml_dl_la_LIBADD = -lltdl
+local_libopenvrml_dl_la_LIBADD = \
+        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
+        -lltdl
 
 openvrmlscriptdir = $(pkglibdir)/script
 

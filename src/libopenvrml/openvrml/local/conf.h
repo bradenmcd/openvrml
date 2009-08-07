@@ -22,8 +22,9 @@
 #   define OPENVRML_LOCAL_CONF_H
 
 #   include <openvrml-common.h>
+#   include <boost/filesystem/path.hpp>
 #   include <stdexcept>
-#   include <string>
+#   include <vector>
 
 namespace openvrml {
 
@@ -31,11 +32,15 @@ namespace openvrml {
 
         namespace conf {
 
-            OPENVRML_LOCAL const std::string datadir()
+            OPENVRML_LOCAL const boost::filesystem::path datadir()
                 OPENVRML_THROW2(std::runtime_error, std::bad_alloc);
-            OPENVRML_LOCAL const std::string node_path()
+
+            OPENVRML_LOCAL
+            const std::vector<boost::filesystem::path> node_path()
                 OPENVRML_THROW2(std::runtime_error, std::bad_alloc);
-            OPENVRML_LOCAL const std::string script_path()
+
+            OPENVRML_LOCAL
+            const std::vector<boost::filesystem::path> script_path()
                 OPENVRML_THROW2(std::runtime_error, std::bad_alloc);
         }
     }

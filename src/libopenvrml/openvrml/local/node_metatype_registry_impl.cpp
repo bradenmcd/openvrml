@@ -27,10 +27,10 @@
 
 using namespace boost::multi_index::detail;  // for scope_guard
 
-const char openvrml::local::node_metatype_registry_impl::sym[33] =
+const std::string openvrml::local::node_metatype_registry_impl::sym =
     "openvrml_register_node_metatypes";
 
-int openvrml_open_node_module(const char * const filename, void * const data)
+int openvrml_open_node_module(const std::string & filename, void * const data)
 {
     using openvrml::node_metatype_registry;
     using namespace openvrml::local;
@@ -75,9 +75,9 @@ node_metatype_registry_impl(openvrml::browser & b):
         throw std::runtime_error("dlinit_failure");
     }
 
-    const std::string node_path = conf::node_path();
+    const std::vector<boost::filesystem::path> & node_path = conf::node_path();
 
-    result = dl::foreachfile(node_path.c_str(),
+    result = dl::foreachfile(node_path,
                              openvrml_open_node_module,
                              this);
     assert(result == 0); // We always return 0 from the callback.
