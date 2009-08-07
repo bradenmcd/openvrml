@@ -24,8 +24,9 @@
 #   include <openvrml/local/dl.h>
 #   include <openvrml/node.h>
 
-extern "C" OPENVRML_LOCAL int openvrml_open_node_module(const char * filename,
-                                                        void * data);
+extern "C"
+OPENVRML_LOCAL
+int openvrml_open_node_module(const std::string & filename, void * data);
 
 namespace openvrml {
 
@@ -36,8 +37,10 @@ namespace openvrml {
     namespace local {
 
         class OPENVRML_LOCAL node_metatype_registry_impl : boost::noncopyable {
-            friend int (::openvrml_open_node_module)(const char * filename,
-                                                     void * data);
+            friend
+            int (::openvrml_open_node_module)(const std::string & filename,
+                                              void * data);
+
             mutable boost::shared_mutex mutex_;
 
             openvrml::browser & browser_;
@@ -50,7 +53,7 @@ namespace openvrml {
             mutable node_metatype_map_t node_metatype_map_;
 
         public:
-            static const char sym[33];
+            static const std::string sym;
 
             explicit node_metatype_registry_impl(openvrml::browser & b);
             ~node_metatype_registry_impl() OPENVRML_NOTHROW;

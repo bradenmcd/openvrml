@@ -361,7 +361,7 @@ openvrml::script_factory::~script_factory() OPENVRML_NOTHROW
  *        instantiate @c script_factory_registry.
  */
 
-extern "C" int openvrml_get_script_factory(const char * filename, void * data);
+extern "C" int openvrml_get_script_factory(const std::string & filename, void * data);
 
 /**
  * @internal
@@ -373,7 +373,7 @@ extern "C" int openvrml_get_script_factory(const char * filename, void * data);
 class openvrml::script_factory_registry::impl :
     boost::noncopyable {
 
-    friend int (::openvrml_get_script_factory)(const char * filename,
+    friend int (::openvrml_get_script_factory)(const std::string & filename,
                                                void * data);
 
     typedef std::set<local::dl::handle> module_handle_set;
@@ -403,7 +403,7 @@ public:
     find_using_uri_scheme(const std::string & uri_scheme) const;
 };
 
-int openvrml_get_script_factory(const char * const filename, void * data)
+int openvrml_get_script_factory(const std::string & filename, void * data)
 {
     assert(data);
 
@@ -442,9 +442,10 @@ openvrml::script_factory_registry::impl::impl()
         throw std::runtime_error("dlinit failure");
     }
 
-    const std::string script_path = local::conf::script_path();
+    const std::vector<boost::filesystem::path> & script_path =
+        local::conf::script_path();
 
-    result = dl::foreachfile(script_path.c_str(),
+    result = dl::foreachfile(script_path,
                              openvrml_get_script_factory,
                              this);
     assert(result == 0); // We always return 0 from the callback.

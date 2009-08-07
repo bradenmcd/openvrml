@@ -23,6 +23,7 @@
 # include <boost/ref.hpp>
 # include <boost/tokenizer.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
+# include <sstream>
 
 using namespace boost::multi_index::detail;  // for scope_guard
 
@@ -45,75 +46,55 @@ int openvrml::local::dl::exit()
 }
 
 namespace {
-
-    struct OPENVRML_LOCAL win32_search_path_tokenizer {
-        win32_search_path_tokenizer()
-        {}
-
-        template <typename Iterator, typename Token>
-            bool operator()(Iterator & next, Iterator end, Token & tok)
-        {
-            while (next != end) {
-                if (*next == ';') {
-                    ++next;
-                    break;
-                }
-                this->tok_.push_back(*next);
-                ++next;
-            }
-            if (!this->tok_.empty()) {
-                tok = this->tok_;
-                this->tok_.clear();
-                return true;
-            }
-            return false;
-        }
-
-        void reset()
-        {
-            this->tok_.clear();
-        }
-
-    private:
-        std::string tok_;
+    struct ltforeachfile_data {
+        int (*func)(const std::string & filename, void * data);
+        void * data;
     };
 }
 
+extern "C"
+OPENVRML_LOCAL
+int openvrml_dl_ltforeachfile(const char * filename, void * data)
+{
+    ltforeachfile_data * const d = static_cast<ltforeachfile_data *>(data);
+    return (d->func)(filename, d->data);
+}
+
 int
-openvrml::local::dl::foreachfile(const char * search_path,
-                                 int (*func)(const char * filename, void * data),
-                                 void * data)
+openvrml::local::dl::
+foreachfile(const std::vector<boost::filesystem::path> & search_path,
+            int (*func)(const std::string & filename, void * data),
+            void * data)
 {
 # ifdef _WIN32
     using boost::filesystem::path;
     using boost::filesystem::directory_iterator;
     typedef boost::tokenizer<win32_search_path_tokenizer> tokenizer_t;
 
-    std::vector<path> search_dirs;
-    win32_search_path_tokenizer tokenizer_func;
-    std::string search_path_str(search_path);
-    tokenizer_t tokenizer(search_path_str, tokenizer_func);
-    for (tokenizer_t::const_iterator token = tokenizer.begin();
-         token != tokenizer.end();
-         ++token) {
-        search_dirs.push_back(path(*token));
-    }
-
     int result = 0;
-    for (std::vector<path>::const_iterator dir = search_dirs.begin();
-         dir != search_dirs.end();
+    for (std::vector<path>::const_iterator dir = search_path.begin();
+         dir != search_path.end();
          ++dir) try {
-            for (directory_iterator entry(*dir);
-                 entry != directory_iterator();
-                 ++entry) {
-                result = (func)(entry->path().external_file_string().c_str(),
-                                data);
-                if (result != 0) { return result; }
-            }
-        } catch (boost::filesystem::filesystem_error &) {}
+        for (directory_iterator entry(*dir);
+             entry != directory_iterator();
+             ++entry) {
+            result = (func)(entry->path().external_file_string(), data);
+            if (result != 0) { return result; }
+        }
+    } catch (boost::filesystem::filesystem_error &) {}
     return result;
 # else
-    return lt_dlforeachfile(search_path, func, data);
+    std::ostringstream path;
+    std::vector<boost::filesystem::path>::const_iterator dir =
+        search_path.begin();
+    while (dir != search_path.end()) {
+        path << *dir;
+        if (++dir != search_path.end()) { path << LT_PATHSEP_CHAR; }
+    }
+    ltforeachfile_data ltdata = { func, data };
+    return lt_dlforeachfile(path.str().c_str(),
+                            openvrml_dl_ltforeachfile,
+                            &ltdata);
 # endif
 }
 
@@ -122,24 +103,26 @@ openvrml::local::dl::foreachfile(const char * search_path,
  *
  * @brief Prepend @p dir to the dynamic library search path.
  */
-int openvrml::local::dl::prepend_to_searchpath(const char * const dir)
+int
+openvrml::local::dl::prepend_to_searchpath(const boost::filesystem::path & dir)
 {
 # ifdef _WIN32
-    return SetDllDirectory(dir);
+    return SetDllDirectory(dir.directory_string().c_str());
 # else
     const char * const before = lt_dlgetsearchpath();
-    return lt_dlinsertsearchdir(before, dir);
+    return lt_dlinsertsearchdir(before, dir.directory_string().c_str());
 # endif
 }
 
-openvrml::local::dl::handle openvrml::local::dl::open(const char * filename)
+openvrml::local::dl::handle
+openvrml::local::dl::open(const std::string & filename)
 {
 # ifdef _WIN32
-    const char * last_dot = strrchr(filename, '.');
-    if (strcmp(last_dot, ".dll") != 0) { return 0; }
-    return LoadLibrary(filename);
+    std::string::size_type last_dot_index = filename.find_last_of('.');
+    if (filename.substr(last_dot_index) != ".dll") { return 0; }
+    return LoadLibrary(filename.c_str());
 # else
-    return lt_dlopenext(filename);
+    return lt_dlopenext(filename.c_str());
 # endif
 }
 
@@ -177,11 +160,11 @@ int openvrml::local::dl::close(handle h)
 # endif
 }
 
-void * openvrml::local::dl::sym(handle h, const char * name)
+void * openvrml::local::dl::sym(handle h, const std::string & name)
 {
 # ifdef _WIN32
-    return GetProcAddress(h, name);
+    return GetProcAddress(h, name.c_str());
 # else
-    return lt_dlsym(h, name);
+    return lt_dlsym(h, name.c_str());
 # endif
 }

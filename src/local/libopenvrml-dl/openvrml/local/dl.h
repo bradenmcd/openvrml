@@ -27,7 +27,9 @@
 #   else
 #     include <ltdl.h>
 #   endif
+#   include <boost/filesystem/path.hpp>
 #   include <string>
+#   include <vector>
 
 namespace openvrml {
 
@@ -40,11 +42,14 @@ namespace openvrml {
             OPENVRML_LOCAL int exit();
             
             OPENVRML_LOCAL
-            int foreachfile(const char * search_path,
-                            int (*func)(const char * filename, void * data),
-                            void * data);
+            int
+            foreachfile(
+                const std::vector<boost::filesystem::path> & search_path,
+                int (*func)(const std::string & filename, void * data),
+                void * data);
 
-            OPENVRML_LOCAL int prepend_to_searchpath(const char * dir);
+            OPENVRML_LOCAL
+            int prepend_to_searchpath(const boost::filesystem::path & dir);
 
 #   ifdef _WIN32
             typedef HMODULE handle;
@@ -52,13 +57,13 @@ namespace openvrml {
             typedef lt_dlhandle handle;
 #   endif
 
-            OPENVRML_LOCAL handle open(const char * filename);
+            OPENVRML_LOCAL handle open(const std::string & filename);
 
             OPENVRML_LOCAL const std::string error();
 
             OPENVRML_LOCAL int close(handle);
 
-            OPENVRML_LOCAL void * sym(handle, const char * name);
+            OPENVRML_LOCAL void * sym(handle, const std::string & name);
         }
     }
 }
