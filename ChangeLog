@@ -1,5 +1,16 @@
 2009-08-07 Braden McDaniel  <braden@endoframe.com>
 
+	Fixes for building on Windows.
+
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
+	(openvrml::local::dl::foreachfile(const
+	std::vector<boost::filesystem::path> &, int (*)(const
+	std::string&, void *), void *)): Removed obsolete typedef.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Added libopenvrml-dl source directory to include path.
+
+2009-08-07 Braden McDaniel  <braden@endoframe.com>
+
 	Modified openvrml::local::dl interface to use
 	boost::filesystem::path and std::string.
 

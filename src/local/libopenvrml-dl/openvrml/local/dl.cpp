@@ -69,7 +69,6 @@ foreachfile(const std::vector<boost::filesystem::path> & search_path,
 # ifdef _WIN32
     using boost::filesystem::path;
     using boost::filesystem::directory_iterator;
-    typedef boost::tokenizer<win32_search_path_tokenizer> tokenizer_t;
 
     int result = 0;
     for (std::vector<path>::const_iterator dir = search_path.begin();
