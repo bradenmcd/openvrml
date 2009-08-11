@@ -1,3 +1,8 @@
+2009-08-10 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/local/float.h: Removed obsolete include
+	of <boost/concept_check.hpp>.
+
 2009-08-07 Braden McDaniel  <braden@endoframe.com>
 
 	Fixes for building on Windows.
