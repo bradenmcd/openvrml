@@ -23,7 +23,6 @@
 
 #   include <openvrml-common.h>
 #   include <limits>
-#   include <boost/concept_check.hpp>
 
 namespace openvrml {
 
