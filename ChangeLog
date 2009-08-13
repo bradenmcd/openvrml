@@ -1,3 +1,16 @@
+2009-08-13 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.18.3 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am: Updated libopenvrml library version to 9:2:0.
+
 2009-08-10 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/local/float.h: Removed obsolete include
