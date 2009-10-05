@@ -4,6 +4,7 @@ VISUALC9_0_FILES = \
         Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj \
         Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h \
         Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc \
+        Windows/VisualC9_0/OpenVRML/openvrml-dl/openvrml-dl.vcproj \
         Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj \
         Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl-config.h \
         Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc \
