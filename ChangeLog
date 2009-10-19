@@ -3,7 +3,8 @@
 	Make throw_runtime_error_from_win32_system_error available to
 	other translation units.
 
-	* src/Makefile.am
+	* src/Makefile.am (libopenvrml_libopenvrml_la_SOURCES): Added
+	libopenvrml/openvrml/local/error.{cpp,h}.
 	* src/libopenvrml/openvrml/local/conf.cpp
 	* src/libopenvrml/openvrml/local/error.cpp
 	* src/libopenvrml/openvrml/local/error.h
