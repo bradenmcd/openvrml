@@ -230,6 +230,10 @@ int main(int argc, char * argv[])
     error_guard.dismiss();
 }
 
+//
+// Note that this callback gets called for every name owner change on the
+// bus--including those completely unrelated to us.
+//
 gboolean
 openvrml_xembed_name_owner_changed(
     DBusGProxy * /* proxy */,
@@ -252,7 +256,7 @@ openvrml_xembed_name_owner_changed(
             openvrml_xembed_browser_factory_remove_hosts_for_owner(
                 data->browser_factory,
                 old_owner);
-        g_debug("erased references to %s", old_owner);
+        if (erased > 0) { g_debug("erased references to %s", old_owner); }
     }
 
     const bool browser_factory_has_hosts =
