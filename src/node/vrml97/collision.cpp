@@ -126,7 +126,7 @@ namespace {
     {
         return (this->proxy_.value() && this->proxy_.value()->modified())
             || (this->openvrml_node_vrml97::grouping_node_base<collision_node>::
-                modified());
+                do_modified());
     }
 }
 
