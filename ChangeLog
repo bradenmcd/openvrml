@@ -1,3 +1,23 @@
+2009-10-19 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for building against Boost 1.40.0.
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/local/uri.cpp
+	* src/libopenvrml/openvrml/local/externproto.cpp
+	* src/libopenvrml/openvrml/scene.cpp
+	* src/local/libopenvrml-control/openvrml_control/browser.h
+	* src/node/vrml97/inline.cpp
+	* src/node/x3d-nurbs/nurbs_trimmed_surface.cpp
+	* src/openvrml-xembed/main.cpp
+
+2009-10-18 Braden McDaniel  <braden@endoframe.com>
+
+	* src/openvrml-xembed/main.cpp
+	(openvrml_xembed_name_owner_changed(DBusGProxy *, const gchar *,
+	const gchar *, const gchar *, gpointer)): Only print out debugging
+	message if we actually erased any references.
+
 2009-10-18 Braden McDaniel  <braden@endoframe.com>
 
 	Make throw_runtime_error_from_win32_system_error available to

@@ -274,7 +274,8 @@ namespace {
     {
         if ((this->control_point_.value()
              && this->control_point_.value()->modified())
-            || this->tex_coord_.value() && this->tex_coord_.value()->modified())
+            || (this->tex_coord_.value()
+                && this->tex_coord_.value()->modified()))
         {
             return true;
         }

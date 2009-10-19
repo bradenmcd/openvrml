@@ -29,6 +29,7 @@
 # include <openvrml/local/parse_vrml.h>
 # include <private.h>
 # include <boost/bind.hpp>
+# include <boost/function.hpp>
 # include <boost/functional.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
