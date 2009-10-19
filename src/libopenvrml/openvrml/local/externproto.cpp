@@ -23,6 +23,7 @@
 # include "uri.h"
 # include <openvrml/browser.h>
 # include <openvrml/scene.h>
+# include <boost/function.hpp>
 # include <boost/mpl/for_each.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
 

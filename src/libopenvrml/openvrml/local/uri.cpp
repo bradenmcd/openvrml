@@ -21,6 +21,7 @@
 # include "uri.h"
 # include <list>
 # include <cerrno>
+# include <cstring>
 # ifdef _WIN32
 #   include <boost/multi_index/detail/scope_guard.hpp>
 using namespace boost::multi_index::detail;  // for scope_guard
@@ -596,7 +597,7 @@ const std::string openvrml::local::getcwd()
         assert(errno != 0);
         assert(errno != EFAULT);
         assert(errno != EINVAL);
-        throw std::runtime_error(strerror(errno));
+        throw std::runtime_error(std::strerror(errno));
     }
 # endif
     return std::string(&buf.front());

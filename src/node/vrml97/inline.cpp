@@ -29,6 +29,7 @@
 # include <openvrml/scene.h>
 # include <private.h>
 # include <boost/array.hpp>
+# include <boost/function.hpp>
 
 namespace {
 

@@ -26,6 +26,7 @@
 # include <dbus/dbus-glib-bindings.h>
 # include <dbus/dbus-glib-lowlevel.h>
 # include <boost/concept_check.hpp>
+# include <boost/function.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>

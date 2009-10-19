@@ -22,6 +22,7 @@
 #   define OPENVRML_CONTROL_BROWSER_H
 
 #   include <openvrml/browser.h>
+#   include <boost/function.hpp>
 
 namespace openvrml_control {
 

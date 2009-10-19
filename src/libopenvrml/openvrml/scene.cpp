@@ -24,6 +24,7 @@
 # include <openvrml/local/uri.h>
 # include <openvrml/local/parse_vrml.h>
 # include <private.h>
+# include <boost/function.hpp>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
