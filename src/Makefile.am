@@ -96,6 +96,8 @@ libopenvrml_libopenvrml_la_SOURCES = \
         libopenvrml/openvrml/node_impl_util.cpp \
         libopenvrml/openvrml/local/conf.cpp \
         libopenvrml/openvrml/local/conf.h \
+        libopenvrml/openvrml/local/error.cpp \
+        libopenvrml/openvrml/local/error.h \
         libopenvrml/openvrml/local/uri.cpp \
         libopenvrml/openvrml/local/uri.h \
         libopenvrml/openvrml/local/xml_reader.cpp \

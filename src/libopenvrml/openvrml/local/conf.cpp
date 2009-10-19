@@ -19,6 +19,7 @@
 //
 
 # include "conf.h"
+# include "error.h"
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
 # include <boost/tokenizer.hpp>
@@ -64,25 +65,6 @@ namespace {
     }
 
 # ifdef _WIN32
-    void throw_runtime_error(LONG result) OPENVRML_THROW1(std::runtime_error)
-    {
-        using boost::ref;
-
-        static const LPCVOID source;
-        LPTSTR buf = 0;
-        scope_guard buf_guard = make_guard(LocalFree, ref(buf));
-        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM
-                      | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-                      source,
-                      result,
-                      LANG_USER_DEFAULT,
-                      reinterpret_cast< LPTSTR >(&buf),
-                      0,
-                      0);
-
-        throw std::runtime_error(buf);
-    }
-
     const std::string query_registry_value(HKEY key, const std::string & name)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
@@ -101,7 +83,9 @@ namespace {
             data.resize(data.size() * 2);
         }
 
-        if (result != 0) { throw_runtime_error(result); }
+        if (result != 0) {
+            throw_runtime_error_from_win32_system_error(result);
+        }
 
         _ASSERTE(type == REG_SZ);
 
@@ -125,7 +109,7 @@ namespace {
                                    &key);
         if (result != ERROR_SUCCESS) {
             if (result == ERROR_FILE_NOT_FOUND) { throw no_registry_key(); }
-            throw_runtime_error(result);
+            throw_runtime_error_from_win32_system_error(result);
         }
 
         return query_registry_value(key, name);
