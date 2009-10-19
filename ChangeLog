@@ -1,5 +1,11 @@
 2009-10-19 Braden McDaniel  <braden@endoframe.com>
 
+	* src/node/vrml97/collision.cpp
+	(collision_node::do_modified() const): Call do_modified to avoid
+	recursion.
+
+2009-10-19 Braden McDaniel  <braden@endoframe.com>
+
 	Fixes for building against Boost 1.40.0.
 
 	* src/libopenvrml/openvrml/browser.cpp
