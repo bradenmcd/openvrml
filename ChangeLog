@@ -1,5 +1,10 @@
 2009-10-22 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Infer JRE_HOME from JAVA_HOME if only the latter
+	is set.
+
+2009-10-22 Braden McDaniel  <braden@endoframe.com>
+
 	Use boost::filesystem::path when setting the search path for
 	libjvm.
 
