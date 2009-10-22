@@ -114,9 +114,9 @@ namespace {
 
     OPENVRML_JAVA_LOCAL
     int
-    prepend_java_home_libdirs_to_searchpath(const std::string & java_home)
+    prepend_jre_home_libdirs_to_searchpath(const std::string & jre_home)
     {
-        assert(!java_home.empty());
+        assert(!jre_home.empty());
 
         using std::ostringstream;
         using namespace openvrml::local;
@@ -128,14 +128,14 @@ namespace {
         {
             ostringstream libdir;
             libdir.exceptions(exceptions);
-            libdir << java_home << "/lib/" << OPENVRML_JVM_ARCH << "/client";
+            libdir << jre_home << "/lib/" << OPENVRML_JVM_ARCH << "/client";
             result = dl::prepend_to_searchpath(libdir.str().c_str());
             if (result != 0) { return result; }
         }
         {
             ostringstream libdir;
             libdir.exceptions(exceptions);
-            libdir << java_home << "/lib/" << OPENVRML_JVM_ARCH << "/server";
+            libdir << jre_home << "/lib/" << OPENVRML_JVM_ARCH << "/server";
             result = dl::prepend_to_searchpath(libdir.str().c_str());
             if (result != 0) { return result; }
         }
@@ -151,20 +151,35 @@ namespace {
             std::cerr << dl::error() << std::endl;
             return;
         }
-        const std::string java_home = JAVA_HOME;
-        if (!java_home.empty()) {
-            result = prepend_java_home_libdirs_to_searchpath(java_home);
+        const std::string jre_home = JRE_HOME;
+        if (!jre_home.empty()) {
+            result = prepend_jre_home_libdirs_to_searchpath(jre_home);
             if (result != 0) {
                 std::cerr << dl::error() << std::endl;
                 return;
             }
         }
-        const char * const java_home_env = getenv("JAVA_HOME");
-        if (java_home_env && (java_home_env != java_home)) {
-            result = prepend_java_home_libdirs_to_searchpath(java_home_env);
+        const char * const jre_home_env = getenv("JRE_HOME");
+        if (jre_home_env && (jre_home_env != jre_home)) {
+            result = prepend_jre_home_libdirs_to_searchpath(jre_home_env);
             if (result != 0) {
                 std::cerr << dl::error() << std::endl;
                 return;
+            }
+        } else {
+            //
+            // If JRE_HOME isn't set, try JAVA_HOME.
+            //
+            const char * const java_home_env = getenv("JAVA_HOME");
+            if (java_home_env) {
+                using boost::filesystem::path;
+                result =
+                    prepend_jre_home_libdirs_to_searchpath(
+                        (path(java_home_env) / "jre").string());
+                if (result != 0) {
+                    std::cerr << dl::error() << std::endl;
+                    return;
+                }
             }
         }
         libjvm_handle = dl::open("libjvm");

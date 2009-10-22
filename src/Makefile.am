@@ -170,7 +170,7 @@ script_java_la_CPPFLAGS = \
         -I$(top_srcdir)/src/local/libopenvrml-dl \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
-        -DJAVA_HOME=\"$(JAVA_HOME)\" \
+        -DJRE_HOME=\"$(JRE_HOME)\" \
         -DOPENVRML_JVM_ARCH=\"$(OPENVRML_JVM_ARCH)\" \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
         -DBOOST_MPL_LIMIT_VECTOR_SIZE=30

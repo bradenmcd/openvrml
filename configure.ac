@@ -371,7 +371,7 @@ AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVASCRIPT],
 #
 # Script node Java support
 #
-AC_ARG_VAR([JAVA_HOME], [Path to Java Runtime Environment])
+AC_ARG_VAR([JRE_HOME], [Path to Java Runtime Environment])
 AC_ARG_ENABLE([script-node-java],
               [AC_HELP_STRING([--disable-script-node-java],
                               [disable Script node Java support])])
@@ -388,12 +388,12 @@ AS_IF([test X$enable_script_node_java != Xno],
        [AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])])
 AC_DEFINE_UNQUOTED([OPENVRML_JNI_CONST], [$ov_cv_jni_const],
                    [const for JNI function signatures.])
-AS_IF([test -z "$JAVA_HOME"],
-[AC_MSG_WARN([JAVA_HOME has not been set.  JAVA_HOME must be set at run time to locate libjvm.])],
+AS_IF([test -z "$JRE_HOME"],
+[AC_MSG_WARN([JRE_HOME has not been set.  JRE_HOME must be set at run time to locate libjvm.])],
 [ov_save_LDFLAGS=$LDFLAGS
-LDFLAGS="-L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
+LDFLAGS="-L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
 AC_CHECK_LIB([jvm], [JNI_CreateJavaVM], [LIBS=$LIBS],
-             [AC_MSG_WARN([no libjvm found at JAVA_HOME])])
+             [AC_MSG_WARN([no libjvm found at JRE_HOME])])
 LDFLAGS=$ov_save_LDFLAGS
 ])
 java_subdir=java])

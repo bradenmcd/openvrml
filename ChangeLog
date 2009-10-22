@@ -1,3 +1,16 @@
+2009-10-22 Braden McDaniel  <braden@endoframe.com>
+
+	Prefer JRE_HOME to locate libjvm rather than JAVA_HOME.
+
+	* configure.ac: Use JRE_HOME instead of JAVA_HOME.
+	* src/Makefile.am (script_java_la_CPPFLAGS): Define JRE_HOME
+	instead of JAVA_HOME.
+	* src/script/java.cpp
+	(prepend_jre_home_libdirs_to_searchpath(const std::string &)):
+	Changed function name.
+	(load_libjvm::load_libjvm()): First check JRE_HOME; then use
+	JAVA_HOME if JRE_HOME isn't set.
+
 2009-10-19 Braden McDaniel  <braden@endoframe.com>
 
 	* src/node/vrml97/collision.cpp
