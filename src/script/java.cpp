@@ -114,36 +114,29 @@ namespace {
 
     OPENVRML_JAVA_LOCAL
     int
-    prepend_jre_home_libdirs_to_searchpath(const std::string & jre_home)
+    prepend_jre_home_libdirs_to_searchpath(
+        const boost::filesystem::path & jre_home)
     {
         assert(!jre_home.empty());
 
-        using std::ostringstream;
+        using boost::filesystem::path;
         using namespace openvrml::local;
 
-        static const ostringstream::iostate exceptions = ostringstream::eofbit
-                                                       | ostringstream::failbit
-                                                       | ostringstream::badbit;
+        const path archdir = jre_home / "lib" / OPENVRML_JVM_ARCH;
         int result = 0;
-        {
-            ostringstream libdir;
-            libdir.exceptions(exceptions);
-            libdir << jre_home << "/lib/" << OPENVRML_JVM_ARCH << "/client";
-            result = dl::prepend_to_searchpath(libdir.str().c_str());
-            if (result != 0) { return result; }
-        }
-        {
-            ostringstream libdir;
-            libdir.exceptions(exceptions);
-            libdir << jre_home << "/lib/" << OPENVRML_JVM_ARCH << "/server";
-            result = dl::prepend_to_searchpath(libdir.str().c_str());
-            if (result != 0) { return result; }
-        }
+
+        result = dl::prepend_to_searchpath(archdir / "client");
+        if (result != 0) { return result; }
+
+        result = dl::prepend_to_searchpath(archdir / "server");
+        if (result != 0) { return result; }
+
         return result;
     }
 
     load_libjvm::load_libjvm()
     {
+        using boost::filesystem::path;
         using namespace openvrml::local;
 
         int result = dl::init();
@@ -151,7 +144,7 @@ namespace {
             std::cerr << dl::error() << std::endl;
             return;
         }
-        const std::string jre_home = JRE_HOME;
+        const path jre_home = JRE_HOME;
         if (!jre_home.empty()) {
             result = prepend_jre_home_libdirs_to_searchpath(jre_home);
             if (result != 0) {
@@ -172,10 +165,9 @@ namespace {
             //
             const char * const java_home_env = getenv("JAVA_HOME");
             if (java_home_env) {
-                using boost::filesystem::path;
                 result =
                     prepend_jre_home_libdirs_to_searchpath(
-                        (path(java_home_env) / "jre").string());
+                        path(java_home_env) / "jre");
                 if (result != 0) {
                     std::cerr << dl::error() << std::endl;
                     return;

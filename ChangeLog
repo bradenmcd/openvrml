@@ -1,5 +1,17 @@
 2009-10-22 Braden McDaniel  <braden@endoframe.com>
 
+	Use boost::filesystem::path when setting the search path for
+	libjvm.
+
+	* src/script/java.cpp
+	(prepend_jre_home_libdirs_to_searchpath(const
+	boost::filesystem::path &)): Changed to take a
+	boost::filesystem::path.
+	(load_libjvm::load_libjvm()): Pass a boost::filesystem::path to
+	prepend_jre_home_libdirs_to_searchpath.
+
+2009-10-22 Braden McDaniel  <braden@endoframe.com>
+
 	Prefer JRE_HOME to locate libjvm rather than JAVA_HOME.
 
 	* configure.ac: Use JRE_HOME instead of JAVA_HOME.
