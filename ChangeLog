@@ -1,5 +1,15 @@
 2009-10-22 Braden McDaniel  <braden@endoframe.com>
 
+	Set development version to 0.18.99.
+
+	* README
+	* configure.ac
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+
+2009-10-22 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Infer JRE_HOME from JAVA_HOME if only the latter
 	is set.
 

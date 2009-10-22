@@ -33,7 +33,7 @@ BEGIN
             VALUE "LegalCopyright", "Copyright (C) 2009"
             VALUE "OriginalFilename", "openvrml.dll"
             VALUE "ProductName", "OpenVRML Library"
-            VALUE "ProductVersion", "0.18.3"
+            VALUE "ProductVersion", "0.18.99"
         END
     END
     BLOCK "VarFileInfo"
