@@ -1,3 +1,7 @@
+2009-10-24 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Clean up legacy cruft in handling of GRE_PATH.
+
 2009-10-22 Braden McDaniel  <braden@endoframe.com>
 
 	Set development version to 0.18.99.

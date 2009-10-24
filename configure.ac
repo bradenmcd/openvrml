@@ -23,7 +23,7 @@ AC_CONFIG_FILES([Makefile]
                 [openvrml.pc])
 
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.10.1 foreign subdir-objects check-news tar-pax])
+AM_INIT_AUTOMAKE([1.10.1 gnits subdir-objects check-news tar-pax])
 AM_CONFIG_HEADER([config.h])
 
 #
@@ -497,15 +497,15 @@ AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 # Determine whether to apply the -rpath for the Gecko runtime libraries.
 #
 AS_IF([test "X$enable_gecko_rpath" = Xyes],
-[AS_IF([test -z "$GRE_PATH"],
+[AS_IF([test $GRE_PATH],
        [GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
         AS_IF([test "X$GRE_PATH" = "X$JS_LIBS"],
               [GRE_PATH=""
-               AC_MSG_ERROR([GRE_PATH could not be derived from JS_LIBS.  Set GRE_PATH if executables linking with libopenvrml should be built with an -rpath for the Gecko runtime libraries.])])])
+               AC_MSG_ERROR([GRE_PATH could not be derived from JS_LIBS.  Set GRE_PATH if an -rpath is needed to locate the Gecko runtime libraries at runtime.])])])
 AS_IF([test -n "${openvrml_js_run_path}" -a -n "${GRE_PATH}"],
       [openvrml_js_run_path=":${openvrml_js_run_path}"])
 openvrml_js_run_path="${GRE_PATH}${openvrml_js_run_path}"
-OPENVRML_JAVASCRIPT_RPATH="-Wl,-rpath -Wl,${openvrml_js_run_path}"
+OPENVRML_JAVASCRIPT_RPATH="-Wl,-rpath -Wl,${GRE_PATH}"
 ])
 AC_SUBST([OPENVRML_JAVASCRIPT_RPATH])
 
