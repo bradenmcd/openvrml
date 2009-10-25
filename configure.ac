@@ -502,9 +502,6 @@ AS_IF([test "X$enable_gecko_rpath" = Xyes],
         AS_IF([test "X$GRE_PATH" = "X$JS_LIBS"],
               [GRE_PATH=""
                AC_MSG_ERROR([GRE_PATH could not be derived from JS_LIBS.  Set GRE_PATH if an -rpath is needed to locate the Gecko runtime libraries at runtime.])])])
-AS_IF([test -n "${openvrml_js_run_path}" -a -n "${GRE_PATH}"],
-      [openvrml_js_run_path=":${openvrml_js_run_path}"])
-openvrml_js_run_path="${GRE_PATH}${openvrml_js_run_path}"
 OPENVRML_JAVASCRIPT_RPATH="-Wl,-rpath -Wl,${GRE_PATH}"
 ])
 AC_SUBST([OPENVRML_JAVASCRIPT_RPATH])
