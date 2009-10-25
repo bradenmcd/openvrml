@@ -391,7 +391,7 @@ AS_IF([test X$enable_script_node_java != Xno],
 AC_DEFINE_UNQUOTED([OPENVRML_JNI_CONST], [$ov_cv_jni_const],
                    [const for JNI function signatures.])
 AS_IF([test -z "$JRE_HOME"],
-[AC_MSG_WARN([JRE_HOME has not been set.  JRE_HOME must be set at run time to locate libjvm.])],
+[AC_MSG_WARN([Neither JRE_HOME nor JAVA_HOME has been set.  If neither of these is set at build time, at least one of them must be set at run time to locate libjvm.])],
 [ov_save_LDFLAGS=$LDFLAGS
 LDFLAGS="-L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
 AC_CHECK_LIB([jvm], [JNI_CreateJavaVM], [LIBS=$LIBS],
