@@ -1,5 +1,10 @@
 2009-10-25 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Improve quality of checks to see whether variables
+	have been set.
+
+2009-10-25 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: More GRE_PATH cleanup.
 
 2009-10-24 Braden McDaniel  <braden@endoframe.com>
