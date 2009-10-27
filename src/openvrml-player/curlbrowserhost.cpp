@@ -34,6 +34,21 @@
 
 using namespace boost::multi_index::detail; // for scope_guard
 
+# define OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR \
+    openvrml_player_curl_browser_host_error_quark()
+
+OPENVRML_LOCAL
+GQuark openvrml_player_curl_browser_host_error_quark()
+{
+    return g_quark_from_static_string(
+        "openvrml-player-curl-browser-host-error-quark");
+}
+
+enum OpenvrmlPlayerCurlBrowserHostError {
+    OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_OUT_OF_MEMORY = 1,
+    OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL
+};
+
 G_DEFINE_TYPE(OpenvrmlPlayerCurlBrowserHost,
               openvrml_player_curl_browser_host,
               GTK_TYPE_SOCKET)
@@ -418,14 +433,29 @@ openvrml_player_curl_browser_host_curl_perform_init_callback(
     return false;
 }
 
-/**
- * @todo We need to do something with the GError here.
- */
+namespace {
+    G_GNUC_INTERNAL
+    CURLcode curl_easy_setopt_with_error(CURL * const handle,
+                                         const CURLoption option,
+                                         void * const parameter,
+                                         GError ** const error)
+    {
+        CURLcode setopt_result = curl_easy_setopt(handle, option, parameter);
+        if (setopt_result != CURLE_OK) {
+            g_set_error(error,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL,
+                        curl_easy_strerror(setopt_result));
+        }
+        return setopt_result;
+    }
+}
+
 int
 openvrml_player_curl_browser_host_get_url(
     OpenvrmlPlayerCurlBrowserHost * const host,
     const char * const url,
-    GError ** /* error */)
+    GError ** const error)
 {
     CURL * const handle = curl_easy_init();
     try {
@@ -441,28 +471,65 @@ openvrml_player_curl_browser_host_get_url(
         CURLcode setopt_result;
         setopt_result = curl_easy_setopt(handle,
                                          CURLOPT_FAILONERROR, true);
-        CURL_BROWSER_HOST_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+        if (setopt_result != CURLE_OK) {
+            g_set_error(error,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL,
+                        curl_easy_strerror(setopt_result));
+            return 1;
+        }
+
         setopt_result = curl_easy_setopt(handle,
                                          CURLOPT_ENCODING, "");
-        CURL_BROWSER_HOST_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+        if (setopt_result != CURLE_OK) {
+            g_set_error(error,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL,
+                        curl_easy_strerror(setopt_result));
+            return 1;
+        }
+
         setopt_result = curl_easy_setopt(handle,
                                          CURLOPT_URL, stream_data->url());
-        CURL_BROWSER_HOST_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+        if (setopt_result != CURLE_OK) {
+            g_set_error(error,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL,
+                        curl_easy_strerror(setopt_result));
+            return 1;
+        }
 
         setopt_result =
             curl_easy_setopt(handle,
                              CURLOPT_WRITEFUNCTION,
                              openvrml_player_curl_browser_host_curl_write);
-        CURL_BROWSER_HOST_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+        if (setopt_result != CURLE_OK) {
+            g_set_error(error,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL,
+                        curl_easy_strerror(setopt_result));
+            return 1;
+        }
 
         setopt_result = curl_easy_setopt(handle,
                                          CURLOPT_WRITEDATA, stream_data);
-        CURL_BROWSER_HOST_CURL_EASY_RETURN_VAL_IF_ERROR(setopt_result, false);
+        if (setopt_result != CURLE_OK) {
+            g_set_error(error,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL,
+                        curl_easy_strerror(setopt_result));
+            return 1;
+        }
 
         const CURLMcode add_handle_result =
             curl_multi_add_handle(host->priv->multi_handle, handle);
-        CURL_BROWSER_HOST_CURL_MULTI_RETURN_VAL_IF_ERROR(add_handle_result,
-                                                         false);
+        if (setopt_result != CURLE_OK) {
+            g_set_error(error,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                        OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_CURL,
+                        curl_multi_strerror(add_handle_result));
+            return 1;
+        }
 
         CURLSource * curl_source =
             static_cast<CURLSource *>(
@@ -483,6 +550,10 @@ openvrml_player_curl_browser_host_get_url(
                 host->priv->multi_handle);
         }
     } catch (std::bad_alloc & ex) {
+        g_set_error(error,
+                    OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR,
+                    OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR_OUT_OF_MEMORY,
+                    ex.what());
         return 1;
     }
     return 0;
