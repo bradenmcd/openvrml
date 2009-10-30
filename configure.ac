@@ -137,6 +137,7 @@ PKG_CHECK_MODULES([XML], [libxml-2.0 >= 2.5], , [have_libxml=no])
 AS_IF([test X$have_libxml = Xno -a -n "${XML_LIBS-x}"],
       [AC_MSG_FAILURE([libxml not found])])
 
+PKG_CHECK_MODULES([PNG], [libpng], , [have_libpng=no])
 PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
 PKG_CHECK_MODULES([FREETYPE], [$REQUIRE_FREETYPE], , [have_freetype=no])
 #
@@ -284,12 +285,11 @@ AC_ARG_ENABLE([gecko-rpath],
 AC_ARG_ENABLE([png-textures],
               [AC_HELP_STRING([--disable-png-textures],
                               [disable support for rendering PNG textures])])
-AS_IF([test X$enable_png_textures = Xno],
-      [PNG_LIBS=""],
-      [PNG_LIBS="-lpng -lz"
+AS_IF([test X$enable_png_textures != Xno],
+      [AS_IF([test X$have_libpng = Xno],
+             [AC_MSG_FAILURE([libpng is required for PNG texture support])])
        AC_DEFINE([OPENVRML_ENABLE_PNG_TEXTURES], [1],
                  [Defined if support for rendering PNG textures is enabled.])])
-AC_SUBST([PNG_LIBS])
 
 #
 # JPEG texture support
