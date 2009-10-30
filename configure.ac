@@ -242,19 +242,16 @@ AC_SUBST([OPENVRML_GL_HAVE_OPENGL_GLU_H])
 
 AC_PATH_PROG([SDL_CONFIG], [sdl-config])
 have_sdl=no
-if test -n "${SDL_CONFIG}"; then
-    have_sdl=yes
-    SDL_CFLAGS=`$SDL_CONFIG --cflags`
-    SDL_LIBS=`$SDL_CONFIG --libs`
-    #
-    # sdl-config sometimes emits an rpath flag pointing at its library
-    # installation directory.  We don't want this, as it prevents users from
-    # linking sdl-viewer against, for example, a locally compiled libGL when a
-    # version of the library also exists in SDL's library installation
-    # directory, typically /usr/lib.
-    #
-    SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`
-fi
+#
+# sdl-config sometimes emits an rpath flag pointing at its library
+# installation directory.  We don't want this, as it prevents users from
+# linking sdl-viewer against, for example, a locally compiled libGL when a
+# version of the library also exists in SDL's library installation
+# directory, typically /usr/lib.
+#
+AS_IF([test -n "${SDL_CONFIG}"],
+      [have_sdl=yes SDL_CFLAGS=`$SDL_CONFIG --cflags` SDL_LIBS=`$SDL_CONFIG --libs`
+       SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`])
 AC_SUBST([SDL_CFLAGS])
 AC_SUBST([SDL_LIBS])
 
@@ -287,13 +284,11 @@ AC_ARG_ENABLE([gecko-rpath],
 AC_ARG_ENABLE([png-textures],
               [AC_HELP_STRING([--disable-png-textures],
                               [disable support for rendering PNG textures])])
-if test X$enable_png_textures = Xno; then
-  PNG_LIBS=""
-else
-  PNG_LIBS="-lpng -lz"
-  AC_DEFINE([OPENVRML_ENABLE_PNG_TEXTURES], [1],
-            [Defined if support for rendering PNG textures is enabled.])
-fi
+AS_IF([test X$enable_png_textures = Xno],
+      [PNG_LIBS=""],
+      [PNG_LIBS="-lpng -lz"
+       AC_DEFINE([OPENVRML_ENABLE_PNG_TEXTURES], [1],
+                 [Defined if support for rendering PNG textures is enabled.])])
 AC_SUBST([PNG_LIBS])
 
 #
@@ -302,13 +297,11 @@ AC_SUBST([PNG_LIBS])
 AC_ARG_ENABLE([jpeg-textures],
               [AC_HELP_STRING([--disable-jpeg-textures],
                               [disable support for rendering JPEG textures])])
-if test X$enable_jpeg_textures = Xno; then
-  JPEG_LIBS=""
-else
-  JPEG_LIBS="-ljpeg"
-  AC_DEFINE([OPENVRML_ENABLE_JPEG_TEXTURES], [1],
-            [Defined if support for rendering JPEG textures is enabled.])
-fi
+AS_IF([test X$enable_jpeg_textures = Xno],
+      [JPEG_LIBS=""]
+      [JPEG_LIBS="-ljpeg"
+       AC_DEFINE([OPENVRML_ENABLE_JPEG_TEXTURES], [1],
+                 [Defined if support for rendering JPEG textures is enabled.])])
 AC_SUBST([JPEG_LIBS])
 
 #
@@ -411,17 +404,14 @@ AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVA],
 AC_ARG_ENABLE([gl-renderer],
               [AC_HELP_STRING([--disable-gl-renderer],
                               [do not build GL renderer])])
-if test "X$enable_gl_renderer" != "Xno"; then
-  if test "X$no_gl" = "Xyes"; then
-    AC_MSG_FAILURE([OpenGL/Mesa (libGL) is required for the GL renderer])
-  fi
-  if test "X$no_glu" = "Xyes"; then
-    AC_MSG_FAILURE([the OpenGL Utility library (libGLU) is required for the GL renderer])
-  fi
-  AC_CONFIG_FILES([openvrml-gl.pc])
-fi
+AS_IF([test X$enable_gl_renderer != Xno],
+      [AS_IF([test X$no_gl = Xyes],
+             [AC_MSG_FAILURE([OpenGL/Mesa (libGL) is required for the GL renderer])])
+       AS_IF([test X$no_glu = Xyes],
+             [AC_MSG_FAILURE([the OpenGL Utility library (libGLU) is required for the GL renderer])])
+       AC_CONFIG_FILES([openvrml-gl.pc])])
 AM_CONDITIONAL([ENABLE_GL_RENDERER],
-               [test "X$enable_gl_renderer" != "Xno" -a "X$no_gl" != "Xyes"])
+               [test X$enable_gl_renderer != Xno -a X$no_gl != Xyes])
 
 #
 # build the XEmbed control
@@ -478,11 +468,8 @@ AM_CONDITIONAL([ENABLE_MOZILLA_PLUGIN],
 AC_ARG_ENABLE([examples],
               [AC_HELP_STRING([--disable-examples],
                               [do not build the example programs])])
-if test "X$enable_examples" != "Xno"; then
-  if test "X$have_sdl" != "Xyes"; then
-    AC_MSG_FAILURE([SDL is required for the example programs])
-  fi
-fi
+AS_IF([test "X$enable_examples" != "Xno" -a "X$have_sdl" != "Xyes"],
+      [AC_MSG_FAILURE([SDL is required for the example programs])])
 AM_CONDITIONAL([ENABLE_EXAMPLES],
                [test "X$enable_examples" != "Xno" -a "X$have_sdl" = "Xyes"])
 

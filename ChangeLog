@@ -1,3 +1,7 @@
+2009-10-30 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Use AS_IF consistently.
+
 2009-10-27 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-player/curlbrowserhost.cpp
