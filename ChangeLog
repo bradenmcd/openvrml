@@ -1,5 +1,11 @@
 2009-10-30 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Use pkg-config to check for libpng.  This allows
+	us to be a little smarter about linking and avoid linking directly
+	with zlib on platforms that don't need it.
+
+2009-10-30 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Use AS_IF consistently.
 
 2009-10-27 Braden McDaniel  <braden@endoframe.com>
