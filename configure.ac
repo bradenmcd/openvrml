@@ -112,7 +112,7 @@ AC_LANG_POP])
 #
 # Allow users to specify any Boost library name suffix
 #
-AS_IF([test -n "${BOOST_LIB_SUFFIX-x}"], [BOOST_LIB_SUFFIX=-mt])
+AS_IF([test -z "${BOOST_LIB_SUFFIX+x}"], [BOOST_LIB_SUFFIX=-mt])
 AC_ARG_VAR([BOOST_LIB_SUFFIX], [Boost library name suffix [default=-mt]])
 
 AC_CACHE_CHECK([for boost_thread$BOOST_LIB_SUFFIX library],
@@ -134,7 +134,7 @@ AS_IF([test X$ov_cv_boost_thread = Xno],
 # The XmlTextReader interface appears in libxml 2.5.
 #
 PKG_CHECK_MODULES([XML], [libxml-2.0 >= 2.5], , [have_libxml=no])
-AS_IF([test X$have_libxml = Xno -a -n "${XML_LIBS-x}"],
+AS_IF([test X$have_libxml = Xno -a -z "${XML_LIBS+x}"],
       [AC_MSG_FAILURE([libxml not found])])
 
 PKG_CHECK_MODULES([PNG], [libpng], , [have_libpng=no])
@@ -311,9 +311,9 @@ AC_ARG_ENABLE([render-text-node],
               [AC_HELP_STRING([--disable-render-text-node],
                               [disable support for rendering Text nodes])])
 AS_IF([test X$enable_render_text_node != Xno],
-      [AS_IF([test X$have_fontconfig = Xno -a -n "${FONTCONFIG_LIBS-x}"],
+      [AS_IF([test X$have_fontconfig = Xno -a -z "${FONTCONFIG_LIBS+x}"],
              [AC_MSG_FAILURE([fontconfig is required for rendering Text nodes])])
-       AS_IF([test X$have_freetype = Xno -a -n "${FREETYPE_LIBS-x}"],
+       AS_IF([test X$have_freetype = Xno -a -z "${FREETYPE_LIBS+x}"],
              [AC_MSG_FAILURE([FreeType is required for rendering Text nodes])])
        AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
                  [Defined if support for rendering Text nodes is enabled.])
@@ -333,9 +333,9 @@ AC_ARG_WITH([libjs],
 AS_IF([test X$enable_script_node_javascript = Xno],
 [JS_CFLAGS="" JS_LIBS=""],
 [AS_IF([test X$with_libjs = Xyes -a X$have_libjs = Xyes],
-       [AS_IF([test -n "${JS_CFLAGS-x}"], [JS_CFLAGS=""])
-        AS_IF([test -n "${JS_LIBS-x}"], [JS_LIBS="-ljs"])])
-AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -n "${JS_LIBS-x}" \) -o X$have_jsapi_h != Xyes],
+       [AS_IF([test -z "${JS_CFLAGS+x}"], [JS_CFLAGS=""])
+        AS_IF([test -z "${JS_LIBS+x}"], [JS_LIBS="-ljs"])])
+AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "${JS_LIBS+x}" \) -o X$have_jsapi_h != Xyes],
       [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])
 #
 # Figure out whether we need to add -DJS_THREADSAFE to JS_CFLAGS.
@@ -365,7 +365,7 @@ AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVASCRIPT],
 # Script node Java support
 #
 AC_ARG_VAR([JAVA_HOME], [Path to Java installation])
-AS_IF([test -n "${JRE_HOME-x}"],
+AS_IF([test -z "${JRE_HOME+x}"],
       [AS_IF([test -n "${JAVA_HOME+x}"], [JRE_HOME=$JAVA_HOME])])
 AC_ARG_VAR([JRE_HOME], [Path to Java Runtime Environment [default=JAVA_HOME/jre]])
 AC_ARG_ENABLE([script-node-java],
@@ -384,7 +384,7 @@ AS_IF([test X$enable_script_node_java != Xno],
        [AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])])
 AC_DEFINE_UNQUOTED([OPENVRML_JNI_CONST], [$ov_cv_jni_const],
                    [const for JNI function signatures.])
-AS_IF([test -n "${JRE_HOME-x}" -o -n "${JAVA_HOME-x}"],
+AS_IF([test -z "${JRE_HOME+x}" -a -z "${JAVA_HOME+x}"],
 [AC_MSG_WARN([Neither JRE_HOME nor JAVA_HOME has been set.  If neither of these is set at build time, at least one of them must be set at run time to locate libjvm.])],
 [ov_save_LDFLAGS=$LDFLAGS
 LDFLAGS="-L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
@@ -420,9 +420,9 @@ AC_ARG_ENABLE([xembed],
               [AC_HELP_STRING([--disable-xembed],
                               [do not build the XEmbed control])])
 AS_IF([test X$enable_xembed != Xno],
-      [AS_IF([test X$have_dbus_glib = Xno -a -n "${DBUS_G_LIBS-x}"],
+      [AS_IF([test X$have_dbus_glib = Xno -a -z "${DBUS_G_LIBS+x}"],
              [AC_MSG_FAILURE([D-Bus GLib bindings are required to build the XEmbed control])])
-       AS_IF([test X$have_gtkgl = Xno -a -n "${GTKGL_LIBS-x}"],
+       AS_IF([test X$have_gtkgl = Xno -a -z "${GTKGL_LIBS+x}"],
              [AC_MSG_FAILURE([GtkGLExt is required to build the XEmbed control])])
        AS_IF([test X$enable_gl_renderer = Xno],
              [AC_MSG_FAILURE([the XEmbed control cannot be built without the GL renderer])])])
@@ -437,11 +437,11 @@ AC_ARG_ENABLE([player],
 AS_IF([test X$enable_player != Xno],
       [AS_IF([test X$enable_xembed = Xno],
              [AC_MSG_FAILURE([OpenVRML Player cannot be built without the XEmbed control])])
-       AS_IF([test X$have_gio = Xno -a -n "${GIO_LIBS-x}"],
+       AS_IF([test X$have_gio = Xno -a -z "${GIO_LIBS+x}"],
              [AC_MSG_FAILURE([GIO is required to build OpenVRML Player])])
-       AS_IF([test X$have_gnomeui = Xno -a -n "${GNOMEUI_LIBS-x}"],
+       AS_IF([test X$have_gnomeui = Xno -a -z "${GNOMEUI_LIBS+x}"],
              [AC_MSG_FAILURE([libgnomeui is required to build OpenVRML Player])])
-       AS_IF([test X$have_libcurl = Xno -a -n "${CURL_LIBS-x}"],
+       AS_IF([test X$have_libcurl = Xno -a -z "${CURL_LIBS+x}"],
              [AC_MSG_FAILURE([libcurl is required to build OpenVRML Player])])
 ])
 AM_CONDITIONAL([ENABLE_PLAYER], [test X$enable_player != Xno])
@@ -455,9 +455,9 @@ AC_ARG_ENABLE([mozilla-plugin],
 AS_IF([test X$enable_mozilla_plugin != Xno],
       [AS_IF([test X$enable_xembed = Xno],
              [AC_MSG_FAILURE([the Mozilla plug-in cannot be built without the XEmbed control])])
-       AS_IF([test X$have_mozilla_plugin = Xno -a -n "${MOZILLA_PLUGIN_CFLAGS-x}"],
+       AS_IF([test X$have_mozilla_plugin = Xno -a -z "${MOZILLA_PLUGIN_CFLAGS+x}"],
              [AC_MSG_FAILURE([Mozilla plug-in development headers are required to build the Mozilla plug-in.])])
-       AS_IF([test X$have_dbus_glib = Xno -a -n "${DBUS_G_LIBS-x}"],
+       AS_IF([test X$have_dbus_glib = Xno -a -z "${DBUS_G_LIBS+x}"],
              [AC_MSG_FAILURE([The D-Bus GLib binding is required to build the Mozilla plug-in])])])
 AM_CONDITIONAL([ENABLE_MOZILLA_PLUGIN],
   [test "X$enable_mozilla_plugin" != "Xno" -a "X$have_dbus_glib" != "Xno"])
@@ -485,7 +485,7 @@ AM_CONDITIONAL([ENABLE_SHARED], [test "X$enable_shared" != "Xno"])
 # Determine whether to apply the -rpath for the Gecko runtime libraries.
 #
 AS_IF([test "X$enable_gecko_rpath" = Xyes],
-[AS_IF([test -n "${GRE_PATH-x}"],
+[AS_IF([test -z "${GRE_PATH+x}"],
        [GRE_PATH=`echo $JS_LIBS | sed -e 's/^-L\([[^ ]]*\).*/\1/'`
         AS_IF([test "X$GRE_PATH" = "X$JS_LIBS"],
               [GRE_PATH=""
