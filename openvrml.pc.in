@@ -5,6 +5,7 @@ includedir=@includedir@/@PACKAGE_TARNAME@
 
 Name: @PACKAGE_NAME@
 Description: VRML/X3D run-time library.
+URL: http://openvrml.org
 Version: @PACKAGE_VERSION@
 Requires.private: libxml-2.0 >= 2.5
 Libs: -L${libdir} -lopenvrml
