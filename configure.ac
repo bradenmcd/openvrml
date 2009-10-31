@@ -153,7 +153,7 @@ AC_LANG_POP])
 ])
 
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], , [have_libmozjs=no])
+PKG_CHECK_MODULES([JS], [mozilla-js >= 1.8.1.8], , [have_libmozjs=no])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 #
 # Ensure that we can, in fact, find and use the SpiderMonkey headers.
@@ -316,25 +316,7 @@ AS_IF([test X$enable_script_node_javascript = Xno],
        [AS_IF([test -z "${JS_CFLAGS+x}"], [JS_CFLAGS=""])
         AS_IF([test -z "${JS_LIBS+x}"], [JS_LIBS="-ljs"])])
 AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "${JS_LIBS+x}" \) -o X$have_jsapi_h != Xyes],
-      [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])
-#
-# Figure out whether we need to add -DJS_THREADSAFE to JS_CFLAGS.
-#
-# libmozjs from Firefox 2.0 needs -DJS_THREADSAFE; but the Cflags from
-# the pkg-config metadata don't include it.  And if we're using the stand-
-# alone SpiderMonkey, we don't have any pkg-config metadata to go on.
-#
-# Fortunately, there are a few library symbols that should be defined
-# only if the installed binary was built with JS_THREADSAFE.  We'll
-# try to link with them.
-#
-AS_IF([test "X$JS_CFLAGS" = "X`echo "$JS_CFLAGS" | sed s/JS_THREADSAFE//`"],
-[ov_save_LDFLAGS=$LDFLAGS
-LDFLAGS="$JS_LIBS $LDFLAGS"
-AC_LINK_IFELSE([AC_LANG_CALL([], [JS_BeginRequest])],
-	       [JS_CFLAGS="$JS_CFLAGS -DJS_THREADSAFE"])
-LDFLAGS=$ov_save_LDFLAGS
-])])
+      [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])])
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 

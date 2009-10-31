@@ -1,5 +1,10 @@
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Require mozilla-js >= 1.8.1.8.  This means we
+	don't need to doctor JS_CFLAGS for -DJS_THREADSAFE anymore.
+
+2009-10-31 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Removed references to obsolete variants of
 	mozilla-js.pc.
 
