@@ -153,11 +153,7 @@ AC_LANG_POP])
 ])
 
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [xulrunner-js], ,
-                  [PKG_CHECK_MODULES([JS], [firefox-js], ,
-                                     [PKG_CHECK_MODULES([JS], [seamonkey-js], ,
-                                                        [PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], ,
-                                                                           [have_libmozjs=no])])])])
+PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], , [have_libmozjs=no])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 #
 # Ensure that we can, in fact, find and use the SpiderMonkey headers.

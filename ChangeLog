@@ -1,5 +1,10 @@
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Removed references to obsolete variants of
+	mozilla-js.pc.
+
+2009-10-31 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Since all of the optional features now appear in
 	dynamically loaded modules, we no longer need the machinery to
 	propagate the resulting dependencies to the pkg-config metadata.
