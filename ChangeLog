@@ -1,5 +1,9 @@
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Fixed checks for unset shell variables.
+
+2009-10-31 Braden McDaniel  <braden@endoframe.com>
+
 	* openvrml.pc.in: Added URL.
 
 2009-10-30 Braden McDaniel  <braden@endoframe.com>
