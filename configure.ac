@@ -27,18 +27,6 @@ AM_INIT_AUTOMAKE([1.10.1 foreign subdir-objects check-news tar-pax])
 AM_CONFIG_HEADER([config.h])
 
 #
-# These strings are used with PKG_CHECK_MODULES.  If the corresponding
-# features are enabled, they also propagate to the pkg-config metadata files
-# output by configure.
-#
-REQUIRE_FONTCONFIG="fontconfig"
-REQUIRE_FREETYPE="freetype2"
-require_xulrunner_js="xulrunner-js"
-require_firefox_js="firefox-js"
-require_seamonkey_js="seamonkey-js"
-require_mozilla_js="mozilla-js >= 1.2.1"
-
-#
 # Checks for programs.
 #
 AC_LIBTOOL_DLOPEN
@@ -138,8 +126,8 @@ AS_IF([test X$have_libxml = Xno -a -z "${XML_LIBS+x}"],
       [AC_MSG_FAILURE([libxml not found])])
 
 PKG_CHECK_MODULES([PNG], [libpng], , [have_libpng=no])
-PKG_CHECK_MODULES([FONTCONFIG], [$REQUIRE_FONTCONFIG], , [have_fontconfig=no])
-PKG_CHECK_MODULES([FREETYPE], [$REQUIRE_FREETYPE], , [have_freetype=no])
+PKG_CHECK_MODULES([FONTCONFIG], [fontconfig], , [have_fontconfig=no])
+PKG_CHECK_MODULES([FREETYPE], [freetype2], , [have_freetype=no])
 #
 # FreeType >= 2.2 uses const in callback function signatures.  This
 # doesn't cause an error in C; but it does in C++.
@@ -165,14 +153,10 @@ AC_LANG_POP])
 ])
 
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [$require_xulrunner_js],
-                  [mozilla_js_pkg=$require_xulrunner_js],
-                  [PKG_CHECK_MODULES([JS], [$require_firefox_js],
-                                     [mozilla_js_pkg=$require_firefox_js],
-                                     [PKG_CHECK_MODULES([JS], [$require_seamonkey_js],
-                                                        [mozilla_js_pkg=$require_seamonkey_js],
-                                                        [PKG_CHECK_MODULES([JS], [$require_mozilla_js],
-                                                                           [mozilla_js_pkg=$require_mozilla_js],
+PKG_CHECK_MODULES([JS], [xulrunner-js], ,
+                  [PKG_CHECK_MODULES([JS], [firefox-js], ,
+                                     [PKG_CHECK_MODULES([JS], [seamonkey-js], ,
+                                                        [PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], ,
                                                                            [have_libmozjs=no])])])])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 #
