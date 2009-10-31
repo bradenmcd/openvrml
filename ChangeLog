@@ -1,5 +1,11 @@
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Since all of the optional features now appear in
+	dynamically loaded modules, we no longer need the machinery to
+	propagate the resulting dependencies to the pkg-config metadata.
+
+2009-10-31 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Fixed checks for unset shell variables.
 
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
