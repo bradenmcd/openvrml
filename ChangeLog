@@ -1,3 +1,7 @@
+2009-10-31 Braden McDaniel  <braden@endoframe.com>
+
+	* openvrml.pc.in: Added URL.
+
 2009-10-30 Braden McDaniel  <braden@endoframe.com>
 
 	* openvrml.pc.in: Added libxml-2.0 to Requires.private.
