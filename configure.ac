@@ -248,7 +248,7 @@ AC_ARG_ENABLE([png-textures],
               [AC_HELP_STRING([--disable-png-textures],
                               [disable support for rendering PNG textures])])
 AS_IF([test X$enable_png_textures != Xno],
-      [AS_IF([test X$have_libpng = Xno],
+      [AS_IF([test X$have_libpng = Xno -a -z "${PNG_LIBS+x}"],
              [AC_MSG_FAILURE([libpng is required for PNG texture support])])
        AC_DEFINE([OPENVRML_ENABLE_PNG_TEXTURES], [1],
                  [Defined if support for rendering PNG textures is enabled.])])

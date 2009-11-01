@@ -1,5 +1,10 @@
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Don't fail on missing libpng if PNG_LIBS has been
+	set.
+
+2009-11-01 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Improve error message when no SpiderMonkey is
 	found: account for the possibility that the installed libjs was
 	not built with -DJS_THREADSAFE.
