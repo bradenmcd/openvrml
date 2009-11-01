@@ -296,7 +296,7 @@ AS_IF([test X$enable_script_node_javascript = Xno],
              [AS_IF([test -z "${JS_CFLAGS+x}"], [JS_CFLAGS="-DXP_UNIX -DJS_THREADSAFE"])
               AS_IF([test -z "${JS_LIBS+x}"], [JS_LIBS="-ljs"])])
        AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "${JS_LIBS+x}" \) -o X$have_jsapi_h != Xyes],
-             [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])])
+             [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.  If you are trying to build --with-libjs, make sure that libjs has been built with thread safety enabled.])])])
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 

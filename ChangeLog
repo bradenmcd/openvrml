@@ -1,5 +1,11 @@
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Improve error message when no SpiderMonkey is
+	found: account for the possibility that the installed libjs was
+	not built with -DJS_THREADSAFE.
+
+2009-11-01 Braden McDaniel  <braden@endoframe.com>
+
 	Require at least FreeType 2.2.
 
 	* configure.ac: Require FreeType >= 2.2.
