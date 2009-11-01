@@ -154,7 +154,12 @@ AC_LANG_POP])
 
 have_libmozjs=yes
 PKG_CHECK_MODULES([JS], [mozilla-js >= 1.8.1.8], , [have_libmozjs=no])
-AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
+#
+# JS_BeginRequest should be there only if SpiderMonkey was built with
+# -DJS_THREADSAFE.
+#
+AC_CHECK_LIB([js], [JS_BeginRequest], [have_libjs=yes], [have_libjs=no])
+
 #
 # Ensure that we can, in fact, find and use the SpiderMonkey headers.
 #
@@ -311,12 +316,12 @@ AC_ARG_WITH([libjs],
             [AC_HELP_STRING([--with-libjs],
                             [use libjs for JavaScript support])])
 AS_IF([test X$enable_script_node_javascript = Xno],
-[JS_CFLAGS="" JS_LIBS=""],
-[AS_IF([test X$with_libjs = Xyes -a X$have_libjs = Xyes],
-       [AS_IF([test -z "${JS_CFLAGS+x}"], [JS_CFLAGS=""])
-        AS_IF([test -z "${JS_LIBS+x}"], [JS_LIBS="-ljs"])])
-AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "${JS_LIBS+x}" \) -o X$have_jsapi_h != Xyes],
-      [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])])
+      [JS_CFLAGS="" JS_LIBS=""],
+      [AS_IF([test X$with_libjs = Xyes -a X$have_libjs = Xyes],
+             [AS_IF([test -z "${JS_CFLAGS+x}"], [JS_CFLAGS="-DXP_UNIX -DJS_THREADSAFE"])
+              AS_IF([test -z "${JS_LIBS+x}"], [JS_LIBS="-ljs"])])
+       AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "${JS_LIBS+x}" \) -o X$have_jsapi_h != Xyes],
+             [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])])
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 

@@ -1,3 +1,9 @@
+2009-11-01 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Set JS_CFLAGS (if it has not been set) when
+	building --with-libjs; ensure libjs was built with
+	-DJS_THREADSAFE.
+
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Require mozilla-js >= 1.8.1.8.  This means we
