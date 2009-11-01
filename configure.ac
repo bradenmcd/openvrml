@@ -127,30 +127,7 @@ AS_IF([test X$have_libxml = Xno -a -z "${XML_LIBS+x}"],
 
 PKG_CHECK_MODULES([PNG], [libpng], , [have_libpng=no])
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig], , [have_fontconfig=no])
-PKG_CHECK_MODULES([FREETYPE], [freetype2], , [have_freetype=no])
-#
-# FreeType >= 2.2 uses const in callback function signatures.  This
-# doesn't cause an error in C; but it does in C++.
-#
-AS_IF([test X$have_freetype != Xno],
-      [AC_MSG_CHECKING([if FreeType callback function signatures use const])
-       AC_CACHE_VAL([ov_cv_ft_const],
-[AC_LANG_PUSH([C++])
-save_CXXFLAGS="${CXXFLAGS}"
-CXXFLAGS="${CXXFLAGS} ${FREETYPE_CFLAGS}"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-                  [#include <ft2build.h>
-#include FT_OUTLINE_H
-int moveTo(const FT_Vector *, void *);],
-                  [FT_Outline_MoveToFunc f = moveTo])],
-                  [ov_cv_ft_const=const],
-                  [ov_cv_ft_const= ])
-CXXFLAGS="${save_CXXFLAGS}"
-AC_LANG_POP])
-       AS_IF([test -n "$ov_cv_ft_const"],
-             [AC_MSG_RESULT([yes])],
-             [AC_MSG_RESULT([no])])
-])
+PKG_CHECK_MODULES([FREETYPE], [freetype2 >= 2.2], , [have_freetype=no])
 
 have_libmozjs=yes
 PKG_CHECK_MODULES([JS], [mozilla-js >= 1.8.1.8], , [have_libmozjs=no])
@@ -301,9 +278,7 @@ AS_IF([test X$enable_render_text_node != Xno],
        AS_IF([test X$have_freetype = Xno -a -z "${FREETYPE_LIBS+x}"],
              [AC_MSG_FAILURE([FreeType is required for rendering Text nodes])])
        AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
-                 [Defined if support for rendering Text nodes is enabled.])
-       AC_DEFINE_UNQUOTED([OPENVRML_FT_CONST], [$ov_cv_ft_const],
-                          [const for FreeType callback function signatures.])])
+                 [Defined if support for rendering Text nodes is enabled.])])
 
 #
 # Script node JavaScript support

@@ -1,5 +1,12 @@
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
 
+	Require at least FreeType 2.2.
+
+	* configure.ac: Require FreeType >= 2.2.
+	* src/node/vrml97/text.cpp: Remove use of OPENVRML_FT_CONST.
+
+2009-11-01 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Set JS_CFLAGS (if it has not been set) when
 	building --with-libjs; ensure libjs was built with
 	-DJS_THREADSAFE.

@@ -1744,7 +1744,7 @@ namespace {
     const float stepSize_ = 0.2f;
 
     extern "C" int
-    moveTo_(OPENVRML_FT_CONST FT_Vector * const to,
+    moveTo_(const FT_Vector * const to,
             void * const user)
     {
         using std::vector;
@@ -1765,7 +1765,7 @@ namespace {
     }
 
     extern "C" int
-    lineTo_(OPENVRML_FT_CONST FT_Vector * const to,
+    lineTo_(const FT_Vector * const to,
             void * const user)
     {
         using openvrml::make_vec2f;
@@ -1832,8 +1832,8 @@ namespace {
     }
 
     extern "C" int
-    conicTo_(OPENVRML_FT_CONST FT_Vector * const control,
-             OPENVRML_FT_CONST FT_Vector * const to,
+    conicTo_(const FT_Vector * const control,
+             const FT_Vector * const to,
              void * const user)
     {
         using std::vector;
@@ -1868,9 +1868,9 @@ namespace {
     }
 
     extern "C" int
-    cubicTo_(OPENVRML_FT_CONST FT_Vector * const control1,
-             OPENVRML_FT_CONST FT_Vector * const control2,
-             OPENVRML_FT_CONST FT_Vector * const to,
+    cubicTo_(const FT_Vector * const control1,
+             const FT_Vector * const control2,
+             const FT_Vector * const to,
              void * const user)
     {
         using std::vector;
