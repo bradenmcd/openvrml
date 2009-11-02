@@ -1,3 +1,8 @@
+2009-11-02 Braden McDaniel  <braden@endoframe.com>
+
+	* Makefile.am: Simplify addition of openvrml-gl.pc to
+	pkgconfig_DATA.
+
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Require pkg-config >= 0.18.0.
