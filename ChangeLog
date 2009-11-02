@@ -1,5 +1,9 @@
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Require pkg-config >= 0.18.0.
+
+2009-11-01 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Use pkg-config to find SDL.
 
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
