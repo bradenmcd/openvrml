@@ -1,3 +1,7 @@
+2009-11-01 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Require pkg-config >= 0.18.0.
+
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Since all of the optional features now appear in
