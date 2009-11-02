@@ -1,5 +1,9 @@
 2009-11-02 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Updated copyright notice.
+
+2009-11-02 Braden McDaniel  <braden@endoframe.com>
+
 	* Makefile.am: Simplify addition of openvrml-gl.pc to
 	pkgconfig_DATA.
 
