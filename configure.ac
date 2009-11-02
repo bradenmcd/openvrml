@@ -203,20 +203,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
                   [OPENVRML_GL_HAVE_OPENGL_GLU_H=0])
 AC_SUBST([OPENVRML_GL_HAVE_OPENGL_GLU_H])
 
-AC_PATH_PROG([SDL_CONFIG], [sdl-config])
-have_sdl=no
-#
-# sdl-config sometimes emits an rpath flag pointing at its library
-# installation directory.  We don't want this, as it prevents users from
-# linking sdl-viewer against, for example, a locally compiled libGL when a
-# version of the library also exists in SDL's library installation
-# directory, typically /usr/lib.
-#
-AS_IF([test -n "${SDL_CONFIG}"],
-      [have_sdl=yes SDL_CFLAGS=`$SDL_CONFIG --cflags` SDL_LIBS=`$SDL_CONFIG --libs`
-       SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`])
-AC_SUBST([SDL_CFLAGS])
-AC_SUBST([SDL_LIBS])
+PKG_CHECK_MODULES([SDL], [sdl], [have_sdl=yes], [have_sdl=no])
 
 #
 # Use exception specifications?
@@ -410,10 +397,10 @@ AM_CONDITIONAL([ENABLE_MOZILLA_PLUGIN],
 AC_ARG_ENABLE([examples],
               [AC_HELP_STRING([--disable-examples],
                               [do not build the example programs])])
-AS_IF([test "X$enable_examples" != "Xno" -a "X$have_sdl" != "Xyes"],
+AS_IF([test X$enable_examples != Xno -a \( X$have_sdl != Xyes -o -z "${SDL_LIBS+x}" \)],
       [AC_MSG_FAILURE([SDL is required for the example programs])])
 AM_CONDITIONAL([ENABLE_EXAMPLES],
-               [test "X$enable_examples" != "Xno" -a "X$have_sdl" = "Xyes"])
+               [test X$enable_examples != Xno -a X$have_sdl = Xyes])
 
 #
 # Apply Rez to executables? (Only seem to need this if we're using the Apple

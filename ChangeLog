@@ -1,5 +1,9 @@
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Use pkg-config to find SDL.
+
+2009-11-01 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Don't fail on missing libpng if PNG_LIBS has been
 	set.
 
