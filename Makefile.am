@@ -6,9 +6,8 @@ EXTRA_DIST = \
         openvrml.pc.in \
         openvrml-gl.pc.in
 
-if ENABLE_GL_RENDERER
-OPENVRML_GL_PC = openvrml-gl.pc
-endif
-
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = openvrml.pc $(OPENVRML_GL_PC)
+pkgconfig_DATA = openvrml.pc
+if ENABLE_GL_RENDERER
+pkgconfig_DATA += openvrml-gl.pc
+endif
