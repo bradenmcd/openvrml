@@ -1403,16 +1403,6 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
 /**
  * @internal
  *
- * @var class openvrml::node::field_value_listener<FieldValue>
- *
- * @brief @c field_value_listener.
- *
- * @tparam FieldValue   a concrete @c field_value.
- */
-
-/**
- * @internal
- *
  * @var class openvrml::node::exposedfield<FieldValue>
  *
  * @brief @c exposedfield<FieldValue>::do_process_event calls

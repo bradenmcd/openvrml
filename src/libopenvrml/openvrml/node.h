@@ -456,9 +456,6 @@ namespace openvrml {
             OPENVRML_NOTHROW;
 
         template <typename FieldValue>
-        friend class field_value_listener;
-
-        template <typename FieldValue>
         friend class exposedfield;
 
         mutable boost::mutex ref_count_mutex_;

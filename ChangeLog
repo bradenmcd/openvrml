@@ -1,5 +1,13 @@
 2009-11-24 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Friendship with field_value_listener does not
+	appear to be necessary.
+	* src/libopenvrml/openvrml/node.cpp: Removed doc-comment for
+	field_value_listener friend.
+
+2009-11-24 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.cpp: Clean up obsolete
 	doc-comments.
 
