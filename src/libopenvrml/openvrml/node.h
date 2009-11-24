@@ -455,67 +455,11 @@ namespace openvrml {
         friend viewpoint_node * node_cast<viewpoint_node *>(node * n)
             OPENVRML_NOTHROW;
 
-        friend class field_value_listener<sfbool>;
-        friend class field_value_listener<sfcolor>;
-        friend class field_value_listener<sfcolorrgba>;
-        friend class field_value_listener<sffloat>;
-        friend class field_value_listener<sfdouble>;
-        friend class field_value_listener<sfimage>;
-        friend class field_value_listener<sfint32>;
-        friend class field_value_listener<sfnode>;
-        friend class field_value_listener<sfrotation>;
-        friend class field_value_listener<sfstring>;
-        friend class field_value_listener<sftime>;
-        friend class field_value_listener<sfvec2f>;
-        friend class field_value_listener<sfvec2d>;
-        friend class field_value_listener<sfvec3f>;
-        friend class field_value_listener<sfvec3d>;
-        friend class field_value_listener<mfbool>;
-        friend class field_value_listener<mfcolor>;
-        friend class field_value_listener<mfcolorrgba>;
-        friend class field_value_listener<mffloat>;
-        friend class field_value_listener<mfdouble>;
-        friend class field_value_listener<mfimage>;
-        friend class field_value_listener<mfint32>;
-        friend class field_value_listener<mfnode>;
-        friend class field_value_listener<mfrotation>;
-        friend class field_value_listener<mfstring>;
-        friend class field_value_listener<mftime>;
-        friend class field_value_listener<mfvec2f>;
-        friend class field_value_listener<mfvec2d>;
-        friend class field_value_listener<mfvec3f>;
-        friend class field_value_listener<mfvec3d>;
+        template <typename FieldValue>
+        friend class field_value_listener;
 
-        friend class exposedfield<sfbool>;
-        friend class exposedfield<sfcolor>;
-        friend class exposedfield<sfcolorrgba>;
-        friend class exposedfield<sffloat>;
-        friend class exposedfield<sfdouble>;
-        friend class exposedfield<sfimage>;
-        friend class exposedfield<sfint32>;
-        friend class exposedfield<sfnode>;
-        friend class exposedfield<sfrotation>;
-        friend class exposedfield<sfstring>;
-        friend class exposedfield<sftime>;
-        friend class exposedfield<sfvec2f>;
-        friend class exposedfield<sfvec2d>;
-        friend class exposedfield<sfvec3f>;
-        friend class exposedfield<sfvec3d>;
-        friend class exposedfield<mfbool>;
-        friend class exposedfield<mfcolor>;
-        friend class exposedfield<mfcolorrgba>;
-        friend class exposedfield<mffloat>;
-        friend class exposedfield<mfdouble>;
-        friend class exposedfield<mfimage>;
-        friend class exposedfield<mfint32>;
-        friend class exposedfield<mfnode>;
-        friend class exposedfield<mfrotation>;
-        friend class exposedfield<mfstring>;
-        friend class exposedfield<mftime>;
-        friend class exposedfield<mfvec2f>;
-        friend class exposedfield<mfvec2d>;
-        friend class exposedfield<mfvec3f>;
-        friend class exposedfield<mfvec3d>;
+        template <typename FieldValue>
+        friend class exposedfield;
 
         mutable boost::mutex ref_count_mutex_;
         mutable size_t ref_count_;

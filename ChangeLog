@@ -1,3 +1,9 @@
+2009-11-24 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::node): Use friend templates for field_value_listener
+	and exposedfield.
+
 2009-11-02 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Updated copyright notice.
