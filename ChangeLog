@@ -1,5 +1,10 @@
 2009-11-24 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node.cpp: Clean up obsolete
+	doc-comments.
+
+2009-11-24 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node.h
 	(openvrml::node): Use friend templates for field_value_listener
 	and exposedfield.
