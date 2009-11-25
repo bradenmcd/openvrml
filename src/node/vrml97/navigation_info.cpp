@@ -183,16 +183,16 @@ do_initialize(openvrml::viewpoint_node *, const double timestamp)
 }
 
 # define NAVIGATION_INFO_INTERFACE_SEQ                                  \
-    ((eventin,      sfbool,   "set_bind",       set_bind_listener_))    \
-    ((exposedfield, mffloat,  "avatarSize",     avatar_size_))          \
-    ((exposedfield, sfbool,   "headlight",      headlight_))            \
-    ((exposedfield, sffloat,  "speed",          speed_))                \
-    ((exposedfield, mfstring, "type",           type_))                 \
-    ((exposedfield, sffloat,  "visibiltyLimit", visibility_limit_))     \
-    ((eventout,     sfbool,   "isBound",        is_bound_emitter_))     \
-    ((exposedfield, sfnode,   "metadata",       metadata))              \
-    ((exposedfield, mfstring, "transitionType", transition_type_))      \
-    ((eventout,     sftime,   "bindTime",       bind_time_emitter_))
+    ((eventin,      sfbool,   "set_bind",        set_bind_listener_))   \
+    ((exposedfield, mffloat,  "avatarSize",      avatar_size_))         \
+    ((exposedfield, sfbool,   "headlight",       headlight_))           \
+    ((exposedfield, sffloat,  "speed",           speed_))               \
+    ((exposedfield, mfstring, "type",            type_))                \
+    ((exposedfield, sffloat,  "visibilityLimit", visibility_limit_))    \
+    ((eventout,     sfbool,   "isBound",         is_bound_emitter_))    \
+    ((exposedfield, sfnode,   "metadata",        metadata))             \
+    ((exposedfield, mfstring, "transitionType",  transition_type_))     \
+    ((eventout,     sftime,   "bindTime",        bind_time_emitter_))
 
 OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
                                               navigation_info_metatype,

@@ -1,5 +1,10 @@
 2009-11-25 Braden McDaniel  <braden@endoframe.com>
 
+	* src/node/vrml97/navigation_info.cpp
+	(NAVIGATION_INFO_INTERFACE_SEQ): Fixed typo in "visibilityLimit".
+
+2009-11-25 Braden McDaniel  <braden@endoframe.com>
+
 	Generate openvrml::node_type::do_create_type implementations using
 	the Boost.Preprocessor library.
 
