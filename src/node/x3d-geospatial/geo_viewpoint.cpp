@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -318,168 +318,25 @@ openvrml_node_x3d_geospatial::geo_viewpoint_metatype::~geo_viewpoint_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating GeoViewpoint nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by @c geo_viewpoint_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_geospatial::geo_viewpoint_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 16> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sfbool_id,
-                       "set_bind"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sfrotation_id,
-                       "set_orientation"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sfvec3d_id,
-                       "set_position"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "fieldOfView"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "headlight"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "jump"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "navType"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "bindTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isBound"),
-        node_interface(node_interface::field_id,
-                       field_value::sfnode_id,
-                       "geoOrigin"),
-        node_interface(node_interface::field_id,
-                       field_value::mfstring_id,
-                       "geoSystem"),
-        node_interface(node_interface::field_id,
-                       field_value::sfrotation_id,
-                       "orientation"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3d_id,
-                       "position"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "speedFactor")
-    };
-    typedef node_type_impl<geo_viewpoint_node> node_type_t;
+# define GEO_VIEWPOINT_INTERFACE_SEQ                                   \
+    ((exposedfield, sfnode,     "metadata",        metadata))          \
+    ((eventin,      sfbool,     "set_bind",        set_bind_listener_)) \
+    ((eventin,      sfrotation, "set_orientation", set_orientation_listener_)) \
+    ((eventin,      sfvec3d,    "set_position",    set_position_listener_)) \
+    ((exposedfield, sfstring,   "description",     description_))      \
+    ((exposedfield, sffloat,    "fieldOfView",     field_of_view_))    \
+    ((exposedfield, sfbool,     "headlight",       headlight_))        \
+    ((exposedfield, sfbool,     "jump",            jump_))             \
+    ((exposedfield, mfstring,   "navType",         nav_type_))         \
+    ((eventout,     sftime,     "bindTime",        bind_time_emitter_)) \
+    ((eventout,     sfbool,     "isBound",         is_bound_emitter_)) \
+    ((field,        sfnode,     "geoOrigin",       geo_origin_))       \
+    ((field,        mfstring,   "geoSystem",       geo_system_))       \
+    ((field,        sfrotation, "orientation",     orientation_))      \
+    ((field,        sfvec3d,    "position",        position_))         \
+    ((field,        sffloat,    "speedFactor",     speed_factor_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::set_bind_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::set_orientation_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::set_position_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::description_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::field_of_view_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::headlight_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::jump_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::nav_type_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::bind_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::is_bound_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::geo_origin_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::geo_system_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::orientation_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::position_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_viewpoint_node::speed_factor_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_geospatial,
+                                              geo_viewpoint_metatype,
+                                              geo_viewpoint_node,
+                                              GEO_VIEWPOINT_INTERFACE_SEQ)

@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -479,198 +479,28 @@ openvrml_node_vrml97::indexed_face_set_metatype::~indexed_face_set_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating IndexedFaceSet nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  indexed_face_set_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::indexed_face_set_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define INDEXED_FACE_SET_INTERFACE_SEQ                                 \
+    ((eventin,      mfint32, "set_colorIndex",    set_color_index_))    \
+    ((eventin,      mfint32, "set_coordIndex",    set_coord_index_))    \
+    ((eventin,      mfint32, "set_normalIndex",   set_normal_index_listener_)) \
+    ((eventin,      mfint32, "set_texCoordIndex", set_tex_coord_index_listener_)) \
+    ((exposedfield, sfnode,  "color",             color_))              \
+    ((exposedfield, sfnode,  "coord",             coord_))              \
+    ((exposedfield, sfnode,  "normal",            normal_))             \
+    ((exposedfield, sfnode,  "texCoord",          tex_coord_))          \
+    ((field,        sfbool,  "ccw",               ccw_))                \
+    ((field,        mfint32, "colorIndex",        color_index_))        \
+    ((field,        sfbool,  "colorPerVertex",    color_per_vertex_))   \
+    ((field,        sfbool,  "convex",            convex_))             \
+    ((field,        mfint32, "coordIndex",        coord_index_))        \
+    ((field,        sffloat, "creaseAngle",       crease_angle_))       \
+    ((field,        mfint32, "normalIndex",       normal_index_))       \
+    ((field,        sfbool,  "normalPerVertex",   normal_per_vertex_))  \
+    ((field,        sfbool,  "solid",             solid_))              \
+    ((field,        mfint32, "texCoordIndex",     tex_coord_index_))    \
+    ((exposedfield, sfnode,  "metadata",          metadata))
 
-    typedef boost::array<node_interface, 19> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::mfint32_id,
-                       "set_colorIndex"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfint32_id,
-                       "set_coordIndex"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfint32_id,
-                       "set_normalIndex"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfint32_id,
-                       "set_texCoordIndex"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "color"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "coord"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "normal"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "texCoord"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "ccw"),
-        node_interface(node_interface::field_id,
-                       field_value::mfint32_id,
-                       "colorIndex"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "colorPerVertex"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "convex"),
-        node_interface(node_interface::field_id,
-                       field_value::mfint32_id,
-                       "coordIndex"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "creaseAngle"),
-        node_interface(node_interface::field_id,
-                       field_value::mfint32_id,
-                       "normalIndex"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "normalPerVertex"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "solid"),
-        node_interface(node_interface::field_id,
-                       field_value::mfint32_id,
-                       "texCoordIndex"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_impl_util::node_type_impl<indexed_face_set_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & indexedFaceSetNodeType =
-        static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::set_color_index_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::set_coord_index_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::set_normal_index_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::set_tex_coord_index_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::color_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::coord_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::normal_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::tex_coord_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::ccw_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::color_index_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::color_per_vertex_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::convex_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::coord_index_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::crease_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::normal_index_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::normal_per_vertex_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::solid_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::tex_coord_index_);
-        } else if (*interface_ == *++supported_interface) {
-            indexedFaceSetNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &indexed_face_set_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              indexed_face_set_metatype,
+                                              indexed_face_set_node,
+                                              INDEXED_FACE_SET_INTERFACE_SEQ)

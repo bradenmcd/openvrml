@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -154,92 +154,15 @@ cone_metatype(openvrml::browser & browser):
 openvrml_node_vrml97::cone_metatype::~cone_metatype() OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating Cone nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by cone_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::cone_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define CONE_INTERFACE_SEQ                                  \
+    ((field,        sffloat, "bottomRadius", bottomRadius))  \
+    ((field,        sffloat, "height",       height))        \
+    ((field,        sfbool,  "side",         side))          \
+    ((field,        sfbool,  "bottom",       bottom))        \
+    ((exposedfield, sfnode,  "metadata",     metadata))      \
+    ((field,        sfbool,  "solid",        solid_))
 
-    typedef boost::array<node_interface, 6> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "bottomRadius"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "height"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "side"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "bottom"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "solid")
-    };
-
-    typedef node_impl_util::node_type_impl<cone_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & coneNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_ = interfaces.begin();
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            coneNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cone_node::bottomRadius);
-        } else if (*interface_ == *++supported_interface) {
-            coneNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cone_node::height);
-        } else if (*interface_ == *++supported_interface) {
-            coneNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cone_node::side);
-        } else if (*interface_ == *++supported_interface) {
-            coneNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cone_node::bottom);
-        } else if (*interface_ == *++supported_interface) {
-            coneNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cone_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            coneNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cone_node::solid_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              cone_metatype,
+                                              cone_node,
+                                              CONE_INTERFACE_SEQ)

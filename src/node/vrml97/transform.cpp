@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -747,140 +747,20 @@ openvrml_node_vrml97::transform_metatype::~transform_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating Transform nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by transform_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::transform_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using openvrml::field_value;
-    using openvrml::sfrotation;
-    using openvrml::sfvec3f;
-    using openvrml::sfnode;
-    using openvrml::mfnode;
-    using openvrml::node_interface;
-    using openvrml::node_interface_set;
-    using openvrml::node_type;
-    using openvrml::unsupported_interface;
-    using namespace openvrml::node_impl_util;
+# define TRANSFORM_INTERFACE_SEQ                                        \
+    ((eventin,      mfnode,     "addChildren",      add_children_listener_)) \
+    ((eventin,      mfnode,     "removeChildren",   remove_children_listener_)) \
+    ((exposedfield, sfvec3f,    "center",           center_))           \
+    ((exposedfield, mfnode,     "children",         children_))         \
+    ((exposedfield, sfrotation, "rotation",         rotation_))         \
+    ((exposedfield, sfvec3f,    "scale",            scale_))            \
+    ((exposedfield, sfrotation, "scaleOrientation", scale_orientation_)) \
+    ((exposedfield, sfvec3f,    "translation",      translation_))      \
+    ((field,        sfvec3f,    "bboxCenter",       bbox_center_))      \
+    ((field,        sfvec3f,    "bboxSize",         bbox_size_))        \
+    ((exposedfield, sfnode,     "metadata",         metadata))
 
-    typedef boost::array<node_interface, 11> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "addChildren"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "removeChildren"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "center"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "children"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfrotation_id,
-                       "rotation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "scale"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfrotation_id,
-                       "scaleOrientation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "translation"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_type_impl< ::transform_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & transformNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            transformNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::add_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::remove_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::center_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::children_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::rotation_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::scale_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::scale_orientation_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::translation_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &::transform_node::bbox_size_);
-        } else if (*interface_ == *++supported_interface) {
-            transformNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &transform_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              transform_metatype,
+                                              transform_node,
+                                              TRANSFORM_INTERFACE_SEQ)

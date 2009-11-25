@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -342,132 +342,20 @@ openvrml_node_vrml97::plane_sensor_metatype::~plane_sensor_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating PlaneSensor nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by plane_sensor_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::plane_sensor_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define PLANE_SENSOR_INTERFACE_SEQ \
+    ((exposedfield, sfbool,   "autoOffset",          auto_offset_)) \
+    ((exposedfield, sfbool,   "enabled",             enabled_)) \
+    ((exposedfield, sfvec2f,  "maxPosition",         max_position_)) \
+    ((exposedfield, sfvec2f,  "minPosition",         min_position_)) \
+    ((exposedfield, sfvec3f,  "offset",              offset_)) \
+    ((eventout,     sfbool,   "isActive",            is_active_emitter_)) \
+    ((eventout,     sfvec3f,  "trackPoint_changed",  track_point_changed_emitter_)) \
+    ((eventout,     sfvec3f,  "translation_changed", translation_changed_emitter_)) \
+    ((exposedfield, sfnode,   "metadata",            metadata)) \
+    ((exposedfield, sfstring, "description",         description_)) \
+    ((eventout,     sfbool,   "isOver",              is_over_emitter_))
 
-    typedef boost::array<node_interface, 11> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "autoOffset"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "enabled"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec2f_id,
-                       "maxPosition"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec2f_id,
-                       "minPosition"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "offset"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfvec3f_id,
-                       "trackPoint_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfvec3f_id,
-                       "translation_changed"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isOver")
-    };
-
-    typedef node_impl_util::node_type_impl<plane_sensor_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & planeSensorNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::auto_offset_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::enabled_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::max_position_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::min_position_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::offset_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::is_active_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::track_point_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::translation_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::description_);
-        } else if (*interface_ == *++supported_interface) {
-            planeSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &plane_sensor_node::is_over_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              plane_sensor_metatype,
+                                              plane_sensor_node,
+                                              PLANE_SENSOR_INTERFACE_SEQ)

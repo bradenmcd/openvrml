@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -175,81 +175,14 @@ openvrml_node_x3d_nurbs::nurbs_swept_surface_metatype::
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating NurbsSweptSurface nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  @c nurbs_swept_surface_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_nurbs::nurbs_swept_surface_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 5> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "crossSectionCurve"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "trajectoryCurve"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "ccw"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "solid")
-    };
-    typedef node_type_impl<nurbs_swept_surface_node> node_type_t;
+# define NURBS_SWEPT_SURFACE_INTERFACE_SEQ                              \
+    ((exposedfield, sfnode,   "metadata",          metadata))           \
+    ((exposedfield, sfnode,   "crossSectionCurve", cross_section_curve_)) \
+    ((exposedfield, sfnode,   "trajectoryCurve",   trajectory_curve_))  \
+    ((field,        sfbool,   "ccw",               ccw_))               \
+    ((field,        sfbool,   "solid",             solid_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &nurbs_swept_surface_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &nurbs_swept_surface_node::cross_section_curve_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &nurbs_swept_surface_node::trajectory_curve_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &nurbs_swept_surface_node::ccw_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &nurbs_swept_surface_node::solid_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_nurbs,
+                                              nurbs_swept_surface_metatype,
+                                              nurbs_swept_surface_node,
+                                              NURBS_SWEPT_SURFACE_INTERFACE_SEQ)

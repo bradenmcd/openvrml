@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -323,264 +323,37 @@ openvrml_node_x3d_dis::signal_pdu_metatype::~signal_pdu_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating SignalPdu nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by @c signal_pdu_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_dis::signal_pdu_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 28> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "address"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "applicationID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfint32_id,
-                       "data"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "dataLength"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "encodingScheme"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entityID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "multicastRelayHost"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "multicastRelayPort"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "networkMode"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "port"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "radioID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "readInterval"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "rtpHeaderExpected"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "sampleRate"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "samples"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "siteID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "tdlType"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "whichGeometry"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "writeInterval"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isNetworkReader"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isNetworkWriter"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isRtpHeaderHeard"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isStandAlone"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "timestamp"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize")
-    };
-    typedef node_type_impl<signal_pdu_node> node_type_t;
+# define SIGNAL_PDU_INTERFACE_SEQ                                       \
+    ((exposedfield, sfnode,   "metadata",           metadata))          \
+    ((exposedfield, sfstring, "address",            address_))          \
+    ((exposedfield, sfint32,  "applicationID",      application_id_))   \
+    ((exposedfield, mfint32,  "data",               data_))             \
+    ((exposedfield, sfint32,  "dataLength",         data_length_))      \
+    ((exposedfield, sfint32,  "encodingScheme",     encoding_scheme_))  \
+    ((exposedfield, sfint32,  "entityID",           entity_id_))        \
+    ((exposedfield, sfstring, "multicastRelayHost", multicast_relay_host_)) \
+    ((exposedfield, sfint32,  "multicastRelayPort", multicast_relay_port_)) \
+    ((exposedfield, sfstring, "networkMode",        network_mode_))     \
+    ((exposedfield, sfint32,  "port",               port_))             \
+    ((exposedfield, sfint32,  "radioID",            radio_id_))         \
+    ((exposedfield, sffloat,  "readInterval",       read_interval_))    \
+    ((exposedfield, sfbool,   "rtpHeaderExpected",  rtp_header_expected_)) \
+    ((exposedfield, sfint32,  "sampleRate",         sample_rate_))      \
+    ((exposedfield, sfint32,  "samples",            samples_))          \
+    ((exposedfield, sfint32,  "siteID",             site_id_))          \
+    ((exposedfield, sfint32,  "tdlType",            tdl_type_))         \
+    ((exposedfield, sfint32,  "whichGeometry",      which_geometry_))   \
+    ((exposedfield, sffloat,  "writeInterval",      write_interval_))   \
+    ((eventout,     sfbool,   "isActive",           is_active_emitter_)) \
+    ((eventout,     sfbool,   "isNetworkReader",    is_network_reader_emitter_)) \
+    ((eventout,     sfbool,   "isNetworkWriter",    is_network_writer_emitter_)) \
+    ((eventout,     sfbool,   "isRtpHeaderHeard",   is_rtp_header_heard_emitter_)) \
+    ((eventout,     sfbool,   "isStandAlone",       is_stand_alone_emitter_)) \
+    ((eventout,     sftime,   "timestamp",          timestamp_emitter_)) \
+    ((field,        sfvec3f,  "bboxCenter",         bbox_center_))      \
+    ((field,        sfvec3f,  "bboxSize",           bbox_size_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::address_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::application_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::data_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::data_length_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::encoding_scheme_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::entity_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::multicast_relay_host_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::multicast_relay_port_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::network_mode_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::port_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::radio_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::read_interval_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::rtp_header_expected_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::sample_rate_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::samples_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::site_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::tdl_type_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::which_geometry_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::write_interval_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::is_active_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::is_network_reader_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::is_network_writer_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::is_rtp_header_heard_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::is_stand_alone_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::timestamp_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &signal_pdu_node::bbox_size_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_dis,
+                                              signal_pdu_metatype,
+                                              signal_pdu_node,
+                                              SIGNAL_PDU_INTERFACE_SEQ)

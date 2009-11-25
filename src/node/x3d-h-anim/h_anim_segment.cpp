@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -250,136 +250,21 @@ openvrml_node_x3d_h_anim::h_anim_segment_metatype::~h_anim_segment_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating HAnimSegment nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by @c h_anim_segment_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_h_anim::h_anim_segment_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 12> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "addChildren"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "removeChildren"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "centerOfMass"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "children"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "coord"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "displacers"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "mass"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "momentsOfInertia"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "name"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize")
-    };
-    typedef node_type_impl<h_anim_segment_node> node_type_t;
+# define H_ANIM_SEGMENT_INTERFACE_SEQ                                   \
+    ((exposedfield, sfnode,   "metadata",         metadata))            \
+    ((eventin,      mfnode,   "addChildren",      add_children_listener_)) \
+    ((eventin,      mfnode,   "removeChildren",   remove_children_listener_)) \
+    ((exposedfield, sfvec3f,  "centerOfMass",     center_of_mass_))     \
+    ((exposedfield, mfnode,   "children",         children_))           \
+    ((exposedfield, sfnode,   "coord",            coord_))              \
+    ((exposedfield, mfnode,   "displacers",       displacers_))         \
+    ((exposedfield, sffloat,  "mass",             mass_))               \
+    ((exposedfield, mffloat,  "momentsOfInertia", moments_of_inertia_)) \
+    ((exposedfield, sfstring, "name",             name_))               \
+    ((field,        sfvec3f,  "bboxCenter",       bbox_center_))        \
+    ((field,        sfvec3f,  "bboxSize",         bbox_size_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::add_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::remove_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::center_of_mass_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::children_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::coord_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::displacers_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::mass_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::moments_of_inertia_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::name_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_segment_node::bbox_size_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_h_anim,
+                                              h_anim_segment_metatype,
+                                              h_anim_segment_node,
+                                              H_ANIM_SEGMENT_INTERFACE_SEQ)

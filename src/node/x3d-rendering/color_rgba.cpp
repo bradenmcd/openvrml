@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -126,61 +126,11 @@ openvrml_node_x3d_rendering::color_rgba_metatype::~color_rgba_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a node_type_ptr to a node_type capable of creating ColorRGBA nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by color_rgba_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_rendering::color_rgba_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using openvrml::field_value;
-    using openvrml::node_interface;
-    using openvrml::node_interface_set;
-    using openvrml::node_type;
-    using openvrml::unsupported_interface;
-    typedef boost::array<node_interface, 2> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfcolorrgba_id,
-                       "color")
-    };    
-    typedef node_type_impl<color_rgba_node> node_type_t;
+# define COLOR_RGBA_INTERFACE_SEQ \
+    ((exposedfield, sfnode,      "metadata", metadata)) \
+    ((exposedfield, mfcolorrgba, "color",    color_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-        
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &color_rgba_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &color_rgba_node::color_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }        
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_rendering,
+                                              color_rgba_metatype,
+                                              color_rgba_node,
+                                              COLOR_RGBA_INTERFACE_SEQ)

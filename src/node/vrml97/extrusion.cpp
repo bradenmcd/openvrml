@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -524,164 +524,24 @@ openvrml_node_vrml97::extrusion_metatype::~extrusion_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating Extrusion nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by extrusion_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::extrusion_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define EXTRUSION_INTERFACE_SPEC                                       \
+    ((eventin,      mfvec2f,    "set_crossSection", set_cross_section_listener_)) \
+    ((eventin,      mfrotation, "set_orientation",  set_orientation_listener_)) \
+    ((eventin,      mfvec2f,    "set_scale",        set_scale_listener_)) \
+    ((eventin,      mfvec3f,    "set_spine",        set_spine_listener_)) \
+    ((field,        sfbool,     "beginCap",         begin_cap_))        \
+    ((field,        sfbool,     "ccw",              ccw_))              \
+    ((field,        sfbool,     "convex",           convex_))           \
+    ((field,        sffloat,    "creaseAngle",      crease_angle_))     \
+    ((field,        mfvec2f,    "crossSection",     cross_section_))    \
+    ((field,        sfbool,     "endCap",           end_cap_))          \
+    ((field,        mfrotation, "orientation",      orientation_))      \
+    ((field,        mfvec2f,    "scale",            scale_))            \
+    ((field,        sfbool,     "solid",            solid_))            \
+    ((field,        mfvec3f,    "spine",            spine_))            \
+    ((exposedfield, sfnode,     "metadata",         metadata))
 
-    typedef boost::array<node_interface, 15> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::mfvec2f_id,
-                       "set_crossSection"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfrotation_id,
-                       "set_orientation"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfvec2f_id,
-                       "set_scale"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfvec3f_id,
-                       "set_spine"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "beginCap"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "ccw"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "convex"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "creaseAngle"),
-        node_interface(node_interface::field_id,
-                       field_value::mfvec2f_id,
-                       "crossSection"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "endCap"),
-        node_interface(node_interface::field_id,
-                       field_value::mfrotation_id,
-                       "orientation"),
-        node_interface(node_interface::field_id,
-                       field_value::mfvec2f_id,
-                       "scale"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "solid"),
-        node_interface(node_interface::field_id,
-                       field_value::mfvec3f_id,
-                       "spine"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_impl_util::node_type_impl<extrusion_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & extrusionNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::set_cross_section_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::set_orientation_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::set_scale_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::set_spine_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::begin_cap_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::ccw_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::convex_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::crease_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::cross_section_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::end_cap_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::orientation_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::scale_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::solid_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::spine_);
-        } else if (*interface_ == *++supported_interface) {
-            extrusionNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &extrusion_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              extrusion_metatype,
+                                              extrusion_node,
+                                              EXTRUSION_INTERFACE_SPEC)

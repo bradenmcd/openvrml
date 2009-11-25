@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -371,164 +371,24 @@ openvrml_node_vrml97::elevation_grid_metatype::~elevation_grid_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating ElevationGrid nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by elevation_grid_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::elevation_grid_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define ELEVATION_GRID_INTERFACE_SEQ                                  \
+    ((eventin,      mffloat, "set_height",      set_height_listener_)) \
+    ((exposedfield, sfnode,  "color",           color_))               \
+    ((exposedfield, sfnode,  "normal",          normal_))              \
+    ((exposedfield, sfnode,  "texCoord",        tex_coord_))           \
+    ((field,        mffloat, "height",          height_))              \
+    ((field,        sfbool,  "ccw",             ccw_))                 \
+    ((field,        sfbool,  "colorPerVertex",  color_per_vertex_))    \
+    ((field,        sffloat, "creaseAngle",     crease_angle_))        \
+    ((field,        sfbool,  "normalPerVertex", normal_per_vertex_))   \
+    ((field,        sfbool,  "solid",           solid_))               \
+    ((field,        sfint32, "xDimension",      x_dimension_))         \
+    ((field,        sffloat, "xSpacing",        x_spacing_))           \
+    ((field,        sfint32, "zDimension",      z_dimension_))         \
+    ((field,        sffloat, "zSpacing",        z_spacing_))           \
+    ((exposedfield, sfnode,  "metadata",        metadata))
 
-    typedef boost::array<node_interface, 15> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::mffloat_id,
-                       "set_height"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "color"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "normal"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "texCoord"),
-        node_interface(node_interface::field_id,
-                       field_value::mffloat_id,
-                       "height"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "ccw"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "colorPerVertex"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "creaseAngle"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "normalPerVertex"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "solid"),
-        node_interface(node_interface::field_id,
-                       field_value::sfint32_id,
-                       "xDimension"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "xSpacing"),
-        node_interface(node_interface::field_id,
-                       field_value::sfint32_id,
-                       "zDimension"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "zSpacing"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_impl_util::node_type_impl<elevation_grid_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & elevationGridNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::set_height_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::color_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::normal_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::tex_coord_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::height_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::ccw_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::color_per_vertex_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::crease_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::normal_per_vertex_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::solid_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::x_dimension_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::x_spacing_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::z_dimension_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::z_spacing_);
-        } else if (*interface_ == *++supported_interface) {
-            elevationGridNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &elevation_grid_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              elevation_grid_metatype,
+                                              elevation_grid_node,
+                                              ELEVATION_GRID_INTERFACE_SEQ)

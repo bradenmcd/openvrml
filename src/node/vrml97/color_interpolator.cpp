@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -259,86 +259,14 @@ openvrml_node_vrml97::color_interpolator_metatype::
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a @c boost::shared_ptr to a @c node_type capable of creating
- *         ColorInterpolator nodes.
- *
- * @exception openvrml::unsupported_interface   if @p interfaces includes an
- *                                              interface not supported by
- *                                              @c color_interpolator_metatype.
- * @exception std::bad_alloc                    if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::color_interpolator_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define COLOR_INTERPOLATOR_INTERFACE_SEQ                               \
+    ((eventin,      sffloat, "set_fraction",  set_fraction_listener_))  \
+    ((exposedfield, mffloat, "key",           key_))                    \
+    ((exposedfield, mfcolor, "keyValue",      key_value_))              \
+    ((eventout,     sfcolor, "value_changed", value_changed_))          \
+    ((exposedfield, sfnode,  "metadata",      metadata))
 
-    typedef boost::array<node_interface, 5> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_fraction"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "key"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfcolor_id,
-                       "keyValue"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfcolor_id,
-                       "value_changed"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_impl_util::node_type_impl<color_interpolator_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & colorInterpolatorNodeType =
-        static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            colorInterpolatorNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &color_interpolator_node::set_fraction_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            colorInterpolatorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &color_interpolator_node::key_);
-        } else if (*interface_ == *++supported_interface) {
-            colorInterpolatorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &color_interpolator_node::key_value_);
-        } else if (*interface_ == *++supported_interface) {
-            colorInterpolatorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &color_interpolator_node::value_changed_);
-        } else if (*interface_ == *++supported_interface) {
-            colorInterpolatorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &color_interpolator_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              color_interpolator_metatype,
+                                              color_interpolator_node,
+                                              COLOR_INTERPOLATOR_INTERFACE_SEQ)

@@ -182,128 +182,22 @@ do_initialize(openvrml::viewpoint_node *, const double timestamp)
     }
 }
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating NavigationInfo nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by navigation_info_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::navigation_info_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define NAVIGATION_INFO_INTERFACE_SEQ                                  \
+    ((eventin,      sfbool,   "set_bind",       set_bind_listener_))    \
+    ((exposedfield, mffloat,  "avatarSize",     avatar_size_))          \
+    ((exposedfield, sfbool,   "headlight",      headlight_))            \
+    ((exposedfield, sffloat,  "speed",          speed_))                \
+    ((exposedfield, mfstring, "type",           type_))                 \
+    ((exposedfield, sffloat,  "visibiltyLimit", visibility_limit_))     \
+    ((eventout,     sfbool,   "isBound",        is_bound_emitter_))     \
+    ((exposedfield, sfnode,   "metadata",       metadata))              \
+    ((exposedfield, mfstring, "transitionType", transition_type_))      \
+    ((eventout,     sftime,   "bindTime",       bind_time_emitter_))
 
-    typedef boost::array<node_interface, 10> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::sfbool_id,
-                       "set_bind"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "avatarSize"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "headlight"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "speed"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "type"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "visibilityLimit"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isBound"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "transitionType"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "bindTime")
-    };
-
-    typedef node_impl_util::node_type_impl<navigation_info_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & navigationInfoNodeType =
-        static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::set_bind_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::avatar_size_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::headlight_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::speed_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::type_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::visibility_limit_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::is_bound_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::transition_type_);
-        } else if (*interface_ == *++supported_interface) {
-            navigationInfoNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &navigation_info_node::bind_time_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              navigation_info_metatype,
+                                              navigation_info_node,
+                                              NAVIGATION_INFO_INTERFACE_SEQ)
 
 /**
  * @class openvrml_node_vrml97::navigation_info_node

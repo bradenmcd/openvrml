@@ -1,3 +1,140 @@
+2009-11-25 Braden McDaniel  <braden@endoframe.com>
+
+	Generate openvrml::node_type::do_create_type implementations using
+	the Boost.Preprocessor library.
+
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comment
+	for OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+	* src/libopenvrml/openvrml/node_impl_util.h: Added
+	OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE and supporting
+	macros.
+	* src/node/vrml97/anchor.cpp
+	* src/node/vrml97/appearance.cpp
+	* src/node/vrml97/audio_clip.cpp
+	* src/node/vrml97/background.cpp
+	* src/node/vrml97/billboard.cpp
+	* src/node/vrml97/box.cpp
+	* src/node/vrml97/cad_assembly.cpp
+	* src/node/vrml97/cad_layer.cpp
+	* src/node/vrml97/collision.cpp
+	* src/node/vrml97/color.cpp
+	* src/node/vrml97/color_interpolator.cpp
+	* src/node/vrml97/cone.cpp
+	* src/node/vrml97/coordinate.cpp
+	* src/node/vrml97/coordinate_interpolator.cpp
+	* src/node/vrml97/cylinder.cpp
+	* src/node/vrml97/cylinder_sensor.cpp
+	* src/node/vrml97/directional_light.cpp
+	* src/node/vrml97/elevation_grid.cpp
+	* src/node/vrml97/extrusion.cpp
+	* src/node/vrml97/fog.cpp
+	* src/node/vrml97/font_style.cpp
+	* src/node/vrml97/group.cpp
+	* src/node/vrml97/image_texture.cpp
+	* src/node/vrml97/indexed_face_set.cpp
+	* src/node/vrml97/indexed_line_set.cpp
+	* src/node/vrml97/inline.cpp
+	* src/node/vrml97/lod.cpp
+	* src/node/vrml97/material.cpp
+	* src/node/vrml97/navigation_info.cpp
+	* src/node/vrml97/normal.cpp
+	* src/node/vrml97/normal_interpolator.cpp
+	* src/node/vrml97/orientation_interpolator.cpp
+	* src/node/vrml97/pixel_texture.cpp
+	* src/node/vrml97/plane_sensor.cpp
+	* src/node/vrml97/point_light.cpp
+	* src/node/vrml97/point_set.cpp
+	* src/node/vrml97/position_interpolator.cpp
+	* src/node/vrml97/proximity_sensor.cpp
+	* src/node/vrml97/scalar_interpolator.cpp
+	* src/node/vrml97/shape.cpp
+	* src/node/vrml97/sound.cpp
+	* src/node/vrml97/sphere.cpp
+	* src/node/vrml97/sphere_sensor.cpp
+	* src/node/vrml97/spot_light.cpp
+	* src/node/vrml97/switch.cpp
+	* src/node/vrml97/text.cpp
+	* src/node/vrml97/texture_coordinate.cpp
+	* src/node/vrml97/texture_transform.cpp
+	* src/node/vrml97/touch_sensor.cpp
+	* src/node/vrml97/transform.cpp
+	* src/node/vrml97/visibility_sensor.cpp
+	* src/node/vrml97/world_info.cpp
+	* src/node/vrml97/viewpoint.cpp
+	* src/node/x3d-cad-geometry/cad_face.cpp
+	* src/node/x3d-cad-geometry/indexed_quad_set.cpp
+	* src/node/x3d-core/metadata_double.cpp
+	* src/node/x3d-core/metadata_float.cpp
+	* src/node/x3d-core/metadata_integer.cpp
+	* src/node/x3d-core/metadata_set.cpp
+	* src/node/x3d-core/metadata_string.cpp
+	* src/node/x3d-dis/espdu_transform.cpp
+	* src/node/x3d-dis/receiver_pdu.cpp
+	* src/node/x3d-dis/signal_pdu.cpp
+	* src/node/x3d-dis/transmitter_pdu.cpp
+	* src/node/x3d-environmental-effects/texture_background.cpp
+	* src/node/x3d-event-utilities/boolean_filter.cpp
+	* src/node/x3d-event-utilities/boolean_sequencer.cpp
+	* src/node/x3d-event-utilities/boolean_toggle.cpp
+	* src/node/x3d-event-utilities/boolean_trigger.cpp
+	* src/node/x3d-event-utilities/integer_sequencer.cpp
+	* src/node/x3d-event-utilities/integer_trigger.cpp
+	* src/node/x3d-event-utilities/time_trigger.cpp
+	* src/node/x3d-geometry2d/arc_close2d.cpp
+	* src/node/x3d-geometry2d/arc2d.cpp
+	* src/node/x3d-geometry2d/circle2d.cpp
+	* src/node/x3d-geometry2d/disk2d.cpp
+	* src/node/x3d-geometry2d/polyline2d.cpp
+	* src/node/x3d-geometry2d/polypoint2d.cpp
+	* src/node/x3d-geometry2d/rectangle2d.cpp
+	* src/node/x3d-geometry2d/triangle_set2d.cpp
+	* src/node/x3d-geospatial/geo_coordinate.cpp
+	* src/node/x3d-geospatial/geo_elevation_grid.cpp
+	* src/node/x3d-geospatial/geo_location.cpp
+	* src/node/x3d-geospatial/geo_lod.cpp
+	* src/node/x3d-geospatial/geo_metadata.cpp
+	* src/node/x3d-geospatial/geo_origin.cpp
+	* src/node/x3d-geospatial/geo_position_interpolator.cpp
+	* src/node/x3d-geospatial/geo_touch_sensor.cpp
+	* src/node/x3d-geospatial/geo_viewpoint.cpp
+	* src/node/x3d-grouping/static_group.cpp
+	* src/node/x3d-h-anim/h_anim_displacer.cpp
+	* src/node/x3d-h-anim/h_anim_humanoid.cpp
+	* src/node/x3d-h-anim/h_anim_joint.cpp
+	* src/node/x3d-h-anim/h_anim_segment.cpp
+	* src/node/x3d-h-anim/h_anim_site.cpp
+	* src/node/x3d-interpolation/coordinate_interpolator2d.cpp
+	* src/node/x3d-interpolation/position_interpolator2d.cpp
+	* src/node/x3d-key-device-sensor/key_sensor.cpp
+	* src/node/x3d-key-device-sensor/string_sensor.cpp
+	* src/node/x3d-networking/load_sensor.cpp
+	* src/node/x3d-nurbs/contour_polyline2d.cpp
+	* src/node/x3d-nurbs/contour2d.cpp
+	* src/node/x3d-nurbs/coordinate_double.cpp
+	* src/node/x3d-nurbs/nurbs_curve.cpp
+	* src/node/x3d-nurbs/nurbs_curve2d.cpp
+	* src/node/x3d-nurbs/nurbs_orientation_interpolator.cpp
+	* src/node/x3d-nurbs/nurbs_patch_surface.cpp
+	* src/node/x3d-nurbs/nurbs_position_interpolator.cpp
+	* src/node/x3d-nurbs/nurbs_set.cpp
+	* src/node/x3d-nurbs/nurbs_surface_interpolator.cpp
+	* src/node/x3d-nurbs/nurbs_swept_surface.cpp
+	* src/node/x3d-nurbs/nurbs_swung_surface.cpp
+	* src/node/x3d-nurbs/nurbs_texture_coordinate.cpp
+	* src/node/x3d-nurbs/nurbs_trimmed_surface.cpp
+	* src/node/x3d-rendering/color_rgba.cpp
+	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
+	* src/node/x3d-rendering/indexed_triangle_set.cpp
+	* src/node/x3d-rendering/indexed_triangle_strip_set.cpp
+	* src/node/x3d-rendering/triangle_fan_set.cpp
+	* src/node/x3d-rendering/triangle_set.cpp
+	* src/node/x3d-rendering/triangle_strip_set.cpp
+	* src/node/x3d-shape/fill_properties.cpp
+	* src/node/x3d-shape/line_properties.cpp
+	* src/node/x3d-texturing/multi_texture.cpp
+	* src/node/x3d-texturing/multi_texture_coordinate.cpp
+	* src/node/x3d-texturing/multi_texture_transform.cpp
+
 2009-11-24 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node.h

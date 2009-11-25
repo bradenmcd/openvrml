@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -137,75 +137,13 @@ openvrml_node_vrml97::pixel_texture_metatype::~pixel_texture_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating PixelTexture nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by pixel_texture_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::pixel_texture_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define PIXEL_TEXTURE_INTERFACE_SEQ                 \
+    ((exposedfield, sfimage, "image",    image_))    \
+    ((field,        sfbool,  "repeatS",  repeat_s_)) \
+    ((field,        sfbool,  "repeatT",  repeat_t_)) \
+    ((exposedfield, sfnode,  "metadata", metadata))
 
-    typedef boost::array<node_interface, 4> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfimage_id,
-                       "image"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "repeatS"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "repeatT"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_impl_util::node_type_impl<pixel_texture_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & pixelTextureNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end(); ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            pixelTextureNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &pixel_texture_node::image_);
-        } else if (*interface_ == *++supported_interface) {
-            pixelTextureNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &pixel_texture_node::repeat_s_);
-        } else if (*interface_ == *++supported_interface) {
-            pixelTextureNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &pixel_texture_node::repeat_t_);
-        } else if (*interface_ == *++supported_interface) {
-            pixelTextureNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &pixel_texture_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              pixel_texture_metatype,
+                                              pixel_texture_node,
+                                              PIXEL_TEXTURE_INTERFACE_SEQ)

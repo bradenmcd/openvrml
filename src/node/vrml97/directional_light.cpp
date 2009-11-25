@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -138,94 +138,15 @@ openvrml_node_vrml97::directional_light_metatype::~directional_light_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating DirectionalLight nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  directional_light_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::directional_light_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define DIRECTIONAL_LIGHT_INTERFACE_SEQ                              \
+    ((exposedfield, sffloat, "ambientIntensity", ambient_intensity_)) \
+    ((exposedfield, sfcolor, "color",            color_))             \
+    ((exposedfield, sfvec3f, "direction",        direction_))         \
+    ((exposedfield, sffloat, "intensity",        intensity_))         \
+    ((exposedfield, sfbool,  "on",               on_))                \
+    ((exposedfield, sfnode,  "metadata",         metadata))
 
-    typedef boost::array<node_interface, 6> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "ambientIntensity"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfcolor_id,
-                       "color"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "direction"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "intensity"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "on"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_impl_util::node_type_impl<directional_light_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & directionalLightNodeType =
-        static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_ = interfaces.begin();
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            directionalLightNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &directional_light_node::ambient_intensity_);
-        } else if (*interface_ == *++supported_interface) {
-            directionalLightNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &directional_light_node::color_);
-        } else if (*interface_ == *++supported_interface) {
-            directionalLightNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &directional_light_node::direction_);
-        } else if (*interface_ == *++supported_interface) {
-            directionalLightNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &directional_light_node::intensity_);
-        } else if (*interface_ == *++supported_interface) {
-            directionalLightNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &directional_light_node::on_);
-        } else if (*interface_ == *++supported_interface) {
-            directionalLightNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &directional_light_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              directional_light_metatype,
+                                              directional_light_node,
+                                              DIRECTIONAL_LIGHT_INTERFACE_SEQ)

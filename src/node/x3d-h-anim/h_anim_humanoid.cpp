@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -246,193 +246,27 @@ openvrml_node_x3d_h_anim::h_anim_humanoid_metatype::~h_anim_humanoid_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating HAnimHumanoid nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  @c h_anim_humanoid_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_h_anim::h_anim_humanoid_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 19> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "center"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "info"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "joints"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "name"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfrotation_id,
-                       "rotation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "scale"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfrotation_id,
-                       "scaleOrientation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "segments"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "sites"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "skeleton"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "skin"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "skinCoord"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "skinNormal"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "translation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "version"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "viewpoints"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize")
-    };
-    typedef node_type_impl<h_anim_humanoid_node> node_type_t;
+# define H_ANIM_HUMANOID_INTERFACE_SEQ                                  \
+    ((exposedfield, sfnode,     "metadata",         metadata))          \
+    ((exposedfield, sfvec3f,    "center",           center_))           \
+    ((exposedfield, mfstring,   "info",             info_))             \
+    ((exposedfield, mfnode,     "joints",           joints_))           \
+    ((exposedfield, sfrotation, "rotation",         rotation_))         \
+    ((exposedfield, sfvec3f,    "scale",            scale_))            \
+    ((exposedfield, sfrotation, "scaleOrientation", scale_orientation_)) \
+    ((exposedfield, mfnode,     "segments",         segments_))         \
+    ((exposedfield, mfnode,     "sites",            sites_))            \
+    ((exposedfield, mfnode,     "skeleton",         skeleton_))         \
+    ((exposedfield, mfnode,     "skin",             skin_))             \
+    ((exposedfield, sfnode,     "skinCoord",        skin_coord_))       \
+    ((exposedfield, sfnode,     "skinNormal",       skin_normal_))      \
+    ((exposedfield, sfvec3f,    "translation",      translation_))      \
+    ((exposedfield, sfstring,   "version",          version_))          \
+    ((exposedfield, mfnode,     "viewpoints",       viewpoints_))       \
+    ((field, sfvec3f,           "bboxCenter",       bbox_center_))             \
+    ((field, sfvec3f,           "bboxSize",         bbox_size_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::center_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::info_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::joints_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::name_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::rotation_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::scale_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::scale_orientation_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::segments_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::sites_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::skeleton_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::skin_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::skin_coord_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::skin_normal_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::translation_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::version_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::viewpoints_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &h_anim_humanoid_node::bbox_size_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_h_anim,
+                                              h_anim_humanoid_metatype,
+                                              h_anim_humanoid_node,
+                                              H_ANIM_HUMANOID_INTERFACE_SEQ)

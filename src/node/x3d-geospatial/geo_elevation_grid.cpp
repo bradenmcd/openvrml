@@ -318,193 +318,27 @@ openvrml_node_x3d_geospatial::geo_elevation_grid_metatype::
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating GeoElevationGrid nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  @c geo_elevation_grid_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_geospatial::geo_elevation_grid_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 19> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfdouble_id,
-                       "set_height"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "color"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "normal"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "texCoord"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "yScale"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "ccw"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "colorPerVertex"),
-        node_interface(node_interface::field_id,
-                       field_value::sfdouble_id,
-                       "creaseAngle"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3d_id,
-                       "geoGridOrigin"),
-        node_interface(node_interface::field_id,
-                       field_value::sfnode_id,
-                       "geoOrigin"),
-        node_interface(node_interface::field_id,
-                       field_value::mfstring_id,
-                       "geoSystem"),
-        node_interface(node_interface::field_id,
-                       field_value::mfdouble_id,
-                       "height"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "normalPerVertex"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "solid"),
-        node_interface(node_interface::field_id,
-                       field_value::sfint32_id,
-                       "xDimension"),
-        node_interface(node_interface::field_id,
-                       field_value::sfdouble_id,
-                       "xSpacing"),
-        node_interface(node_interface::field_id,
-                       field_value::sfint32_id,
-                       "zDimension"),
-        node_interface(node_interface::field_id,
-                       field_value::sfdouble_id,
-                       "zSpacing")
-    };
-    typedef node_type_impl<geo_elevation_grid_node> node_type_t;
+# define GEO_ELEVATION_GRID_INTERFACE_SEQ                               \
+    ((exposedfield, sfnode,   "metadata",        metadata))             \
+    ((eventin,      mfdouble, "set_height",      set_height_listener_)) \
+    ((exposedfield, sfnode,   "color",           color_))               \
+    ((exposedfield, sfnode,   "normal",          normal_))              \
+    ((exposedfield, sfnode,   "texCoord",        tex_coord_))           \
+    ((exposedfield, sffloat,  "yScale",          y_scale_))             \
+    ((field,        sfbool,   "ccw",             ccw_))                 \
+    ((field,        sfbool,   "colorPerVertex",  color_per_vertex_))    \
+    ((field,        sfdouble, "creaseAngle",     crease_angle_))        \
+    ((field,        sfvec3d,  "geoGridOrigin",   geo_grid_origin_))     \
+    ((field,        mfstring, "geoSystem",       geo_system_))          \
+    ((field,        mfdouble, "height",          height_))              \
+    ((field,        sfbool,   "normalPerVertex", normal_per_vertex_))   \
+    ((field,        sfbool,   "solid",           solid_))               \
+    ((field,        sfint32,  "xDimension",      x_dimension_))         \
+    ((field,        sfdouble, "xSpacing",        x_spacing_))           \
+    ((field,        sfint32,  "zDimension",      z_dimension_))         \
+    ((field,        sfdouble, "zSpacing",        z_spacing_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::set_height_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::color_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::normal_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::tex_coord_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::y_scale_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::ccw_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::color_per_vertex_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::crease_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::geo_grid_origin_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::geo_origin_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::geo_system_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::height_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::normal_per_vertex_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::solid_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::x_dimension_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::x_spacing_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::z_dimension_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_elevation_grid_node::z_spacing_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_geospatial,
+                                              geo_elevation_grid_metatype,
+                                              geo_elevation_grid_node,
+                                              GEO_ELEVATION_GRID_INTERFACE_SEQ)

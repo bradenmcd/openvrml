@@ -27,6 +27,54 @@
  */
 
 /**
+ * @def OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(namespace_scope, node_metatype_type, node_instance_type, interface_seq)
+ *
+ * @param namespace_scope       the namespace scope where @p node_instance_type
+ *                              is defined.
+ * @param node_metatype_type    the name of the concrete
+ *                              @c openvrml::node_metatype type for the node
+ *                              implementation.
+ * @param node_instance_type    the name of the concrete @c openvrml::node type
+ *                              for the node implementation.
+ * @param interface_seq         a <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/sequences.html">
+ *                              Boost.Preprocessor sequence</a> of
+ *                              <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/tuples.html">tuples</a>
+ *                              defining the supported interfaces for the node
+ *                              implementation and the @p node_instance_type
+ *                              member that implements them.
+ *
+ * @p interface_seq consists of tuples of the following form:
+ * <pre>
+ * (@e interface-type, @e value-type, @e interface-id, @e handler)
+ * </pre>
+ *
+ * @e interface-type and @e value-type are both all lower-case; @e
+ * interface-id is a string literal; and @e handler is the identifier of the
+ * member of @p node_instance_type that implements the interface.  For
+ * example:
+ *
+ * @code
+ * # define MY_NODE_INTERFACE_SEQ                                   \
+ *    ((eventin,      sfbool,  "set_wiggly",  set_wiggly_listener)) \
+ *    ((field,        sfbool,  "wiggly",      wiggly))              \
+ *    ((exposedfield, mffloat, "heightField", height_field))
+ * @endcode
+ *
+ * @c MY_NODE_INTERFACE_SEQ is then used to instantiate
+ * @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE:
+ *
+ * @code
+ * OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(my_namespace,
+ *                                               my_node_metatype,
+ *                                               my_node,
+ *                                               MY_NODE_INTERFACE_SEQ)
+ * @endcode
+ *
+ * In this example, @c set_wiggly_listener, @c wiggly, and @c height_field are
+ * all members of the @c my_node class.
+ */
+
+/**
  * @namespace openvrml::node_impl_util
  *
  * @brief Utility classes to facilitate node implementations.

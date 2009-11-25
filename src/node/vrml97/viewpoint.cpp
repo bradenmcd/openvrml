@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -182,148 +182,26 @@ do_initialize(openvrml::viewpoint_node * initial_viewpoint,
     }
 }
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a @c boost::shared_ptr<node_type> to a @c node_type capable of
- *         creating Viewpoint nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by viewpoint_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::viewpoint_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using openvrml::field_value;
-    using openvrml::sfbool;
-    using openvrml::sffloat;
-    using openvrml::sfnode;
-    using openvrml::sfrotation;
-    using openvrml::sfstring;
-    using openvrml::sftime;
-    using openvrml::sfvec3f;
-    using openvrml::node_interface;
-    using openvrml::node_interface_set;
-    using openvrml::node_type;
-    using openvrml::unsupported_interface;
-    using namespace openvrml::node_impl_util;
+//
+// description is a field in VRML97 and an exposedField in X3D.
+//
+# define VIEWPOINT_INTERFACE_SEQ                                        \
+    ((eventin,      sfbool,     "set_bind",         set_bind_listener_)) \
+    ((exposedfield, sffloat,    "fieldOfView",      field_of_view_))    \
+    ((exposedfield, sfbool,     "jump",             jump_))             \
+    ((exposedfield, sfrotation, "orientation",      orientation_))      \
+    ((exposedfield, sfvec3f,    "position",         position_))         \
+    ((field,        sfstring,   "description",      description_))      \
+    ((exposedfield, sfstring,   "description",      description_))      \
+    ((eventout,     sftime,     "bindTime",         bind_time_emitter_)) \
+    ((eventout,     sfbool,     "isBound",          is_bound_emitter_)) \
+    ((exposedfield, sfnode,     "metadata",         metadata))          \
+    ((exposedfield, sfvec3f,    "centerOfRotation", center_of_rotation_))
 
-    typedef boost::array<node_interface, 11> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::sfbool_id,
-                       "set_bind"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "fieldOfView"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "jump"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfrotation_id,
-                       "orientation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "position"),
-        // Note: Description is a field in VRML97 and an exposedField in
-        // X3D.
-        node_interface(node_interface::field_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "bindTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isBound"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "centerOfRotation")
-    };
-
-    typedef node_type_impl<viewpoint_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & viewpointNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::set_bind_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::field_of_view_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::jump_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::orientation_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::position_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::description_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::description_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::bind_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::is_bound_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            viewpointNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &viewpoint_node::center_of_rotation_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              viewpoint_metatype,
+                                              viewpoint_node,
+                                              VIEWPOINT_INTERFACE_SEQ)
 
 /**
  * @class openvrml_node_vrml97::viewpoint_node

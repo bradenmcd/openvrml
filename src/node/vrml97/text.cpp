@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -2299,92 +2299,15 @@ openvrml_node_vrml97::text_metatype::~text_metatype() OPENVRML_NOTHROW
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating Text nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by text_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::text_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define TEXT_INTERFACE_SEQ                              \
+    ((exposedfield, mfstring, "string", string_))        \
+    ((exposedfield, sfnode,   "fontStyle", font_style_)) \
+    ((exposedfield, mffloat,  "length",    length_))     \
+    ((exposedfield, sffloat,  "maxExtent", max_extent_)) \
+    ((exposedfield, sfnode,   "metadata",  metadata))    \
+    ((field,        sfbool,   "solid",     solid_))
 
-    typedef boost::array<node_interface, 6> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "string"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "fontStyle"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "length"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "maxExtent"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "solid")
-    };
-
-    typedef node_impl_util::node_type_impl<text_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & textNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface(interfaces.begin());
-         interface != interfaces.end();
-         ++interface) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface == *++supported_interface) {
-            textNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &text_node::string_);
-        } else if (*interface == *++supported_interface) {
-            textNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &text_node::font_style_);
-        } else if (*interface == *++supported_interface) {
-            textNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &text_node::length_);
-        } else if (*interface == *++supported_interface) {
-            textNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &text_node::max_extent_);
-        } else if (*interface == *++supported_interface) {
-            textNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &text_node::metadata);
-        } else if (*interface == *++supported_interface) {
-            textNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &text_node::solid_);
-        } else {
-            throw unsupported_interface(*interface);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              text_metatype,
+                                              text_node,
+                                              TEXT_INTERFACE_SEQ)

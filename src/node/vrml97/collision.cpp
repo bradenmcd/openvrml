@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -153,132 +153,20 @@ openvrml_node_vrml97::collision_metatype::~collision_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating Collision nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by collision_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::collision_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define COLLISION_INTERFACE_SEQ                                        \
+    ((eventin,      mfnode,  "addChildren",    add_children_listener_)) \
+    ((eventin,      mfnode,  "removeChildren", remove_children_listener_)) \
+    ((exposedfield, mfnode,  "children",       children_))              \
+    ((exposedfield, sfbool,  "collide",        collide_))               \
+    ((field,        sfvec3f, "bboxCenter",     bbox_center_))           \
+    ((field,        sfvec3f, "bboxSize",       bbox_size_))             \
+    ((field,        sfnode,  "proxy",          proxy_))                 \
+    ((eventout,     sftime,  "collideTime",    collide_time_emitter_))  \
+    ((exposedfield, sfnode,  "metadata",       metadata))               \
+    ((exposedfield, sfbool,  "enabled",        collide_))               \
+    ((eventout,     sfbool,  "isActive",       is_active_emitter_))
 
-    typedef boost::array<node_interface, 11> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "addChildren"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "removeChildren"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "children"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "collide"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize"),
-        node_interface(node_interface::field_id,
-                       field_value::sfnode_id,
-                       "proxy"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "collideTime"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "enabled"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive")
-    };
-
-    typedef node_impl_util::node_type_impl<collision_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & collisionNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::add_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::remove_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::children_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::collide_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::bbox_size_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::proxy_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::collide_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::collide_);
-        } else if (*interface_ == *++supported_interface) {
-            collisionNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &collision_node::is_active_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              collision_metatype,
+                                              collision_node,
+                                              COLLISION_INTERFACE_SEQ)

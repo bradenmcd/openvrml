@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -295,134 +295,19 @@ openvrml_node_vrml97::font_style_metatype::~font_style_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating FontStyle nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by font_style_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::font_style_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using openvrml::field_value;
-    using openvrml::sfbool;
-    using openvrml::sffloat;
-    using openvrml::sfnode;
-    using openvrml::sfstring;
-    using openvrml::mfstring;
-    using openvrml::node_interface;
-    using openvrml::node_interface_set;
-    using openvrml::node_type;
-    using openvrml::unsupported_interface;
-    using namespace openvrml::node_impl_util;
+# define FONT_STYLE_INTERFACE_SEQ                             \
+    ((field,        mfstring, "family",      family_))        \
+    ((field,        sfbool,   "horizontal",  horizontal_))    \
+    ((field,        mfstring, "justify",     justify_))       \
+    ((field,        sfstring, "language",    language_))      \
+    ((field,        sfbool,   "leftToRight", leftToRight)) \
+    ((field,        sffloat,  "size",        size_))          \
+    ((field,        sffloat,  "spacing",     spacing_))       \
+    ((field,        sfstring, "style",       style_))         \
+    ((field,        sfbool,   "topToBottom", topToBottom)) \
+    ((exposedfield, sfnode,   "metadata",    metadata))
 
-    typedef boost::array<node_interface, 10> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::field_id,
-                       field_value::mfstring_id,
-                       "family"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "horizontal"),
-        node_interface(node_interface::field_id,
-                       field_value::mfstring_id,
-                       "justify"),
-        node_interface(node_interface::field_id,
-                       field_value::sfstring_id,
-                       "language"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "leftToRight"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "size"),
-        node_interface(node_interface::field_id,
-                       field_value::sffloat_id,
-                       "spacing"),
-        node_interface(node_interface::field_id,
-                       field_value::sfstring_id,
-                       "style"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "topToBottom"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef openvrml::node_impl_util::node_type_impl<font_style_node>
-        node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & fontStyleNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::family_);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::horizontal_);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::justify_);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::language_);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::leftToRight);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::size_);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::spacing_);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::style_);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::topToBottom);
-        } else if (*interface_ == *++supported_interface) {
-            fontStyleNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &font_style_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              font_style_metatype,
+                                              font_style_node,
+                                              FONT_STYLE_INTERFACE_SEQ)

@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -275,84 +275,14 @@ shape_metatype(openvrml::browser & browser):
 openvrml_node_vrml97::shape_metatype::~shape_metatype() OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating Shape nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by shape_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::shape_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define SHAPE_INTERFACE_SEQ                              \
+    ((exposedfield, sfnode,  "appearance", appearance_))  \
+    ((exposedfield, sfnode,  "geometry",   geometry_))    \
+    ((exposedfield, sfnode,  "metadata",   metadata))     \
+    ((field,        sfvec3f, "bboxCenter", bbox_center_)) \
+    ((field,        sfvec3f, "bboxSize",   bbox_size_))
 
-    typedef boost::array<node_interface, 5> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "appearance"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "geometry"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize")
-    };
-
-    typedef node_impl_util::node_type_impl<shape_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & shapeNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            shapeNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &shape_node::appearance_);
-        } else if (*interface_ == *++supported_interface) {
-            shapeNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &shape_node::geometry_);
-        } else if (*interface_ == *++supported_interface) {
-            shapeNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &shape_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            shapeNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &shape_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            shapeNodeType.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &shape_node::bbox_size_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              shape_metatype,
+                                              shape_node,
+                                              SHAPE_INTERFACE_SEQ)

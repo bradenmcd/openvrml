@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -226,112 +226,18 @@ openvrml_node_x3d_geospatial::geo_location_metatype::~geo_location_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating GeoLocation nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by @c geo_location_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_geospatial::geo_location_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 9> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "addChildren"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "removeChildren"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "children"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3d_id,
-                       "geoCoords"),
-        node_interface(node_interface::field_id,
-                       field_value::sfnode_id,
-                       "geoOrigin"),
-        node_interface(node_interface::field_id,
-                       field_value::mfstring_id,
-                       "geoSystem"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize")
-    };
-    typedef node_type_impl<geo_location_node> node_type_t;
+# define GEO_LOCATION_INTERFACE_SEQ                                     \
+    ((exposedfield, sfnode,   "metadata",       metadata))              \
+    ((eventin,      mfnode,   "addChildren",    add_children_listener_)) \
+    ((eventin,      mfnode,   "removeChildren", remove_children_listener_)) \
+    ((exposedfield, mfnode,   "children",       children_))             \
+    ((exposedfield, sfvec3d,  "geoCoords",      geo_coords_))           \
+    ((field,        sfnode,   "geoOrigin",      geo_origin_))           \
+    ((field,        mfstring, "geoSystem",      geo_system_))           \
+    ((field,        sfvec3f,  "bboxCenter",     bbox_center_))          \
+    ((field,        sfvec3f,  "bboxSize",       bbox_size_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::add_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::remove_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::children_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::geo_coords_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::geo_origin_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::geo_system_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &geo_location_node::bbox_size_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_geospatial,
+                                              geo_location_metatype,
+                                              geo_location_node,
+                                              GEO_LOCATION_INTERFACE_SEQ)

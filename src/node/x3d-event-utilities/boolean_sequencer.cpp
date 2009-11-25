@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -253,100 +253,16 @@ openvrml_node_x3d_event_utilities::boolean_sequencer_metatype::
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating BooleanSequencer nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  @c boolean_sequencer_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_event_utilities::boolean_sequencer_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define BOOLEAN_SEQUENCER_INTERFACE_SEQ                               \
+    ((exposedfield, sfnode,  "metadata",      metadata))               \
+    ((eventin,      sfbool,  "next",          next_listener_))         \
+    ((eventin,      sfbool,  "previous",      previous_listener_))     \
+    ((eventin,      sffloat, "set_fraction",  set_fraction_listener_)) \
+    ((exposedfield, mffloat, "key",           key_))                   \
+    ((exposedfield, mfbool,  "keyValue",      key_value_))             \
+    ((eventout,     sfbool,  "value_changed", value_changed_emitter_))
 
-    typedef boost::array<node_interface, 7> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sfbool_id,
-                       "next"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sfbool_id,
-                       "previous"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_fraction"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "key"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfbool_id,
-                       "keyValue"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "value_changed")
-    };
-    typedef node_type_impl<boolean_sequencer_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &boolean_sequencer_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &boolean_sequencer_node::next_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &boolean_sequencer_node::previous_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &boolean_sequencer_node::set_fraction_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &boolean_sequencer_node::key_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &boolean_sequencer_node::key_value_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &boolean_sequencer_node::value_changed_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_event_utilities,
+                                              boolean_sequencer_metatype,
+                                              boolean_sequencer_node,
+                                              BOOLEAN_SEQUENCER_INTERFACE_SEQ)

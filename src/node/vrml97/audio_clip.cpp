@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -236,148 +236,22 @@ openvrml_node_vrml97::audio_clip_metatype::~audio_clip_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating AudioClip nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by audio_clip_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::audio_clip_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define AUDIO_CLIP_INTERFACE_SEQ \
+    ((exposedfield, sfstring, "description",      description_))        \
+    ((exposedfield, sfbool,   "loop",             loop_))               \
+    ((exposedfield, sffloat,  "pitch",            pitch_))              \
+    ((exposedfield, sftime,   "startTime",        start_time_))         \
+    ((exposedfield, sftime,   "stopTime",         stop_time_))          \
+    ((exposedfield, mfstring, "url",              url_))                \
+    ((eventout,     sftime,   "duration_changed", duration_changed_emitter_)) \
+    ((eventout,     sfbool,   "isActive",         is_active_emitter_))  \
+    ((exposedfield, sfnode,   "metadata",         metadata))            \
+    ((exposedfield, sftime,   "pauseTime",        pause_time_))         \
+    ((exposedfield, sftime,   "resumeTime",       resume_time_))        \
+    ((eventout,     sftime,   "elapsedTime",      elapsed_time_emitter_)) \
+    ((eventout,     sfbool,   "isPaused",         is_paused_emitter_))
 
-    typedef boost::array<node_interface, 13> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "loop"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "pitch"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "startTime"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "stopTime"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "url"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "duration_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "pauseTime"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "resumeTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "elapsedTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isPaused")
-    };
-
-    typedef node_impl_util::node_type_impl<audio_clip_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & audioClipNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_ = interfaces.begin();
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::description_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::loop_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::pitch_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::start_time_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::stop_time_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::url_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::duration_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::is_active_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::pause_time_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::resume_time_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::elapsed_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            audioClipNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &audio_clip_node::is_paused_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              audio_clip_metatype,
+                                              audio_clip_node,
+                                              AUDIO_CLIP_INTERFACE_SEQ)

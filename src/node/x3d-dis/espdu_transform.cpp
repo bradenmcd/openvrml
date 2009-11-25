@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -1157,745 +1157,97 @@ openvrml_node_x3d_dis::espdu_transform_metatype::~espdu_transform_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a @c node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c node_type capable of creating EspduTransform nodes.
- *
- * @exception unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  @c espdu_transform_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_x3d_dis::espdu_transform_metatype::
-do_create_type(const std::string & id,
-               const node_interface_set & interfaces) const
-    OPENVRML_THROW2(unsupported_interface, std::bad_alloc)
-{
-    typedef boost::array<node_interface, 88> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "addChildren"),
-        node_interface(node_interface::eventin_id,
-                       field_value::mfnode_id,
-                       "removeChildren"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue0"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue1"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue2"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue3"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue4"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue5"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue6"),
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_articulationParameterValue7"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "address"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "applicationID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "articulationParameterCount"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfint32_id,
-                       "articulationParameterDesignatorArray"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfint32_id,
-                       "articulationParameterChangeIndicatorArray"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfint32_id,
-                       "articulationParameterIdPartAttachedToArray"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfint32_id,
-                       "articulationParameterTypeArray"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "articulationParameterArray"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "center"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfnode_id,
-                       "children"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "collisionType"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "deadReckoning"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "detonationLocation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "detonationRelativeLocation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "detonationResult"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entityCategory"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entityCountry"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entityDomain"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entityExtra"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entityID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entityKind"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entitySpecific"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "entitySubCategory"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "eventApplicationID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "eventEntityID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "eventNumber"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "eventSiteID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "fired1"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "fired2"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "fireMissionIndex"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "firingRange"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "firingRate"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "forceID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "fuse"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "linearVelocity"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "linearAcceleration"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "marking"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "multicastRelayHost"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "multicastRelayPort"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "munitionApplicationID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "munitionEndPoint"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "munitionEntityID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "munitionQuantity"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "munitionSiteID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "munitionStartPoint"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "networkMode"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "port"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "readInterval"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfrotation_id,
-                       "rotation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "scale"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfrotation_id,
-                       "scaleOrientation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "siteID"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "translation"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfint32_id,
-                       "warhead"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sftime_id,
-                       "writeInterval"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue0_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue1_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue2_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue3_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue4_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue5_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue6_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sffloat_id,
-                       "articulationParameterValue7_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "collideTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "detonateTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "firedTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isCollided"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isDetonated"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isNetworkReader"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isNetworkWriter"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isRtpHeaderHeard"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isStandAlone"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "timestamp"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxCenter"),
-        node_interface(node_interface::field_id,
-                       field_value::sfvec3f_id,
-                       "bboxSize"),
-        node_interface(node_interface::field_id,
-                       field_value::sfbool_id,
-                       "rtpHeaderExpected")
-    };
-    typedef node_type_impl<espdu_transform_node> node_type_t;
+# define ESPDU_TRANSFORM_INTERFACE_SEQ                                  \
+    ((exposedfield, sfnode,     "metadata",                                   metadata)) \
+    ((eventin,      mfnode,     "addChildren",                                add_children_listener_)) \
+    ((eventin,      mfnode,     "removeChildren",                             remove_children_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue0",            set_articulation_parameter_value0_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue1",            set_articulation_parameter_value1_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue2",            set_articulation_parameter_value2_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue3",            set_articulation_parameter_value3_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue4",            set_articulation_parameter_value4_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue5",            set_articulation_parameter_value5_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue6",            set_articulation_parameter_value6_listener_)) \
+    ((eventin,      sffloat,    "set_articulationParameterValue7",            set_articulation_parameter_value7_listener_)) \
+    ((exposedfield, sfstring,   "address",                                    address_)) \
+    ((exposedfield, sfint32,    "applicationID",                              application_id_)) \
+    ((exposedfield, sfint32,    "articulationParameterCount",                 articulation_parameter_count_)) \
+    ((exposedfield, mfint32,    "articulationParameterDesignatorArray",       articulation_parameter_designator_array_)) \
+    ((exposedfield, mfint32,    "articulationParameterChangeIndicatorArray",  articulation_parameter_change_indicator_array_)) \
+    ((exposedfield, mfint32,    "articulationParameterIdPartAttachedToArray", articulation_parameter_id_part_attached_to_array_)) \
+    ((exposedfield, mfint32,    "articulationParameterTypeArray",             articulation_parameter_type_array_)) \
+    ((exposedfield, mffloat,    "articulationParameterArray",                 articulation_parameter_array_)) \
+    ((exposedfield, sfvec3f,    "center",                                     center_)) \
+    ((exposedfield, mfnode,     "children",                                   children_)) \
+    ((exposedfield, sfint32,    "collisionType",                              collision_type_)) \
+    ((exposedfield, sfint32,    "deadReckoning",                              dead_reckoning_)) \
+    ((exposedfield, sfvec3f,    "detonationLocation",                         detonation_location_)) \
+    ((exposedfield, sfvec3f,    "detonationRelativeLocation",                 detonation_relative_location_)) \
+    ((exposedfield, sfint32,    "detonationResult",                           detonation_result_)) \
+    ((exposedfield, sfint32,    "entityCategory",                             entity_category_)) \
+    ((exposedfield, sfint32,    "entityCountry",                              entity_country_)) \
+    ((exposedfield, sfint32,    "entityDomain",                               entity_domain_)) \
+    ((exposedfield, sfint32,    "entityExtra",                                entity_extra_)) \
+    ((exposedfield, sfint32,    "entityID",                                   entity_id_)) \
+    ((exposedfield, sfint32,    "entityKind",                                 entity_kind_)) \
+    ((exposedfield, sfint32,    "entitySpecific",                             entity_specific_)) \
+    ((exposedfield, sfint32,    "entitySubCategory",                          entity_sub_category_)) \
+    ((exposedfield, sfint32,    "eventApplicationID",                         event_application_id_)) \
+    ((exposedfield, sfint32,    "eventEntityID",                              event_entity_id_)) \
+    ((exposedfield, sfint32,    "eventNumber",                                event_number_)) \
+    ((exposedfield, sfint32,    "eventSiteID",                                event_site_id_)) \
+    ((exposedfield, sfbool,     "fired1",                                     fired1_)) \
+    ((exposedfield, sfbool,     "fired2",                                     fired2_)) \
+    ((exposedfield, sfint32,    "fireMissionIndex",                           fire_mission_index_)) \
+    ((exposedfield, sffloat,    "firingRange",                                firing_range_)) \
+    ((exposedfield, sfint32,    "firingRate",                                 firing_rate_)) \
+    ((exposedfield, sfint32,    "forceID",                                    force_id_)) \
+    ((exposedfield, sfint32,    "fuse",                                       fuse_)) \
+    ((exposedfield, sfvec3f,    "linearVelocity",                             linear_velocity_)) \
+    ((exposedfield, sfvec3f,    "linearAcceleration",                         linear_acceleration_)) \
+    ((exposedfield, sfstring,   "marking",                                    marking_)) \
+    ((exposedfield, sfstring,   "multicastRelayHost",                         multicast_relay_host_)) \
+    ((exposedfield, sfint32,    "multicastRelayPort",                         multicast_relay_port_)) \
+    ((exposedfield, sfint32,    "munitionApplicationID",                      munition_application_id_)) \
+    ((exposedfield, sfvec3f,    "munitionEndPoint",                           munition_end_point_)) \
+    ((exposedfield, sfint32,    "munitionEntityID",                           munition_entity_id_)) \
+    ((exposedfield, sfint32,    "munitionQuantity",                           munition_quantity_)) \
+    ((exposedfield, sfint32,    "munitionSiteID",                             munition_site_id_)) \
+    ((exposedfield, sfvec3f,    "munitionStartPoint",                         munition_start_point_)) \
+    ((exposedfield, sfstring,   "networkMode",                                network_mode_)) \
+    ((exposedfield, sfint32,    "port",                                       port_)) \
+    ((exposedfield, sftime,     "readInterval",                               read_interval_)) \
+    ((exposedfield, sfrotation, "rotation",                                   rotation_)) \
+    ((exposedfield, sfvec3f,    "scale",                                      scale_)) \
+    ((exposedfield, sfrotation, "scaleOrientation",                           scale_orientation_)) \
+    ((exposedfield, sfint32,    "siteID",                                     site_id_)) \
+    ((exposedfield, sfvec3f,    "translation",                                translation_)) \
+    ((exposedfield, sfint32,    "warhead",                                    warhead_)) \
+    ((exposedfield, sftime,     "writeInterval",                              write_interval_)) \
+    ((eventout,     sffloat,    "articulationParameterValue0_changed",        articulation_parameter_value0_changed_emitter_)) \
+    ((eventout,     sffloat,    "articulationParameterValue1_changed",        articulation_parameter_value1_changed_emitter_)) \
+    ((eventout,     sffloat,    "articulationParameterValue2_changed",        articulation_parameter_value2_changed_emitter_)) \
+    ((eventout,     sffloat,    "articulationParameterValue3_changed",        articulation_parameter_value3_changed_emitter_)) \
+    ((eventout,     sffloat,    "articulationParameterValue4_changed",        articulation_parameter_value4_changed_emitter_)) \
+    ((eventout,     sffloat,    "articulationParameterValue5_changed",        articulation_parameter_value5_changed_emitter_)) \
+    ((eventout,     sffloat,    "articulationParameterValue6_changed",        articulation_parameter_value6_changed_emitter_)) \
+    ((eventout,     sffloat,    "articulationParameterValue7_changed",        articulation_parameter_value7_changed_emitter_)) \
+    ((eventout,     sftime,     "collideTime",                                collide_time_emitter_)) \
+    ((eventout,     sftime,     "detonateTime",                               detonate_time_emitter_)) \
+    ((eventout,     sftime,     "firedTime",                                  fired_time_emitter_)) \
+    ((eventout,     sfbool,     "isActive",                                   is_active_emitter_)) \
+    ((eventout,     sfbool,     "isCollided",                                 is_collided_emitter_)) \
+    ((eventout,     sfbool,     "isDetonated",                                is_detonated_emitter_)) \
+    ((eventout,     sfbool,     "isNetworkReader",                            is_network_reader_emitter_)) \
+    ((eventout,     sfbool,     "isNetworkWriter",                            is_network_writer_emitter_)) \
+    ((eventout,     sfbool,     "isRtpHeaderHeard",                           is_rtp_header_heard_emitter_)) \
+    ((eventout,     sfbool,     "isStandAlone",                               is_stand_alone_emitter_)) \
+    ((eventout,     sftime,     "timestamp",                                  timestamp_emitter_)) \
+    ((field,        sfvec3f,    "bboxCenter",                                 bbox_center_)) \
+    ((field,        sfvec3f,    "bboxSize",                                   bbox_size_)) \
+    ((field,        sfbool,     "rtpHeaderExpected",                          rtp_header_expected_))
 
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & the_node_type = static_cast<node_type_t &>(*type);
-
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::add_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::remove_children_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value0_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value1_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value2_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value3_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value4_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value5_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value6_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::set_articulation_parameter_value7_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::address_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::application_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_count_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_designator_array_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_change_indicator_array_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_id_part_attached_to_array_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_type_array_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_array_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::center_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::children_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::collision_type_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::dead_reckoning_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::detonation_location_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::detonation_relative_location_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::detonation_result_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_category_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_country_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_domain_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_extra_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_kind_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_specific_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::entity_sub_category_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::event_application_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::event_entity_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::event_number_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::event_site_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::fired1_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::fired2_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::fire_mission_index_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::firing_range_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::firing_rate_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::force_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::fuse_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::linear_velocity_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::linear_acceleration_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::marking_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::multicast_relay_host_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::multicast_relay_port_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::munition_application_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::munition_end_point_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::munition_entity_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::munition_quantity_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::munition_site_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::munition_start_point_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::network_mode_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::port_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::read_interval_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::rotation_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::scale_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::scale_orientation_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::site_id_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::translation_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::warhead_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::write_interval_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value0_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value1_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value2_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value3_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value4_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value5_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value6_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::articulation_parameter_value7_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::collide_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::detonate_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::fired_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::is_active_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::is_collided_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::is_detonated_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::is_network_reader_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::is_network_writer_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::is_rtp_header_heard_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::is_stand_alone_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::timestamp_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::bbox_center_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::bbox_size_);
-        } else if (*interface_ == *++supported_interface) {
-            the_node_type.add_field(
-                supported_interface->field_type,
-                supported_interface->id,
-                &espdu_transform_node::rtp_header_expected_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_x3d_dis,
+                                              espdu_transform_metatype,
+                                              espdu_transform_node,
+                                              ESPDU_TRANSFORM_INTERFACE_SEQ)

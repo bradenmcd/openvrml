@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -308,126 +308,19 @@ openvrml_node_vrml97::proximity_sensor_metatype::~proximity_sensor_metatype()
     OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating ProximitySensor nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  proximity_sensor_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::proximity_sensor_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define PROXIMITY_SENSOR_INTERFACE_SEQ                                 \
+    ((exposedfield, sfvec3f,    "center",                   center_))   \
+    ((exposedfield, sfvec3f,    "size",                     size_))     \
+    ((exposedfield, sfbool,     "enabled",                  enabled_))  \
+    ((eventout,     sfbool,     "isActive",                 is_active_emitter_)) \
+    ((eventout,     sfvec3f,    "position_changed",         position_changed_emitter_)) \
+    ((eventout,     sfrotation, "orientation_changed",      orientation_changed_emitter_)) \
+    ((eventout,     sftime,     "enterTime",                enter_time_emitter_)) \
+    ((eventout,     sftime,     "exitTime",                 exit_time_emitter_)) \
+    ((exposedfield, sfnode,     "metadata",                 metadata))  \
+    ((eventout,     sfvec3f,    "centerOfRotation_changed", center_of_rotation_changed_emitter_))
 
-    typedef boost::array<node_interface, 10> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "center"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfvec3f_id,
-                       "size"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "enabled"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfvec3f_id,
-                       "position_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfrotation_id,
-                       "orientation_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "enterTime"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "exitTime"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfvec3f_id,
-                       "centerOfRotation_changed")
-    };
-
-    typedef node_impl_util::node_type_impl<proximity_sensor_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & proximitySensorNodeType =
-        static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::center_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::size_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::enabled_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::is_active_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::position_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::orientation_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::enter_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::exit_time_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            proximitySensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &proximity_sensor_node::center_of_rotation_changed_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              proximity_sensor_metatype,
+                                              proximity_sensor_node,
+                                              PROXIMITY_SENSOR_INTERFACE_SEQ)

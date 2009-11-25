@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -276,87 +276,15 @@ openvrml_node_vrml97::orientation_interpolator_metatype::
 ~orientation_interpolator_metatype() OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating OrientationInterpolator nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by
- *                                  orientation_interpolator_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::orientation_interpolator_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define ORIENTATION_INTERPOLATOR_INTERFACE_SEQ                         \
+    ((eventin,      sffloat,    "set_fraction",  set_fraction_listener_)) \
+    ((exposedfield, mffloat,    "key",           key_))                 \
+    ((exposedfield, mfrotation, "keyValue",      key_value_))           \
+    ((eventout,     sfrotation, "value_changed", value_changed_emitter_)) \
+    ((exposedfield, sfnode,     "metadata",      metadata))
 
-    typedef boost::array<node_interface, 5> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::sffloat_id,
-                       "set_fraction"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "key"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfrotation_id,
-                       "keyValue"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfrotation_id,
-                       "value_changed"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata")
-    };
-
-    typedef node_impl_util::node_type_impl<orientation_interpolator_node>
-        node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & orientationInterpolatorNodeType =
-        static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            orientationInterpolatorNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &orientation_interpolator_node::set_fraction_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            orientationInterpolatorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &orientation_interpolator_node::key_);
-        } else if (*interface_ == *++supported_interface) {
-            orientationInterpolatorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &orientation_interpolator_node::key_value_);
-        } else if (*interface_ == *++supported_interface) {
-            orientationInterpolatorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &orientation_interpolator_node::value_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            orientationInterpolatorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &orientation_interpolator_node::metadata);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(
+    openvrml_node_vrml97,
+    orientation_interpolator_metatype,
+    orientation_interpolator_node,
+    ORIENTATION_INTERPOLATOR_INTERFACE_SEQ)

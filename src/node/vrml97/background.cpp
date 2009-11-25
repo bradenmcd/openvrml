@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -244,159 +244,26 @@ do_render(openvrml::viewer & v) const
     }
 }
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new @c node_type.
- * @param interfaces    the interfaces for the new @c node_type.
- *
- * @return a @c boost::shared_ptr<node_type> to a @c node_type capable of
- *         creating Background nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by @c background_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::background_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define BACKGROUND_INTERFACE_SEQ                                 \
+    ((eventin,      sfbool,   "set_bind",    set_bind_listener_)) \
+    ((exposedfield, mffloat,  "groundAngle", ground_angle_))      \
+    ((exposedfield, mfcolor,  "groundColor", ground_color_))      \
+    ((exposedfield, mfstring, "backUrl",     back_url_))          \
+    ((exposedfield, mfstring, "bottomUrl",   bottom_url_))        \
+    ((exposedfield, mfstring, "frontUrl",    front_url_))         \
+    ((exposedfield, mfstring, "leftUrl",     left_url_))          \
+    ((exposedfield, mfstring, "rightUrl",    right_url_))         \
+    ((exposedfield, mfstring, "topUrl",      top_url_))           \
+    ((exposedfield, mffloat,  "skyAngle",    sky_angle_))         \
+    ((exposedfield, mfcolor,  "skyColor",    sky_color_))         \
+    ((eventout,     sfbool,   "isBound",     is_bound_emitter_))  \
+    ((exposedfield, sfnode,   "metadata",    metadata))           \
+    ((eventout,     sftime,   "bindTime",    bind_time_emitter_))
 
-    typedef boost::array<node_interface, 14> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::eventin_id,
-                       field_value::sfbool_id,
-                       "set_bind"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "groundAngle"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfcolor_id,
-                       "groundColor"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "backUrl"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "bottomUrl"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "frontUrl"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "leftUrl"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "rightUrl"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfstring_id,
-                       "topUrl"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mffloat_id,
-                       "skyAngle"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::mfcolor_id,
-                       "skyColor"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isBound"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sftime_id,
-                       "bindTime")
-    };
-
-    typedef node_impl_util::node_type_impl<background_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & backgroundNodeType = static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_eventin(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::set_bind_listener_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::ground_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::ground_color_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::back_url_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::bottom_url_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::front_url_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::left_url_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::right_url_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::top_url_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::sky_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::sky_color_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::is_bound_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            backgroundNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &background_node::bind_time_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              background_metatype,
+                                              background_node,
+                                              BACKGROUND_INTERFACE_SEQ)
 
 /**
  * @class openvrml_node_vrml97::background_node

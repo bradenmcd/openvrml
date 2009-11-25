@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -364,141 +364,21 @@ cylinder_sensor_metatype(openvrml::browser & browser):
 openvrml_node_vrml97::cylinder_sensor_metatype::~cylinder_sensor_metatype() OPENVRML_NOTHROW
 {}
 
-/**
- * @brief Create a node_type.
- *
- * @param id            the name for the new node_type.
- * @param interfaces    the interfaces for the new node_type.
- *
- * @return a boost::shared_ptr<node_type> to a node_type capable of
- *         creating CylinderSensor nodes.
- *
- * @exception openvrml::unsupported_interface if @p interfaces includes an interface
- *                                  not supported by cylinder_sensor_metatype.
- * @exception std::bad_alloc        if memory allocation fails.
- */
-const boost::shared_ptr<openvrml::node_type>
-openvrml_node_vrml97::cylinder_sensor_metatype::
-do_create_type(const std::string & id,
-               const openvrml::node_interface_set & interfaces) const
-    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
-{
-    using namespace openvrml;
-    using namespace openvrml::node_impl_util;
+# define CYLINDER_SENSOR_INTERFACE_SEQ                                  \
+    ((exposedfield, sfbool,     "autoOffset",         auto_offset_))    \
+    ((exposedfield, sffloat,    "diskAngle",          disk_angle_))     \
+    ((exposedfield, sfbool,     "enabled",            enabled_))        \
+    ((exposedfield, sffloat,    "maxAngle",           max_angle_))      \
+    ((exposedfield, sffloat,    "minAngle",           min_angle_))      \
+    ((exposedfield, sffloat,    "offset",             offset_))         \
+    ((eventout,     sfbool,     "isActive",           is_active_emitter_)) \
+    ((eventout,     sfrotation, "rotation_changed",   rotation_changed_emitter_)) \
+    ((eventout,     sfvec3f,    "trackPoint_changed", track_point_changed_emitter_)) \
+    ((exposedfield, sfnode,     "metadata",           metadata))        \
+    ((exposedfield, sfstring,   "description",        description_))    \
+    ((eventout,     sfbool,     "isOver",             is_over_emitter_))
 
-    typedef boost::array<node_interface, 12> supported_interfaces_t;
-    static const supported_interfaces_t supported_interfaces = {
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "autoOffset"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "diskAngle"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfbool_id,
-                       "enabled"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "maxAngle"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "minAngle"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sffloat_id,
-                       "offset"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isActive"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfrotation_id,
-                       "rotation_changed"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfvec3f_id,
-                       "trackPoint_changed"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfnode_id,
-                       "metadata"),
-        node_interface(node_interface::exposedfield_id,
-                       field_value::sfstring_id,
-                       "description"),
-        node_interface(node_interface::eventout_id,
-                       field_value::sfbool_id,
-                       "isOver")
-    };
-
-    typedef node_impl_util::node_type_impl<cylinder_sensor_node> node_type_t;
-
-    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
-    node_type_t & cylinderSensorNodeType =
-        static_cast<node_type_t &>(*type);
-    for (node_interface_set::const_iterator interface_(interfaces.begin());
-         interface_ != interfaces.end();
-         ++interface_) {
-        supported_interfaces_t::const_iterator supported_interface =
-            supported_interfaces.begin() - 1;
-        if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::auto_offset_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::disk_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::enabled_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::max_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::min_angle_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::offset_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::is_active_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::rotation_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::track_point_changed_emitter_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::metadata);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_exposedfield(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::description_);
-        } else if (*interface_ == *++supported_interface) {
-            cylinderSensorNodeType.add_eventout(
-                supported_interface->field_type,
-                supported_interface->id,
-                &cylinder_sensor_node::is_over_emitter_);
-        } else {
-            throw unsupported_interface(*interface_);
-        }
-    }
-    return type;
-}
+OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
+                                              cylinder_sensor_metatype,
+                                              cylinder_sensor_node,
+                                              CYLINDER_SENSOR_INTERFACE_SEQ)
