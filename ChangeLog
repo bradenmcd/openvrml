@@ -1,3 +1,7 @@
+2009-11-26 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Doxyfile: Upgraded for Doxygen 1.6.1.
+
 2009-11-25 Braden McDaniel  <braden@endoframe.com>
 
 	* src/node/vrml97/navigation_info.cpp
