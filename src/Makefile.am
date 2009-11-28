@@ -814,12 +814,14 @@ openvrml-xembed/org.openvrml.BrowserControl.service: Makefile
 
 openvrml-xembed/org.openvrml.BrowserControl.service: $(srcdir)/openvrml-xembed/org.openvrml.BrowserControl.service.in
 
+openvrml_player_uidir = $(datadir)/openvrml-player/ui
 if ENABLE_PLAYER
 bin_PROGRAMS = openvrml-player/openvrml-player
 BUILT_SOURCES += \
         openvrml-player/browser-host-server-glue.h \
         openvrml-player/browser-factory-client-glue.h \
         openvrml-player/browser-client-glue.h
+dist_openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
 endif
 
 openvrml_player_openvrml_player_CPPFLAGS = \
@@ -842,9 +844,6 @@ openvrml_player_openvrml_player_LDFLAGS = \
         $(GIO_LIBS) \
         $(DBUS_G_LIBS) \
         $(CURL_LIBS)
-
-openvrml_player_uidir = $(datadir)/openvrml-player/ui
-dist_openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
 
 openvrml_player_openvrml_player_SOURCES = \
         openvrml-player/filechooserdialog.cpp \
