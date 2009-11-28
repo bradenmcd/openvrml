@@ -176,14 +176,16 @@ namespace {
         }
         libjvm_handle = dl::open("libjvm");
         if (!libjvm_handle) {
-            std::cerr << lt_dlerror() << std::endl;
+            std::cerr << "failed to load libjvm.so: " << dl::error()
+                      << std::endl;
             return;
         }
         CreateJavaVM =
             reinterpret_cast<jint (*)(JavaVM **, void **, void *)>(
                 dl::sym(libjvm_handle, "JNI_CreateJavaVM"));
         if (!CreateJavaVM) {
-            std::cerr << dl::error() << std::endl;
+            std::cerr << "symbol \"JNI_CreateJavaVM\" not found in libjvm.so: "
+                      << dl::error() << std::endl;
         }
     }
 
