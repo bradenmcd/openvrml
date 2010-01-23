@@ -1,5 +1,13 @@
 2010-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	Move documentation concerning rotation normalization from
+	openvrml::sfrotation to openvrml::rotation.
+
+	* src/libopenvrml/openvrml/basetypes.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+
+2010-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Doxygen formatting improvements.
 
 	* doc/doxygen-header

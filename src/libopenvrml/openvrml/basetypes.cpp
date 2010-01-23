@@ -2589,6 +2589,19 @@ std::ostream & openvrml::operator<<(std::ostream & out, const vec3d & v)
  * VRML rotations are represented with four single-precision floating point
  * components. The first three are an axis of rotation, and the last is
  * rotation in radians.
+ *
+ * Per the VRML97 specification, the axis of a @c rotation is a normalized
+ * vector (5.8).  The specification leaves undefined how to deal with an
+ * attempt to construct a @c rotation from an axis vector that is not
+ * normalized.  In order to allow users of the library to minimize the number
+ * of normalizations, OpenVRML takes the following approach:
+ *
+ * - Attempts to construct a @c rotation axis from a vector that is not
+ *   normalized will yield an assertion failure (abort) unless @c NDEBUG is
+ *   defined when compiling the library (in which case truly wacky behavior
+ *   could result).
+ * - Assignment to individual components of the axis will result in the
+ *   axis being renormalized upon each assignment.
  */
 
 /**
