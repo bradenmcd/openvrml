@@ -1,3 +1,10 @@
+2010-01-23 Braden McDaniel  <braden@endoframe.com>
+
+	Escape control characters for doxygen.
+
+	* doc/gpl.doc
+	* doc/conformance.doc
+
 2009-11-28 Braden McDaniel  <braden@endoframe.com>
 
 	* src/Makefile.am: Only install openvrml-player.ui if we were
