@@ -2274,20 +2274,7 @@ bool openvrml::operator!=(const sfnode & lhs, const sfnode & rhs)
 /**
  * @class openvrml::sfrotation openvrml/field_value.h
  *
- * @brief A %rotation node field value.
- *
- * Per the VRML97 specification, the axis of an @c sfrotation is a normalized
- * vector (5.8).  The specification leaves undefined how to deal with an
- * attempt to construct an @c sfrotation from an axis vector that is not
- * normalized.  In order to allow users of the library to minimize the number
- * of normalizations, openvrml takes the following approach:
- *
- * - Attempts to construct an sfrotation axis from a vector that is not
- *   normalized will yield an assertion failure (abort) unless @c NDEBUG is
- *   defined when compiling the library (in which case truly wacky behavior
- *   could result).
- * - Assignment to individual components of the axis will result in the
- *   axis being renormalized upon each assignment.
+ * @brief A %rotation @c node field value.
  *
  * @par Model of
  * @link openvrml::FieldValueConcept Field Value@endlink
