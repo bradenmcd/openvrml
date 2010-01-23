@@ -549,6 +549,8 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  *
  * @brief Emit an event.
  *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
  * @param[in] timestamp the current time.
  *
  * @exception std::bad_alloc    if memory allocation fails.
@@ -558,8 +560,6 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  * @fn void openvrml::event_emitter::emit_event(double timestamp)
  *
  * @brief Emit an event.
- *
- * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
  *
  * @param[in] timestamp the current time.
  *
