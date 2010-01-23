@@ -15,10 +15,6 @@
 @import url("tabs.css");
 @import url("http://openvrml.org/openvrml.css");
 
-table {
-  width: 100%;
-}
-
 h2 {
   border-bottom-style: solid;
   border-bottom-width: 1px;
@@ -150,10 +146,12 @@ td.invalid {
 
 .memitem {
   padding: 0;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
-.memitem table {
-  width: auto;
+.memitem .memname {
+  margin-left: 0;
 }
 
 .memproto, .memdoc {
@@ -172,6 +170,7 @@ td.invalid {
   -webkit-border-top-right-radius: 0.6em;
   -moz-border-radius-topleft: 0.6em;
   -moz-border-radius-topright: 0.6em;
+  white-space: nowrap;
 }
 
 .memdoc {
@@ -215,6 +214,22 @@ table {
   background-color: rgb(95%, 95%, 95%);
   margin-left: 10%;
   margin-right: 10%;
+}
+
+.contents h3 {
+  text-align: center;
+}
+
+.contents table {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contents table p {
+  font-size: medium;
+  margin: 0;
+  padding: 0;
 }
 </style>
 </head>

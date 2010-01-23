@@ -8,7 +8,6 @@
  *
  * @section contents Contents
  *
- * <center>
  * <table border="0">
  * <tr><td>@subpage intro</td></tr>
  * <tr><td>@ref license</td></tr>
@@ -30,5 +29,4 @@
  * <tr><td>@subpage lgpl</td></tr>
  * <tr><td>@subpage conformance</td><td>NIST VRML Test Suite results</td></tr>
  * </table>
- * </center>
  */
