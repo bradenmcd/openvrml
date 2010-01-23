@@ -2159,10 +2159,10 @@ vrmlstring used in the script code.
 <sup id="note6">6</sup> Expected results incorrect for top, bottom, left and
 right views.
 
-<sup id="note7">7</sup> Comments for world state, "THE
+<sup id="note7">7</sup> Comments for world state, &quot;THE
 SECOND BACKGROUND IS NOT FORCED TO BE THE ACTIVE BACKGROUND BY SENDING A TRUE
 EVENT TO IT, BUT BY SENDING A FALSE EVENT TO THE BACKGROUND AT THE TOP OF THE
-STACK." The problem is that the second background should @e never be bound
+STACK.&quot; The problem is that the second background should @e never be bound
 unless a true event is sent to it as only the first background is bound by
 default. See comments on <a
 href="http://sourceforge.net/tracker/?func=detail&atid=107151&aid=210036&group_id=7151">
