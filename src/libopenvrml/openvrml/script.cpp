@@ -581,6 +581,12 @@ find_using_uri_scheme(const std::string & uri_scheme) const
 }
 
 /**
+ * @var boost::scoped_ptr<openvrml::script_factory_registry::impl> openvrml::script_factory_registry::impl_
+ *
+ * @brief A pointer to the implementation instance.
+ */
+
+/**
  * @internal
  *
  * @brief Construct.
@@ -901,11 +907,12 @@ openvrml::script_node::script_node_type::~script_node_type() OPENVRML_NOTHROW
 /**
  * @brief Add an interface.
  *
- * @param[in] interface
+ * @param[in] interface_
  *
  * @exception std::bad_alloc        if memory allocation fails.
  * @exception std::invalid_argument if the @c script_node_type already has an
- *                                  interface that conflicts with @p interface.
+ *                                  interface that conflicts with
+ *                                  @p interface_.
  */
 void
 openvrml::script_node::script_node_type::

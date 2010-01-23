@@ -38,6 +38,8 @@
  */
 
 /**
+ * @relatesalso openvrml::field_value
+ *
  * @brief Stream output.
  *
  * @param[in,out] out   an output stream.

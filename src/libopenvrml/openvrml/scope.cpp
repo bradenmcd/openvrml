@@ -237,7 +237,7 @@ openvrml::node * openvrml::scope::find_node(const std::string & id) const
 }
 
 /**
- * @relates openvrml::scope
+ * @relatesalso openvrml::scope
  *
  * @param[in] s a @c scope.
  *

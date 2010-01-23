@@ -945,11 +945,11 @@ namespace openvrml {
         }
 
         template <typename Node>
-        template <typename EventListenerMember, typename DeducedNode>
+        template <typename EventEmitterMember, typename DeducedNode>
         void node_type_impl<Node>::
         add_eventout(const openvrml::field_value::type_id type,
                      const std::string & id,
-                     EventListenerMember DeducedNode::* event_emitter)
+                     EventEmitterMember DeducedNode::* event_emitter)
             OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
         {
             using openvrml::node_interface;

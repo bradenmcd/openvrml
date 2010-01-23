@@ -687,7 +687,7 @@ openvrml::node_metatype_id::operator std::string() const
 }
 
 /**
- * @relates openvrml::node_metatype_id
+ * @relatesalso openvrml::node_metatype_id
  *
  * @param[in] lhs
  * @param[in] rhs
@@ -702,7 +702,7 @@ bool openvrml::operator==(const node_metatype_id & lhs,
 }
 
 /**
- * @relates openvrml::node_metatype_id
+ * @relatesalso openvrml::node_metatype_id
  *
  * @param[in] lhs
  * @param[in] rhs
@@ -1121,7 +1121,7 @@ create_node(const boost::shared_ptr<scope> & scope,
  */
 
 /**
- * @relates openvrml::node_type
+ * @relatesalso openvrml::node_type
  *
  * @brief Compare for equality.
  *
@@ -1156,7 +1156,7 @@ bool openvrml::operator==(const node_type & lhs, const node_type & rhs)
 }
 
 /**
- * @relates openvrml::node_type
+ * @relatesalso openvrml::node_type
  *
  * @brief Compare for inequality.
  *
@@ -3018,7 +3018,7 @@ openvrml::appearance_node::material() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::material() const
+ * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::do_material() const
  *
  * @brief Get the material node associated with this appearance node.
  *
@@ -3037,7 +3037,7 @@ openvrml::appearance_node::texture() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::texture() const
+ * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::do_texture() const
  *
  * @brief Get the texture node associated with this appearance node.
  *
@@ -3057,7 +3057,7 @@ openvrml::appearance_node::texture_transform() const OPENVRML_NOTHROW
 }
 
 /**
- * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::texture_transform() const
+ * @fn const boost::intrusive_ptr<openvrml::node> & openvrml::appearance_node::do_texture_transform() const
  *
  * @brief Get the texture transform node associated with this appearance node.
  *
@@ -3517,7 +3517,7 @@ openvrml::texture_node * openvrml::background_node::left() const
 /**
  * @brief Right texture.
  *
- * This function delegates to @c @do_right.
+ * This function delegates to @c #do_right.
  *
  * @return the right texture.
  */
@@ -3674,7 +3674,7 @@ openvrml::color_rgba_node::to_color_rgba() OPENVRML_NOTHROW
 /**
  * @brief Get the @c color_rgba array encapsulated by this @c node.
  *
- * This function delegates to @c #do_color.
+ * This function delegates to @c #do_color_rgba.
  *
  * @return the @c color_rgba array for this @c node.
  */
@@ -4167,7 +4167,8 @@ openvrml::grouping_node::children() const OPENVRML_THROW1(std::bad_alloc)
  * @brief Called in response to user interaction to activate any child pointing
  *        device sensor nodes.
  *
- * Delegates to @c #do_activate.
+ * Calls @c pointing_device_sendor_node::activate for child
+ * @c pointing_device_sensor_node%s, recursively.
  *
  * @param[in] timestamp the current time.
  * @param[in] over      whether the pointer is over sensitive geometry.

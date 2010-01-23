@@ -1502,8 +1502,8 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
  *          likelihood any preexisting entry in the map with the same
  *          implementation identifier as @p id will have been removed.
  *
- * @param[in] id    a @c node_metatype identifier.
- * @param[in] nc    a @c boost::shared_ptr to a @c node_metatype
+ * @param[in] id        a @c node_metatype identifier.
+ * @param[in] metatype  a @c boost::shared_ptr to a @c node_metatype
  *
  * @exception std::invalid_argument if @p nc is null.
  * @exception std::bad_alloc        if memory allocation fails.

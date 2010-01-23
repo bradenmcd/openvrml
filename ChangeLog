@@ -1,5 +1,17 @@
 2010-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	Doc-comment fixes and improvements.
+
+	* src/libopenvrml/openvrml/event.cpp
+	* src/libopenvrml/openvrml/node.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml/openvrml/node_impl_util.h
+	* src/libopenvrml/openvrml/scope.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/browser.cpp
+
+2010-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Escape control characters for doxygen.
 
 	* doc/gpl.doc
