@@ -220,13 +220,13 @@ h1 + h3 {
   text-align: center;
 }
 
-.contents table {
+#toc {
   width: 70%;
   margin-left: auto;
   margin-right: auto;
 }
 
-.contents table p {
+#toc p {
   font-size: medium;
   margin: 0;
   padding: 0;
