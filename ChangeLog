@@ -1,5 +1,10 @@
 2010-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	* doc/doxygen-header: Just center the h3 text on the main
+	page (that is, the version text).
+
+2010-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Move documentation concerning rotation normalization from
 	openvrml::sfrotation to openvrml::rotation.
 
