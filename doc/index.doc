@@ -8,7 +8,7 @@
  *
  * @section contents Contents
  *
- * <table border="0">
+ * <table id="toc" border="0">
  * <tr><td>@subpage intro</td></tr>
  * <tr><td>@ref license</td></tr>
  * <tr><td>@ref history</td></tr>

@@ -1,5 +1,12 @@
 2010-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	Doxygen formatting improvements for tables.
+
+	* doc/doxygen-header
+	* doc/index.doc
+
+2010-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	* doc/doxygen-header: Just center the h3 text on the main
 	page (that is, the version text).
 
