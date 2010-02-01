@@ -3,6 +3,10 @@
 /**
  * @page intro 1. Introduction
  *
+ * <table class="top seqnav">
+ * <tr><th>Previous: @ref contents</th><th>Up: @ref contents</th><th>Next: @ref parsing</th></tr>
+ * </table>
+ *
  * The OpenVRML libraries provide an extensible run-time for rendering and
  * playing VRML and X3D.  OpenVRML includes two libraries:
  *
@@ -32,4 +36,8 @@
  *
  * OpenVRML was started as LibVRML97 by Chris Morley.  Since 2000 it has been
  * maintained by Braden McDaniel.
+ *
+ * <table class="bottom seqnav">
+ * <tr><th>Previous: @ref contents</th><th>Up: @ref contents</th><th>Next: @ref parsing</th></tr>
+ * </table>
  */

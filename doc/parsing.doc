@@ -3,6 +3,10 @@
 /**
  * @page parsing 2 Parsing VRML97 and VRML-encoded X3D
  *
+ * <table class="top seqnav">
+ * <tr><th>Previous: @ref intro</th><th>Up: @ref contents</th><th>Next: @ref libopenvrml</th></tr>
+ * </table>
+ *
  * OpenVRML includes parsers for reading VRML97 and VRML-encoded X3D.  Prior
  * to version 0.17.0, users wanting to use OpenVRML to load VRML or X3D had to
  * load the file into an @c openvrml::browser and traverse the runtime's scene
@@ -302,4 +306,8 @@
  * while exploring that is beyond the scope of this manual, the <a
  * href="http://spirit.sourceforge.net/documentation.html">Spirit User's
  * Guide</a> is an excellent resource.
+ *
+ * <table class="bottom seqnav">
+ * <tr><th>Previous: @ref intro</th><th>Up: @ref contents</th><th>Next: @ref libopenvrml</th></tr>
+ * </table>
  */
