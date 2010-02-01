@@ -3,6 +3,10 @@
 /**
  * @mainpage OpenVRML User's Guide
  *
+ * <table class="top seqnav">
+ * <tr><th></th><th></th><th>Next: @ref intro</th></tr>
+ * </table>
+ *
  * OpenVRML comprises a runtime library for VRML97 along with an OpenGL
  * renderer.
  *
@@ -28,5 +32,9 @@
  * <tr><td>@subpage gpl</td></tr>
  * <tr><td>@subpage lgpl</td></tr>
  * <tr><td>@subpage conformance</td><td>NIST VRML Test Suite results</td></tr>
+ * </table>
+ *
+ * <table class="bottom seqnav">
+ * <tr><th></th><th></th><th>Next: @ref intro</th></tr>
  * </table>
  */

@@ -1,3 +1,16 @@
+2010-02-01 Braden McDaniel  <braden@endoframe.com>
+
+	Add previous/up/next navigation to documentation pages.
+
+	* doc/doxygen-header
+	* doc/conformance.doc
+	* doc/gpl.doc
+	* doc/index.doc
+	* doc/intro.doc
+	* doc/lgpl.doc
+	* doc/libopenvrml.doc
+	* doc/parsing.doc
+
 2010-01-23 Braden McDaniel  <braden@endoframe.com>
 
 	Doxygen formatting improvements for tables.

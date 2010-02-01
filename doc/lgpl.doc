@@ -3,6 +3,10 @@
 /**
  * @page lgpl GNU Lesser General Public License
  *
+ * <table class="top seqnav">
+ * <tr><th>Previous: @ref gpl</th><th>Up: @ref contents</th><th>Next: @ref conformance</th></tr>
+ * </table>
+ *
  * Version 3, 29 June 2007
  *
  * Copyright &copy; 2007 Free Software Foundation, Inc. <http://fsf.org/>
@@ -152,4 +156,8 @@
  * future versions of the GNU Lesser General Public License shall apply, that
  * proxy's public statement of acceptance of any version is permanent
  * authorization for you to choose that version for the Library.
+ *
+ * <table class="bottom seqnav">
+ * <tr><th>Previous: @ref gpl</th><th>Up: @ref contents</th><th>Next: @ref conformance</th></tr>
+ * </table>
  */

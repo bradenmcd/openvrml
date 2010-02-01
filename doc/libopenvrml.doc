@@ -3,6 +3,10 @@
 /**
  * @page libopenvrml 3 libopenvrml - the run-time library
  *
+ * <table class="top seqnav">
+ * <tr><th>Previous: @ref parsing</th><th>Up: @ref contents</th><th>Next: @ref gpl</th></tr>
+ * </table>
+ *
  * @section resource_fetching 3.1 Fetching network resources
  *
  * @subsection resource_fetching_rationale 3.1.1 Rationale
@@ -107,4 +111,8 @@
  * synchronization primitives, for writing incoming data.  Data can then be
  * moved from this buffer to the <code>streambuf</code>'s buffer in the
  * implementation of @c std::streambuf::underflow.
+ *
+ * <table class="bottom seqnav">
+ * <tr><th>Previous: @ref parsing</th><th>Up: @ref contents</th><th>Next: @ref gpl</th></tr>
+ * </table>
  */

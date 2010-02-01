@@ -226,10 +226,38 @@ h1 + h3 {
   margin-right: auto;
 }
 
-#toc p {
-  font-size: medium;
+#toc p, .seqnav p, .conformance p {
   margin: 0;
   padding: 0;
+}
+
+.top.seqnav {
+  margin-bottom: 1.5em;
+}
+
+.bottom.seqnav {
+  margin-top: 1.5em;
+}
+
+.seqnav {
+  table-layout: fixed;
+  width: 100%;
+  border-style: none;
+  background-color: rgb(90%, 90%, 90%);
+  border-color: rgb(65%, 65%, 65%);
+  -webkit-border-top-left-radius: 0.6em;
+  -webkit-border-top-right-radius: 0.6em;
+  -moz-border-radius-topleft: 0.6em;
+  -moz-border-radius-topright: 0.6em;
+  -webkit-border-bottom-left-radius: 0.6em;
+  -webkit-border-bottom-right-radius: 0.6em;
+  -moz-border-radius-bottomleft: 0.6em;
+  -moz-border-radius-bottomright: 0.6em;
+}
+
+.seqnav tr th {
+  background-color: transparent;
+  border-style: none;
 }
 </style>
 </head>

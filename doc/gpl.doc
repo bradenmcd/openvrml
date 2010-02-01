@@ -2,6 +2,10 @@
 
 /**
  * @page gpl GNU General Public License
+ *
+ * <table class="top seqnav">
+ * <tr><th>Previous: @ref libopenvrml</th><th>Up: @ref contents</th><th>Next: @ref lgpl</th></tr>
+ * </table>
  * 
  * Version 3, 29 June 2007
  *
@@ -604,7 +608,7 @@
  * warranty or assumption of liability accompanies a copy of the Program in
  * return for a fee.
  *
- * @section end_of_terms END OF TERMS AND CONDITIONS
+ * END OF TERMS AND CONDITIONS
  *
  * @section howto How to Apply These Terms to Your New Programs
  *
@@ -664,4 +668,8 @@
  * the library.  If this is what you want to do, use the GNU Lesser General
  * Public License instead of this License.  But first, please read
  * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+ *
+ * <table class="bottom seqnav">
+ * <tr><th>Previous: @ref libopenvrml</th><th>Up: @ref contents</th><th>Next: @ref lgpl</th></tr>
+ * </table>
  */
