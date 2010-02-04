@@ -1,3 +1,8 @@
+2010-02-03 Braden McDaniel  <braden@endoframe.com>
+
+	* doc/Doxyfile: Suppress generation of the bug, todo, and test
+	list pages.
+
 2010-02-01 Braden McDaniel  <braden@endoframe.com>
 
 	Add previous/up/next navigation to documentation pages.
