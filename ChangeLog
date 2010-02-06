@@ -1,5 +1,9 @@
 2010-02-06 Braden McDaniel  <braden@endoframe.com>
 
+	* src/mozilla-plugin/openvrml.cpp: Use NPBool instead of PRBool.
+
+2010-02-06 Braden McDaniel  <braden@endoframe.com>
+
 	* src/mozilla-plugin/openvrml.cpp: Use C99 sized types instead of
 	XULRunner-/NSPR-specific ones.
 

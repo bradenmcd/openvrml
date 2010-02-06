@@ -339,7 +339,7 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     //
     // Make sure the browser supports XEmbed plug-ins.
     //
-    PRBool supportsXEmbed = PR_FALSE;
+    NPBool supportsXEmbed = false;
     err = NPN_GetValue(0, NPNVSupportsXEmbedBool, &supportsXEmbed);
 
     if (err != NPERR_NO_ERROR || !supportsXEmbed) {
@@ -681,7 +681,7 @@ NPError NPP_GetValue(const NPP npp,
 
     switch (variable) {
     case NPPVpluginNeedsXEmbed:
-        *static_cast<PRBool *>(value) = PR_TRUE;
+        *static_cast<NPBool *>(value) = true;
         break;
     case NPPVpluginScriptableNPObject:
         assert(npp->pdata);
