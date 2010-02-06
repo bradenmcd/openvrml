@@ -1,5 +1,14 @@
 2010-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-xembed/browserfactory.cpp
+	(openvrml_xembed_browser_factory_create_control(
+	OpenvrmlXembedBrowserFactory *, const char *, const char *,
+	guint64, gboolean, DBusGMethodInvocation *)): Don't add a
+	reference when constructing the intrusive_ptr to put in the
+	controls_map.
+
+2010-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/openvrml-xembed/main.cpp
 	(dbus_thread_loop::operator()() const): Terminating a variable
 	argument list with plain 0 is not 64-bit-safe.
