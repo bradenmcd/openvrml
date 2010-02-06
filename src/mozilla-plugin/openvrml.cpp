@@ -123,7 +123,7 @@ namespace {
 
         NPError new_stream(NPMIMEType type, NPStream * stream);
         NPError destroy_stream(NPStream * stream);
-        int32 write(NPStream * stream, int32 len, void * buffer);
+        int32_t write(NPStream * stream, int32_t len, void * buffer);
 
         //
         // Scripting API method implementations.
@@ -445,8 +445,8 @@ void NPP_Shutdown()
  */
 NPError NPP_New(const NPMIMEType,
                 const NPP instance,
-                uint16 /* mode */,
-                int16 /* argc */,
+                uint16_t /* mode */,
+                int16_t /* argc */,
                 char * /* argn */[],
                 char * /* argv */[],
                 NPSavedData *)
@@ -536,7 +536,7 @@ NPError NPP_NewStream(const NPP instance,
                       const NPMIMEType type,
                       NPStream * const stream,
                       NPBool /* seekable */,
-                      uint16 * const stype)
+                      uint16_t * const stype)
 {
     if (!instance || !instance->pdata) { return NPERR_INVALID_INSTANCE_ERROR; }
 
@@ -572,23 +572,23 @@ NPError NPP_DestroyStream(const NPP instance,
  */
 
 namespace {
-    int32 STREAMBUFSIZE = 0X0FFFFFFF; /* If we are reading from a file in
-                                       * NPAsFile mode so we can take any size
-                                       * stream in our write call (since we
-                                       * ignore it) */
+    int32_t STREAMBUFSIZE = 0X0FFFFFFF; /* If we are reading from a file in
+                                         * NPAsFile mode so we can take any
+                                         * size stream in our write call
+                                         * (since we ignore it) */
 }
 
-int32 NPP_WriteReady(NPP, NPStream *)
+int32_t NPP_WriteReady(NPP, NPStream *)
 {
     return STREAMBUFSIZE;
 }
 
 
-int32 NPP_Write(const NPP instance,
-                NPStream * const stream,
-                int32 /* offset */,
-                const int32 len,
-                void * const buffer)
+int32_t NPP_Write(const NPP instance,
+                  NPStream * const stream,
+                  int32_t /* offset */,
+                  const int32_t len,
+                  void * const buffer)
 {
     if (!instance || !instance->pdata) { return 0; }
 
@@ -654,7 +654,7 @@ void NPP_Print(const NPP instance, NPPrint * const printInfo)
     }
 }
 
-int16 NPP_HandleEvent(NPP, void * /* event */)
+int16_t NPP_HandleEvent(NPP, void * /* event */)
 {
     return true;
 }
@@ -730,7 +730,7 @@ NPError NPN_GetURL(NPP instance, const char * url, const char * target)
 NPError NPN_PostURLNotify(NPP instance,
                           const char * url,
                           const char * window,
-                          uint32 len,
+                          uint32_t len,
                           const char * buf,
                           NPBool file,
                           void * notifyData)
@@ -750,7 +750,7 @@ NPError NPN_PostURLNotify(NPP instance,
 NPError NPN_PostURL(NPP instance,
                     const char * url,
                     const char * window,
-                    uint32 len,
+                    uint32_t len,
                     const char * buf,
                     NPBool file)
 {
@@ -773,7 +773,7 @@ NPError NPN_NewStream(NPP instance,
         : NPERR_INCOMPATIBLE_VERSION_ERROR;
 }
 
-int32 NPN_Write(NPP instance, NPStream * stream, int32 len, void * buffer)
+int32_t NPN_Write(NPP instance, NPStream * stream, int32_t len, void * buffer)
 {
     const int navMinorVersion = mozillaFuncs.version & 0xFF;
     return (navMinorVersion >= NPVERS_HAS_STREAMOUTPUT)
@@ -799,7 +799,7 @@ const char * NPN_UserAgent(NPP instance)
     return mozillaFuncs.uagent(instance);
 }
 
-void * NPN_MemAlloc(uint32 size)
+void * NPN_MemAlloc(uint32_t size)
 {
     return mozillaFuncs.memalloc(size);
 }
@@ -809,7 +809,7 @@ void NPN_MemFree(void * ptr)
     mozillaFuncs.memfree(ptr);
 }
 
-uint32 NPN_MemFlush(uint32 size)
+uint32_t NPN_MemFlush(uint32_t size)
 {
     return mozillaFuncs.memflush(size);
 }
@@ -1211,9 +1211,9 @@ namespace {
         return NPERR_NO_ERROR;
     }
 
-    int32 plugin_instance::write(NPStream * const stream,
-                                 const int32 len,
-                                 void * const buffer)
+    int32_t plugin_instance::write(NPStream * const stream,
+                                   const int32_t len,
+                                   void * const buffer)
     {
         if (!this->browser) { return 0; }
 
