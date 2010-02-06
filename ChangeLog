@@ -1,5 +1,10 @@
 2010-02-06 Braden McDaniel  <braden@endoframe.com>
 
+	* src/mozilla-plugin/openvrml.cpp: Use C99 sized types instead of
+	XULRunner-/NSPR-specific ones.
+
+2010-02-06 Braden McDaniel  <braden@endoframe.com>
+
 	Use a dedicated (private) D-Bus connection to call
 	org.openvrml.BrowserHost.GetUrl.  Multiple threads can call this
 	function; and a connection should not be shared by multiple
