@@ -1,3 +1,10 @@
+2010-02-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/local/libopenvrml-control/openvrml_control/browser.cpp
+	(openvrml_control::browser::resource_fetcher::do_get_resource(const
+	std::string &)): Ensure that plugin_streambuf::set_get_url_result
+	gets called if browser_host::get_url throws.
+
 2010-02-03 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Doxyfile: Suppress generation of the bug, todo, and test

@@ -527,9 +527,17 @@ do_get_resource(const std::string & uri)
                 uri, this->streambuf_);
 
             //
-            // browser_host::get_url could throw; let it.
+            // If browser_host::get_url throws, we need to make sure that
+            // plugin_streambuf::set_get_url_result gets called.  Otherwise,
+            // plugin_streambuf::init will block indefinitely.
             //
-            const int get_url_result = fetcher.control_host_.get_url(uri);
+            int get_url_result;
+            try {
+                get_url_result = fetcher.control_host_.get_url(uri);
+            } catch (...) {
+                this->streambuf_->set_get_url_result(-1);
+                throw;
+            }
 
             if (get_url_result != 0) {
                 this->setstate(ios_base::badbit);
