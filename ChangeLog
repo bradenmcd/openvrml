@@ -1,3 +1,43 @@
+2010-02-06 Braden McDaniel  <braden@endoframe.com>
+
+	Use a dedicated (private) D-Bus connection to call
+	org.openvrml.BrowserHost.GetUrl.  Multiple threads can call this
+	function; and a connection should not be shared by multiple
+	threads.
+
+	* src/openvrml-xembed/browser.cpp
+	(browser_host_proxy): Store a reference to the
+	OpenvrmlXembedBrowser.
+	(browser_host_proxy::do_get_url(const std::string &)): Use a
+	private D-Bus connection to call org.openvrml.BrowserHost.GetUrl.
+	(OpenvrmlXembedBrowserPrivate_): Store the
+	org.openvrml.BrowserHost name.
+	(browser_property_id): Add enumerant for the control host name
+	property.
+	(openvrml_xembed_browser_class_init(OpenvrmlXembedBrowserClass *)):
+	Add control-host-name property.
+	(openvrml_xembed_browser_constructor(GType, guint,
+	GObjectConstructParam *)): Construct the browser_host_proxy with a
+	reference to the OpenvrmlXembedBrowser.
+	(openvrml_xembed_browser_finalize(GObject *)): g_free the
+	control_host_name.
+	(openvrml_xembed_browser_set_property(GObject *, guint, const
+	GValue *, GParamSpec *)): Set the control-host-name property.
+	(openvrml_xembed_browser_get_property(GObject *, guint, GValue *,
+	GParamSpec *)): Get the control-host-name property.
+	(openvrml_xembed_browser_new(DBusGProxy *, gboolean,
+	GMainContext *, const gchar *, GdkNativeWindow)): Create the
+	OpenvrmlXembedBrowser using the org.openvrml.BrowserHost name.
+	* src/openvrml-xembed/browser.h
+	(openvrml_xembed_browser_new(DBusGProxy *, gboolean,
+	GMainContext *, const gchar *, GdkNativeWindow)): Pass the
+	org.openvrml.BrowserHost name.
+	* src/openvrml-xembed/browserfactory.cpp
+	(openvrml_xembed_browser_factory_create_control(
+	OpenvrmlXembedBrowserFactory *, const char *, const char *,
+	guint64, gboolean, DBusGMethodInvocation *)): Create the
+	OpenvrmlXembedBrowser using the org.openvrml.BrowserHost name.
+
 2010-02-05 Braden McDaniel  <braden@endoframe.com>
 
 	* src/openvrml-xembed/browserfactory.cpp

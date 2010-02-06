@@ -31,6 +31,7 @@
 # include "browser-host-client-glue.h"
 # include <gtk/gtkgl.h>
 # include <gtk/gtkdrawingarea.h>
+# include <dbus/dbus.h>
 
 using namespace boost::multi_index::detail; // for scope_guard
 
@@ -84,37 +85,21 @@ namespace {
     class G_GNUC_INTERNAL browser_host_proxy :
         public openvrml_control::browser_host {
 
-        DBusGProxy & host_;
+        OpenvrmlXembedBrowser & browser_;
 
     public:
-        explicit browser_host_proxy(DBusGProxy & host):
-            host_(host)
+        explicit browser_host_proxy(OpenvrmlXembedBrowser & browser):
+            browser_(browser)
         {}
 
     private:
-        virtual int do_get_url(const std::string & url)
-        {
-            GError * error = 0;
-            scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
-            gint result = -1;
-            gboolean succeeded =
-                org_openvrml_BrowserHost_get_url(&this->host_,
-                                                 url.c_str(),
-                                                 &result,
-                                                 &error);
-            if (!succeeded) {
-                throw std::invalid_argument(error->message);
-            }
-
-            error_guard.dismiss();
-
-            return result;
-        }
+        virtual int do_get_url(const std::string & url);
     };
 }
 
 struct OpenvrmlXembedBrowserPrivate_ {
     DBusGProxy * control_host;
+    const gchar * control_host_name;
     browser_host_proxy * browser_control_host_proxy;
     openvrml_control::browser * browser_control;
     browser_listener * listener;
@@ -134,6 +119,7 @@ void openvrml_xembed_browser_init(OpenvrmlXembedBrowser * const vrml_browser)
 namespace {
     enum browser_property_id {
         control_host_proxy_id = 1,
+        control_host_name_id,
         expect_initial_stream_id
     };
 
@@ -190,13 +176,24 @@ openvrml_xembed_browser_class_init(OpenvrmlXembedBrowserClass * const klass)
                                     pspec);
 
     pspec =
+        g_param_spec_string(
+            "control-host-name",
+            "BrowserHost name",
+            "Well-known (nonunique) name for a BrowserHost",
+            "",
+            GParamFlags(G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
+    g_object_class_install_property(g_object_class,
+                                    control_host_name_id,
+                                    pspec);
+
+    pspec =
         g_param_spec_boolean(
             "expect-initial-stream",
             "expect an initial stream",
             "The VrmlControl will be delivered an initial stream",
             false,
             GParamFlags(G_PARAM_CONSTRUCT_ONLY | G_PARAM_WRITABLE));
-    g_object_class_install_property(G_OBJECT_CLASS(klass),
+    g_object_class_install_property(g_object_class,
                                     expect_initial_stream_id,
                                     pspec);
 
@@ -229,7 +226,7 @@ openvrml_xembed_browser_constructor(
     try {
         OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
         browser->priv->browser_control_host_proxy =
-            new browser_host_proxy(*browser->priv->control_host);
+            new browser_host_proxy(*browser);
         browser->priv->browser_control =
             new openvrml_control::browser(
                 *browser->priv->browser_control_host_proxy,
@@ -255,6 +252,7 @@ void openvrml_xembed_browser_finalize(GObject * const obj)
     OpenvrmlXembedBrowser * const browser = OPENVRML_XEMBED_BROWSER(obj);
     g_cond_free(browser->priv->browser_plug_realized_cond);
     g_mutex_free(browser->priv->browser_plug_mutex);
+    g_free(const_cast<gchar *>(browser->priv->control_host_name));
     browser->priv->browser_control->remove_listener(*browser->priv->listener);
     delete browser->priv->listener;
     delete browser->priv->browser_control;
@@ -270,6 +268,9 @@ void openvrml_xembed_browser_set_property(GObject * const obj,
     switch (property_id) {
     case control_host_proxy_id:
         browser->priv->control_host = DBUS_G_PROXY(g_value_get_object(value));
+        break;
+    case control_host_name_id:
+        browser->priv->control_host_name = g_strdup(g_value_get_string(value));
         break;
     case expect_initial_stream_id:
         browser->priv->expect_initial_stream = g_value_get_boolean(value);
@@ -288,6 +289,9 @@ void openvrml_xembed_browser_get_property(GObject * const obj,
     switch (property_id) {
     case control_host_proxy_id:
         g_value_set_object(value, browser->priv->control_host);
+        break;
+    case control_host_name_id:
+        g_value_set_string(value, browser->priv->control_host_name);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, property_id, pspec);
@@ -314,14 +318,16 @@ OpenvrmlXembedBrowser *
 openvrml_xembed_browser_new(DBusGProxy * const host_proxy,
                             const gboolean expect_initial_stream,
                             GMainContext * const gtk_thread_context,
+                            const gchar * const host_name,
                             const GdkNativeWindow socket_id)
 {
     OpenvrmlXembedBrowser * const browser =
         OPENVRML_XEMBED_BROWSER(
             g_object_new(OPENVRML_XEMBED_TYPE_BROWSER,
                          "control-host-proxy", host_proxy,
+                         "control-host-name", host_name,
                          "expect-initial-stream", expect_initial_stream,
-                         0));
+                         static_cast<void *>(0)));
     if (!browser) { return 0; }
     scope_guard browser_guard = make_guard(g_object_unref, browser);
 
@@ -353,7 +359,6 @@ openvrml_xembed_browser_new_stream(
 
     OpenvrmlXembedBrowser * const browser =
         OPENVRML_XEMBED_BROWSER(stream_client);
-
     try {
         browser->priv->browser_control->new_stream(stream_id, type, url);
     } catch (const openvrml_control::unknown_stream & ex) {
@@ -1289,4 +1294,79 @@ gboolean openvrml_xembed_browser_ready_dispatch(GSource * const source,
 
 void openvrml_xembed_browser_ready_finalize(GSource * /* source */)
 {
+}
+
+namespace {
+
+    void cleanup_private_connection(DBusConnection * const connection)
+    {
+        dbus_connection_close(connection);
+        dbus_connection_unref(connection);
+    }
+
+    int browser_host_proxy::do_get_url(const std::string & url)
+    {
+        //
+        // This function may be called from multiple threads.  Because of
+        // this, we can't use the same D-Bus connection that we use for
+        // everything else.
+        //
+        DBusError error;
+        dbus_error_init(&error);
+        scope_guard error_guard = make_guard(dbus_error_free, &error);
+        DBusConnection * const connection =
+            dbus_bus_get_private(DBUS_BUS_SESSION, &error);
+        if (!connection) {
+            g_warning("failed to get session bus connection: %s",
+                      error.message);
+            return -1;
+        }
+        scope_guard connection_guard =
+            make_guard(cleanup_private_connection, connection);
+
+        DBusMessage * const get_url_call =
+            dbus_message_new_method_call(
+                this->browser_.priv->control_host_name,
+                dbus_g_proxy_get_path(this->browser_.priv->control_host),
+                dbus_g_proxy_get_interface(this->browser_.priv->control_host),
+                "GetUrl");
+        scope_guard get_url_call_guard =
+            make_guard(dbus_message_unref, get_url_call);
+
+        const char * const url_c_str = url.c_str();
+        bool succeeded =
+            dbus_message_append_args(get_url_call,
+                                     DBUS_TYPE_STRING, &url_c_str,
+                                     DBUS_TYPE_INVALID);
+        if (!succeeded) {
+            g_warning("error appending arguments for method call");
+            return -1;
+        }
+
+        DBusMessage * const get_url_response =
+            dbus_connection_send_with_reply_and_block(connection,
+                                                      get_url_call,
+                                                      -1,
+                                                      &error);
+        if (!get_url_response) {
+            g_warning("error fetching resource: %s", error.message);
+            return -1;
+        }
+        scope_guard get_url_response_guard =
+            make_guard(dbus_message_unref, get_url_response);
+
+        gint get_url_result = -1;
+        succeeded =
+            dbus_message_get_args(get_url_response,
+                                  &error,
+                                  DBUS_TYPE_INT32, &get_url_result,
+                                  DBUS_TYPE_INVALID);
+        if (!succeeded) {
+            g_warning("error getting arguments for method call result: %s",
+                      error.message);
+            return -1;
+        }
+
+        return get_url_result;
+    }
 }
