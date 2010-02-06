@@ -334,10 +334,12 @@ openvrml_xembed_browser_factory_create_control(
     bool succeeded;
     try {
         using std::make_pair;
+        static const bool add_ref = false;
         succeeded =
             (*control_factory->priv->hosts)[sender].insert(
                 make_pair(control_obj_path,
-                          boost::intrusive_ptr<GObject>(G_OBJECT(browser))))
+                          boost::intrusive_ptr<GObject>(G_OBJECT(browser),
+                                                        add_ref)))
             .second;
         g_debug("inserted reference to %s", sender);
     } catch (std::bad_alloc & ex) {
