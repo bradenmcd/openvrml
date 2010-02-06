@@ -665,11 +665,6 @@ void NPP_URLNotify(NPP,
                    void * /* notifyData */)
 {}
 
-jref NPP_GetJavaClass()
-{
-    return 0;
-}
-
 NPError NPP_GetValue(const NPP npp,
                      const NPPVariable variable,
                      void * const value)
@@ -817,16 +812,6 @@ uint32_t NPN_MemFlush(uint32_t size)
 void NPN_ReloadPlugins(NPBool reloadPages)
 {
     mozillaFuncs.reloadplugins(reloadPages);
-}
-
-JRIEnv * NPN_GetJavaEnv()
-{
-    return static_cast<JRIEnv *>(mozillaFuncs.getJavaEnv());
-}
-
-jref NPN_GetJavaPeer(NPP instance)
-{
-    return static_cast<jref>(mozillaFuncs.getJavaPeer(instance));
 }
 
 NPError NPN_GetValue(NPP instance, NPNVariable variable, void * value)
