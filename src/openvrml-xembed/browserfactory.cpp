@@ -310,6 +310,7 @@ openvrml_xembed_browser_factory_create_control(
         openvrml_xembed_browser_new(host,
                                     expect_initial_stream,
                                     control_factory->priv->main_thread_context,
+                                    host_name,
                                     host_id);
 
     if (!browser) {

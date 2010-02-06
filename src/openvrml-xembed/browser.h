@@ -61,6 +61,7 @@ OpenvrmlXembedBrowser *
 openvrml_xembed_browser_new(DBusGProxy * host_proxy,
                             gboolean expect_initial_stream,
                             GMainContext * gtk_thread_context,
+                            const gchar * host_name,
                             GdkNativeWindow socket_id);
 
 GType openvrml_xembed_browser_get_type(void) G_GNUC_CONST;
