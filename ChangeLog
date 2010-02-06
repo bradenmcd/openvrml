@@ -1,5 +1,17 @@
 2010-02-06 Braden McDaniel  <braden@endoframe.com>
 
+	Remove Java-related function definitions.  The signatures of these
+	functions differ from XULRunner 1.9.1 to 1.9.2.  We're not using
+	them; so in the interest of working with both XULRunner versions,
+	just delete them for now.
+
+	* src/mozilla-plugin/openvrml.cpp
+	(NPP_GetJavaClass()): Removed.
+	(NPN_GetJavaEnv()): Removed.
+	(NPN_GetJavaPeer(NPP)): Removed.
+
+2010-02-06 Braden McDaniel  <braden@endoframe.com>
+
 	* src/mozilla-plugin/openvrml.cpp: Use NPBool instead of PRBool.
 
 2010-02-06 Braden McDaniel  <braden@endoframe.com>
