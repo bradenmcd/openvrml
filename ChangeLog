@@ -1,5 +1,12 @@
 2010-02-05 Braden McDaniel  <braden@endoframe.com>
 
+	* src/openvrml-xembed/main.cpp
+	(dbus_thread_loop::operator()() const): Terminating a variable
+	argument list with plain 0 is not 64-bit-safe.
+	Use static_cast<void *>(0) instead.
+
+2010-02-05 Braden McDaniel  <braden@endoframe.com>
+
 	* src/local/libopenvrml-control/openvrml_control/browser.cpp
 	(openvrml_control::browser::resource_fetcher::do_get_resource(const
 	std::string &)): Ensure that plugin_streambuf::set_get_url_result

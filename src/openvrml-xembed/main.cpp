@@ -2,7 +2,7 @@
 //
 // OpenVRML XEmbed Control
 //
-// Copyright 2004, 2005, 2006, 2007, 2008  Braden McDaniel
+// Copyright 2004, 2005, 2006, 2007, 2008, 2009, 2010  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -46,10 +46,10 @@ extern "C"
 G_GNUC_INTERNAL
 gboolean
 openvrml_xembed_name_owner_changed(DBusGProxy * proxy,
-                                                   const gchar * name,
-                                                   const gchar * old_owner,
-                                                   const gchar * new_owner,
-                                                   gpointer user_data);
+                                   const gchar * name,
+                                   const gchar * old_owner,
+                                   const gchar * new_owner,
+                                   gpointer user_data);
 
 namespace {
 
@@ -108,7 +108,7 @@ namespace {
                         OPENVRML_XEMBED_TYPE_BROWSER_FACTORY,
                         "connection", connection,
                         "main-thread-context", &this->main_thread_context_,
-                        0));
+                        static_cast<void *>(0)));
             scope_guard browser_factory_guard =
                 make_guard(g_object_unref, browser_factory);
             boost::ignore_unused_variable_warning(browser_factory_guard);
