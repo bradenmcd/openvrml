@@ -21,7 +21,7 @@
 # include "browser.h"
 # include <boost/enable_shared_from_this.hpp>
 # include <boost/lexical_cast.hpp>
-# include <boost/thread/condition.hpp>
+# include <boost/thread.hpp>
 # include <iostream>
 
 openvrml_control::unknown_stream::unknown_stream(const std::string & uri):
@@ -84,7 +84,7 @@ namespace {
     template <typename CharT, size_t BufferSize>
     class bounded_buffer {
         mutable boost::mutex mutex_;
-        boost::condition buffer_not_full_, buffer_not_empty_or_eof_;
+        boost::condition_variable buffer_not_full_, buffer_not_empty_or_eof_;
 
         CharT buf_[BufferSize];
         size_t begin_, end_, buffered_;
@@ -184,8 +184,8 @@ private:
     state_id state_;
     mutable boost::mutex mutex_;
     int get_url_result_;
-    mutable boost::condition received_get_url_result_;
-    mutable boost::condition streambuf_initialized_or_failed_;
+    mutable boost::condition_variable received_get_url_result_;
+    mutable boost::condition_variable streambuf_initialized_or_failed_;
     std::string url_;
     std::string type_;
     bounded_buffer<char_type, 16384> buf_;

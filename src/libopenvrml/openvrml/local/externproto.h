@@ -23,7 +23,7 @@
 
 #   include <openvrml/local/proto.h>
 #   include <boost/enable_shared_from_this.hpp>
-#   include <boost/thread/thread.hpp>
+#   include <boost/thread.hpp>
 
 namespace openvrml {
 

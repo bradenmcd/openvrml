@@ -31,8 +31,7 @@
 #   include <boost/scoped_ptr.hpp>
 #   include <boost/shared_ptr.hpp>
 #   include <boost/utility.hpp>
-#   include <boost/thread/locks.hpp>
-#   include <boost/thread/shared_mutex.hpp>
+#   include <boost/thread.hpp>
 #   include <openvrml/basetypes.h>
 
 namespace openvrml {

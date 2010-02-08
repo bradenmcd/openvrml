@@ -25,7 +25,6 @@
 #   include <openvrml-common.h>
 #   include <openvrml/bad_url.h>
 #   include <openvrml/node.h>
-#   include <boost/thread.hpp>
 
 namespace openvrml {
 

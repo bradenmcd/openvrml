@@ -746,6 +746,8 @@ local_libopenvrml_control_la_SOURCES = \
 local_libopenvrml_control_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml
+local_libopenvrml_control_la_LDFLAGS = \
+        -lboost_thread$(BOOST_LIB_SUFFIX)
 local_libopenvrml_control_la_LIBADD = \
         libopenvrml/libopenvrml.la
 
