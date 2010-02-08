@@ -33,7 +33,6 @@
 # include <boost/functional.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
-# include <boost/thread/thread.hpp>
 # include <algorithm>
 # include <functional>
 # include <cerrno>

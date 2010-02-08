@@ -25,7 +25,6 @@
 #   include <openvrml/field_value.h>
 #   include <openvrml/rendering_context.h>
 #   include <boost/bind.hpp>
-#   include <boost/thread/mutex.hpp>
 #   include <deque>
 #   include <map>
 #   include <set>

@@ -1,3 +1,24 @@
+2010-02-07 Braden McDaniel  <braden@endoframe.com>
+
+	Modernize Boost.Thread usage: include <boost/thread.hpp> and use
+	boost::condition_variable.
+
+	* src/Makefile.am
+	(local_libopenvrml_control_la_LDFLAGS): Link with libboost_thread.
+	* src/libopenvrml/openvrml/browser.cpp: Boost.Thread headers are
+	pulled in by scene.h.
+	* src/libopenvrml/openvrml/field_value.h: Include
+	<boost/thread.hpp>.
+	* src/libopenvrml/openvrml/local/externproto.h: Include
+	<boost/thread.hpp>.
+	* src/libopenvrml/openvrml/node.h: Boost.Thread headers are pulled
+	in by field_value.h.
+	* src/libopenvrml/openvrml/scene.h: Boost.Thread headers are
+	pulled in by node.h.
+	* src/local/libopenvrml-control/openvrml_control/browser.cpp:
+	Include <boost/thread.hpp>; use boost::condition_variable.
+	* src/openvrml-xembed/main.cpp: Include <boost/thread.hpp>.
+
 2010-02-06 Braden McDaniel  <braden@endoframe.com>
 
 	Remove Java-related function definitions.  The signatures of these

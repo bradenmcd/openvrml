@@ -31,7 +31,7 @@
 # include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
 # include <boost/scoped_ptr.hpp>
-# include <boost/thread/thread.hpp>
+# include <boost/thread.hpp>
 # include <iostream>
 # include <cstring>
 # include <unistd.h>
