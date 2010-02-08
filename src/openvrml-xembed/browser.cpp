@@ -466,44 +466,6 @@ guint64 openvrml_xembed_browser_get_id(OpenvrmlXembedBrowser * const browser)
     return id;
 }
 
-gboolean
-openvrml_xembed_browser_new_stream(OpenvrmlXembedBrowser * const browser,
-                                   const guint64 stream_id,
-                                   const char * const type,
-                                   const char * const url,
-                                   GError ** const error)
-{
-    return openvrml_xembed_stream_client_new_stream(
-        OPENVRML_XEMBED_STREAM_CLIENT(browser),
-        stream_id,
-        type,
-        url,
-        error);
-}
-
-gboolean
-openvrml_xembed_browser_destroy_stream(OpenvrmlXembedBrowser * const browser,
-                                       const guint64 stream_id,
-                                       GError ** const error)
-{
-    return openvrml_xembed_stream_client_destroy_stream(
-        OPENVRML_XEMBED_STREAM_CLIENT(browser),
-        stream_id,
-        error);
-}
-
-gboolean openvrml_xembed_browser_write(OpenvrmlXembedBrowser * const browser,
-                                       const guint64 stream_id,
-                                       const GArray * const data,
-                                       GError ** const error)
-{
-    return openvrml_xembed_stream_client_write(
-        OPENVRML_XEMBED_STREAM_CLIENT(browser),
-        stream_id,
-        data,
-        error);
-}
-
 gchar *
 openvrml_xembed_browser_get_world_url(
     OpenvrmlXembedBrowser * const browser,

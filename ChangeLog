@@ -1,3 +1,15 @@
+2010-02-08 Braden McDaniel  <braden@endoframe.com>
+
+	Remove dead code.
+
+	* src/openvrml-xembed/browser.cpp
+	(openvrml_xembed_browser_new_stream(OpenvrmlXembedBrowser *,
+	guint64, const char *, const char *, GError **)): Removed.
+	(openvrml_xembed_browser_destroy_stream(OpenvrmlXembedBrowser *,
+	guint64, GError **)): Removed.
+	(openvrml_xembed_browser_write(OpenvrmlXembedBrowser *, guint64,
+	const GArray *, GError **)): Removed.
+
 2010-02-07 Braden McDaniel  <braden@endoframe.com>
 
 	Modernize Boost.Thread usage: include <boost/thread.hpp> and use
