@@ -19,6 +19,11 @@
 //
 
 # include "error.h"
+# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/ref.hpp>
+
+using namespace boost::multi_index::detail;  // for scope_guard
+
 
 # ifdef _WIN32
 void openvrml::local::throw_runtime_error_from_win32_system_error(LONG result)

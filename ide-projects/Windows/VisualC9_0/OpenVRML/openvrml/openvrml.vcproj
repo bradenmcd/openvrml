@@ -232,6 +232,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\error.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\event.cpp"
 				>
 			</File>
@@ -334,6 +338,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\conf.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\src\libopenvrml\openvrml\local\error.h"
 				>
 			</File>
 			<File

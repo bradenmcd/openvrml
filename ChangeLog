@@ -1,3 +1,20 @@
+2010-02-13 Braden McDaniel  <braden@endoframe.com>
+
+	Fixes for Windows.
+
+	* src/libopenvrml/openvrml/local/conf.cpp
+	(const std::string query_registry_value(HKEY, const
+	std::string&)): Bring
+	openvrml::local::throw_runtime_error_from_win32_system_error into
+	scope.
+	(const std::string get_registry_setting(const std::string &)):
+	Bring openvrml::local::throw_runtime_error_from_win32_system_error
+	into scope.
+	* src/libopenvrml/openvrml/local/error.cpp: Include
+	<boost/multi_index/detail/scope_guard.hpp>.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Add src/libopenvrml/openvrml/local/error.{cpp,h} to the project.
+
 2010-02-08 Braden McDaniel  <braden@endoframe.com>
 
 	Remove dead code.
