@@ -1,5 +1,9 @@
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/Makefile.am (browser_LDADD): Link with libboost_system.
+
+2010-02-13 Braden McDaniel  <braden@endoframe.com>
+
 	Fixes for Windows.
 
 	* src/libopenvrml/openvrml/local/conf.cpp
