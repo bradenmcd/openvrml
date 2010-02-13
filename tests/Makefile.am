@@ -50,7 +50,8 @@ browser_SOURCES = browser.cpp
 browser_LDADD = \
         libtest-openvrml.la \
         -lboost_unit_test_framework$(BOOST_LIB_SUFFIX) \
-        -lboost_filesystem$(BOOST_LIB_SUFFIX)
+        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
+        -lboost_system$(BOOST_LIB_SUFFIX)
 
 parse_anchor_SOURCES = parse_anchor.cpp
 parse_anchor_LDADD = \
