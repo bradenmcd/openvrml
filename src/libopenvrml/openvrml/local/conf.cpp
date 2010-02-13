@@ -68,6 +68,8 @@ namespace {
     const std::string query_registry_value(HKEY key, const std::string & name)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
+        using openvrml::local::throw_runtime_error_from_win32_system_error;
+
         LONG result;
         static DWORD * const reserved;
         DWORD type;
@@ -100,6 +102,8 @@ namespace {
     const std::string get_registry_setting(const std::string & name)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
+        using openvrml::local::throw_runtime_error_from_win32_system_error;
+
         static const ULONG options = 0;
         HKEY key;
         LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
