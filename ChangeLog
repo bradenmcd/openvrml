@@ -1,5 +1,10 @@
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
 
+	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj:
+	Update FreeType library name for 2.3.12.
+
+2010-02-13 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/Makefile.am (browser_LDADD): Link with libboost_system.
 
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
