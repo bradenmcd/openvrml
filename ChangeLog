@@ -1,5 +1,10 @@
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
 
+	* tests/browser.cpp: Modernize Boost.Thread usage: include
+	<boost/thread.hpp> and use boost::condition_variable.
+
+2010-02-13 Braden McDaniel  <braden@endoframe.com>
+
 	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj:
 	Update FreeType library name for 2.3.12.
 
