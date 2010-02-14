@@ -366,7 +366,7 @@ AS_IF([test X$enable_script_node_java != Xno],
        [AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])])
 AC_DEFINE_UNQUOTED([OPENVRML_JNI_CONST], [$ov_cv_jni_const],
                    [const for JNI function signatures.])
-AS_IF([test -n "${JAVA_HOME-x"],
+AS_IF([test -z "${JAVA_HOME+x}"],
 [AC_MSG_WARN([JAVA_HOME has not been set.  JAVA_HOME must be set at run time to locate libjvm.])],
 [ov_save_LDFLAGS=$LDFLAGS
 LDFLAGS="-L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
