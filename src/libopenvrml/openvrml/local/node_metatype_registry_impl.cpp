@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2008  Braden McDaniel
+// Copyright 2008, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -21,11 +21,9 @@
 # include "node_metatype_registry_impl.h"
 # include "conf.h"
 # include <openvrml/browser.h>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <iostream>
 # include <sstream>
-
-using namespace boost::multi_index::detail;  // for scope_guard
 
 const std::string openvrml::local::node_metatype_registry_impl::sym =
     "openvrml_register_node_metatypes";
@@ -43,7 +41,10 @@ int openvrml_open_node_module(const std::string & filename, void * const data)
         std::cerr << dl::error() << std::endl;
         return 0;
     }
-    scope_guard handle_guard = make_guard(dl::close, handle);
+    bool succeeded = false;
+    BOOST_SCOPE_EXIT((&succeeded)(handle)) {
+        if (!succeeded) { dl::close(handle); }
+    } BOOST_SCOPE_EXIT_END
 
     //
     // Make sure the module has what we're looking for.
@@ -52,9 +53,8 @@ int openvrml_open_node_module(const std::string & filename, void * const data)
         dl::sym(handle, openvrml::local::node_metatype_registry_impl::sym);
     if (!sym) { return 0; } // handle_guard will close the module.
 
-    const bool succeeded = registry.module_handles_.insert(handle).second;
+    succeeded = registry.module_handles_.insert(handle).second;
     assert(succeeded);
-    handle_guard.dismiss();
     return 0;
 }
 

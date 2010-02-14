@@ -3,7 +3,8 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
+//   Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +32,7 @@
 # include <boost/functional.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/utility.hpp>
 # include <algorithm>
 # include <functional>
@@ -39,9 +40,6 @@
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-
-using namespace boost::multi_index::detail;  // for scope_guard
 
  /**
  * @file openvrml/script.h
@@ -415,7 +413,10 @@ int openvrml_get_script_factory(const std::string & filename, void * data)
 
     const dl::handle handle = dl::open(filename);
     if (!handle) { return 0; } // Ignore things we can't open.
-    scope_guard handle_guard = make_guard(dl::close, handle);
+    bool succeeded = false;
+    BOOST_SCOPE_EXIT((&succeeded)(handle)) {
+        if (!succeeded) { dl::close(handle); }
+    } BOOST_SCOPE_EXIT_END
 
     //
     // Make sure the module has what we're looking for.
@@ -423,9 +424,8 @@ int openvrml_get_script_factory(const std::string & filename, void * data)
     const void * sym = dl::sym(handle, "openvrml_script_LTX_register_factory");
     if (!sym) { return 0; } // handle_guard will close the module.
 
-    const bool succeeded = registry.module_handles_.insert(handle).second;
+    succeeded = registry.module_handles_.insert(handle).second;
     assert(succeeded);
-    handle_guard.dismiss();
     return 0;
 }
 
@@ -1938,8 +1938,10 @@ script_node(script_node_metatype & class_,
     // nodes.
     //
     this->add_ref();
-    scope_guard guard = make_obj_guard(*this, &script_node::remove_ref);
-    boost::ignore_unused_variable_warning(guard);
+    script_node & self = *this;
+    BOOST_SCOPE_EXIT((&self)) {
+        self.remove_ref();
+    } BOOST_SCOPE_EXIT_END
 
     for (node_interface_set::const_iterator interface_ = interfaces.begin();
          interface_ != interfaces.end();

@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2008  Braden McDaniel
+// Copyright 2008, 2009, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -21,11 +21,9 @@
 # include "dl.h"
 # include <boost/filesystem.hpp>
 # include <boost/ref.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/tokenizer.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
 # include <sstream>
-
-using namespace boost::multi_index::detail;  // for scope_guard
 
 int openvrml::local::dl::init()
 {
@@ -130,7 +128,9 @@ const std::string openvrml::local::dl::error()
 # ifdef _WIN32
     const DWORD err = GetLastError();
     char * buf = 0;
-    scope_guard buf_guard = make_guard(LocalFree, boost::ref(buf));
+    BOOST_SCOPE_EXIT((buf)) {
+        LocalFree(buf);
+    } BOOST_SCOPE_EXIT_END
     static const LPCVOID source = 0;
     static const DWORD buf_size = 0;
     static va_list * const args = 0;

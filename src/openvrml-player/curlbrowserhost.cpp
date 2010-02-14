@@ -1,7 +1,7 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
 // OpenVRML Player
-// Copyright 2008  Braden McDaniel
+// Copyright 2008, 2010  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -25,14 +25,11 @@
 # include <browser-client-glue.h>
 # include <dbus/dbus-glib-bindings.h>
 # include <dbus/dbus-protocol.h>
-# include <boost/concept_check.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/ref.hpp>
 # include <list>
 # include <vector>
 # include <string.h>
-
-using namespace boost::multi_index::detail; // for scope_guard
 
 # define OPENVRML_PLAYER_CURL_BROWSER_HOST_ERROR \
     openvrml_player_curl_browser_host_error_quark()
@@ -153,7 +150,9 @@ openvrml_player_curl_browser_host_class_init(
                      G_TYPE_NONE, 0);
 
     GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+    BOOST_SCOPE_EXIT((&error)) {
+        if (error) { g_error_free(error); }
+    } BOOST_SCOPE_EXIT_END
     klass->connection = dbus_g_bus_get(DBUS_BUS_SESSION, &error);
     if (!klass->connection) {
         g_critical("Failed to open connection to bus: %s", error->message);
@@ -168,8 +167,9 @@ openvrml_player_curl_browser_host_class_init(
                                   DBUS_SERVICE_DBUS,
                                   DBUS_PATH_DBUS,
                                   DBUS_INTERFACE_DBUS);
-    scope_guard driver_proxy_guard = make_guard(g_object_unref, driver_proxy);
-    boost::ignore_unused_variable_warning(driver_proxy_guard);
+    BOOST_SCOPE_EXIT((driver_proxy)) {
+        g_object_unref(G_OBJECT(driver_proxy));
+    } BOOST_SCOPE_EXIT_END
 
     guint request_ret;
     if (!org_freedesktop_DBus_request_name(driver_proxy,
@@ -196,7 +196,6 @@ openvrml_player_curl_browser_host_class_init(
     dbus_g_object_type_install_info(
         OPENVRML_PLAYER_TYPE_CURL_BROWSER_HOST,
         &dbus_glib_openvrml_player_curl_browser_host_object_info);
-    error_guard.dismiss();
 }
 
 void openvrml_player_curl_browser_host_get_property(GObject * const obj,
@@ -258,7 +257,9 @@ void openvrml_player_curl_browser_host_realize(GtkWidget * const widget)
         OPENVRML_PLAYER_CURL_BROWSER_HOST_CLASS(klass);
 
     GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+    BOOST_SCOPE_EXIT((&error)) {
+        if (error) { g_error_free(error); }
+    } BOOST_SCOPE_EXIT_END
 
     g_assert(browser_host->priv->path);
     browser_host->priv->browser = get_browser(browser_host_class->connection,
@@ -283,14 +284,24 @@ void openvrml_player_curl_browser_host_realize(GtkWidget * const widget)
 
     browser_host->priv->multi_handle = curl_multi_init();
     g_return_if_fail(browser_host->priv->multi_handle);
-    scope_guard multi_handle_guard =
-        make_guard(curl_multi_cleanup, browser_host->priv->multi_handle);
+    bool succeeded = false;
+    BOOST_SCOPE_EXIT((&succeeded)(&browser_host)) {
+        if (!succeeded) {
+            curl_multi_cleanup(browser_host->priv->multi_handle);
+        }
+    } BOOST_SCOPE_EXIT_END
 
     try {
+        bool succeeded = false;
+
         browser_host->priv->curl_source =
             curl_source_new(browser_host->priv->multi_handle);
-        scope_guard curl_source_guard =
-            make_guard(g_source_unref, browser_host->priv->curl_source);
+        BOOST_SCOPE_EXIT((&succeeded)(&browser_host)) {
+            if (!succeeded && browser_host->priv->curl_source) {
+                g_source_unref(browser_host->priv->curl_source);
+                browser_host->priv->curl_source = 0;
+            }
+        } BOOST_SCOPE_EXIT_END
 
         g_source_set_callback(
             browser_host->priv->curl_source,
@@ -298,8 +309,9 @@ void openvrml_player_curl_browser_host_realize(GtkWidget * const widget)
             browser_host,
             0);
         guint source_id = g_source_attach(browser_host->priv->curl_source, 0);
-        scope_guard source_attach_guard =
-            make_guard(g_source_remove, source_id);
+        BOOST_SCOPE_EXIT((&succeeded)(source_id)) {
+            if (!succeeded && source_id != 0) { g_source_remove(source_id); }
+        } BOOST_SCOPE_EXIT_END
 
         browser_host->priv->stream_data =
             g_hash_table_new_full(
@@ -309,14 +321,12 @@ void openvrml_player_curl_browser_host_realize(GtkWidget * const widget)
                 openvrml_player_curl_browser_host_delete_curl_stream_data);
         g_return_if_fail(browser_host->priv->stream_data);
 
-        source_attach_guard.dismiss();
-        curl_source_guard.dismiss();
+        succeeded = true;
     } catch (std::bad_alloc & ex) {
         g_critical("%s", ex.what());
     }
 
-    multi_handle_guard.dismiss();
-    error_guard.dismiss();
+    succeeded = true;
 }
 
 void openvrml_player_curl_browser_host_unrealize(GtkWidget * const widget)
@@ -459,14 +469,20 @@ openvrml_player_curl_browser_host_get_url(
 {
     CURL * const handle = curl_easy_init();
     try {
-        curl_stream_data * const stream_data =
-            new curl_stream_data(handle, url, host->priv->browser);
-        scope_guard stream_data_guard =
-            make_guard(
-                openvrml_player_curl_browser_host_delete_curl_stream_data,
-                stream_data);
-        g_hash_table_insert(host->priv->stream_data, handle, stream_data);
-        stream_data_guard.dismiss();
+        curl_stream_data * stream_data = 0;
+        {
+            bool succeeded = false;
+            stream_data =
+                new curl_stream_data(handle, url, host->priv->browser);
+            BOOST_SCOPE_EXIT((&succeeded)(stream_data)) {
+                if (!succeeded) {
+                    openvrml_player_curl_browser_host_delete_curl_stream_data(
+                        stream_data);
+                }
+            } BOOST_SCOPE_EXIT_END
+            g_hash_table_insert(host->priv->stream_data, handle, stream_data);
+            succeeded = true;
+        }
 
         CURLcode setopt_result;
         setopt_result = curl_easy_setopt(handle,
@@ -860,35 +876,38 @@ size_t openvrml_player_curl_browser_host_curl_write(void * ptr,
         CURL_BROWSER_HOST_CURL_EASY_RETURN_VAL_IF_ERROR(getinfo_result, 0);
 
         GError * error = 0;
+        BOOST_SCOPE_EXIT((&error)) {
+            if (error) { g_error_free(error); }
+        } BOOST_SCOPE_EXIT_END
+
         GFile * file = 0;
-        scope_guard file_guard = make_guard(g_object_unref, ref(file));
         GFileInfo * info = 0;
-        scope_guard info_guard = make_guard(g_object_unref, ref(info));
-        if (!type) {
-            file = g_file_new_for_uri(stream_data.url());
-            static GCancellable * const cancellable = 0;
-            info = g_file_query_info(file,
-                                     G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-                                     G_FILE_QUERY_INFO_NONE,
-                                     cancellable,
-                                     &error);
-            if (error) {
-                g_warning(error->message);
-                g_error_free(error);
-                error = 0;
+        BOOST_SCOPE_EXIT((&type)(&file)(&info)) {
+            if (type) {
+                if (file) { g_object_unref(file); }
+                if (info) { g_object_unref(info); }
             }
-            if (info) {
-                type =
-                    g_file_info_get_attribute_string(
-                        info,
-                        G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
-            }
-        } else {
-            info_guard.dismiss();
-            file_guard.dismiss();
+        } BOOST_SCOPE_EXIT_END
+
+        file = g_file_new_for_uri(stream_data.url());
+        static GCancellable * const cancellable = 0;
+        info = g_file_query_info(file,
+                                 G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+                                 G_FILE_QUERY_INFO_NONE,
+                                 cancellable,
+                                 &error);
+        if (error) {
+            g_warning(error->message);
+            g_error_free(error);
+            error = 0;
+        }
+        if (info) {
+            type =
+                g_file_info_get_attribute_string(
+                    info,
+                    G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
         }
 
-        scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
         gboolean new_stream_result =
             org_openvrml_Browser_new_stream(
                 stream_data.browser(),
@@ -903,8 +922,6 @@ size_t openvrml_player_curl_browser_host_curl_write(void * ptr,
         }
 
         stream_data.initialize();
-
-        error_guard.dismiss();
     }
 
     //
@@ -950,9 +967,9 @@ namespace {
                                       "/org/openvrml/BrowserFactory",
                                       "org.openvrml.BrowserFactory");
         g_return_val_if_fail(browser_factory, 0);
-        scope_guard browser_factory_guard =
-            make_guard(g_object_unref, G_OBJECT(browser_factory));
-        boost::ignore_unused_variable_warning(browser_factory_guard);
+        BOOST_SCOPE_EXIT((browser_factory)) {
+            g_object_unref(G_OBJECT(browser_factory));
+        } BOOST_SCOPE_EXIT_END
 
         char * browser_path = 0;
         if (!org_openvrml_BrowserFactory_create_control(

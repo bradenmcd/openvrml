@@ -5,7 +5,7 @@
 // Copyright 1998  Chris Morley
 // Copyright 2001  Henri Manson
 // Copyright 2002  Thomas Flynn
-// Copyright 2007, 2008  Braden McDaniel
+// Copyright 2007, 2008, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -85,7 +85,7 @@
 # include <private.h>
 # include <boost/array.hpp>
 # include <boost/filesystem/path.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/scoped_array.hpp>
 # include <algorithm>
 # include <iostream>
@@ -96,8 +96,6 @@
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
@@ -361,23 +359,19 @@ namespace {
     OPENVRML_JAVA_LOCAL jobject create_url(JNIEnv & env, const char * const url)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(3) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jstring url_string = env.NewStringUTF(url);
             if (!url_string) {
@@ -429,23 +423,19 @@ namespace {
                                                     const std::string & url_str)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(4) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jobject url = create_url(env, url_str.c_str());
 
@@ -506,23 +496,19 @@ namespace {
         assert(this->browser_);
         assert(this->script_class_);
 
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(1) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             //
             // We call AllocObject to create the Script instance, set the
@@ -593,23 +579,19 @@ namespace {
         assert(this->class_loader_);
         assert(!class_name.empty());
 
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jclass result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jclass class_loader_class =
                 env.GetObjectClass(this->class_loader_);
@@ -669,23 +651,19 @@ namespace {
     jobject script::create_browser_obj(JNIEnv & env)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jclass browser_class = this->find_class(env, "vrml.Browser");
 
@@ -740,23 +718,19 @@ namespace {
                 const bool const_ = false)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             using std::ostringstream;
             using openvrml::field_value;
@@ -807,23 +781,19 @@ namespace {
                  const bool const_ = false)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             using std::ostringstream;
             using openvrml::field_value;
@@ -872,9 +842,9 @@ namespace {
         assert(script_class);
         assert(script);
         if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-        scope_guard local_frame_guard =
-            make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-        boost::ignore_unused_variable_warning(local_frame_guard);
+        BOOST_SCOPE_EXIT((&env)) {
+            env.PopLocalFrame(0);
+        } BOOST_SCOPE_EXIT_END
 
         const jfieldID fields = env.GetFieldID(script_class,
                                                "fields",
@@ -898,9 +868,9 @@ namespace {
              field != field_map.end();
              ++field) {
             if (env.PushLocalFrame(3) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jstring name = env.NewStringUTF(field->first.c_str());
             const jobject val = clone_Field(env, *field->second);
@@ -915,23 +885,19 @@ namespace {
                     const openvrml::field_value & value)
         OPENVRML_THROW1(std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             if (env.PushLocalFrame(2) < 0) { return 0; }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             using std::ostringstream;
             using openvrml::field_value;
@@ -978,9 +944,9 @@ namespace {
         assert(script_class);
         assert(script);
         if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-        scope_guard local_frame_guard =
-            make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-        boost::ignore_unused_variable_warning(local_frame_guard);
+        BOOST_SCOPE_EXIT((&env)) {
+            env.PopLocalFrame(0);
+        } BOOST_SCOPE_EXIT_END
 
         const jfieldID eventouts = env.GetFieldID(script_class,
                                                   "eventOuts",
@@ -1005,9 +971,9 @@ namespace {
              eventout != eventout_map.end();
              ++eventout) {
             if (env.PushLocalFrame(3) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jstring name = env.NewStringUTF(eventout->first.c_str());
             const jobject val =
@@ -1075,10 +1041,12 @@ namespace {
             source_url.substr(0, last_slash_pos + 1);
 
         {
+            bool succeeded = false;
+
             if (env->PushLocalFrame(4) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(*env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((env)) {
+                env->PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jobject class_loader_local_ref =
                 create_class_loader(*env, url_path_prefix);
@@ -1087,9 +1055,9 @@ namespace {
                 throw std::runtime_error("failed to create global reference "
                                          "to Java class loader instance");
             }
-            scope_guard class_loader_global_ref_guard =
-                make_obj_guard(*env, &JNIEnv::DeleteGlobalRef,
-                               this->class_loader_);
+            BOOST_SCOPE_EXIT((&succeeded)(env)(&class_loader_)) {
+                if (!succeeded) { env->DeleteGlobalRef(class_loader_); }
+            } BOOST_SCOPE_EXIT_END
 
             const jobject browser_local_ref = create_browser_obj(*env);
             this->browser_ = env->NewGlobalRef(browser_local_ref);
@@ -1097,8 +1065,9 @@ namespace {
                 throw std::runtime_error("failed to create global reference "
                                          "to Java vrml.Browser instance");
             }
-            scope_guard browser_global_ref_guard =
-                make_obj_guard(*env, &JNIEnv::DeleteGlobalRef, this->browser_);
+            BOOST_SCOPE_EXIT((&succeeded)(env)(&browser_)) {
+                if (!succeeded) { env->DeleteGlobalRef(browser_); }
+            } BOOST_SCOPE_EXIT_END
 
             const std::string::size_type class_name_start_pos =
                 (last_slash_pos != std::string::npos) ? last_slash_pos + 1
@@ -1123,9 +1092,9 @@ namespace {
                 throw std::runtime_error("failed to create global reference "
                                          "to Java " + class_name + " class");
             }
-            scope_guard script_class_global_ref_guard =
-                make_obj_guard(*env, &JNIEnv::DeleteGlobalRef,
-                               this->script_class_);
+            BOOST_SCOPE_EXIT((&succeeded)(env)(&script_class_)) {
+                if (!succeeded) { env->DeleteGlobalRef(script_class_); }
+            } BOOST_SCOPE_EXIT_END
 
             const jobject script_local_ref = this->create_script_obj(*env);
             this->script_ = env->NewGlobalRef(script_local_ref);
@@ -1134,8 +1103,9 @@ namespace {
                                          "to Java " + class_name
                                          + " instance");
             }
-            scope_guard script_global_ref_guard =
-                make_obj_guard(*env, &JNIEnv::DeleteGlobalRef, this->script_);
+            BOOST_SCOPE_EXIT((&succeeded)(env)(&script_)) {
+                if (!succeeded) { env->DeleteGlobalRef(script_); }
+            } BOOST_SCOPE_EXIT_END
 
             this->process_events_ =
                 env->GetMethodID(this->script_class_, "processEvents",
@@ -1168,8 +1138,9 @@ namespace {
                 throw std::runtime_error("failed to create global reference "
                                          "to Java vrml.Event instance");
             }
-            scope_guard event_class_global_ref_guard =
-                make_obj_guard(*env, &JNIEnv::DeleteGlobalRef, this->event_class_);
+            BOOST_SCOPE_EXIT((&succeeded)(env)(&event_class_)) {
+                if (!succeeded) { env->DeleteGlobalRef(event_class_); }
+            } BOOST_SCOPE_EXIT_END
 
             this->event_ctor_ =
                 env->GetMethodID(this->event_class_,
@@ -1191,11 +1162,7 @@ namespace {
             init_script_eventouts(*env, this->script_class_, this->script_,
                                   this->node.eventout_map());
 
-            event_class_global_ref_guard.dismiss();
-            script_global_ref_guard.dismiss();
-            script_class_global_ref_guard.dismiss();
-            browser_global_ref_guard.dismiss();
-            class_loader_global_ref_guard.dismiss();
+            succeeded = true;
         }
     }
 
@@ -1298,9 +1265,9 @@ namespace {
             throw std::runtime_error("failed to create local frame when "
                                      "processing event");
         }
-        scope_guard local_frame_guard =
-            make_obj_guard(*env, &JNIEnv::PopLocalFrame, jobject(0));
-        boost::ignore_unused_variable_warning(local_frame_guard);
+        BOOST_SCOPE_EXIT((env)) {
+            env->PopLocalFrame(0);
+        } BOOST_SCOPE_EXIT_END
 
         const jstring event_name = env->NewStringUTF(id.c_str());
         if (!event_name) {
@@ -1328,11 +1295,13 @@ namespace {
 
         const jobject event_global_ref = env->NewGlobalRef(event);
         if (!event_global_ref) { throw std::bad_alloc(); }
-        scope_guard event_global_ref_guard =
-            make_obj_guard(*env, &JNIEnv::DeleteGlobalRef, event_global_ref);
+        bool succeeded = false;
+        BOOST_SCOPE_EXIT((&succeeded)(env)(&event_global_ref)) {
+            if (!succeeded) { env->DeleteGlobalRef(event_global_ref); }
+        } BOOST_SCOPE_EXIT_END
 
         this->events_received_.push_back(event_global_ref);
-        event_global_ref_guard.dismiss();
+        succeeded = true;
     }
 
     /**
@@ -1362,9 +1331,9 @@ namespace {
                 throw std::runtime_error("failed to create local frame when "
                                          "processing events");
             }
-            scope_guard local_frame_guard =
-                make_obj_guard(*env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((env)) {
+                env->PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jobjectArray events =
                 env->NewObjectArray(this->events_received_.size(),
@@ -1539,9 +1508,9 @@ namespace {
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
         if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-        scope_guard local_frame_guard =
-            make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-        boost::ignore_unused_variable_warning(local_frame_guard);
+        BOOST_SCOPE_EXIT_TPL((&env)) {
+            env.PopLocalFrame(0);
+        } BOOST_SCOPE_EXIT_END
 
         jclass clazz;
 # ifndef NDEBUG
@@ -1577,9 +1546,9 @@ namespace {
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
         if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-        scope_guard local_frame_guard =
-            make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-        boost::ignore_unused_variable_warning(local_frame_guard);
+        BOOST_SCOPE_EXIT((&env)) {
+            env.PopLocalFrame(0);
+        } BOOST_SCOPE_EXIT_END
 
         jclass clazz;
 # ifndef NDEBUG
@@ -1726,26 +1695,22 @@ namespace {
     create_Node(JNIEnv & env, const boost::intrusive_ptr<openvrml::node> & node)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobject result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             using std::auto_ptr;
             using boost::intrusive_ptr;
 
             if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jclass clazz = env.FindClass("vrml/node/NodeImpl");
             if (!clazz) {
@@ -1790,25 +1755,21 @@ namespace {
         std::vector<boost::intrusive_ptr<openvrml::node> > & nodes)
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
-        using boost::ref;
-
         //
         // We can safely run DeleteGlobalRef in the scope guard because
         // calling DeleteGlobalRef with 0 is a no-op.
         //
         jobjectArray result_global_ref = 0;
-        scope_guard result_global_ref_guard =
-            make_obj_guard(env,
-                           &JNIEnv::DeleteGlobalRef,
-                           ref(result_global_ref));
-        boost::ignore_unused_variable_warning(result_global_ref_guard);
+        BOOST_SCOPE_EXIT((&env)(&result_global_ref)) {
+            env.DeleteGlobalRef(result_global_ref);
+        } BOOST_SCOPE_EXIT_END
         {
             using boost::intrusive_ptr;
 
             if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((&env)) {
+                env.PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jclass clazz = env.FindClass("vrml/BaseNode");
             if (!clazz) {
@@ -1823,9 +1784,9 @@ namespace {
                  i != nodes.size();
                  ++i) {
                 if (env.PushLocalFrame(1) < 0) { throw std::bad_alloc(); }
-                scope_guard local_frame_guard =
-                    make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-                boost::ignore_unused_variable_warning(local_frame_guard);
+                BOOST_SCOPE_EXIT((&env)) {
+                    env.PopLocalFrame(0);
+                } BOOST_SCOPE_EXIT_END
                 env.SetObjectArrayElement(result, i,
                                           create_Node(env, nodes[i]));
             }
@@ -1872,10 +1833,9 @@ Java_vrml_Browser_createVrmlFromString(JNIEnv * const env,
 
         const char * const vrmlSyntax_chars =
             env->GetStringUTFChars(vrmlSyntax, 0);
-        scope_guard vrmlSyntax_chars_guard =
-            make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                           vrmlSyntax, vrmlSyntax_chars);
-        boost::ignore_unused_variable_warning(vrmlSyntax_chars_guard);
+        BOOST_SCOPE_EXIT((env)(vrmlSyntax)(vrmlSyntax_chars)) {
+            env->ReleaseStringUTFChars(vrmlSyntax, vrmlSyntax_chars);
+        } BOOST_SCOPE_EXIT_END
 
         std::istringstream in(vrmlSyntax_chars);
         try {
@@ -1924,9 +1884,9 @@ namespace {
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
         if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-        scope_guard local_frame_guard =
-            make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-        boost::ignore_unused_variable_warning(local_frame_guard);
+        BOOST_SCOPE_EXIT((&env)) {
+            env.PopLocalFrame(0);
+        } BOOST_SCOPE_EXIT_END
 
 # ifndef NDEBUG
         const jclass script_class = env.FindClass("vrml/node/Script");
@@ -1958,9 +1918,9 @@ namespace {
         OPENVRML_THROW2(std::runtime_error, std::bad_alloc)
     {
         if (env.PushLocalFrame(2) < 0) { throw std::bad_alloc(); }
-        scope_guard local_frame_guard =
-            make_obj_guard(env, &JNIEnv::PopLocalFrame, jobject(0));
-        boost::ignore_unused_variable_warning(local_frame_guard);
+        BOOST_SCOPE_EXIT((&env)) {
+            env.PopLocalFrame(0);
+        } BOOST_SCOPE_EXIT_END
 
 # ifndef NDEBUG
         const jclass base_node_class = env.FindClass("vrml/BaseNode");
@@ -2021,10 +1981,9 @@ void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
         const char * const eventout_id =
             env->GetStringUTFChars(fromEventOut, 0);
         if (!eventout_id) { return; }
-        scope_guard eventout_id_guard =
-            make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                           fromEventOut, eventout_id);
-        boost::ignore_unused_variable_warning(eventout_id_guard);
+        BOOST_SCOPE_EXIT((env)(fromEventOut)(eventout_id)) {
+            env->ReleaseStringUTFChars(fromEventOut, eventout_id);
+        } BOOST_SCOPE_EXIT_END
 
         const intrusive_ptr<openvrml::node> & to =
             get_BaseNode_peer(*env, toNode);
@@ -2032,10 +1991,9 @@ void JNICALL Java_vrml_Browser_addRoute(JNIEnv * const env,
 
         const char * const eventin_id = env->GetStringUTFChars(toEventIn, 0);
         if (!eventin_id) { return; }
-        scope_guard eventin_id_guard =
-            make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                           toEventIn, eventin_id);
-        boost::ignore_unused_variable_warning(eventin_id_guard);
+        BOOST_SCOPE_EXIT((env)(toEventIn)(eventin_id)) {
+            env->ReleaseStringUTFChars(toEventIn, eventin_id);
+        } BOOST_SCOPE_EXIT_END
 
         openvrml::add_route(*from, eventout_id, *to, eventin_id);
     } catch (std::logic_error & ex) {
@@ -2081,10 +2039,9 @@ void JNICALL Java_vrml_Browser_deleteRoute(JNIEnv * const env,
         const char * const eventout_id =
             env->GetStringUTFChars(fromEventOut, 0);
         if (!eventout_id) { return; }
-        scope_guard eventout_id_guard =
-            make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                           fromEventOut, eventout_id);
-        boost::ignore_unused_variable_warning(eventout_id_guard);
+        BOOST_SCOPE_EXIT((env)(fromEventOut)(eventout_id)) {
+            env->ReleaseStringUTFChars(fromEventOut, eventout_id);
+        } BOOST_SCOPE_EXIT_END
 
         const intrusive_ptr<openvrml::node> & to =
             get_BaseNode_peer(*env, toNode);
@@ -2092,10 +2049,9 @@ void JNICALL Java_vrml_Browser_deleteRoute(JNIEnv * const env,
 
         const char * const eventin_id = env->GetStringUTFChars(toEventIn, 0);
         if (!eventin_id) { return; }
-        scope_guard eventin_id_guard =
-            make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                           toEventIn, eventin_id);
-        boost::ignore_unused_variable_warning(eventin_id_guard);
+        BOOST_SCOPE_EXIT((env)(toEventIn)(eventin_id)) {
+            env->ReleaseStringUTFChars(toEventIn, eventin_id);
+        } BOOST_SCOPE_EXIT_END
 
         openvrml::delete_route(*from, eventout_id, *to, eventin_id);
     } catch (openvrml::unsupported_interface & ex) {
@@ -2148,9 +2104,9 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
             }
             const char * str = env->GetStringUTFChars(jstr, 0);
             if (!str) { return; } // OutOfMemoryError
-            scope_guard str_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars, jstr, str);
-            boost::ignore_unused_variable_warning(str_guard);
+            BOOST_SCOPE_EXIT((env)(jstr)(str)) {
+                env->ReleaseStringUTFChars(jstr, str);
+            } BOOST_SCOPE_EXIT_END
             url_vec[i] = str; // Throws std::bad_alloc.
         }
 
@@ -2163,9 +2119,9 @@ void JNICALL Java_vrml_Browser_loadURL(JNIEnv * const env,
             }
             const char * str = env->GetStringUTFChars(jstr, 0);
             if (!str) { return; } // OutOfMemoryError
-            scope_guard str_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars, jstr, str);
-            boost::ignore_unused_variable_warning(str_guard);
+            BOOST_SCOPE_EXIT((env)(jstr)(str)) {
+                env->ReleaseStringUTFChars(jstr, str);
+            } BOOST_SCOPE_EXIT_END
             param_vec[i] = str; // Throws std::bad_alloc.
         }
 
@@ -2192,9 +2148,9 @@ void JNICALL Java_vrml_Browser_setDescription(JNIEnv * const env,
 {
     const char * desc = env->GetStringUTFChars(description, 0);
     if (!desc) { return; } // OutOfMemoryError
-    scope_guard desc_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars, description, desc);
-    boost::ignore_unused_variable_warning(desc_guard);
+    BOOST_SCOPE_EXIT((env)(description)(desc)) {
+        env->ReleaseStringUTFChars(description, desc);
+    } BOOST_SCOPE_EXIT_END
     try {
         openvrml::browser & browser = get_Browser_peer(*env, obj);
         browser.description(desc);
@@ -2265,9 +2221,9 @@ void JNICALL Java_vrml_node_Script_updateField(JNIEnv * const env,
 {
     const char * id_chars = env->GetStringUTFChars(id, 0);
     if (!id_chars) { return; }
-    scope_guard id_chars_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars, id, id_chars);
-    boost::ignore_unused_variable_warning(id_chars_guard);
+    BOOST_SCOPE_EXIT((env)(id)(id_chars)) {
+        env->ReleaseStringUTFChars(id, id_chars);
+    } BOOST_SCOPE_EXIT_END
 
     try {
         using openvrml::field_value;
@@ -2286,9 +2242,9 @@ void JNICALL Java_vrml_node_Script_emitEvent(JNIEnv * const env,
 {
     const char * id_chars = env->GetStringUTFChars(id, 0);
     if (!id_chars) { return; }
-    scope_guard id_chars_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars, id, id_chars);
-    boost::ignore_unused_variable_warning(id_chars_guard);
+    BOOST_SCOPE_EXIT((env)(id)(id_chars)) {
+        env->ReleaseStringUTFChars(id, id_chars);
+    } BOOST_SCOPE_EXIT_END
 
     try {
         using std::find_if;
@@ -2883,10 +2839,9 @@ jlong JNICALL Java_vrml_field_SFImage_createPeer(JNIEnv * const env,
     try {
         if (pixels) {
             jbyte * const elements = env->GetByteArrayElements(pixels, 0);
-            scope_guard elements_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseByteArrayElements,
-                               pixels, elements, 0);
-            boost::ignore_unused_variable_warning(elements_guard);
+            BOOST_SCOPE_EXIT((env)(pixels)(elements)) {
+                env->ReleaseByteArrayElements(pixels, elements, 0);
+            } BOOST_SCOPE_EXIT_END
             peer.reset(
                 new sfimage(
                     image(w, h, comp, elements, elements + (w * h * comp))));
@@ -2976,10 +2931,9 @@ void JNICALL Java_vrml_field_SFImage_setValue__III_3B(JNIEnv * const env,
         sfimage & peer = get_Field_peer<sfimage>(*env, obj);
         try {
             jbyte * const elements = env->GetByteArrayElements(pixels, NULL);
-            scope_guard elements_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseByteArrayElements,
-                               pixels, elements, 0);
-            boost::ignore_unused_variable_warning(elements_guard);
+            BOOST_SCOPE_EXIT((env)(pixels)(elements)) {
+                env->ReleaseByteArrayElements(pixels, elements, 0);
+            } BOOST_SCOPE_EXIT_END
             peer.value(image(width, height, components,
                              elements,
                              elements + (width * height * components)));
@@ -3276,12 +3230,9 @@ jlong JNICALL Java_vrml_field_SFString_createPeer(JNIEnv * const env,
         if (jstr) {
             const char * str = env->GetStringUTFChars(jstr, 0);
             if (!str) { return 0; } // OutOfMemoryError
-            scope_guard str_guard =
-                make_obj_guard(*env,
-                               &JNIEnv::ReleaseStringUTFChars,
-                               jstr,
-                               str);
-            boost::ignore_unused_variable_warning(str_guard);
+            BOOST_SCOPE_EXIT((env)(jstr)(str)) {
+                env->ReleaseStringUTFChars(jstr, str);
+            } BOOST_SCOPE_EXIT_END
             peer.reset(new openvrml::sfstring(str));
         } else {
             peer.reset(new openvrml::sfstring);
@@ -3316,9 +3267,9 @@ Java_vrml_field_SFString_setValue__Ljava_lang_String_2(JNIEnv * const env,
         sfstring & sfstr = get_Field_peer<sfstring>(*env, obj);
         const char * const str = env->GetStringUTFChars(jstr, 0);
         if (!str) { return; } // OutOfMemoryError
-        scope_guard str_guard =
-            make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars, jstr, str);
-        boost::ignore_unused_variable_warning(str_guard);
+        BOOST_SCOPE_EXIT((env)(jstr)(str)) {
+            env->ReleaseStringUTFChars(jstr, str);
+        } BOOST_SCOPE_EXIT_END
         sfstr.value(str);
     } catch (std::exception & ex) {
         OPENVRML_PRINT_EXCEPTION_(ex);
@@ -4129,8 +4080,6 @@ namespace {
         const jint size,
         const typename array_type<typename jni_type<typename FieldValue::value_type::value_type>::type>::type array)
     {
-        using boost::ref;
-
         typedef typename jni_type<
             typename FieldValue::value_type::value_type>::type elem_t;
 
@@ -4142,10 +4091,9 @@ namespace {
         }
         elem_t * const elements = get_array_elements<elem_t>(env, array);
         if (!elements) { return 0; }
-        scope_guard elements_guard =
-            make_guard(release_array_elements<elem_t>,
-                       ref(env), array, elements);
-        boost::ignore_unused_variable_warning(elements_guard);
+        BOOST_SCOPE_EXIT_TPL((&env)(array)(elements)) {
+            release_array_elements<elem_t>(env, array, elements);
+        } BOOST_SCOPE_EXIT_END
         std::auto_ptr<FieldValue> peer;
         try {
             const typename FieldValue::value_type vec(elements,
@@ -4689,10 +4637,9 @@ jlong JNICALL Java_vrml_field_MFColor_createPeer__I_3F(JNIEnv * const env,
     }
     jfloat * c = env->GetFloatArrayElements(jarr, 0);
     if (!c) { return 0; }
-    scope_guard c_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                       jarr, c, 0);
-    boost::ignore_unused_variable_warning(c_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(c)) {
+        env->ReleaseFloatArrayElements(jarr, c, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfcolor> peer;
     try {
         openvrml::mfcolor::value_type vec(size);
@@ -4731,10 +4678,9 @@ Java_vrml_field_MFColor_createPeer___3_3F(JNIEnv * const env,
                 // Presumably we raised an OutOfMemoryError.
                 return 0;
             }
-            scope_guard c_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                               element, c, 0);
-            boost::ignore_unused_variable_warning(c_guard);
+            BOOST_SCOPE_EXIT((env)(element)(c)) {
+                env->ReleaseFloatArrayElements(element, c, 0);
+            } BOOST_SCOPE_EXIT_END
             vec[i] = openvrml::make_color(c[0], c[1], c[2]);
         }
         peer.reset(new openvrml::mfcolor(vec));
@@ -5472,9 +5418,9 @@ jobjectArray JNICALL Java_vrml_field_MFNode_initNodes(JNIEnv * const env,
     try {
         for (jsize i = 0; i < jsize(mfn->value().size()); ++i) {
             if (env->PushLocalFrame(1) < 0) { throw std::bad_alloc(); }
-            scope_guard local_frame_guard =
-                make_obj_guard(*env, &JNIEnv::PopLocalFrame, jobject(0));
-            boost::ignore_unused_variable_warning(local_frame_guard);
+            BOOST_SCOPE_EXIT((env)) {
+                env->PopLocalFrame(0);
+            } BOOST_SCOPE_EXIT_END
 
             const jobject node = create_Node(*env, mfn->value()[i]);
             env->SetObjectArrayElement(nodes, i, node);
@@ -5694,10 +5640,9 @@ Java_vrml_field_ConstMFRotation_createPeer__I_3F(JNIEnv * const env,
     }
     jfloat * r = env->GetFloatArrayElements(jarr, 0);
     if (!r) { return 0; }
-    scope_guard r_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                       jarr, r, 0);
-    boost::ignore_unused_variable_warning(r_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(r)) {
+        env->ReleaseFloatArrayElements(jarr, r, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfrotation> peer;
     try {
         openvrml::mfrotation::value_type vec(size);
@@ -5802,10 +5747,9 @@ Java_vrml_field_MFRotation_createPeer___3_3F(JNIEnv * const env,
                 // Presumably we raised an OutOfMemoryError.
                 return 0;
             }
-            scope_guard r_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                               element, r, 0);
-            boost::ignore_unused_variable_warning(r_guard);
+            BOOST_SCOPE_EXIT((env)(element)(r)) {
+                env->ReleaseFloatArrayElements(element, r, 0);
+            } BOOST_SCOPE_EXIT_END
             vec[i] = openvrml::make_rotation(r[0], r[1], r[2], r[3]);
         }
         peer.reset(new openvrml::mfrotation(vec));
@@ -5830,10 +5774,9 @@ Java_vrml_field_MFRotation_createPeer__I_3F(JNIEnv * const env,
     }
     jfloat * r = env->GetFloatArrayElements(jarr, 0);
     if (!r) { return 0; }
-    scope_guard r_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                       jarr, r, 0);
-    boost::ignore_unused_variable_warning(r_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(r)) {
+        env->ReleaseFloatArrayElements(jarr, r, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfrotation> peer;
     try {
         openvrml::mfrotation::value_type vec(size);
@@ -6082,9 +6025,9 @@ jlong JNICALL Java_vrml_field_MFString_createPeer(JNIEnv * const env,
             if (!el) { return 0; } // ArrayIndexOutOfBoundsException
             const char * const temp = env->GetStringUTFChars(el, 0);
             if (!temp) { return 0; } // OutOfMemoryError
-            scope_guard temp_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars, el, temp);
-            boost::ignore_unused_variable_warning(temp_guard);
+            BOOST_SCOPE_EXIT((env)(el)(temp)) {
+                env->ReleaseStringUTFChars(el, temp);
+            } BOOST_SCOPE_EXIT_END
             vec[i] = temp;
         }
         peer.reset(new openvrml::mfstring(vec));
@@ -6194,10 +6137,9 @@ Java_vrml_field_MFString_set1Value__ILjava_lang_String_2(JNIEnv * const env,
         try {
             const char * utf8chars = env->GetStringUTFChars(value, 0);
             if (!utf8chars) { return; } // OutOfMemoryError
-            scope_guard utf8chars_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                               value, utf8chars);
-            boost::ignore_unused_variable_warning(utf8chars_guard);
+            BOOST_SCOPE_EXIT((env)(value)(utf8chars)) {
+                env->ReleaseStringUTFChars(value, utf8chars);
+            } BOOST_SCOPE_EXIT_END
             mfstring::value_type temp = mfstr.value();
             temp.at(index) = utf8chars;
             mfstr.value(temp);
@@ -6229,10 +6171,9 @@ Java_vrml_field_MFString_addValue__Ljava_lang_String_2(JNIEnv * env,
         try {
             const char * utf8chars = env->GetStringUTFChars(value, 0);
             if (!utf8chars) { return; } // OutOfMemoryError
-            scope_guard utf8chars_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                               value, utf8chars);
-            boost::ignore_unused_variable_warning(utf8chars_guard);
+            BOOST_SCOPE_EXIT((env)(value)(utf8chars)) {
+                env->ReleaseStringUTFChars(value, utf8chars);
+            } BOOST_SCOPE_EXIT_END
             mfstring::value_type temp = mfstr.value();
             temp.push_back(utf8chars);
             mfstr.value(temp);
@@ -6266,10 +6207,9 @@ Java_vrml_field_MFString_insertValue__ILjava_lang_String_2(JNIEnv * const env,
         try {
             const char * utf8chars = env->GetStringUTFChars(value, 0);
             if (!utf8chars) { return; } // OutOfMemoryError
-            scope_guard utf8chars_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseStringUTFChars,
-                               value, utf8chars);
-            boost::ignore_unused_variable_warning(utf8chars_guard);
+            BOOST_SCOPE_EXIT((env)(value)(utf8chars)) {
+                env->ReleaseStringUTFChars(value, utf8chars);
+            } BOOST_SCOPE_EXIT_END
             mfstring::value_type temp = mfstr.value();
             temp.insert(temp.begin() + index, utf8chars);
             mfstr.value(temp);
@@ -6528,10 +6468,9 @@ jlong JNICALL Java_vrml_field_MFVec2f_createPeer___3_3F(JNIEnv * const env,
                 // Presumably we raised an OutOfMemoryError.
                 return 0;
             }
-            scope_guard v_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                               element, v, 0);
-            boost::ignore_unused_variable_warning(v_guard);
+            BOOST_SCOPE_EXIT((env)(element)(v)) {
+                env->ReleaseFloatArrayElements(element, v, 0);
+            } BOOST_SCOPE_EXIT_END
             vec[i] = openvrml::make_vec2f(v[0], v[1]);
         }
         peer.reset(new openvrml::mfvec2f(vec));
@@ -6555,10 +6494,9 @@ jlong JNICALL Java_vrml_field_MFVec2f_createPeer__I_3F(JNIEnv * const env,
     }
     jfloat * v = env->GetFloatArrayElements(jarr, 0);
     if (!v) { return 0; }
-    scope_guard v_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                       jarr, v, 0);
-    boost::ignore_unused_variable_warning(v_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(v)) {
+        env->ReleaseFloatArrayElements(jarr, v, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfvec2f> peer;
     try {
         openvrml::mfvec2f::value_type vec(size);
@@ -6757,10 +6695,9 @@ Java_vrml_field_ConstMFVec2d_createPeer__I_3F(JNIEnv * const env,
     }
     jdouble * v = env->GetDoubleArrayElements(jarr, 0);
     if (!v) { return 0; }
-    scope_guard v_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseDoubleArrayElements,
-                       jarr, v, 0);
-    boost::ignore_unused_variable_warning(v_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(v)) {
+        env->ReleaseDoubleArrayElements(jarr, v, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfvec2d> peer;
     try {
         openvrml::mfvec2d::value_type vec(size);
@@ -6865,10 +6802,9 @@ Java_vrml_field_MFVec2d_createPeer___3_3F(JNIEnv * const env,
                 // Presumably we raised an OutOfMemoryError.
                 return 0;
             }
-            scope_guard v_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseDoubleArrayElements,
-                               element, v, 0);
-            boost::ignore_unused_variable_warning(v_guard);
+            BOOST_SCOPE_EXIT((env)(element)(v)) {
+                env->ReleaseDoubleArrayElements(element, v, 0);
+            } BOOST_SCOPE_EXIT_END
             vec[i] = openvrml::make_vec2d(v[0], v[1]);
         }
         peer.reset(new openvrml::mfvec2d(vec));
@@ -6892,10 +6828,9 @@ jlong JNICALL Java_vrml_field_MFVec2d_createPeer__I_3F(JNIEnv * const env,
     }
     jdouble * v = env->GetDoubleArrayElements(jarr, 0);
     if (!v) { return 0; }
-    scope_guard v_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseDoubleArrayElements,
-                       jarr, v, 0);
-    boost::ignore_unused_variable_warning(v_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(v)) {
+        env->ReleaseDoubleArrayElements(jarr, v, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfvec2d> peer;
     try {
         openvrml::mfvec2d::value_type vec(size);
@@ -7171,10 +7106,9 @@ Java_vrml_field_MFVec3f_createPeer___3_3F(JNIEnv * const env,
                 // Presumably we raised an OutOfMemoryError.
                 return 0;
             }
-            scope_guard v_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                               element, v, 0);
-            boost::ignore_unused_variable_warning(v_guard);
+            BOOST_SCOPE_EXIT((env)(element)(v)) {
+                env->ReleaseFloatArrayElements(element, v, 0);
+            } BOOST_SCOPE_EXIT_END
             vec[i] = openvrml::make_vec3f(v[0], v[1], v[2]);
         }
         peer.reset(new openvrml::mfvec3f(vec));
@@ -7198,10 +7132,9 @@ jlong JNICALL Java_vrml_field_MFVec3f_createPeer__I_3F(JNIEnv * const env,
     }
     jfloat * v = env->GetFloatArrayElements(jarr, 0);
     if (!v) { return 0; }
-    scope_guard v_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseFloatArrayElements,
-                       jarr, v, 0);
-    boost::ignore_unused_variable_warning(v_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(v)) {
+        env->ReleaseFloatArrayElements(jarr, v, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfvec3f> peer;
     try {
         openvrml::mfvec3f::value_type vec(size);
@@ -7483,10 +7416,9 @@ Java_vrml_field_MFVec3d_createPeer___3_3F(JNIEnv * const env,
                 // Presumably we raised an OutOfMemoryError.
                 return 0;
             }
-            scope_guard v_guard =
-                make_obj_guard(*env, &JNIEnv::ReleaseDoubleArrayElements,
-                               element, v, 0);
-            boost::ignore_unused_variable_warning(v_guard);
+            BOOST_SCOPE_EXIT((env)(element)(v)) {
+                env->ReleaseDoubleArrayElements(element, v, 0);
+            } BOOST_SCOPE_EXIT_END
             vec[i] = openvrml::make_vec3d(v[0], v[1], v[2]);
         }
         peer.reset(new openvrml::mfvec3d(vec));
@@ -7510,10 +7442,9 @@ jlong JNICALL Java_vrml_field_MFVec3d_createPeer__I_3F(JNIEnv * const env,
     }
     jdouble * v = env->GetDoubleArrayElements(jarr, 0);
     if (!v) { return 0; }
-    scope_guard v_guard =
-        make_obj_guard(*env, &JNIEnv::ReleaseDoubleArrayElements,
-                       jarr, v, 0);
-    boost::ignore_unused_variable_warning(v_guard);
+    BOOST_SCOPE_EXIT((env)(jarr)(v)) {
+        env->ReleaseDoubleArrayElements(jarr, v, 0);
+    } BOOST_SCOPE_EXIT_END
     std::auto_ptr<openvrml::mfvec3d> peer;
     try {
         openvrml::mfvec3d::value_type vec(size);

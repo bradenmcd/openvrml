@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -24,7 +24,7 @@
 
 # include <sstream>
 # include <boost/algorithm/string/predicate.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include "image_stream_listener.h"
 
 openvrml_node_vrml97::image_stream_listener::image_reader::~image_reader()
@@ -204,14 +204,15 @@ png_reader(image_stream_listener & stream_listener):
     stream_listener(stream_listener),
     gray_palette(false)
 {
-    using namespace boost::multi_index::detail;  // for scope_guard
     this->png_ptr_ =
         png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
     if (!this->png_ptr_) { throw std::bad_alloc(); }
-    scope_guard guard = make_guard(&png_destroy_read_struct,
-                                   &this->png_ptr_,
-                                   &this->info_ptr_,
-                                   png_infopp(0));
+    bool succeeded = false;
+    BOOST_SCOPE_EXIT((&succeeded)(&png_ptr_)(&info_ptr_)) {
+        if (!succeeded) {
+            png_destroy_read_struct(&png_ptr_, &info_ptr_, png_infopp(0));
+        }
+    } BOOST_SCOPE_EXIT_END
 
     this->info_ptr_ = png_create_info_struct(this->png_ptr_);
     if (!this->info_ptr_) { throw std::bad_alloc(); }
@@ -221,7 +222,7 @@ png_reader(image_stream_listener & stream_listener):
                                 openvrml_png_info_callback,
                                 openvrml_png_row_callback,
                                 openvrml_png_end_callback);
-    guard.dismiss();
+    succeeded = true;
 }
 
 openvrml_node_vrml97::image_stream_listener::png_reader::~png_reader()

@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,7 @@
 # include <private.h>
 # include <jsapi.h>
 # include <boost/array.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <algorithm>
 # include <iostream>
 # include <memory>
@@ -35,8 +35,6 @@
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
@@ -1195,9 +1193,9 @@ namespace {
 
 # ifdef JS_THREADSAFE
         JS_SetContextThread(this->cx);
-        scope_guard context_thread_guard =
-            make_guard(&JS_ClearContextThread, this->cx);
-        boost::ignore_unused_variable_warning(context_thread_guard);
+        BOOST_SCOPE_EXIT((cx)) {
+            JS_ClearContextThread(cx);
+        } BOOST_SCOPE_EXIT_END
 # endif
 
         jsval fval, rval;

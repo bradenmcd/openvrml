@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2008  Braden McDaniel
+// Copyright 2008, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -23,8 +23,7 @@
 # include <cerrno>
 # include <cstring>
 # ifdef _WIN32
-#   include <boost/multi_index/detail/scope_guard.hpp>
-using namespace boost::multi_index::detail;  // for scope_guard
+#   include <boost/scope_exit.hpp>
 # endif
 
 openvrml::local::uri::uri() OPENVRML_THROW1(std::bad_alloc):
@@ -549,7 +548,9 @@ const std::string openvrml::local::getcwd()
         using boost::ref;
         DWORD error = GetLastError();
         void * msgBuf = 0;
-        scope_guard msgBuf_guard = make_guard(LocalFree, ref(msgBuf));
+        BOOST_SCOPE_EXIT((&msgBuf)) {
+            LocalFree(msgBuf);
+        } BOOST_SCOPE_EXIT_END
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
                       | FORMAT_MESSAGE_FROM_SYSTEM
                       | FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -575,7 +576,9 @@ const std::string openvrml::local::getcwd()
         using boost::ref;
         DWORD error = GetLastError();
         void * msgBuf = 0;
-        scope_guard msgBuf_guard = make_guard(LocalFree, ref(msgBuf));
+        BOOST_SCOPE_EXIT((&msgBuf)) {
+            LocalFree(msgBuf);
+        } BOOST_SCOPE_EXIT_END
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER
                       | FORMAT_MESSAGE_FROM_SYSTEM
                       | FORMAT_MESSAGE_IGNORE_INSERTS,

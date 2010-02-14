@@ -1,3 +1,31 @@
+2010-02-14 Braden McDaniel  <braden@endoframe.com>
+
+	Use Boost.ScopeExit instead of ScopeGuard.
+
+	* README: Note Boost 1.38 requirement.
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/local/conf.cpp
+	* src/libopenvrml/openvrml/local/error.cpp
+	* src/libopenvrml/openvrml/local/externproto.cpp
+	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
+	* src/libopenvrml/openvrml/local/uri.cpp
+	* src/libopenvrml/openvrml/local/xml_reader.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
+	* src/mozilla-plugin/openvrml.cpp
+	* src/node/vrml97/grouping_node_base.h
+	* src/node/vrml97/image_stream_listener.cpp
+	* src/node/vrml97/text.cpp
+	* src/openvrml-player/curlbrowserhost.cpp
+	* src/openvrml-player/filechooserdialog.cpp
+	* src/openvrml-player/player.cpp
+	* src/openvrml-xembed/browser.cpp
+	* src/openvrml-xembed/browserfactory.cpp
+	* src/openvrml-xembed/main.cpp
+	* src/script/java.cpp
+	* src/script/javascript.cpp
+	* tests/browser.cpp
+
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.18.4 release.

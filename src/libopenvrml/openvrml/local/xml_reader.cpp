@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2008  Braden McDaniel
+// Copyright 2008, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -21,8 +21,7 @@
 # include "xml_reader.h"
 # ifdef _WIN32
 #   include <shlwapi.h>
-#   include <boost/multi_index/detail/scope_guard.hpp>
-using namespace boost::multi_index::detail;  // for scope_guard
+#   include <boost/scope_exit.hpp>
 # endif
 
 /**
@@ -125,31 +124,33 @@ openvrml::local::xml_reader::xml_reader(const std::string & filename)
 {
 # ifdef _WIN32
     HRESULT hr;
+    bool succeeded = false;
 
     hr = SHCreateStreamOnFile(filename.c_str(), STGM_READ, &this->input);
+    BOOST_SCOPE_EXIT((&succeeded)(&input)) {
+        if (!succeeded && input) { input->Release(); }
+    } BOOST_SCOPE_EXIT_END
     if (FAILED(hr)) {
         throw std::runtime_error("failed to open file \"" + filename
                                  + '\"');
     }
-    scope_guard input_guard =
-        make_obj_guard(*this->input, &IStream::Release);
 
     hr = CreateXmlReader(__uuidof(IXmlReader),
                          reinterpret_cast<void **>(&this->reader),
                          0);
+    BOOST_SCOPE_EXIT((&succeeded)(&reader)) {
+        if (!succeeded && reader) { reader->Release(); }
+    } BOOST_SCOPE_EXIT_END
     if (FAILED(hr)) {
         throw std::runtime_error("failed to create XML reader");
     }
-    scope_guard reader_guard =
-        make_obj_guard(*this->reader, &IXmlReader::Release);
 
     hr = this->reader->SetInput(this->input);
     if (FAILED(hr)) {
         throw std::runtime_error("failed to set input for XML reader");
     }
 
-    input_guard.dismiss();
-    reader_guard.dismiss();
+    succeeded = true;
 # else
     static const char * const encoding = 0;
     static const int options = 0;

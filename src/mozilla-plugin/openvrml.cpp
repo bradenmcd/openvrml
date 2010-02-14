@@ -2,7 +2,7 @@
 //
 // OpenVRML Mozilla plug-in
 //
-// Copyright 2004, 2005, 2006, 2007, 2008  Braden McDaniel
+// Copyright 2004, 2005, 2006, 2007, 2008, 2010  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -25,9 +25,8 @@
 # include <vector>
 # include <sys/socket.h>
 # include <sys/wait.h>
-# include <boost/concept_check.hpp>
 # include <boost/lexical_cast.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/noncopyable.hpp>
 # include <boost/ref.hpp>
 # include <boost/scoped_ptr.hpp>
@@ -74,8 +73,6 @@ G_END_DECLS
 # include "browser-host-server-glue.h"
 # include "browser-factory-client-glue.h"
 # include "browser-client-glue.h"
-
-using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
@@ -169,7 +166,9 @@ void openvrml_np_browser_host_class_init(OpenvrmlNpBrowserHostClass * klass)
                      G_TYPE_NONE, 0);
 
     GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+    BOOST_SCOPE_EXIT((&error)) {
+        if (error) { g_error_free(error); }
+    } BOOST_SCOPE_EXIT_END
     klass->connection = dbus_g_bus_get(DBUS_BUS_SESSION, &error);
     if (!klass->connection) {
         g_critical("Failed to open connection to bus: %s", error->message);
@@ -184,8 +183,9 @@ void openvrml_np_browser_host_class_init(OpenvrmlNpBrowserHostClass * klass)
                                   DBUS_SERVICE_DBUS,
                                   DBUS_PATH_DBUS,
                                   DBUS_INTERFACE_DBUS);
-    scope_guard driver_proxy_guard = make_guard(g_object_unref, driver_proxy);
-    boost::ignore_unused_variable_warning(driver_proxy_guard);
+    BOOST_SCOPE_EXIT((driver_proxy)) {
+        g_object_unref(driver_proxy);
+    } BOOST_SCOPE_EXIT_END
 
     guint request_ret;
     if (!org_freedesktop_DBus_request_name(driver_proxy,
@@ -200,7 +200,6 @@ void openvrml_np_browser_host_class_init(OpenvrmlNpBrowserHostClass * klass)
     dbus_g_object_type_install_info(
         OPENVRML_NP_TYPE_BROWSER_HOST,
         &dbus_glib_openvrml_np_browser_host_object_info);
-    error_guard.dismiss();
 }
 
 int openvrml_np_browser_host_get_url(OpenvrmlNpBrowserHost * const host,
@@ -598,12 +597,10 @@ int32_t NPP_Write(const NPP instance,
     return pluginInstance.write(stream, len, buffer);
 }
 
-void NPP_StreamAsFile(const NPP instance,
+void NPP_StreamAsFile(NPP,
                       NPStream *,
                       const char * /* fname */)
 {
-    boost::ignore_unused_variable_warning(instance);
-    assert(instance);
 }
 
 void NPP_Print(const NPP instance, NPPrint * const printInfo)
@@ -1104,9 +1101,9 @@ namespace {
                                       "/org/openvrml/BrowserFactory",
                                       "org.openvrml.BrowserFactory");
         g_return_val_if_fail(browser_factory, 0);
-        scope_guard browser_factory_guard =
-            make_guard(g_object_unref, G_OBJECT(browser_factory));
-        boost::ignore_unused_variable_warning(browser_factory_guard);
+        BOOST_SCOPE_EXIT((browser_factory)) {
+            g_object_unref(browser_factory);
+        } BOOST_SCOPE_EXIT_END
 
         char * browser_path = 0;
         if (!org_openvrml_BrowserFactory_create_control(browser_factory,
@@ -1149,7 +1146,9 @@ namespace {
             OPENVRML_NP_BROWSER_HOST_GET_CLASS(this->browser_host);
 
         GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+        BOOST_SCOPE_EXIT((&error)) {
+            if (error) { g_error_free(error); }
+        } BOOST_SCOPE_EXIT_END
 
         this->browser = get_browser(browser_host_class->connection,
                                     browser_host_class->host_name,
@@ -1160,8 +1159,6 @@ namespace {
             g_critical("Browser creation failed: %s", error->message);
             return;
         }
-
-        error_guard.dismiss();
     }
 
     NPError plugin_instance::new_stream(const NPMIMEType type,
@@ -1170,7 +1167,9 @@ namespace {
         if (!this->browser) { return NPERR_INVALID_INSTANCE_ERROR; }
 
         GError * error = 0;
-        scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
+        BOOST_SCOPE_EXIT((&error)) {
+            if (error) { g_error_free(error); }
+        } BOOST_SCOPE_EXIT_END
         gboolean result = org_openvrml_Browser_new_stream(this->browser,
                                                           guint64(stream),
                                                           type,
@@ -1181,7 +1180,6 @@ namespace {
                        error->message);
             return NPERR_GENERIC_ERROR;
         }
-        error_guard.dismiss();
         return NPERR_NO_ERROR;
     }
 
