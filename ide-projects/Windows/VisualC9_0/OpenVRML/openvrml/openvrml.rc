@@ -28,9 +28,9 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "OpenVRML Library"
-            VALUE "FileVersion", "9, 2, 0, 0"
+            VALUE "FileVersion", "9, 3, 0, 0"
             VALUE "InternalName", "openvrml"
-            VALUE "LegalCopyright", "Copyright (C) 2009"
+            VALUE "LegalCopyright", "Copyright (C) 2010"
             VALUE "OriginalFilename", "openvrml.dll"
             VALUE "ProductName", "OpenVRML Library"
             VALUE "ProductVersion", "0.18.99"

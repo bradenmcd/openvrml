@@ -1,3 +1,16 @@
+Changes new in version 0.18.4, 13 February, 2010
+========================================================================
+
+- Added missing Visual C++ project file for openvrml-dl.
+
+- Fixes for building with Boost 1.41.0.
+
+- Fixes to build with XULRunner 1.9.2.
+
+- Fixed crashes associated with concurrently downloading resources in
+  openvrml-xembed.
+
+
 Changes new in version 0.18.3, 13 August, 2009
 ========================================================================
 

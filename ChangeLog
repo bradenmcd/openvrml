@@ -1,5 +1,18 @@
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.18.4 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am: Updated libopenvrml library version to 9:3:0.
+
+2010-02-13 Braden McDaniel  <braden@endoframe.com>
+
 	* tests/browser.cpp: Modernize Boost.Thread usage: include
 	<boost/thread.hpp> and use boost::condition_variable.
 
