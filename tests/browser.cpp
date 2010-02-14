@@ -24,7 +24,7 @@
 # include <sstream>
 # include <boost/filesystem/operations.hpp>
 # include <boost/multi_index/detail/scope_guard.hpp>
-# include <boost/thread/condition.hpp>
+# include <boost/thread.hpp>
 # include <boost/test/unit_test.hpp>
 # include "test_resource_fetcher.h"
 
@@ -80,10 +80,11 @@ BOOST_AUTO_TEST_CASE(create_vrml_from_url)
     class children_listener : public openvrml::mfnode_listener {
         bool received_event_;
         boost::mutex & mutex_;
-        boost::condition & condition_;
+        boost::condition_variable & condition_;
 
     public:
-        children_listener(boost::mutex & mutex, boost::condition & condition):
+        children_listener(boost::mutex & mutex,
+                          boost::condition_variable & condition):
             received_event_(false),
             mutex_(mutex),
             condition_(condition)
@@ -122,7 +123,7 @@ BOOST_AUTO_TEST_CASE(create_vrml_from_url)
         b.create_vrml_from_stream(vrmlstream);
 
     boost::mutex mutex;
-    boost::condition listener_received_event;
+    boost::condition_variable listener_received_event;
 
     children_listener listener(mutex, listener_received_event);
     mfnode_emitter & emitter =
