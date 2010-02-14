@@ -47,7 +47,7 @@ noinst_HEADERS = \
         libopenvrml/private.h \
         openvrml-player/filechooserdialog.h
 
-LIBOPENVRML_LIBRARY_VERSION =    9:2:0
+LIBOPENVRML_LIBRARY_VERSION =    9:3:0
 LIBOPENVRML_GL_LIBRARY_VERSION = 8:0:0
 #                                | | |
 #                         +------+ | +---+
@@ -170,7 +170,7 @@ script_java_la_CPPFLAGS = \
         -I$(top_srcdir)/src/local/libopenvrml-dl \
         -DOPENVRML_LIBDIR_=\"$(libdir)\" \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
-        -DJRE_HOME=\"$(JRE_HOME)\" \
+        -DJAVA_HOME=\"$(JAVA_HOME)\" \
         -DOPENVRML_JVM_ARCH=\"$(OPENVRML_JVM_ARCH)\" \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
         -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
