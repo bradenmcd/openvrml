@@ -1,3 +1,15 @@
+2010-02-15 Braden McDaniel  <braden@endoframe.com>
+
+	Update AX_CHECK_GL and AX_CHECK_GLU to the 2010-01-25 release.
+
+	This addresses a problem with correctly detecting and using the
+	Apple OpenGL framework.
+
+	* m4/acx_pthread.m4: Removed; replaced by ax_pthread.m4.
+	* m4/ax_check_gl.m4
+	* m4/ax_check_glu.m4
+	* m4/ax_pthread.m4: Added.
+
 2010-02-14 Braden McDaniel  <braden@endoframe.com>
 
 	Use Boost.ScopeExit instead of ScopeGuard.
