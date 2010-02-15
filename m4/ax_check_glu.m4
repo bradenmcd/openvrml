@@ -15,7 +15,7 @@
 # rather than the standard "GLvoid (*)()".  If the former condition is
 # detected, this macro defines "HAVE_VARARGS_GLU_TESSCB".
 #
-# version: 2.2
+# version: 2.3
 # author: Braden McDaniel <braden@endoframe.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,11 @@ GLU_CFLAGS=$GL_CFLAGS
 
 ax_save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$GL_CFLAGS $CPPFLAGS"
-AC_CHECK_HEADERS([GL/glu.h OpenGL/glu.h])
+AC_CHECK_HEADERS([GL/glu.h OpenGL/glu.h], , , [
+# if defined(HAVE_WINDOWS_H) && defined(_WIN32)
+#   include <windows.h>
+# endif
+])
 CPPFLAGS=$ax_save_CPPFLAGS
 
 m4_define([AX_CHECK_GLU_PROGRAM],
