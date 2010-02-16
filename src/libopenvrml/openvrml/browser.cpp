@@ -3,8 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-//   Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +32,7 @@
 # include <boost/function.hpp>
 # include <boost/functional.hpp>
 # include <boost/lexical_cast.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <algorithm>
 # include <functional>
 # include <cerrno>
@@ -47,6 +47,8 @@
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
+
+using namespace boost::multi_index::detail;  // for scope_guard
 
 /**
  * @file openvrml/browser.h

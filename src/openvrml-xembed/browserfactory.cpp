@@ -2,7 +2,7 @@
 //
 // OpenVRML XEmbed Control
 //
-// Copyright 2008, 2010  Braden McDaniel
+// Copyright 2008  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -18,21 +18,23 @@
 // with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
+# include <boost/concept_check.hpp>
 # include <boost/intrusive_ptr.hpp>
-# include <boost/scope_exit.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
 # include <gtk/gtk.h>
 # include <dbus/dbus-glib-bindings.h>
 # include <dbus/dbus-glib-lowlevel.h>
 # include <map>
 # include <memory>
-# include <string>
 # include <cstring>
 # include <cstdlib>
 
 # include "browserfactory.h"
 # include "browser-factory-server-glue.h"
 # include "browser.h"
+
+using namespace boost::multi_index::detail; // for scope_guard
 
 G_DEFINE_TYPE(OpenvrmlXembedBrowserFactory,
               openvrml_xembed_browser_factory,
@@ -117,14 +119,12 @@ openvrml_xembed_browser_factory_constructor(
                                       DBUS_SERVICE_DBUS,
                                       DBUS_PATH_DBUS,
                                       DBUS_INTERFACE_DBUS);
-        BOOST_SCOPE_EXIT((driver_proxy)) {
-            g_object_unref(driver_proxy);
-        } BOOST_SCOPE_EXIT_END
+        scope_guard driver_proxy_guard =
+            make_guard(g_object_unref, driver_proxy);
+        boost::ignore_unused_variable_warning(driver_proxy_guard);
 
         GError * error = 0;
-        BOOST_SCOPE_EXIT((&error)) {
-            if (error) { g_error_free(error); }
-        } BOOST_SCOPE_EXIT_END
+        scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
         guint request_ret;
         if (!org_freedesktop_DBus_request_name(
                 driver_proxy,
@@ -135,6 +135,7 @@ openvrml_xembed_browser_factory_constructor(
                        "failed: %s", error->message);
             return 0;
         }
+        error_guard.dismiss();
     } catch (std::bad_alloc &) {
         return 0;
     }
@@ -291,9 +292,7 @@ openvrml_xembed_browser_factory_create_control(
     DBusGMethodInvocation * const context)
 {
     GError * error = 0;
-    BOOST_SCOPE_EXIT((&error)) {
-        if (error) { g_error_free(error); }
-    } BOOST_SCOPE_EXIT_END
+    scope_guard error_guard = make_guard(g_error_free, boost::ref(error));
 
     DBusGProxy * host =
         dbus_g_proxy_new_for_name_owner(
@@ -331,9 +330,8 @@ openvrml_xembed_browser_factory_create_control(
         G_OBJECT(browser));
 
     char * const sender = dbus_g_method_get_sender(context);
-    BOOST_SCOPE_EXIT((sender)) {
-        g_free(sender);
-    } BOOST_SCOPE_EXIT_END
+    scope_guard sender_guard = make_guard(g_free, sender);
+    boost::ignore_unused_variable_warning(sender_guard);
     bool succeeded;
     try {
         using std::make_pair;
@@ -374,6 +372,8 @@ openvrml_xembed_browser_factory_create_control(
         delete_on_host_shutdown_data);
 
     dbus_g_method_return(context, control_obj_path);
+
+    error_guard.dismiss();
 
     return true;
 }

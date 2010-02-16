@@ -25,9 +25,10 @@
 # include <gtk/gtk.h>
 # include <dbus/dbus-glib-bindings.h>
 # include <dbus/dbus-glib-lowlevel.h>
+# include <boost/concept_check.hpp>
 # include <boost/function.hpp>
 # include <boost/lexical_cast.hpp>
-# include <boost/scope_exit.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
 # include <boost/scoped_ptr.hpp>
 # include <boost/thread.hpp>
@@ -38,6 +39,8 @@
 # ifdef HAVE_CONFIG_H
 #   include "config.h"
 # endif
+
+using namespace boost::multi_index::detail; // for scope_guard
 
 extern "C"
 G_GNUC_INTERNAL
@@ -84,9 +87,8 @@ namespace {
         void operator()() const
         {
             GError * error = 0;
-            BOOST_SCOPE_EXIT((&error)) {
-                if (error) { g_error_free(error); }
-            } BOOST_SCOPE_EXIT_END
+            scope_guard error_guard =
+                make_guard(g_error_free, boost::ref(error));
 
             DBusGConnection * const connection =
                 bus_get(g_main_loop_get_context(&this->dbus_thread_main_),
@@ -96,9 +98,9 @@ namespace {
                 g_critical("Failed to get session bus: %s", error->message);
                 return;
             }
-            BOOST_SCOPE_EXIT((connection)) {
-                dbus_g_connection_unref(connection);
-            } BOOST_SCOPE_EXIT_END
+            scope_guard connection_guard =
+                make_guard(dbus_g_connection_unref, connection);
+            boost::ignore_unused_variable_warning(connection_guard);
 
             OpenvrmlXembedBrowserFactory * const browser_factory =
                 OPENVRML_XEMBED_BROWSER_FACTORY(
@@ -107,18 +109,18 @@ namespace {
                         "connection", connection,
                         "main-thread-context", &this->main_thread_context_,
                         static_cast<void *>(0)));
-            BOOST_SCOPE_EXIT((browser_factory)) {
-                g_object_unref(browser_factory);
-            } BOOST_SCOPE_EXIT_END
+            scope_guard browser_factory_guard =
+                make_guard(g_object_unref, browser_factory);
+            boost::ignore_unused_variable_warning(browser_factory_guard);
 
             DBusGProxy * driver_proxy =
                 dbus_g_proxy_new_for_name(connection,
                                           DBUS_SERVICE_DBUS,
                                           DBUS_PATH_DBUS,
                                           DBUS_INTERFACE_DBUS);
-            BOOST_SCOPE_EXIT((driver_proxy)) {
-                g_object_unref(driver_proxy);
-            } BOOST_SCOPE_EXIT_END
+            scope_guard driver_proxy_guard =
+                make_guard(g_object_unref, driver_proxy);
+            boost::ignore_unused_variable_warning(driver_proxy_guard);
 
             dbus_g_proxy_add_signal(driver_proxy,
                                     "NameOwnerChanged",
@@ -137,6 +139,8 @@ namespace {
                 0);
 
             g_main_loop_run(&this->dbus_thread_main_);
+
+            error_guard.dismiss();
         }
 
     private:
@@ -175,9 +179,7 @@ int main(int argc, char * argv[])
     };
 
     GError * error = 0;
-    BOOST_SCOPE_EXIT((&error)) {
-        if (error) { g_error_free(error); }
-    } BOOST_SCOPE_EXIT_END
+    scope_guard error_guard = make_guard(g_error_free, ref(error));
 
     GOptionContext * const context =
         g_option_context_new("- render VRML/X3D worlds");
@@ -192,6 +194,7 @@ int main(int argc, char * argv[])
 
     if (version) {
         cout << application_name << ' ' << PACKAGE_VERSION << endl;
+        error_guard.dismiss();
         return EXIT_SUCCESS;
     }
 
@@ -203,13 +206,13 @@ int main(int argc, char * argv[])
     using boost::thread;
 
     GMainContext * dbus_thread_context = g_main_context_new();
-    BOOST_SCOPE_EXIT((dbus_thread_context)) {
-        g_main_context_unref(dbus_thread_context);
-    } BOOST_SCOPE_EXIT_END
+    scope_guard dbus_thread_context_guard =
+        make_guard(g_main_context_unref, dbus_thread_context);
+    boost::ignore_unused_variable_warning(dbus_thread_context_guard);
     GMainLoop * dbus_thread_main = g_main_loop_new(dbus_thread_context, false);
-    BOOST_SCOPE_EXIT((dbus_thread_main)) {
-        g_main_loop_unref(dbus_thread_main);
-    } BOOST_SCOPE_EXIT_END
+    scope_guard dbus_thread_main_guard =
+        make_guard(g_main_loop_unref, dbus_thread_main);
+    boost::ignore_unused_variable_warning(dbus_thread_main_guard);
 
     function<void ()> dbus_thread_func = dbus_thread_loop(*main_context,
                                                           *dbus_thread_main);
@@ -224,6 +227,8 @@ int main(int argc, char * argv[])
     // quit in openvrml_xembed_name_owner_changed.
     //
     dbus_thread->join();
+
+    error_guard.dismiss();
 }
 
 //

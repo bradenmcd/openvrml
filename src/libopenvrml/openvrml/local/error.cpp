@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2009, 2010  Braden McDaniel
+// Copyright 2009  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -19,17 +19,21 @@
 //
 
 # include "error.h"
-# include <boost/scope_exit.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/ref.hpp>
+
+using namespace boost::multi_index::detail;  // for scope_guard
+
 
 # ifdef _WIN32
 void openvrml::local::throw_runtime_error_from_win32_system_error(LONG result)
     OPENVRML_THROW1(std::runtime_error)
 {
+    using boost::ref;
+
     static const LPCVOID source;
     LPTSTR buf = 0;
-    BOOST_SCOPE_EXIT((&buf)) {
-        LocalFree(buf);
-    } BOOST_SCOPE_EXIT_END
+    scope_guard buf_guard = make_guard(LocalFree, ref(buf));
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM
                   | FORMAT_MESSAGE_ALLOCATE_BUFFER,
                   source,
