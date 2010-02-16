@@ -1,5 +1,17 @@
 2010-02-15 Braden McDaniel  <braden@endoframe.com>
 
+	Updates for 0.18.5 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+
+2010-02-15 Braden McDaniel  <braden@endoframe.com>
+
 	Update AX_CHECK_GL and AX_CHECK_GLU to the 2010-01-25 release.
 
 	This addresses a problem with correctly detecting and using the
