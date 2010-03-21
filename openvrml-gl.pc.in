@@ -8,5 +8,5 @@ Description: OpenGL renderer for OpenVRML.
 Version: @PACKAGE_VERSION@
 Requires.private: openvrml = @PACKAGE_VERSION@
 Libs: -L${libdir} -lopenvrml-gl
-Libs.private: @GLU_LIBS@
+Libs.private: @GLU_LIBS@ @GL_LIBS@
 Cflags: -I${includedir} @GLU_CFLAGS@
