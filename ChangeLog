@@ -1,5 +1,10 @@
 2010-03-21 Braden McDaniel  <braden@endoframe.com>
 
+	* configure.ac: Fixed missing comma in --enable-jpeg-textures
+	processing.
+
+2010-03-21 Braden McDaniel  <braden@endoframe.com>
+
 	Update AX_CHECK_GL and AX_CHECK_GLU to the 2010-03-21 release.
 
 	* m4/ax_check_gl.m4
