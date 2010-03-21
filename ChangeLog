@@ -1,3 +1,13 @@
+2010-03-21 Braden McDaniel  <braden@endoframe.com>
+
+	Update AX_CHECK_GL and AX_CHECK_GLU to the 2010-03-21 release.
+
+	* m4/ax_check_gl.m4
+	* m4/ax_check_glu.m4
+	* openvrml-gl.pc.in: Add GL_LIBS to Libs.private.
+	* src/Makefile.am (libopenvrml_gl_libopenvrml_gl_la_LIBADD): Apply
+	both GLU_LIBS and GL_LIBS.
+
 2010-02-15 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.18.5 release.

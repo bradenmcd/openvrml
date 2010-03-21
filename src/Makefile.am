@@ -726,9 +726,11 @@ libopenvrml_gl_libopenvrml_gl_la_SOURCES = \
         libopenvrml-gl/openvrml/gl/viewer.cpp
 libopenvrml_gl_libopenvrml_gl_la_LDFLAGS = \
         -version-info $(LIBOPENVRML_GL_LIBRARY_VERSION) \
-        -no-undefined \
-        $(GLU_LIBS)
-libopenvrml_gl_libopenvrml_gl_la_LIBADD = libopenvrml/libopenvrml.la
+        -no-undefined
+libopenvrml_gl_libopenvrml_gl_la_LIBADD = \
+        libopenvrml/libopenvrml.la \
+        $(GLU_LIBS) \
+        $(GL_LIBS)
 
 if ENABLE_XEMBED
 noinst_LTLIBRARIES += local/libopenvrml-control.la
