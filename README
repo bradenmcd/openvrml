@@ -152,9 +152,10 @@ building OpenVRML with such binaries it may be necessary to set the
 variable BOOST_LIB_SUFFIX to match the suffix applied to the Boost
 binaries; refer to the output of "configure --help".
 
-   libxml is not required on Microsoft Windows platforms.  On Windows,
-OpenVRML uses the XmlLite library for XML parsing.  XmlLite is
-included with recent versions of the Microsoft Windows SDK.
+   libltdl and libxml are not required on Microsoft Windows platforms.
+On Windows, OpenVRML uses the Win32 API for module loading and the
+XmlLite library for XML parsing.  XmlLite is included with recent
+versions of the Microsoft Windows SDK.
 
    Building OpenVRML is fairly demanding of system resources;
 especially, it seems, with modern versions of the GNU C++ compiler.  It
