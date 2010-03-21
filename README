@@ -354,13 +354,19 @@ distribution:
    OPENVRML_SCRIPT_PATH=$(pwd)/build/src/script \
    ./build/examples/sdl-viewer models/rotation_toy.wrl
 
-   If OpenVRML is configured to be installed to the same prefix as a
-Mozilla-based browser is installed on the system, "make install" will
-install the Mozilla plug-in to the browser's plug-in directory.  This
-should be sufficient to enable support for the "model/vrml" and
-"model/x3d-vrml" media types in the browser.  Entering "about:plugins"
-in the URL entry bar of a Mozilla-based browser will show a listing of
-successfully installed plug-ins.
+   openvrml-xembed is installed as a D-Bus service, meaning that it
+can be activated on-demand by applications that need it (like
+openvrml-player and the Mozilla plug-in).  In order for this to work,
+OpenVRML must be installed to the same prefix as the system's D-Bus
+installation.
+
+   Similarly, if OpenVRML is configured to be installed to the same
+prefix as a Mozilla-based browser is installed on the system, "make
+install" will install the Mozilla plug-in to the browser's plug-in
+directory.  This should be sufficient to enable support for the
+"model/vrml" and "model/x3d-vrml" media types in the browser.
+Entering "about:plugins" in the URL entry bar of a Mozilla-based
+browser will show a listing of successfully installed plug-ins.
 
    To run openvrml-player or the Mozilla plug-in from the build
 directories, you must first start an openvrml-xembed process.  Once

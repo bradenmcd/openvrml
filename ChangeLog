@@ -1,5 +1,11 @@
 2010-03-21 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Note that OpenVRML must be installed to the same prefix
+	as D-Bus in order for automatic activation of openvrml-xembed to
+	work.
+
+2010-03-21 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Fixed missing comma in --enable-jpeg-textures
 	processing.
 
