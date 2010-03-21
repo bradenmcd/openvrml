@@ -137,6 +137,7 @@ Prerequisites
    At a minimum, OpenVRML requires these libraries to build:
 
      Boost (at least 1.38)      <http://boost.org>
+     libltdl (non-Windows only) <http://www.gnu.org/software/libtool/>
      libxml (non-Windows only)  <http://xmlsoft.org>
 
    These libraries are packaged for many systems; so you should
