@@ -248,7 +248,7 @@ AC_ARG_ENABLE([jpeg-textures],
               [AC_HELP_STRING([--disable-jpeg-textures],
                               [disable support for rendering JPEG textures])])
 AS_IF([test X$enable_jpeg_textures = Xno],
-      [JPEG_LIBS=""]
+      [JPEG_LIBS=""],
       [JPEG_LIBS="-ljpeg"
        AC_DEFINE([OPENVRML_ENABLE_JPEG_TEXTURES], [1],
                  [Defined if support for rendering JPEG textures is enabled.])])
