@@ -49,7 +49,7 @@ void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
     png_reader_t & reader =
         *static_cast<png_reader_t *>(png_get_progressive_ptr(png_ptr));
 
-    shared_lock<shared_mutex> lock(reader.stream_listener.image_mutex_);
+    unique_lock<shared_mutex> lock(reader.stream_listener.image_mutex_);
 
     openvrml::image & image = reader.stream_listener.image_;
 
