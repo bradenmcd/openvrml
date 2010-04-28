@@ -1923,7 +1923,7 @@ void openvrml::browser::set_world(resource_istream & in)
         {
             upgrade_to_unique_lock<shared_mutex>
                 scene_write_lock(scene_lock),
-                node_metatype_registry_write_lock_(node_metatype_registry_lock);
+                node_metatype_registry_write_lock(node_metatype_registry_lock);
 
             this->scene_.reset();
             assert(this->viewpoint_list_.empty());
