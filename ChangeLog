@@ -1,5 +1,10 @@
 2010-04-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am (node_x3d_cad_geometry_la_SOURCES): Added
+	missing register_node_metatypes.cpp.
+
+2010-04-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.cpp
 	(openvrml::browser::set_world(resource_istream &)): Corrected
 	variable name.

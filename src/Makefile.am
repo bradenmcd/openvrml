@@ -705,6 +705,7 @@ node_x3d_cad_geometry_la_CPPFLAGS = \
 node_x3d_cad_geometry_la_CXXFLAGS = \
         $(PTHREAD_CFLAGS)
 node_x3d_cad_geometry_la_SOURCES = \
+        node/x3d-cad-geometry/register_node_metatypes.cpp \
         node/x3d-cad-geometry/cad_face.cpp \
         node/x3d-cad-geometry/cad_face.h \
         node/x3d-cad-geometry/indexed_quad_set.cpp \
