@@ -1,5 +1,10 @@
 2010-04-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am (node_x3d_cad_geometry_la_SOURCES): Added
+	missing register_node_metatypes.cpp.
+
+2010-04-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/node/vrml97/image_stream_listener.cpp
 	(openvrml_png_info_callback(png_structp, png_infop)): Added
 	missing "using" declaration.
