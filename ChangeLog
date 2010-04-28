@@ -1,5 +1,11 @@
 2010-04-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::set_world(resource_istream &)): Corrected
+	variable name.
+
+2010-04-28 Braden McDaniel  <braden@endoframe.com>
+
 	Protect openvrml::browser::node_metatype_registry_ with a mutex.
 
 	* src/libopenvrml/openvrml/browser.h
