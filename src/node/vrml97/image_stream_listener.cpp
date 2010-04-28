@@ -43,6 +43,7 @@ void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
 {
     using boost::shared_lock;
     using boost::shared_mutex;
+    using boost::unique_lock;
 
     typedef openvrml_node_vrml97::image_stream_listener::png_reader
         png_reader_t;
