@@ -1,5 +1,13 @@
 2010-04-28 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::load_url(const std::vector<std::string> &,
+	const std::vector<std::string> &)): Maintain a lock on the
+	load_root_scene_thread_mutex_ instead of letting one go and
+	reacquiring.
+
+2010-04-28 Braden McDaniel  <braden@endoframe.com>
+
 	* src/Makefile.am (node_x3d_cad_geometry_la_SOURCES): Added
 	missing register_node_metatypes.cpp.
 
