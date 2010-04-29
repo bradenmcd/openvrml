@@ -2077,20 +2077,18 @@ void openvrml::browser::load_url(const std::vector<std::string> & url,
                                  const std::vector<std::string> &)
     OPENVRML_THROW2(std::bad_alloc, boost::thread_resource_error)
 {
-    using boost::unique_lock;
+    using boost::upgrade_lock;
+    using boost::upgrade_to_unique_lock;
     using boost::shared_mutex;
 
-    {
-        using boost::shared_lock;
-        shared_lock<shared_mutex> lock(this->load_root_scene_thread_mutex_);
-        if (this->load_root_scene_thread_) {
-            this->load_root_scene_thread_->join();
-        }
+    upgrade_lock<shared_mutex> read_lock(this->load_root_scene_thread_mutex_);
+    if (this->load_root_scene_thread_) {
+        this->load_root_scene_thread_->join();
     }
 
     boost::function0<void> f = root_scene_loader(*this, url);
 
-    unique_lock<shared_mutex> lock(this->load_root_scene_thread_mutex_);
+    upgrade_to_unique_lock<shared_mutex> write_lock(read_lock);
     this->load_root_scene_thread_.reset(new boost::thread(f));
 }
 
