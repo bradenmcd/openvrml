@@ -1,3 +1,43 @@
+2010-05-02 Braden McDaniel  <braden@endoframe.com>
+
+	Refactor some of the Text node rendering logic.  Move logic
+	previously in text_node::update_geometry to members of the
+	text_node::text_geometry class.
+
+	* src/node/vrml97/text.cpp
+	(text_node::text_geometry_): Changed to a boost::scoped_ptr since
+	text_geometry is no longer default-constructible.
+	(text_node::text_geometry::text_geometry(const
+	boost::ptr_vector<line_geometry> &, const std::string &, const
+	std::string &, bool, float, float, float)): Moved the logic to
+	compose the text geometry from the line geometry to here from
+	text_node::update_geometry.
+	(text_node::text_geometry::coord() const): Added accessor to get
+	the coordinates.
+	(text_node::text_geometry::coord_index() const): Added accessor to
+	get the coordinate indices.
+	(text_node::text_geometry::normal() const): Added accessor to get
+	the normals.
+	(text_node::text_geometry::tex_coord() const): Added accessor to
+	get the texture coordinates.
+	(text_node::text_geometry::add(const line_geometry &, const
+	std::string &, bool)): Add a line of text to the text geometry.
+	(text_node::text_geometry::scale(float)): Scale the text geometry
+	according to the maximum allowed extent.
+	(text_node::text_geometry::minor_align(const std::string &, bool,
+	float, float, std::size_t)): Apply the minor alignment to the text
+	geometry.
+	(text_node::text_geometry::generate_normals(std::size_t)):
+	Generate normals for the text geometry.
+	(text_node::text_geometry::generate_tex_coords(float)): Generate
+	texture coordinates for the text geometry.
+	(text_node::do_render_geometry(openvrml::viewer &,
+	openvrml::rendering_context)): Make sure text_geometry_ is not
+	null.
+	(text_node::update_geometry()): Delegate creation of the text
+	geometry to the text_geometry constructor.  Assemble all the
+	lines, then create the text_geometry.
+
 2010-05-01 Braden McDaniel  <braden@endoframe.com>
 
 	Refactor some of the Text node rendering logic.  Also, apply
