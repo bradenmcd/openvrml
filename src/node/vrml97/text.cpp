@@ -44,6 +44,7 @@ extern "C" {
 #   endif
 # endif
 # include <boost/array.hpp>
+# include <boost/ptr_container/ptr_vector.hpp>
 # include <boost/scope_exit.hpp>
 
 # ifdef HAVE_CONFIG_H
@@ -174,12 +175,50 @@ namespace {
             void scale(float length);
         };
 
-        struct text_geometry {
-            std::vector<openvrml::vec3f> coord;
-            std::vector<openvrml::int32> coord_index;
-            std::vector<openvrml::vec3f> normal;
-            std::vector<openvrml::vec2f> tex_coord;
+        class text_geometry {
+            std::vector<openvrml::vec3f> coord_;
+            std::vector<openvrml::int32> coord_index_;
+            std::vector<openvrml::vec3f> normal_;
+            std::vector<openvrml::vec2f> tex_coord_;
+            float x_min_, x_max_, y_min_, y_max_;
+
+        public:
+            text_geometry(const boost::ptr_vector<line_geometry> & lines,
+                          const std::string & major_alignment,
+                          const std::string & minor_alignment,
+                          bool horizontal,
+                          float size,
+                          float spacing,
+                          float max_extent)
+                OPENVRML_THROW1(std::bad_alloc);
+
+            const std::vector<openvrml::vec3f> & coord() const OPENVRML_NOTHROW;
+            const std::vector<openvrml::int32> & coord_index() const
+                OPENVRML_NOTHROW;
+            const std::vector<openvrml::vec3f> & normal() const
+                OPENVRML_NOTHROW;
+            const std::vector<openvrml::vec2f> & tex_coord() const
+                OPENVRML_NOTHROW;
+
+        private:
+            void add(const line_geometry & line,
+                     const std::string & major_alignment,
+                     bool horizontal)
+                OPENVRML_THROW1(std::bad_alloc);
+            void scale(float max_extent) OPENVRML_NOTHROW;
+            void minor_align(const std::string & align,
+                             bool horizontal,
+                             float size,
+                             float spacing,
+                             std::size_t lines)
+                OPENVRML_NOTHROW;
+            void generate_normals(std::size_t polygons)
+                OPENVRML_THROW1(std::bad_alloc);
+            void generate_tex_coords(float size)
+                OPENVRML_THROW1(std::bad_alloc);
         };
+
+        boost::scoped_ptr<text_geometry> text_geometry_;
 
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         typedef std::vector<std::vector<char32_t> > ucs4_string_t;
@@ -189,7 +228,6 @@ namespace {
         FT_Face face;
         glyph_geometry_map_t glyph_geometry_map;
 # endif
-        text_geometry text_geometry_;
 
     public:
         text_node(const openvrml::node_type & type,
@@ -1511,6 +1549,263 @@ namespace {
      */
 
     /**
+     * @brief Construct.
+     *
+     * @param[in] lines             geometry data for the lines of text.
+     * @param[in] major_alignment   one of @c "FIRST", @c "BEGIN", @c "MIDDLE",
+     *                              or @c "END".
+     * @param[in] minor_alignment   one of @c "FIRST", @c "BEGIN", @c "MIDDLE",
+     *                              or @c "END".
+     * @param[in] horizontal        @c true if text is being rendered
+     *                              horizontally; @c false if text is being
+     *                              rendered vertically.
+     * @param[in] size              the size of the text.
+     * @param[in] spacing           the line spacing.
+     * @param[in] max_extent        the maximum allowed extent for the text.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    text_node::text_geometry::
+    text_geometry(const boost::ptr_vector<line_geometry> & lines,
+                  const std::string & major_alignment,
+                  const std::string & minor_alignment,
+                  const bool horizontal,
+                  const float size,
+                  const float spacing,
+                  const float max_extent)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        std::size_t polygons = 0;
+        for (boost::ptr_vector<line_geometry>::const_iterator line =
+                 lines.begin();
+             line != lines.end();
+             ++line) {
+            this->add(*line, major_alignment, horizontal);
+            polygons += line->polygons();
+        }
+        if (max_extent > 0) { this->scale(max_extent); }
+        this->minor_align(minor_alignment,
+                          horizontal,
+                          size,
+                          spacing,
+                          lines.size());
+        this->generate_normals(polygons);
+        this->generate_tex_coords(size);
+    }
+
+    /**
+     * @brief Coordinates for the text geometry.
+     *
+     * @return coordinates for the text geometry.
+     */
+    const std::vector<openvrml::vec3f> & text_node::text_geometry::coord() const
+        OPENVRML_NOTHROW
+    {
+        return this->coord_;
+    }
+
+    /**
+     * @brief Coordinate indices for the text geometry.
+     *
+     * @return coordinate indices for the text geometry.
+     */
+    const std::vector<openvrml::int32> &
+    text_node::text_geometry::coord_index() const OPENVRML_NOTHROW
+    {
+        return this->coord_index_;
+    }
+
+    /**
+     * @brief Normals for the text geometry.
+     *
+     * @return normals for the text geometry.
+     */
+    const std::vector<openvrml::vec3f> &
+    text_node::text_geometry::normal() const OPENVRML_NOTHROW
+    {
+        return this->normal_;
+    }
+
+    /**
+     * @brief Texture coordinates for the text geometry.
+     *
+     * @return texture coordinates for the text geometry.
+     */
+    const std::vector<openvrml::vec2f> &
+    text_node::text_geometry::tex_coord() const OPENVRML_NOTHROW
+    {
+        return this->tex_coord_;
+    }
+
+    /**
+     * @brief Add a line of text.
+     *
+     * @param[in] line              geometry for a line of text.
+     * @param[in] major_alignment   one of @c "FIRST", @c "BEGIN", @c "MIDDLE",
+     *                              or @c "END".
+     * @param[in] horizontal        @c true if text is being rendered
+     *                              horizontally; @c false if text is being
+     *                              rendered vertically.
+     * @param[in] size              the size of the text.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void text_node::text_geometry::add(const line_geometry & line,
+                                       const std::string & major_alignment,
+                                       const bool horizontal)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using std::min;
+        using std::max;
+        using openvrml::int32;
+        using openvrml::vec2f;
+        using openvrml::vec3f;
+        using openvrml::make_vec3f;
+
+        //
+        // Add the line to the text geometry.  We need to adjust for the major
+        // alignment.
+        //
+        float x_offset = 0.0f, y_offset = 0.0f;
+        //
+        // Offset is 0 for "BEGIN" or "FIRST" (or anything else, in our case).
+        //
+        if (major_alignment == "MIDDLE") {
+            if (horizontal) {
+                x_offset = -((line.x_max() - line.x_min()) / 2.0f);
+            } else {
+                y_offset = (line.y_max() - line.y_min()) / 2.0f;
+            }
+        } else if (major_alignment == "END") {
+            if (horizontal) {
+                x_offset = -(line.x_max() - line.x_min());
+            } else {
+                y_offset = line.y_max() - line.y_min();
+            }
+        }
+        for (size_t i = 0; i < line.coord_index().size(); ++i) {
+            const long index = line.coord_index()[i];
+            if (index > -1) {
+                const vec2f & line_vertex = line.coord()[index];
+                const vec3f text_vertex = make_vec3f(line_vertex.x() + x_offset,
+                                                     line_vertex.y() + y_offset,
+                                                     0.0f);
+                this->coord_.push_back(text_vertex);
+                this->coord_index_.push_back(
+                    static_cast<int32>(this->coord_.size() - 1));
+                this->x_min_ = min(this->x_min_, text_vertex.x());
+                this->x_max_ = max(this->x_max_, text_vertex.x());
+                this->y_min_ = min(this->y_min_, text_vertex.y());
+                this->y_max_ = max(this->y_max_, text_vertex.y());
+            } else {
+                this->coord_index_.push_back(-1);
+            }
+        }
+    }
+
+    /**
+     * @brief Scale the text to the maximum allowed extent.
+     *
+     * @param[in] max_extent    the maximum allowed extent.
+     */
+    void text_node::text_geometry::scale(const float max_extent)
+        OPENVRML_NOTHROW
+    {
+        assert(max_extent > 0);
+        const float current_max_extent = this->x_max_ - this->x_min_;
+        if (current_max_extent > max_extent) {
+            for (size_t i = 0; i < this->coord_.size(); ++i) {
+                this->coord_[i].vec[0] /= current_max_extent * max_extent;
+            }
+        }
+    }
+
+    /**
+     * @brief Apply the minor alignment to the text.
+     *
+     * @param[in] align         one of @c "FIRST", @c "BEGIN", @c "MIDDLE", or
+     *                          @c "END".
+     * @param[in] horizontal    @c true if text is being rendered horizontally;
+     *                          @c false if text is being rendered vertically.
+     * @param[in] size          the size of the text.
+     * @param[in] spacing       the line spacing.
+     * @param[in] lines         the number of lines of text.
+     */
+    void text_node::text_geometry::minor_align(const std::string & align,
+                                               const bool horizontal,
+                                               const float size,
+                                               const float spacing,
+                                               const std::size_t lines)
+        OPENVRML_NOTHROW
+    {
+        using openvrml::vec3f;
+        using openvrml::make_vec3f;
+
+        float x_offset = 0.0f, y_offset = 0.0f;
+        if (align == "FIRST" || align == "") {
+        } else if (align == "BEGIN") {
+            if (horizontal) {
+                y_offset = -(size * spacing);
+            } else {
+                x_offset = 0.0f;
+            }
+        } else if (align == "MIDDLE") {
+            if (horizontal) {
+                y_offset = ((size * spacing * lines) / 2.0f) - (size * spacing);
+            } else {
+                x_offset = ((size * spacing * lines) / 2.0f) - (size * spacing);
+            }
+        } else if (align == "END") {
+            if (horizontal) {
+                y_offset = size * spacing * (lines - 1);
+            } else {
+                x_offset = size * spacing * (lines - 1);
+            }
+        }
+        for (size_t i = 0; i < this->coord_.size(); ++i) {
+            const vec3f & vertex = this->coord_[i];
+            this->coord_[i] = make_vec3f(vertex.x() + x_offset,
+                                         vertex.y() + y_offset,
+                                         vertex.z());
+        }
+    }
+
+    /**
+     * @brief Generate normals for the text geometry.
+     *
+     * @param[in] polygons  the number of polygons in the text geometry.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void text_node::text_geometry::generate_normals(const std::size_t polygons)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        this->normal_.resize(polygons);
+        std::fill(this->normal_.begin(), this->normal_.end(),
+                  openvrml::make_vec3f(0.0, 0.0, 1.0));
+    }
+
+    /**
+     * @brief Generate texture coordinates for the text geometry.
+     *
+     * @param[in] size  the size of the text.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    void text_node::text_geometry::generate_tex_coords(const float size)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        using openvrml::vec3f;
+        using openvrml::make_vec2f;
+        this->tex_coord_.resize(this->coord_.size());
+        for (std::size_t i = 0; i < this->tex_coord_.size(); ++i) {
+            const vec3f & vertex = this->coord_[i];
+            this->tex_coord_[i] = make_vec2f(vertex.x() / size,
+                                             vertex.y() / size);
+        }
+    }
+
+    /**
      * @typedef text_node::ucs4_string_t
      *
      * @brief A vector of FcChar32 vectors.
@@ -1610,18 +1905,20 @@ namespace {
                                        openvrml::rendering_context)
     {
         using openvrml::int32;
-        v.insert_shell(*this,
-                       openvrml::viewer::mask_ccw,
-                       this->text_geometry_.coord,
-                       this->text_geometry_.coord_index,
-                       std::vector<openvrml::color>(), // color
-                       std::vector<int32>(), // colorIndex
-                       this->text_geometry_.normal,
-                       std::vector<int32>(), // normalIndex
-                       this->text_geometry_.tex_coord,
-                       std::vector<int32>()); // texCoordIndex
-        if (this->font_style_.sfnode::value()) {
-            this->font_style_.sfnode::value()->modified(false);
+        if (this->text_geometry_) {
+            v.insert_shell(*this,
+                           openvrml::viewer::mask_ccw,
+                           this->text_geometry_->coord(),
+                           this->text_geometry_->coord_index(),
+                           std::vector<openvrml::color>(), // color
+                           std::vector<int32>(), // colorIndex
+                           this->text_geometry_->normal(),
+                           std::vector<int32>(), // normalIndex
+                           this->text_geometry_->tex_coord(),
+                           std::vector<int32>()); // texCoordIndex
+        }
+        if (this->font_style_.value()) {
+            this->font_style_.value()->modified(false);
         }
     }
 
@@ -2236,9 +2533,12 @@ namespace {
     void text_node::update_geometry() OPENVRML_THROW1(std::bad_alloc)
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+        using std::auto_ptr;
+        using std::max;
         using std::pair;
         using std::string;
         using std::vector;
+        using boost::ptr_vector;
         using openvrml::node_cast;
         using openvrml::vec2f;
         using openvrml::make_vec2f;
@@ -2268,10 +2568,7 @@ namespace {
             spacing = fontStyle->spacing();
         }
 
-        text_geometry newGeometry;
-        float geometryXMin = 0.0, geometryXMax = 0.0;
-        float geometryYMin = 0.0, geometryYMax = 0.0;
-        size_t npolygons = 0;
+        ptr_vector<line_geometry> lines(this->ucs4_string.size());
         const ucs4_string_t::const_iterator stringBegin =
             this->ucs4_string.begin();
         for (ucs4_string_t::const_iterator string = stringBegin;
@@ -2296,7 +2593,9 @@ namespace {
 
             using openvrml::int32;
 
-            line_geometry line_geom(horizontal, leftToRight, topToBottom);
+            auto_ptr<line_geometry> line_geom(new line_geometry(horizontal,
+                                                                leftToRight,
+                                                                topToBottom));
             for (vector<char32_t>::const_iterator character = string->begin();
                  character != string->end(); ++character) {
                 assert(this->face);
@@ -2322,10 +2621,8 @@ namespace {
                     glyphGeometry = &result.first->second;
                 }
                 assert(glyphGeometry);
-                line_geom.add(*glyphGeometry);
+                line_geom->add(*glyphGeometry);
             }
-
-            npolygons += line_geom.polygons();
 
             //
             // Scale to length.
@@ -2333,135 +2630,19 @@ namespace {
             const float length = (line < this->length_.value().size())
                                ? this->length_.value()[line]
                                : 0.0f;
-            if (length > 0.0) { line_geom.scale(length); }
+            if (length > 0.0f) { line_geom->scale(length); }
 
-            //
-            // Add the line to the text geometry.  We need to adjust for the
-            // major alignment.
-            //
-            float xOffset = 0.0f, yOffset = 0.0f;
-            //
-            // Offset is 0 for "BEGIN" or "FIRST" (or anything else, in our
-            // case).
-            //
-            if (justify[0] == "MIDDLE") {
-                if (horizontal) {
-                    xOffset = -((line_geom.x_max() - line_geom.x_min()) / 2.0f);
-                } else {
-                    yOffset = (line_geom.y_max() - line_geom.y_min()) / 2.0f;
-                }
-            } else if (justify[0] == "END") {
-                if (horizontal) {
-                    xOffset = -(line_geom.x_max() - line_geom.x_min());
-                } else {
-                    yOffset = line_geom.y_max() - line_geom.y_min();
-                }
-            }
-            for (size_t i = 0; i < line_geom.coord_index().size(); ++i) {
-                const long index = line_geom.coord_index()[i];
-                if (index > -1) {
-                    const vec2f & lineVertex = line_geom.coord()[index];
-                    const openvrml::vec3f textVertex =
-                        openvrml::make_vec3f(lineVertex.x() + xOffset,
-                                             lineVertex.y() + yOffset,
-                                             0.0f);
-                    newGeometry.coord.push_back(textVertex);
-                    newGeometry.coord_index.push_back(
-                            static_cast<int32>(newGeometry.coord.size() - 1));
-                    geometryXMin = (geometryXMin < textVertex.x())
-                        ? geometryXMin
-                        : textVertex.x();
-                    geometryXMax = (geometryXMax > textVertex.x())
-                        ? geometryXMax
-                        : textVertex.x();
-                    geometryYMin = (geometryYMin < textVertex.y())
-                        ? geometryYMin
-                        : textVertex.y();
-                    geometryYMax = (geometryYMax > textVertex.y())
-                        ? geometryYMax
-                        : textVertex.y();
-                } else {
-                    newGeometry.coord_index.push_back(-1);
-                }
-            }
+            lines.push_back(line_geom);
         }
 
-        //
-        // Scale to maxExtent.
-        //
-        const float maxExtent = (this->max_extent_.value() > 0.0)
-                              ? this->max_extent_.value()
-                              : 0.0f;
-        if (maxExtent > 0.0) {
-            const float currentMaxExtent = geometryXMax - geometryXMin;
-            if (currentMaxExtent > maxExtent) {
-                for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
-                    const vec3f & vertex = newGeometry.coord[i];
-                    const vec3f scaledVertex =
-                        make_vec3f(vertex.x() / currentMaxExtent * maxExtent,
-                                   vertex.y(),
-                                   vertex.z());
-                    newGeometry.coord[i] = scaledVertex;
-                }
-            }
-        }
-
-        //
-        // Adjust for the minor alignment.
-        //
-        float xOffset = 0.0f, yOffset = 0.0f;
-        if (justify[1] == "FIRST" || justify[1] == "") {
-        } else if (justify[1] == "BEGIN") {
-            if (horizontal) {
-                yOffset = -(size * spacing);
-            } else {
-                xOffset = 0.0f;
-            }
-        } else if (justify[1] == "MIDDLE") {
-            if (horizontal) {
-                yOffset = ((size * spacing * this->string_.value().size())
-                           / 2.0f)
-                    - (size * spacing);
-            } else {
-                xOffset = ((size * spacing * this->string_.value().size())
-                           / 2.0f)
-                    - (size * spacing);
-            }
-        } else if (justify[1] == "END") {
-            if (horizontal) {
-                yOffset = size * spacing * (this->string_.value().size() - 1);
-            } else {
-                xOffset = size * spacing * (this->string_.value().size() - 1);
-            }
-        }
-        for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
-            const vec3f & vertex = newGeometry.coord[i];
-            const vec3f adjustedVertex = make_vec3f(vertex.x() + xOffset,
-                                                    vertex.y() + yOffset,
-                                                    vertex.z());
-            newGeometry.coord[i] = adjustedVertex;
-        }
-
-        //
-        // Create the normals.
-        //
-        newGeometry.normal.resize(npolygons); // Throws std::bad_alloc.
-        for (size_t i = 0; i < newGeometry.normal.size(); ++i) {
-            static const vec3f normal = make_vec3f(0.0, 0.0, 1.0);
-            newGeometry.normal[i] = normal;
-        }
-
-        //
-        // Create the texture coordinates.
-        //
-        newGeometry.tex_coord.resize(newGeometry.coord.size()); // std::bad_alloc
-        for (size_t i = 0; i < newGeometry.tex_coord.size(); ++i) {
-            const vec3f & vertex = newGeometry.coord[i];
-            newGeometry.tex_coord[i] = make_vec2f(vertex.x() / size,
-                                                  vertex.y() / size);
-        }
-
-        this->text_geometry_ = newGeometry;
+        const float max_extent = max(this->max_extent_.value(), 0.0f);
+        this->text_geometry_.reset(new text_geometry(lines,
+                                                     justify[0],
+                                                     justify[1],
+                                                     horizontal,
+                                                     size,
+                                                     spacing,
+                                                     max_extent));
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
 }
