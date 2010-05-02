@@ -161,7 +161,8 @@ namespace {
         public:
             line_geometry(bool horizontal,
                           bool left_to_right,
-                          bool top_to_bottom);
+                          bool top_to_bottom,
+                          const openvrml::vec2f & pen_start);
 
             const std::vector<openvrml::vec2f> & coord() const;
             const std::vector<openvrml::int32> & coord_index() const;
@@ -1408,16 +1409,18 @@ namespace {
      * @param[in] top_to_bottom @c true if text is being rendered top-to-bottom;
      *                          @c false if text is being rendered bottom-to-
      *                          top.
+     * @param[in] pen_start     starting position for the "pen".
      */
     text_node::line_geometry::line_geometry(const bool horizontal,
                                             const bool left_to_right,
-                                            const bool top_to_bottom):
+                                            const bool top_to_bottom,
+                                            const openvrml::vec2f & pen_start):
         horizontal_(horizontal),
         left_to_right_(left_to_right),
         top_to_bottom_(top_to_bottom),
         x_min_(0), x_max_(0), y_min_(0), y_max_(0),
         polygons_(0),
-        pen_pos_(openvrml::make_vec2f())
+        pen_pos_(pen_start)
     {}
 
     const std::vector<openvrml::vec2f> & text_node::line_geometry::coord() const
@@ -2525,6 +2528,24 @@ namespace {
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
 
+    const openvrml::vec2f get_pen_start_for_line(const std::size_t line_num,
+                                                 const float size,
+                                                 const float spacing,
+                                                 const bool horizontal,
+                                                 const bool left_to_right,
+                                                 const bool top_to_bottom)
+    {
+        const float line_advance = size * spacing * line_num;
+
+        openvrml::vec2f pen_pos = openvrml::make_vec2f();
+        if (horizontal) {
+            pen_pos.y(top_to_bottom ? -line_advance : line_advance);
+        } else {
+            pen_pos.x(left_to_right ? line_advance : -line_advance);
+        }
+        return pen_pos;
+    }
+
     /**
      * @brief Called to update @a text_geometry.
      *
@@ -2574,28 +2595,20 @@ namespace {
         for (ucs4_string_t::const_iterator string = stringBegin;
              string != this->ucs4_string.end();
              ++string) {
-            float penPos[2] = { 0.0, 0.0 };
             const size_t line = std::distance(stringBegin, string);
-            const float lineAdvance = size * spacing * line;
-            if (horizontal) {
-                if (topToBottom) {
-                    penPos[1] -= lineAdvance;
-                } else {
-                    penPos[1] += lineAdvance;
-                }
-            } else {
-                if (leftToRight) {
-                    penPos[0] += lineAdvance;
-                } else {
-                    penPos[0] -= lineAdvance;
-                }
-            }
+            const vec2f pen_start = get_pen_start_for_line(line,
+                                                           size,
+                                                           spacing,
+                                                           horizontal,
+                                                           leftToRight,
+                                                           topToBottom);
 
             using openvrml::int32;
 
             auto_ptr<line_geometry> line_geom(new line_geometry(horizontal,
                                                                 leftToRight,
-                                                                topToBottom));
+                                                                topToBottom,
+                                                                pen_start));
             for (vector<char32_t>::const_iterator character = string->begin();
                  character != string->end(); ++character) {
                 assert(this->face);

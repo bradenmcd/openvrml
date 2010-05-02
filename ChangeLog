@@ -1,5 +1,22 @@
 2010-05-02 Braden McDaniel  <braden@endoframe.com>
 
+	Delegate the logic to get the pen start position to a helper
+	function; pass the start position to the line_geometry
+	constructor.
+
+	* src/node/vrml97/text.cpp
+	(text_node::line_geometry::line_geometry(bool, bool, bool, const
+	openvrml::vec2f &)): Get the pen start position from the calling
+	context.
+	(get_pen_start_for_line(std::size_t, float, float, bool, bool,
+	bool)): Factored logic to determine the starting position for the
+	"pen" on a line from text_node::update_geometry.
+	(text_node::update_geometry()): Call get_pen_start_for_line to get
+	the pen start position for a line; pass this to the line_geometry
+	constructor.
+
+2010-05-02 Braden McDaniel  <braden@endoframe.com>
+
 	Refactor some of the Text node rendering logic.  Move logic
 	previously in text_node::update_geometry to members of the
 	text_node::text_geometry class.
