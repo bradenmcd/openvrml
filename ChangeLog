@@ -1,3 +1,54 @@
+2010-05-01 Braden McDaniel  <braden@endoframe.com>
+
+	Refactor some of the Text node rendering logic.  Also, apply
+	FT_Done_Glyph (so we shouldn't be leaking those anymore).
+
+	* src/node/vrml97/text.cpp
+	(text_node::line_geometry): Added class.
+	(text_node::glyph_geometry::glyph_geometry(FT_Face, FT_UInt,
+	float)): Construct glyph_geometry from a FT_Face, the glyph_index,
+	and the desired size.  This constructor now does quite a bit of
+	heavy lifting: it loads the FT_Glyph, generates polygons from it,
+	and ultimately unloads it.  The latter bit (unloading) is the only
+	real functional change here, as we were neglecting to do that
+	previously (and thus leaking).  Previously, this logic lived in
+	text_node::update_geometry.
+	(text_node::glyph_geometry::coord() const): Added accessor to get
+	the coordinates.
+	(text_node::glyph_geometry::coord_index() const): Added accessor
+	to get the coordinate indices.
+	(text_node::glyph_geometry::advance_width() const): Added accessor
+	to get the advance_width.
+	(text_node::glyph_geometry::advance_height() const): Added
+	accessor to get the advance_height.
+	(text_node::line_geometry::line_geometry(bool, bool, bool)):
+	Construct the line_geometry.
+	(text_node::line_geometry::coord() const): Accessor to get the
+	coordinates.
+	(text_node::line_geometry::coord() const): Accessor to get the
+	coordinate indices.
+	(text_node::line_geometry::x_min() const): Accessor to get the
+	minimum x extent.
+	(text_node::line_geometry::x_max() const): Accessor to get the
+	maximum x extent.
+	(text_node::line_geometry::y_min() const): Accessor to get the
+	minimum y extent.
+	(text_node::line_geometry::y_max() const): Accessor to get the
+	maximum y extent.
+	(text_node::line_geometry::polygons() const): Accessor to get the
+	number of polygons.
+	(text_node::line_geometry::add(const glyph_geometry &)): Add
+	geometry for a glyph to the line.  Previously, this logic lived in
+	text_node::update_geometry.
+	(text_node::line_geometry::scale(float)): Scale the line geometry
+	to a length.
+	(text_node::~text_node()): Assert that this->face is 0.
+	(text_node::do_shutdown(double)): Set this->face to 0 after it is
+	unloaded.
+	(text_node::update_geometry()): Moved logic to load the FT_Glyph
+	and generate polygons to the glyph_geometry constructor.  Moved
+	logic to add glyph geometry to a line to line_geometry::add.
+
 2010-04-28 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/browser.cpp

@@ -130,16 +130,48 @@ namespace {
         max_extent_exposedfield max_extent_;
         openvrml::sfbool solid_;
 
-        struct glyph_geometry {
-            std::vector<openvrml::vec2f> coord;
-            std::vector<openvrml::int32> coord_index;
-            float advance_width;
-            float advance_height;
+        class glyph_geometry {
+            std::vector<openvrml::vec2f> coord_;
+            std::vector<openvrml::int32> coord_index_;
+            float advance_width_;
+            float advance_height_;
 
-            glyph_geometry(const std::vector<std::vector<openvrml::vec2f> > & contours,
-                           float advance_width,
-                           float advance_height)
+        public:
+            glyph_geometry(FT_Face face, FT_UInt glyph_index, float size)
                 OPENVRML_THROW1(std::bad_alloc);
+
+            const std::vector<openvrml::vec2f> & coord() const;
+            const std::vector<openvrml::int32> & coord_index() const;
+            float advance_width() const;
+            float advance_height() const;
+        };
+
+        class line_geometry {
+            const bool horizontal_;
+            const bool left_to_right_;
+            const bool top_to_bottom_;
+
+            std::vector<openvrml::vec2f> coord_;
+            std::vector<openvrml::int32> coord_index_;
+            float x_min_, x_max_, y_min_, y_max_;
+            std::size_t polygons_;
+            openvrml::vec2f pen_pos_;
+
+        public:
+            line_geometry(bool horizontal,
+                          bool left_to_right,
+                          bool top_to_bottom);
+
+            const std::vector<openvrml::vec2f> & coord() const;
+            const std::vector<openvrml::int32> & coord_index() const;
+            float x_min() const;
+            float x_max() const;
+            float y_min() const;
+            float y_max() const;
+            std::size_t polygons() const;
+
+            void add(const glyph_geometry & glyph);
+            void scale(float length);
         };
 
         struct text_geometry {
@@ -542,26 +574,26 @@ namespace {
      */
 
     /**
-     * @var std::vector<openvrml::vec2f> text_node::glyph_geometry::coord
+     * @var std::vector<openvrml::vec2f> text_node::glyph_geometry::coord_
      *
      * @brief Glyph coordinates.
      */
 
     /**
-     * @var std::vector<openvrml::int32> text_node::glyph_geometry::coord_index
+     * @var std::vector<openvrml::int32> text_node::glyph_geometry::coord_index_
      *
      * @brief Glyph coordinate indices.
      */
 
     /**
-     * @var float text_node::glyph_geometry::advance_width
+     * @var float text_node::glyph_geometry::advance_width_
      *
      * @brief The distance the pen should advance horizontally after drawing
      *        the glyph.
      */
 
     /**
-     * @var float text_node::glyph_geometry::advance_height
+     * @var float text_node::glyph_geometry::advance_height_
      *
      * @brief The distance the pen should advance vertically after drawing the
      *      glyph.
@@ -952,36 +984,499 @@ namespace {
         std::vector<openvrml::vec2f> & coord;
         std::vector<openvrml::int32> & coord_index;
     };
+
+
+    struct OPENVRML_LOCAL GlyphContours_ {
+        const float scale;
+        std::vector<std::vector<openvrml::vec2f> > contours;
+
+        explicit GlyphContours_(float scale);
+    };
+
+    GlyphContours_::GlyphContours_(const float scale):
+        scale(scale)
+    {}
+
+    const float stepSize_ = 0.2f;
+
+    extern "C" int
+    moveTo_(const FT_Vector * const to,
+            void * const user)
+    {
+        using std::vector;
+        using openvrml::vec2f;
+        using openvrml::make_vec2f;
+
+        assert(user);
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+        try {
+            c.contours.push_back(vector<vec2f>(1));
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        const vec2f vertex = make_vec2f(to->x * c.scale, to->y * c.scale);
+        c.contours.back().front() = vertex;
+        return 0;
+    }
+
+    extern "C" int
+    lineTo_(const FT_Vector * const to,
+            void * const user)
+    {
+        using openvrml::make_vec2f;
+
+        assert(user);
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+        const openvrml::vec2f vertex = make_vec2f(to->x * c.scale,
+                                                  to->y * c.scale);
+        try {
+            c.contours.back().push_back(vertex);
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        return 0;
+    }
+
+    /**
+     * @brief de Casteljau's algorithm.
+     *
+     * This is a nice recursive algorithm defined by de-Casteljau which
+     * calculates for a given control polygon the point that lies on the bezier
+     * curve for any value of t, and can be used to evaluate and draw the
+     * Bezier spline without using the Bernstein polynomials.
+     *
+     * The algorithm advances by creating in each step a polygons of degree one
+     * less than the one created in the previous step until there is only one
+     * point left, which is the point on the curve. The polygon vertices for
+     * each step are defined by linear interpolation of two consecutive
+     * vertices of the polygon from the previous step with a value of t (the
+     * parameter):
+     *
+     * @param buffer    an array including the control points for the curve in
+     *                  the first @p npoints elements. The total size of the
+     *                  array must be @p npoints * @p npoints. The remaining
+     *                  elements of the array will be used by the algorithm to
+     *                  store temporary values.
+     * @param npoints   the number of control points.
+     * @param contour   the points on the curve are added to this array.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
+     */
+    OPENVRML_LOCAL void evaluateCurve_(openvrml::vec2f * const buffer,
+                                       const size_t npoints,
+                                       std::vector<openvrml::vec2f> & contour)
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        for (size_t i = 1; i <= (1 / stepSize_); i++){
+            const float t = i * stepSize_; // Parametric points 0 <= t <= 1
+            for (size_t j = 1; j < npoints; j++) {
+                for (size_t k = 0; k < (npoints - j); k++) {
+                    openvrml::vec2f & element = buffer[j * npoints + k];
+                    element.x((1 - t) * buffer[(j - 1) * npoints + k][0]
+                              + t * buffer[(j - 1) * npoints + k + 1][0]);
+                    element.y((1 - t) * buffer[(j - 1) * npoints + k][1]
+                              + t * buffer[(j - 1) * npoints + k + 1][1]);
+                }
+            }
+            //
+            // Specify next vertex to be included on curve
+            //
+            contour.push_back(buffer[(npoints - 1) * npoints]); // throws std::bad_alloc
+        }
+    }
+
+    extern "C" int
+    conicTo_(const FT_Vector * const control,
+             const FT_Vector * const to,
+             void * const user)
+    {
+        using std::vector;
+        using openvrml::vec2f;
+        using openvrml::make_vec2f;
+
+        assert(control);
+        assert(to);
+        assert(user);
+
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+
+        assert(!c.contours.empty());
+        vector<vec2f> & contour = c.contours.back();
+        const vec2f & lastVertex = contour[contour.size() - 1];
+
+        assert(!contour.empty());
+        const size_t npoints = 3;
+        vec2f buffer[npoints * npoints] = {
+            make_vec2f(lastVertex[0], lastVertex[1]),
+            make_vec2f(control->x * c.scale, control->y * c.scale),
+            make_vec2f(to->x * c.scale, to->y * c.scale)
+        };
+
+        try {
+            evaluateCurve_(buffer, npoints, contour);
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        return 0;
+    }
+
+    extern "C" int
+    cubicTo_(const FT_Vector * const control1,
+             const FT_Vector * const control2,
+             const FT_Vector * const to,
+             void * const user)
+    {
+        using std::vector;
+        using openvrml::vec2f;
+        using openvrml::make_vec2f;
+
+        assert(control1);
+        assert(control2);
+        assert(to);
+        assert(user);
+
+        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
+
+        assert(!c.contours.empty());
+        vector<vec2f> & contour = c.contours.back();
+        assert(!contour.empty());
+        const vec2f & lastVertex = contour.back();
+
+        static const size_t npoints = 4;
+        vec2f buffer[npoints * npoints] = {
+            make_vec2f(lastVertex[0], lastVertex[1]),
+            make_vec2f(control1->x * c.scale, control1->y * c.scale),
+            make_vec2f(control2->x * c.scale, control2->y * c.scale),
+            make_vec2f(to->x * c.scale, to->y * c.scale)
+        };
+
+        try {
+            evaluateCurve_(buffer, npoints, contour);
+        } catch (std::bad_alloc & ex) {
+            OPENVRML_PRINT_EXCEPTION_(ex);
+            return FT_Err_Out_Of_Memory;
+        }
+        return 0;
+    }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     /**
      * @brief Construct from a set of contours.
      *
-     * @param contours          a vector of closed contours that make up the
-     *                          glyph's outline.
-     * @param advance_width     the distance the pen should advance
-     *                          horizontally after drawing the glyph.
-     * @param advance_height    the distance the pen should advance vertically
-     *                          after drawing the glyph.
+     * @param[in,out] face      a FreeType font face.
+     * @param[in] glyph_index   the glyph's index (from <a href="http://freetype.sourceforge.net/freetype2/docs/reference/ft2-base_interface.html#FT_Get_Char_Index">@c FT_Get_Char_Index</a>).
+     * @param[in] size          the desired size for the glyph.
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
     text_node::glyph_geometry::
-    glyph_geometry(const std::vector<std::vector<openvrml::vec2f> > & contours,
-                   const float advance_width,
-                   const float advance_height)
+    glyph_geometry(const FT_Face face,
+                   const FT_UInt glyph_index,
+                   const float size)
         OPENVRML_THROW1(std::bad_alloc):
-        advance_width(advance_width),
-        advance_height(advance_height)
+        advance_width_(0),
+        advance_height_(0)
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using std::vector;
 
-        const vector<polygon_> & polygons = get_polygons_(contours);
+        FT_Error error = FT_Err_Ok;
+        error = FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_SCALE);
+        assert(error == FT_Err_Ok);
+        FT_Glyph glyph;
+        error = FT_Get_Glyph(face->glyph, &glyph);
+        assert(error == FT_Err_Ok);
+        BOOST_SCOPE_EXIT((&glyph)) {
+            FT_Done_Glyph(glyph);
+        } BOOST_SCOPE_EXIT_END
+        static FT_Outline_Funcs outlineFuncs = { moveTo_,
+                                                 lineTo_,
+                                                 conicTo_,
+                                                 cubicTo_,
+                                                 0,
+                                                 0 };
+        const float glyphScale = (face->bbox.yMax > 0.0)
+                               ? size / face->bbox.yMax
+                               : size;
+        GlyphContours_ glyphContours(glyphScale);
+        assert(glyph->format == FT_GLYPH_FORMAT_OUTLINE);
+        const FT_OutlineGlyph outlineGlyph =
+            static_cast<FT_OutlineGlyph>(static_cast<void *>(glyph));
+        error = FT_Outline_Decompose(&outlineGlyph->outline,
+                                     &outlineFuncs,
+                                     &glyphContours);
+        assert(error == FT_Err_Ok);
+
+        assert(face->glyph);
+        this->advance_width_ =
+            FT_HAS_HORIZONTAL(face)
+            ? face->glyph->metrics.horiAdvance * glyphScale
+            : 0.0f;
+        this->advance_height_ =
+            FT_HAS_VERTICAL(face)
+            ? face->glyph->metrics.vertAdvance * glyphScale
+            : 0.0f;
+
+        const vector<polygon_> & polygons =
+            get_polygons_(glyphContours.contours);
         std::for_each(polygons.begin(), polygons.end(),
-                      draw_glyph_polygon(this->coord, this->coord_index));
+                      draw_glyph_polygon(this->coord_, this->coord_index_));
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
+
+    /**
+     * @brief The glyph coordinates.
+     *
+     * @return the glyph coordinates.
+     */
+    const std::vector<openvrml::vec2f> &
+    text_node::glyph_geometry::coord() const
+    {
+        return this->coord_;
+    }
+
+    /**
+     * @brief The glyph coordinate indices.
+     *
+     * @return Coordinate indices describing polygons for the glyph.
+     */
+    const std::vector<openvrml::int32> &
+    text_node::glyph_geometry::coord_index() const
+    {
+        return this->coord_index_;
+    }
+
+    /**
+     * @brief The horizontal distance the cursor should advance in order to
+     *        accommodate this glyph.
+     *
+     * @return the horizontal distance the cursor should advance in order to
+     *         accommodate this glyph.
+     */
+    float text_node::glyph_geometry::advance_width() const
+    {
+        return this->advance_width_;
+    }
+
+    /**
+     * @brief The vertical distance the cursor should advance in order to
+     *        accommodate this glyph.
+     *
+     * @return the vertical distance the cursor should advance in order to
+     *         accommodate this glyph.
+     */
+    float text_node::glyph_geometry::advance_height() const
+    {
+        return this->advance_height_;
+    }
+
+
+    /**
+     * @internal
+     *
+     * @class text_node::line_geometry
+     *
+     * @brief Geometry data for a line of text.
+     */
+
+    /**
+     * @var const bool text_node::line_geometry::horizontal_
+     *
+     * @brief @c true if text should be rendered horizontally; @c false if
+     *        text should be rendered vertically.
+     */
+
+    /**
+     * @var const bool text_node::line_geometry::left_to_right_
+     *
+     * @brief @c true if text should be rendered left-to-right; @c false if
+     *        text should be rendered right-to-left.
+     */
+
+    /**
+     * @var const bool text_node::line_geometry::top_to_bottom_
+     *
+     * @brief @c true if text should flow from top to bottom; @c false if text
+     *        should flow from bottom to top.
+     */
+
+    /**
+     * @var std::vector<openvrml::vec2f> text_node::line_geometry::coord_
+     *
+     * @brief Coordinate data for the line of text.
+     */
+
+    /**
+     * @var std::vector<openvrml::int32> text_node::line_geometry::coord_index_
+     *
+     * @brief Coordinate indices describing polygons.
+     */
+
+    /**
+     * @var float text_node::line_geometry::x_min_
+     *
+     * @brief Minimum <var>x</var> coordinate.
+     */
+
+    /**
+     * @var float text_node::line_geometry::x_max_
+     *
+     * @brief Maximum <var>x</var> coordinate.
+     */
+
+    /**
+     * @var float text_node::line_geometry::y_min_
+     *
+     * @brief Minimum <var>y</var> coordinate.
+     */
+
+    /**
+     * @var float text_node::line_geometry::y_max_
+     *
+     * @brief Maximum <var>y</var> coordinate.
+     */
+
+    /**
+     * @var std::size_t text_node::line_geometry::polygons_
+     *
+     * @brief The number of polygons in the line.
+     */
+
+    /**
+     * @var float text_node::line_geometry::pen_x_
+     *
+     * @brief The &ldquo;pen&rdquo; position <var>x</var> coordinate.
+     */
+
+    /**
+     * @var float text_node::line_geometry::pen_y_
+     *
+     * @brief The &ldquo;pen&rdquo; position <var>y</var> coordinate.
+     */
+
+    /**
+     * @internal
+     *
+     * @brief Construct.
+     *
+     * @param[in] horizontal    @c true if text is being rendered horizontally;
+     *                          @c false if text is being rendered vertically.
+     * @param[in] left_to_right @c true if text is being rendered left-to-right;
+     *                          @c false if text is being rendered right-to-
+     *                          left.
+     * @param[in] top_to_bottom @c true if text is being rendered top-to-bottom;
+     *                          @c false if text is being rendered bottom-to-
+     *                          top.
+     */
+    text_node::line_geometry::line_geometry(const bool horizontal,
+                                            const bool left_to_right,
+                                            const bool top_to_bottom):
+        horizontal_(horizontal),
+        left_to_right_(left_to_right),
+        top_to_bottom_(top_to_bottom),
+        x_min_(0), x_max_(0), y_min_(0), y_max_(0),
+        polygons_(0),
+        pen_pos_(openvrml::make_vec2f())
+    {}
+
+    const std::vector<openvrml::vec2f> & text_node::line_geometry::coord() const
+    {
+        return this->coord_;
+    }
+
+    const std::vector<openvrml::int32> &
+    text_node::line_geometry::coord_index() const
+    {
+        return this->coord_index_;
+    }
+
+    float text_node::line_geometry::x_min() const
+    {
+        return this->x_min_;
+    }
+
+    float text_node::line_geometry::x_max() const
+    {
+        return this->x_max_;
+    }
+
+    float text_node::line_geometry::y_min() const
+    {
+        return this->y_min_;
+    }
+
+    float text_node::line_geometry::y_max() const
+    {
+        return this->y_max_;
+    }
+
+    std::size_t text_node::line_geometry::polygons() const
+    {
+        return this->polygons_;
+    }
+
+    /**
+     * @internal
+     *
+     * @brief Add geometry for a glyph to the line.
+     *
+     * @param[in] glyph geometry data for a glyph.
+     */
+    void text_node::line_geometry::add(const glyph_geometry & glyph)
+    {
+        using openvrml::vec2f;
+        using std::min;
+        using std::max;
+
+        for (size_t i = 0; i < glyph.coord().size(); ++i) {
+            const vec2f textVertex = glyph.coord()[i] + this->pen_pos_;
+            this->coord_.push_back(textVertex);
+            this->x_min_ = min(this->x_min_, textVertex[0]);
+            this->x_max_ = max(this->x_max_, textVertex[0]);
+            this->y_min_ = min(this->y_min_, textVertex[1]);
+            this->y_max_ = max(this->y_max_, textVertex[1]);
+        }
+
+        for (size_t i = 0; i < glyph.coord_index().size(); ++i) {
+            const long index = glyph.coord_index()[i];
+            if (index > -1) {
+                const size_t offset =
+                    this->coord_.size() - glyph.coord().size();
+                this->coord_index_.push_back(
+                    static_cast<openvrml::int32>(offset + index));
+            } else {
+                this->coord_index_.push_back(-1);
+                ++this->polygons_;
+            }
+        }
+
+        if (this->horizontal_) {
+            if (this->left_to_right_) {
+                this->pen_pos_.vec[0] += glyph.advance_width();
+            } else {
+                this->pen_pos_.vec[0] -= glyph.advance_width();
+            }
+        } else {
+            if (this->top_to_bottom_) {
+                this->pen_pos_.vec[1] -= glyph.advance_height();
+            } else {
+                this->pen_pos_.vec[1] += glyph.advance_height();
+            }
+        }
+    }
+
+    void text_node::line_geometry::scale(const float length)
+    {
+        const float current_length = this->x_max_ - this->x_min_;
+        const float scale_factor = current_length * length;
+        for (size_t i = 0; i < this->coord_.size(); ++i) {
+            this->coord_[i].vec[0] /= scale_factor;
+        }
+    }
+
 
     /**
      * @internal
@@ -1087,7 +1582,10 @@ namespace {
      * @brief Destroy.
      */
     text_node::~text_node() OPENVRML_NOTHROW
-    {}
+    {
+        // shutdown sets this->face to 0.
+        assert(this->face == 0);
+    }
 
     /**
      * @brief Determine whether the node has been modified.
@@ -1134,8 +1632,7 @@ namespace {
      *
      * @exception std::bad_alloc    if memory allocation fails.
      */
-    void text_node::do_initialize(double)
-        OPENVRML_THROW1(std::bad_alloc)
+    void text_node::do_initialize(double) OPENVRML_THROW1(std::bad_alloc)
     {
         this->update_ucs4();
         this->update_face();
@@ -1147,13 +1644,13 @@ namespace {
      *
      * @param timestamp the current time.
      */
-    void text_node::do_shutdown(double)
-        OPENVRML_NOTHROW
+    void text_node::do_shutdown(double) OPENVRML_NOTHROW
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         if (this->face) {
             FT_Error ftError = FT_Done_Face(this->face);
             assert(ftError == FT_Err_Ok); // Surely this can't fail.
+            this->face = 0;
         }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
@@ -1731,184 +2228,6 @@ namespace {
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-    struct OPENVRML_LOCAL GlyphContours_ {
-        const float scale;
-        std::vector<std::vector<openvrml::vec2f> > contours;
-
-        explicit GlyphContours_(float scale);
-    };
-
-    GlyphContours_::GlyphContours_(const float scale):
-        scale(scale)
-    {}
-
-    const float stepSize_ = 0.2f;
-
-    extern "C" int
-    moveTo_(const FT_Vector * const to,
-            void * const user)
-    {
-        using std::vector;
-        using openvrml::vec2f;
-        using openvrml::make_vec2f;
-
-        assert(user);
-        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-        try {
-            c.contours.push_back(vector<vec2f>(1));
-        } catch (std::bad_alloc & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-            return FT_Err_Out_Of_Memory;
-        }
-        const vec2f vertex = make_vec2f(to->x * c.scale, to->y * c.scale);
-        c.contours.back().front() = vertex;
-        return 0;
-    }
-
-    extern "C" int
-    lineTo_(const FT_Vector * const to,
-            void * const user)
-    {
-        using openvrml::make_vec2f;
-
-        assert(user);
-        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-        const openvrml::vec2f vertex = make_vec2f(to->x * c.scale,
-                                                  to->y * c.scale);
-        try {
-            c.contours.back().push_back(vertex);
-        } catch (std::bad_alloc & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-            return FT_Err_Out_Of_Memory;
-        }
-        return 0;
-    }
-
-    /**
-     * @brief de Casteljau's algorithm.
-     *
-     * This is a nice recursive algorithm defined by de-Casteljau which
-     * calculates for a given control polygon the point that lies on the bezier
-     * curve for any value of t, and can be used to evaluate and draw the
-     * Bezier spline without using the Bernstein polynomials.
-     *
-     * The algorithm advances by creating in each step a polygons of degree one
-     * less than the one created in the previous step until there is only one
-     * point left, which is the point on the curve. The polygon vertices for
-     * each step are defined by linear interpolation of two consecutive
-     * vertices of the polygon from the previous step with a value of t (the
-     * parameter):
-     *
-     * @param buffer    an array including the control points for the curve in
-     *                  the first @p npoints elements. The total size of the
-     *                  array must be @p npoints * @p npoints. The remaining
-     *                  elements of the array will be used by the algorithm to
-     *                  store temporary values.
-     * @param npoints   the number of control points.
-     * @param contour   the points on the curve are added to this array.
-     *
-     * @exception std::bad_alloc    if memory allocation fails.
-     */
-    OPENVRML_LOCAL void evaluateCurve_(openvrml::vec2f * const buffer,
-                                       const size_t npoints,
-                                       std::vector<openvrml::vec2f> & contour)
-        OPENVRML_THROW1(std::bad_alloc)
-    {
-        for (size_t i = 1; i <= (1 / stepSize_); i++){
-            const float t = i * stepSize_; // Parametric points 0 <= t <= 1
-            for (size_t j = 1; j < npoints; j++) {
-                for (size_t k = 0; k < (npoints - j); k++) {
-                    openvrml::vec2f & element = buffer[j * npoints + k];
-                    element.x((1 - t) * buffer[(j - 1) * npoints + k][0]
-                              + t * buffer[(j - 1) * npoints + k + 1][0]);
-                    element.y((1 - t) * buffer[(j - 1) * npoints + k][1]
-                              + t * buffer[(j - 1) * npoints + k + 1][1]);
-                }
-            }
-            //
-            // Specify next vertex to be included on curve
-            //
-            contour.push_back(buffer[(npoints - 1) * npoints]); // throws std::bad_alloc
-        }
-    }
-
-    extern "C" int
-    conicTo_(const FT_Vector * const control,
-             const FT_Vector * const to,
-             void * const user)
-    {
-        using std::vector;
-        using openvrml::vec2f;
-        using openvrml::make_vec2f;
-
-        assert(control);
-        assert(to);
-        assert(user);
-
-        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-
-        assert(!c.contours.empty());
-        vector<vec2f> & contour = c.contours.back();
-        const vec2f & lastVertex = contour[contour.size() - 1];
-
-        assert(!contour.empty());
-        const size_t npoints = 3;
-        vec2f buffer[npoints * npoints] = {
-            make_vec2f(lastVertex[0], lastVertex[1]),
-            make_vec2f(control->x * c.scale, control->y * c.scale),
-            make_vec2f(to->x * c.scale, to->y * c.scale)
-        };
-
-        try {
-            evaluateCurve_(buffer, npoints, contour);
-        } catch (std::bad_alloc & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-            return FT_Err_Out_Of_Memory;
-        }
-        return 0;
-    }
-
-    extern "C" int
-    cubicTo_(const FT_Vector * const control1,
-             const FT_Vector * const control2,
-             const FT_Vector * const to,
-             void * const user)
-    {
-        using std::vector;
-        using openvrml::vec2f;
-        using openvrml::make_vec2f;
-
-        assert(control1);
-        assert(control2);
-        assert(to);
-        assert(user);
-
-        GlyphContours_ & c = *static_cast<GlyphContours_ *>(user);
-
-        assert(!c.contours.empty());
-        vector<vec2f> & contour = c.contours.back();
-        assert(!contour.empty());
-        const vec2f & lastVertex = contour.back();
-
-        static const size_t npoints = 4;
-        vec2f buffer[npoints * npoints] = {
-            make_vec2f(lastVertex[0], lastVertex[1]),
-            make_vec2f(control1->x * c.scale, control1->y * c.scale),
-            make_vec2f(control2->x * c.scale, control2->y * c.scale),
-            make_vec2f(to->x * c.scale, to->y * c.scale)
-        };
-
-        try {
-            evaluateCurve_(buffer, npoints, contour);
-        } catch (std::bad_alloc & ex) {
-            OPENVRML_PRINT_EXCEPTION_(ex);
-            return FT_Err_Out_Of_Memory;
-        }
-        return 0;
-    }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
-
     /**
      * @brief Called to update @a text_geometry.
      *
@@ -1934,7 +2253,7 @@ namespace {
         float spacing = 1.0;
         openvrml::font_style_node * fontStyle =
             node_cast<openvrml::font_style_node *>(
-                this->font_style_.sfnode::value().get());
+                this->font_style_.value().get());
         if (fontStyle) {
             horizontal = fontStyle->horizontal();
             if (!fontStyle->justify().empty()) {
@@ -1977,17 +2296,7 @@ namespace {
 
             using openvrml::int32;
 
-            struct LineGeometry {
-                vector<vec2f> coord;
-                vector<int32> coordIndex;
-                float xMin, xMax;
-                float yMin, yMax;
-
-                LineGeometry(): xMin(0.0), xMax(0.0), yMin(0.0), yMax(0.0)
-                {}
-            };
-
-            LineGeometry lineGeometry;
+            line_geometry line_geom(horizontal, leftToRight, topToBottom);
             for (vector<char32_t>::const_iterator character = string->begin();
                  character != string->end(); ++character) {
                 assert(this->face);
@@ -2004,120 +2313,27 @@ namespace {
                 if (pos != this->glyph_geometry_map.end()) {
                     glyphGeometry = &pos->second;
                 } else {
-                    FT_Error error = FT_Err_Ok;
-                    error = FT_Load_Glyph(this->face,
-                                          glyphIndex,
-                                          FT_LOAD_NO_SCALE);
-                    assert(error == FT_Err_Ok);
-                    FT_Glyph glyph;
-                    error = FT_Get_Glyph(this->face->glyph, &glyph);
-                    assert(error == FT_Err_Ok);
-                    static FT_Outline_Funcs outlineFuncs = { moveTo_,
-                                                             lineTo_,
-                                                             conicTo_,
-                                                             cubicTo_,
-                                                             0,
-                                                             0 };
-                    const float glyphScale = (this->face->bbox.yMax > 0.0)
-                        ? size / this->face->bbox.yMax
-                        : size;
-                    GlyphContours_ glyphContours(glyphScale);
-                    assert(glyph->format == ft_glyph_format_outline);
-                    const FT_OutlineGlyph outlineGlyph =
-                        reinterpret_cast<FT_OutlineGlyph>(glyph);
-                    error = FT_Outline_Decompose(&outlineGlyph->outline,
-                                                 &outlineFuncs,
-                                                 &glyphContours);
-                    assert(error == FT_Err_Ok);
-
-                    assert(this->face->glyph);
-                    const float advanceWidth =
-                        FT_HAS_HORIZONTAL(this->face)
-                        ? this->face->glyph->metrics.horiAdvance * glyphScale
-                        : 0.0f;
-                    const float advanceHeight =
-                        FT_HAS_VERTICAL(this->face)
-                        ? this->face->glyph->metrics.vertAdvance * glyphScale
-                        : 0.0f;
-
                     const glyph_geometry_map_t::value_type
                         value(glyphIndex,
-                              glyph_geometry(glyphContours.contours,
-                                             advanceWidth,
-                                             advanceHeight));
+                              glyph_geometry(this->face, glyphIndex, size));
                     const pair<glyph_geometry_map_t::iterator, bool> result =
                         this->glyph_geometry_map.insert(value);
                     assert(result.second);
                     glyphGeometry = &result.first->second;
                 }
-
-                for (size_t i = 0; i < glyphGeometry->coord.size(); ++i) {
-                    const vec2f & glyphVertex = glyphGeometry->coord[i];
-                    const vec2f textVertex =
-                        make_vec2f(glyphVertex[0] + penPos[0],
-                                   glyphVertex[1] + penPos[1]);
-                    lineGeometry.coord.push_back(textVertex);
-                    lineGeometry.xMin = (lineGeometry.xMin < textVertex[0])
-                        ? lineGeometry.xMin
-                        : textVertex[0];
-                    lineGeometry.xMax = (lineGeometry.xMax > textVertex[0])
-                        ? lineGeometry.xMax
-                        : textVertex[0];
-                    lineGeometry.yMin = (lineGeometry.yMin < textVertex[1])
-                        ? lineGeometry.yMin
-                        : textVertex[1];
-                    lineGeometry.yMax = (lineGeometry.yMax > textVertex[1])
-                        ? lineGeometry.yMax
-                        : textVertex[1];
-                }
-
-                for (size_t i = 0; i < glyphGeometry->coord_index.size(); ++i)
-                {
-                    const long index = glyphGeometry->coord_index[i];
-                    if (index > -1) {
-                        const size_t offset = lineGeometry.coord.size()
-                            - glyphGeometry->coord.size();
-                        lineGeometry.coordIndex.push_back(int32(offset + index));
-                    } else {
-                        lineGeometry.coordIndex.push_back(-1);
-                        ++npolygons;
-                    }
-                }
-                if (horizontal) {
-                    const float xAdvance = glyphGeometry->advance_width;
-                    if (leftToRight) {
-                        penPos[0] += xAdvance;
-                    } else {
-                        penPos[0] -= xAdvance;
-                    }
-                } else {
-                    const float yAdvance = glyphGeometry->advance_height;
-                    if (topToBottom) {
-                        penPos[1] -= yAdvance;
-                    } else {
-                        penPos[1] += yAdvance;
-                    }
-                }
+                assert(glyphGeometry);
+                line_geom.add(*glyphGeometry);
             }
+
+            npolygons += line_geom.polygons();
 
             //
             // Scale to length.
             //
-            const float length =
-                (line < this->length_.mffloat::value().size())
-                ? this->length_.mffloat::value()[line]
-                : 0.0f;
-            if (length > 0.0) {
-                const float currentLength =
-                    lineGeometry.xMax - lineGeometry.xMin;
-                for (size_t i = 0; i < lineGeometry.coord.size(); ++i) {
-                    const vec2f & vertex = lineGeometry.coord[i];
-                    const vec2f scaledVertex =
-                        openvrml::make_vec2f(vertex[0] / currentLength * length,
-                                             vertex[1]);
-                    lineGeometry.coord[i] = scaledVertex;
-                }
-            }
+            const float length = (line < this->length_.value().size())
+                               ? this->length_.value()[line]
+                               : 0.0f;
+            if (length > 0.0) { line_geom.scale(length); }
 
             //
             // Add the line to the text geometry.  We need to adjust for the
@@ -2130,29 +2346,28 @@ namespace {
             //
             if (justify[0] == "MIDDLE") {
                 if (horizontal) {
-                    xOffset =
-                        -((lineGeometry.xMax - lineGeometry.xMin) / 2.0f);
+                    xOffset = -((line_geom.x_max() - line_geom.x_min()) / 2.0f);
                 } else {
-                    yOffset = (lineGeometry.yMax - lineGeometry.yMin) / 2.0f;
+                    yOffset = (line_geom.y_max() - line_geom.y_min()) / 2.0f;
                 }
             } else if (justify[0] == "END") {
                 if (horizontal) {
-                    xOffset = -(lineGeometry.xMax - lineGeometry.xMin);
+                    xOffset = -(line_geom.x_max() - line_geom.x_min());
                 } else {
-                    yOffset = lineGeometry.yMax - lineGeometry.yMin;
+                    yOffset = line_geom.y_max() - line_geom.y_min();
                 }
             }
-            for (size_t i = 0; i < lineGeometry.coordIndex.size(); ++i) {
-                const long index = lineGeometry.coordIndex[i];
+            for (size_t i = 0; i < line_geom.coord_index().size(); ++i) {
+                const long index = line_geom.coord_index()[i];
                 if (index > -1) {
-                    const vec2f & lineVertex = lineGeometry.coord[index];
+                    const vec2f & lineVertex = line_geom.coord()[index];
                     const openvrml::vec3f textVertex =
                         openvrml::make_vec3f(lineVertex.x() + xOffset,
                                              lineVertex.y() + yOffset,
                                              0.0f);
                     newGeometry.coord.push_back(textVertex);
-                    newGeometry.coord_index
-                        .push_back(int32(newGeometry.coord.size() - 1));
+                    newGeometry.coord_index.push_back(
+                            static_cast<int32>(newGeometry.coord.size() - 1));
                     geometryXMin = (geometryXMin < textVertex.x())
                         ? geometryXMin
                         : textVertex.x();
@@ -2174,10 +2389,9 @@ namespace {
         //
         // Scale to maxExtent.
         //
-        const float maxExtent =
-            (this->max_extent_.sffloat::value() > 0.0)
-            ? this->max_extent_.sffloat::value()
-            : 0.0f;
+        const float maxExtent = (this->max_extent_.value() > 0.0)
+                              ? this->max_extent_.value()
+                              : 0.0f;
         if (maxExtent > 0.0) {
             const float currentMaxExtent = geometryXMax - geometryXMin;
             if (currentMaxExtent > maxExtent) {
@@ -2205,21 +2419,19 @@ namespace {
             }
         } else if (justify[1] == "MIDDLE") {
             if (horizontal) {
-                yOffset = ((size * spacing
-                            * this->string_.mfstring::value().size()) / 2.0f)
+                yOffset = ((size * spacing * this->string_.value().size())
+                           / 2.0f)
                     - (size * spacing);
             } else {
-                xOffset = ((size * spacing
-                            * this->string_.mfstring::value().size()) / 2.0f)
+                xOffset = ((size * spacing * this->string_.value().size())
+                           / 2.0f)
                     - (size * spacing);
             }
         } else if (justify[1] == "END") {
             if (horizontal) {
-                yOffset = size * spacing
-                    * (this->string_.mfstring::value().size() - 1);
+                yOffset = size * spacing * (this->string_.value().size() - 1);
             } else {
-                xOffset = size * spacing
-                    * (this->string_.mfstring::value().size() - 1);
+                xOffset = size * spacing * (this->string_.value().size() - 1);
             }
         }
         for (size_t i = 0; i < newGeometry.coord.size(); ++i) {
