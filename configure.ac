@@ -127,7 +127,10 @@ AS_IF([test X$have_libxml = Xno -a -z "${XML_LIBS+x}"],
       [AC_MSG_FAILURE([libxml not found])])
 
 PKG_CHECK_MODULES([PNG], [libpng], , [have_libpng=no])
-PKG_CHECK_MODULES([FONTCONFIG], [fontconfig], , [have_fontconfig=no])
+#
+# fcfreetype.h is C++-safe in fontconfig >= 2.3.0.
+#
+PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.3.0], , [have_fontconfig=no])
 PKG_CHECK_MODULES([FREETYPE], [freetype2 >= 2.2], , [have_freetype=no])
 
 have_libmozjs=yes
