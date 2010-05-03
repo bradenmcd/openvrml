@@ -1,5 +1,14 @@
 2010-05-02 Braden McDaniel  <braden@endoframe.com>
 
+	fcfreetype.h is C++-safe in fontconfig >= 2.3.0.  It should be
+	safe to require at least that version.
+
+	* configure.ac: Require fontconfig >= 2.3.0.
+	* src/node/vrml97/text.cpp: Don't need to wrap fcfreetype.h in
+	'extern "C"' anymore.
+
+2010-05-02 Braden McDaniel  <braden@endoframe.com>
+
 	Added exception specifications for text_node::glyph_geometry and
 	text_node::line_geometry member functions.
 

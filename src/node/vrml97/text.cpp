@@ -37,9 +37,7 @@
 #     undef interface
 #   else
 #     include <fontconfig/fontconfig.h>
-extern "C" {
 #     include <fontconfig/fcfreetype.h>
-}
 #   endif
 # endif
 # include <boost/array.hpp>
