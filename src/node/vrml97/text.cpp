@@ -99,7 +99,8 @@ namespace {
         class length_exposedfield : public exposedfield<openvrml::mffloat> {
         public:
             explicit length_exposedfield(text_node & node);
-            length_exposedfield(const length_exposedfield & obj) OPENVRML_NOTHROW;
+            length_exposedfield(const length_exposedfield & obj)
+                OPENVRML_NOTHROW;
             virtual ~length_exposedfield() OPENVRML_NOTHROW;
 
         private:
@@ -141,10 +142,11 @@ namespace {
             glyph_geometry(FT_Face face, FT_UInt glyph_index, float size)
                 OPENVRML_THROW1(std::bad_alloc);
 
-            const std::vector<openvrml::vec2f> & coord() const;
-            const std::vector<openvrml::int32> & coord_index() const;
-            float advance_width() const;
-            float advance_height() const;
+            const std::vector<openvrml::vec2f> & coord() const OPENVRML_NOTHROW;
+            const std::vector<openvrml::int32> & coord_index() const
+                OPENVRML_NOTHROW;
+            float advance_width() const OPENVRML_NOTHROW;
+            float advance_height() const OPENVRML_NOTHROW;
         };
 
         class line_geometry {
@@ -162,18 +164,22 @@ namespace {
             line_geometry(bool horizontal,
                           bool left_to_right,
                           bool top_to_bottom,
-                          const openvrml::vec2f & pen_start);
+                          const openvrml::vec2f & pen_start)
+                OPENVRML_NOTHROW;
 
-            const std::vector<openvrml::vec2f> & coord() const;
-            const std::vector<openvrml::int32> & coord_index() const;
-            float x_min() const;
-            float x_max() const;
-            float y_min() const;
-            float y_max() const;
-            std::size_t polygons() const;
+            const std::vector<openvrml::vec2f> & coord() const
+                OPENVRML_NOTHROW;
+            const std::vector<openvrml::int32> & coord_index() const
+                OPENVRML_NOTHROW;
+            float x_min() const OPENVRML_NOTHROW;
+            float x_max() const OPENVRML_NOTHROW;
+            float y_min() const OPENVRML_NOTHROW;
+            float y_max() const OPENVRML_NOTHROW;
+            std::size_t polygons() const OPENVRML_NOTHROW;
 
-            void add(const glyph_geometry & glyph);
-            void scale(float length);
+            void add(const glyph_geometry & glyph)
+                OPENVRML_THROW1(std::bad_alloc);
+            void scale(float length) OPENVRML_NOTHROW;
         };
 
         class text_geometry {
@@ -359,7 +365,8 @@ namespace {
     text_node::font_style_exposedfield::
     font_style_exposedfield(text_node & node):
         openvrml::node_event_listener(node),
-        openvrml::event_emitter(static_cast<const openvrml::field_value &>(*this)),
+        openvrml::event_emitter(
+            static_cast<const openvrml::field_value &>(*this)),
         sfnode_listener(node),
         exposedfield<openvrml::sfnode>(node)
     {}
@@ -370,10 +377,13 @@ namespace {
      * @param obj   instance to copy.
      */
     text_node::font_style_exposedfield::
-    font_style_exposedfield(const font_style_exposedfield & obj) OPENVRML_NOTHROW:
+    font_style_exposedfield(const font_style_exposedfield & obj)
+        OPENVRML_NOTHROW:
         openvrml::event_listener(),
-        openvrml::node_event_listener(obj.openvrml::node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const openvrml::field_value &>(*this)),
+        openvrml::node_event_listener(
+            obj.openvrml::node_event_listener::node()),
+        openvrml::event_emitter(
+            static_cast<const openvrml::field_value &>(*this)),
         sfnode_listener(obj.openvrml::node_event_listener::node()),
         exposedfield<openvrml::sfnode>(obj)
     {}
@@ -381,7 +391,8 @@ namespace {
     /**
      * @brief Destroy.
      */
-    text_node::font_style_exposedfield::~font_style_exposedfield() OPENVRML_NOTHROW
+    text_node::font_style_exposedfield::~font_style_exposedfield()
+        OPENVRML_NOTHROW
     {}
 
     /**
@@ -438,7 +449,8 @@ namespace {
     text_node::length_exposedfield::
     length_exposedfield(text_node & node):
         openvrml::node_event_listener(node),
-        openvrml::event_emitter(static_cast<const openvrml::field_value &>(*this)),
+        openvrml::event_emitter(
+            static_cast<const openvrml::field_value &>(*this)),
         mffloat_listener(node),
         exposedfield<openvrml::mffloat>(node)
     {}
@@ -451,8 +463,10 @@ namespace {
     text_node::length_exposedfield::
     length_exposedfield(const length_exposedfield & obj) OPENVRML_NOTHROW:
         openvrml::event_listener(),
-        openvrml::node_event_listener(obj.openvrml::node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const openvrml::field_value &>(*this)),
+        openvrml::node_event_listener(
+            obj.openvrml::node_event_listener::node()),
+        openvrml::event_emitter(
+            static_cast<const openvrml::field_value &>(*this)),
         mffloat_listener(obj.openvrml::node_event_listener::node()),
         exposedfield<openvrml::mffloat>(obj)
     {}
@@ -517,7 +531,8 @@ namespace {
     text_node::max_extent_exposedfield::
     max_extent_exposedfield(text_node & node):
         openvrml::node_event_listener(node),
-        openvrml::event_emitter(static_cast<const openvrml::field_value &>(*this)),
+        openvrml::event_emitter(
+            static_cast<const openvrml::field_value &>(*this)),
         sffloat_listener(node),
         exposedfield<openvrml::sffloat>(node)
     {}
@@ -528,10 +543,13 @@ namespace {
      * @param obj   instance to copy.
      */
     text_node::max_extent_exposedfield::
-    max_extent_exposedfield(const max_extent_exposedfield & obj) OPENVRML_NOTHROW:
+    max_extent_exposedfield(const max_extent_exposedfield & obj)
+        OPENVRML_NOTHROW:
         openvrml::event_listener(),
-        openvrml::node_event_listener(obj.openvrml::node_event_listener::node()),
-        openvrml::event_emitter(static_cast<const openvrml::field_value &>(*this)),
+        openvrml::node_event_listener(
+            obj.openvrml::node_event_listener::node()),
+        openvrml::event_emitter(
+            static_cast<const openvrml::field_value &>(*this)),
         sffloat_listener(obj.openvrml::node_event_listener::node()),
         exposedfield<openvrml::sffloat>(obj)
     {}
@@ -982,12 +1000,14 @@ namespace {
             // contour, and maps to a pointer to the interior contour whose
             // first vertex is closest to the exterior vertex.
             //
-            std::auto_ptr<connection_map_t> connection_map(get_connection_map(p));
+            std::auto_ptr<connection_map_t>
+                connection_map(get_connection_map(p));
 
             assert(!p.exterior->empty());
             for (size_t i = 0; i < p.exterior->size(); ++i) {
                 const vec2f & exterior_vertex = (*p.exterior)[i];
-                long exterior_index = get_vertex_index_(this->coord, exterior_vertex);
+                long exterior_index = get_vertex_index_(this->coord,
+                                                        exterior_vertex);
                 if (exterior_index > -1) {
                     this->coord_index.push_back(exterior_index);
                 } else {
@@ -1009,7 +1029,8 @@ namespace {
                             using openvrml::int32;
                             this->coord.push_back(interior_vertex);
                             assert(!this->coord.empty());
-                            this->coord_index.push_back(int32(this->coord.size() - 1));
+                            this->coord_index.push_back(
+                                static_cast<int32>(this->coord.size() - 1));
                         }
                     }
                     this->coord_index.push_back(exterior_index);
@@ -1082,14 +1103,14 @@ namespace {
      * @brief de Casteljau's algorithm.
      *
      * This is a nice recursive algorithm defined by de-Casteljau which
-     * calculates for a given control polygon the point that lies on the bezier
-     * curve for any value of t, and can be used to evaluate and draw the
-     * Bezier spline without using the Bernstein polynomials.
+     * calculates for a given control polygon the point that lies on the
+     * bezier curve for any value of t, and can be used to evaluate and draw
+     * the Bezier spline without using the Bernstein polynomials.
      *
-     * The algorithm advances by creating in each step a polygons of degree one
-     * less than the one created in the previous step until there is only one
-     * point left, which is the point on the curve. The polygon vertices for
-     * each step are defined by linear interpolation of two consecutive
+     * The algorithm advances by creating in each step a polygons of degree
+     * one less than the one created in the previous step until there is only
+     * one point left, which is the point on the curve. The polygon vertices
+     * for each step are defined by linear interpolation of two consecutive
      * vertices of the polygon from the previous step with a value of t (the
      * parameter):
      *
@@ -1272,7 +1293,7 @@ namespace {
      * @return the glyph coordinates.
      */
     const std::vector<openvrml::vec2f> &
-    text_node::glyph_geometry::coord() const
+    text_node::glyph_geometry::coord() const OPENVRML_NOTHROW
     {
         return this->coord_;
     }
@@ -1283,7 +1304,7 @@ namespace {
      * @return Coordinate indices describing polygons for the glyph.
      */
     const std::vector<openvrml::int32> &
-    text_node::glyph_geometry::coord_index() const
+    text_node::glyph_geometry::coord_index() const OPENVRML_NOTHROW
     {
         return this->coord_index_;
     }
@@ -1295,7 +1316,7 @@ namespace {
      * @return the horizontal distance the cursor should advance in order to
      *         accommodate this glyph.
      */
-    float text_node::glyph_geometry::advance_width() const
+    float text_node::glyph_geometry::advance_width() const OPENVRML_NOTHROW
     {
         return this->advance_width_;
     }
@@ -1307,7 +1328,7 @@ namespace {
      * @return the vertical distance the cursor should advance in order to
      *         accommodate this glyph.
      */
-    float text_node::glyph_geometry::advance_height() const
+    float text_node::glyph_geometry::advance_height() const OPENVRML_NOTHROW
     {
         return this->advance_height_;
     }
@@ -1385,20 +1406,12 @@ namespace {
      */
 
     /**
-     * @var float text_node::line_geometry::pen_x_
+     * @var float text_node::line_geometry::pen_pos_
      *
-     * @brief The &ldquo;pen&rdquo; position <var>x</var> coordinate.
+     * @brief The &ldquo;pen&rdquo; position.
      */
 
     /**
-     * @var float text_node::line_geometry::pen_y_
-     *
-     * @brief The &ldquo;pen&rdquo; position <var>y</var> coordinate.
-     */
-
-    /**
-     * @internal
-     *
      * @brief Construct.
      *
      * @param[in] horizontal    @c true if text is being rendered horizontally;
@@ -1414,7 +1427,8 @@ namespace {
     text_node::line_geometry::line_geometry(const bool horizontal,
                                             const bool left_to_right,
                                             const bool top_to_bottom,
-                                            const openvrml::vec2f & pen_start):
+                                            const openvrml::vec2f & pen_start)
+        OPENVRML_NOTHROW:
         horizontal_(horizontal),
         left_to_right_(left_to_right),
         top_to_bottom_(top_to_bottom),
@@ -1423,50 +1437,87 @@ namespace {
         pen_pos_(pen_start)
     {}
 
+    /**
+     * @brief The line geometry coordinates.
+     *
+     * @return the line geometry coordinates.
+     */
     const std::vector<openvrml::vec2f> & text_node::line_geometry::coord() const
+        OPENVRML_NOTHROW
     {
         return this->coord_;
     }
 
+    /**
+     * @brief The line geometry coordinate indices.
+     *
+     * @return the line geometry coordinate indices.
+     */
     const std::vector<openvrml::int32> &
-    text_node::line_geometry::coord_index() const
+    text_node::line_geometry::coord_index() const OPENVRML_NOTHROW
     {
         return this->coord_index_;
     }
 
-    float text_node::line_geometry::x_min() const
+    /**
+     * @brief The minimum <var>x</var> extent.
+     *
+     * @return the minimum <var>x</var> extent>
+     */
+    float text_node::line_geometry::x_min() const OPENVRML_NOTHROW
     {
         return this->x_min_;
     }
 
-    float text_node::line_geometry::x_max() const
+    /**
+     * @brief The maximum <var>x</var> extent.
+     *
+     * @return the maximum <var>x</var> extent>
+     */
+    float text_node::line_geometry::x_max() const OPENVRML_NOTHROW
     {
         return this->x_max_;
     }
 
-    float text_node::line_geometry::y_min() const
+    /**
+     * @brief The minimum <var>y</var> extent.
+     *
+     * @return the minimum <var>y</var> extent>
+     */
+    float text_node::line_geometry::y_min() const OPENVRML_NOTHROW
     {
         return this->y_min_;
     }
 
-    float text_node::line_geometry::y_max() const
+    /**
+     * @brief The maximum <var>y</var> extent.
+     *
+     * @return the maximum <var>y</var> extent>
+     */
+    float text_node::line_geometry::y_max() const OPENVRML_NOTHROW
     {
         return this->y_max_;
     }
 
-    std::size_t text_node::line_geometry::polygons() const
+    /**
+     * @brief The number of polygons in the line geometry.
+     *
+     * @return the number of polygons in the line geometry.
+     */
+    std::size_t text_node::line_geometry::polygons() const OPENVRML_NOTHROW
     {
         return this->polygons_;
     }
 
     /**
-     * @internal
-     *
      * @brief Add geometry for a glyph to the line.
      *
      * @param[in] glyph geometry data for a glyph.
+     *
+     * @exception std::bad_alloc    if memory allocation fails.
      */
     void text_node::line_geometry::add(const glyph_geometry & glyph)
+        OPENVRML_THROW1(std::bad_alloc)
     {
         using openvrml::vec2f;
         using std::min;
@@ -1509,7 +1560,7 @@ namespace {
         }
     }
 
-    void text_node::line_geometry::scale(const float length)
+    void text_node::line_geometry::scale(const float length) OPENVRML_NOTHROW
     {
         const float current_length = this->x_max_ - this->x_min_;
         const float scale_factor = current_length * length;
@@ -1528,27 +1579,51 @@ namespace {
      */
 
     /**
-     * @var std::vector<openvrml::vec3f> text_node::text_geometry::coord
+     * @var std::vector<openvrml::vec3f> text_node::text_geometry::coord_
      *
      * @brief Text geometry coordinates.
      */
 
     /**
-     * @var std::vector<openvrml::int32> text_node::text_geometry::coord_index
+     * @var std::vector<openvrml::int32> text_node::text_geometry::coord_index_
      *
      * @brief Text geometry coordinate indices.
      */
 
     /**
-     * @var std::vector<openvrml::vec3f> text_node::text_geometry::normal
+     * @var std::vector<openvrml::vec3f> text_node::text_geometry::normal_
      *
      * @brief Text geometry normals.
      */
 
     /**
-     * @var std::vector<openvrml::vec2f> text_node::text_geometry::tex_coord
+     * @var std::vector<openvrml::vec2f> text_node::text_geometry::tex_coord_
      *
      * @brief Text geometry texture coordinates.
+     */
+
+    /**
+     * @var float text_node::text_geometry::x_min_
+     *
+     * @brief Minimum <var>x</var> extent.
+     */
+
+    /**
+     * @var float text_node::text_geometry::x_max_
+     *
+     * @brief Maximum <var>x</var> extent.
+     */
+
+    /**
+     * @var float text_node::text_geometry::y_min_
+     *
+     * @brief Minimum <var>y</var> extent.
+     */
+
+    /**
+     * @var float text_node::text_geometry::y_max_
+     *
+     * @brief Maximum <var>y</var> extent.
      */
 
     /**

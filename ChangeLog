@@ -1,5 +1,34 @@
 2010-05-02 Braden McDaniel  <braden@endoframe.com>
 
+	Added exception specifications for text_node::glyph_geometry and
+	text_node::line_geometry member functions.
+
+	* src/node/vrml97/text.cpp
+	(text_node::glyph_geometry::coord() const): Added
+	OPENVRML_NOTHROW.
+	(text_node::glyph_geometry::coord_index() const): Added
+	OPENVRML_NOTHROW.
+	(text_node::glyph_geometry::advance_width() const): Added
+	OPENVRML_NOTHROW.
+	(text_node::glyph_geometry::advance_height() const): Added
+	OPENVRML_NOTHROW.
+	(text_node::line_geometry::line_geometry(bool, bool, bool, const
+	openvrml::vec2f &)): Added OPENVRML_NOTHROW.
+	(text_node::line_geometry::coord() const): Added OPENVRML_NOTHROW.
+	(text_node::line_geometry::coord_index() const): Added
+	OPENVRML_NOTHROW.
+	(text_node::line_geometry::x_min() const): Added OPENVRML_NOTHROW.
+	(text_node::line_geometry::x_max() const): Added OPENVRML_NOTHROW.
+	(text_node::line_geometry::y_min() const): Added OPENVRML_NOTHROW.
+	(text_node::line_geometry::y_max() const): Added OPENVRML_NOTHROW.
+	(text_node::line_geometry::polygons() const): Added
+	OPENVRML_NOTHROW.
+	(text_node::line_geometry::add(const glyph_geometry &)): Throws
+	std::bad_alloc.
+	(text_node::line_geometry::scale(float)): Added OPENVRML_NOTHROW.
+
+2010-05-02 Braden McDaniel  <braden@endoframe.com>
+
 	Delegate the logic to get the pen start position to a helper
 	function; pass the start position to the line_geometry
 	constructor.
