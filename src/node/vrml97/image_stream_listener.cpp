@@ -41,7 +41,6 @@ read(const std::vector<unsigned char> & data)
 # ifdef OPENVRML_ENABLE_PNG_TEXTURES
 void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
 {
-    using boost::shared_lock;
     using boost::shared_mutex;
     using boost::unique_lock;
 
@@ -78,15 +77,15 @@ void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
     if (color_type == PNG_COLOR_TYPE_PALETTE) {
         png_set_expand(png_ptr);
         image.comp(3);
-    }
-
-    //
-    // Expand grayscale images to the full 8 bits from 1, 2, or
-    // 4 bits/pixel.
-    //
-    const png_byte bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
-        png_set_expand(png_ptr);
+    } else {
+        //
+        // Expand grayscale images to the full 8 bits from 1, 2, or
+        // 4 bits/pixel.
+        //
+        const png_byte bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+        if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
+            png_set_expand(png_ptr);
+        }
     }
 
     //
@@ -137,7 +136,7 @@ void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
 
     png_read_update_info(png_ptr, info_ptr);
 
-    reader.old_row.resize(image.comp() * image.x());
+    reader.old_row.resize(png_ptr->rowbytes);
 }
 
 void openvrml_png_row_callback(png_structp png_ptr,
@@ -159,14 +158,16 @@ void openvrml_png_row_callback(png_structp png_ptr,
 
     openvrml::image & image = reader.stream_listener.image_;
 
-    png_progressive_combine_row(png_ptr, &reader.old_row[0], new_row);
+    assert(!reader.old_row.empty());
+
+    png_progressive_combine_row(png_ptr, &reader.old_row.front(), new_row);
 
     //
     // openvrml::image pixels start at the bottom left.
     //
     const size_t image_row = (image.y() - 1) - row_num;
-    const size_t bytes_per_row = reader.old_row.size();
-    const size_t image_width = bytes_per_row / image.comp();
+    const size_t bytes_per_row = png_ptr->rowbytes;
+    const size_t image_width = png_ptr->width;
     for (size_t pixel_index = 0, byte_index = 0; pixel_index < image_width;
          ++pixel_index) {
         using openvrml::int32;
@@ -191,6 +192,8 @@ void openvrml_png_row_callback(png_structp png_ptr,
     }
 
     reader.stream_listener.node_.modified(true);
+
+    assert(reader.old_row.size() >= bytes_per_row);
 
     copy(new_row, new_row + bytes_per_row, reader.old_row.begin());
 }
@@ -229,9 +232,7 @@ png_reader(image_stream_listener & stream_listener):
 openvrml_node_vrml97::image_stream_listener::png_reader::~png_reader()
     OPENVRML_NOTHROW
 {
-    png_destroy_read_struct(&this->png_ptr_,
-                            &this->info_ptr_,
-                            png_infopp(0));
+    png_destroy_read_struct(&this->png_ptr_, &this->info_ptr_, png_infopp(0));
 }
 
 void
