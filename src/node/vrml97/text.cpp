@@ -1649,7 +1649,11 @@ namespace {
                   const float size,
                   const float spacing,
                   const float max_extent)
-        OPENVRML_THROW1(std::bad_alloc)
+        OPENVRML_THROW1(std::bad_alloc):
+        x_min_(0),
+        x_max_(0),
+        y_min_(0),
+        y_max_(0)
     {
         std::size_t polygons = 0;
         for (boost::ptr_vector<line_geometry>::const_iterator line =
@@ -2748,6 +2752,15 @@ const char * const openvrml_node_vrml97::text_metatype::id =
  * @see http://freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Library
  */
 
+namespace {
+    //
+    // We need to call FcFini once (and only once) when we're finished with
+    // the library (i.e., shutdown).
+    //
+    OPENVRML_LOCAL size_t fc_use_count = 0;
+    OPENVRML_LOCAL boost::mutex fc_use_count_mutex;
+}
+
 /**
  * @brief Construct.
  *
@@ -2758,9 +2771,22 @@ text_metatype(openvrml::browser & browser):
     node_metatype(text_metatype::id, browser)
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-    FT_Error error = 0;
-    error = FT_Init_FreeType(&this->freeTypeLibrary);
-    if (error) {
+    {
+        using boost::mutex;
+        using boost::unique_lock;
+
+        unique_lock<mutex> lock(fc_use_count_mutex);
+        if (fc_use_count++ == 0) {
+            FcBool fc_succeeded = FcInit();
+            if (!fc_succeeded) {
+                browser.err("error initializing fontconfig library");
+            }
+        }
+    }
+
+    FT_Error ft_error = 0;
+    ft_error = FT_Init_FreeType(&this->freeTypeLibrary);
+    if (ft_error) {
         browser.err("error initializing FreeType library");
     }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
@@ -2772,11 +2798,16 @@ text_metatype(openvrml::browser & browser):
 openvrml_node_vrml97::text_metatype::~text_metatype() OPENVRML_NOTHROW
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-    FT_Error error = 0;
-    error = FT_Done_FreeType(this->freeTypeLibrary);
-    if (error) {
+    FT_Error ft_error = FT_Done_FreeType(this->freeTypeLibrary);
+    if (ft_error) {
         this->browser().err("error shutting down FreeType library");
     }
+
+    using boost::mutex;
+    using boost::unique_lock;
+
+    unique_lock<mutex> lock(fc_use_count_mutex);
+    if (--fc_use_count == 0) { FcFini(); }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 

@@ -1,3 +1,18 @@
+2010-05-27 Braden McDaniel  <braden@endoframe.com>
+
+	Call FcInit/FcFini to clean up resources used by Fontconfig.
+
+	* src/node/vrml97/text.cpp
+	(text_node::text_geometry::text_geometry(const
+	boost::ptr_vector<line_geometry> &, const std::string &, const
+	std::string &, bool, float, float, float)): Initialize x_min_,
+	x_max_, y_min_, and y_max_ to 0.
+	(openvrml_node_vrml97::text_metatype::text_metatype(openvrml::browser&)):
+	Call FcInit if this is the first time we're using the Fontconfig
+	library.
+	(openvrml_node_vrml97::text_metatype::~text_metatype()): Call
+	FcFini if this is the last use of the Fontconfig library.
+
 2010-05-21 Braden McDaniel  <braden@endoframe.com>
 
 	We're expanding the pixels that libpng reads to full RGBA
