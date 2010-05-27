@@ -1,5 +1,23 @@
 2010-05-27 Braden McDaniel  <braden@endoframe.com>
 
+	FcFini cannot be called safely from library code.  Calling it is
+	not a strict requirement; though it does clean up valgrind
+	results.  To this end, call it from sdl-viewer instead.
+
+	* examples/Makefile.am
+	(sdl_viewer_CXXFLAGS): Add FONTCONFIG_CFLAGS.
+	(sdl_viewer_LDFLAGS): Add FONTCONFIG_LIBS.
+	* examples/sdl_viewer.cpp
+	(main(int, char *[])): Call FcFini on shutdown if built with
+	OPENVRML_ENABLE_RENDER_TEXT_NODE.
+	* src/node/vrml97/text.cpp
+	(openvrml_node_vrml97::text_metatype::text_metatype(openvrml::browser&)):
+	It's safe to call FcInit redundantly.
+	(openvrml_node_vrml97::text_metatype::~text_metatype()): Don't
+	call FcFini from library code.
+
+2010-05-27 Braden McDaniel  <braden@endoframe.com>
+
 	Call FcInit/FcFini to clean up resources used by Fontconfig.
 
 	* src/node/vrml97/text.cpp
