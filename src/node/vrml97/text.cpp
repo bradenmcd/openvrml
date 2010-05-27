@@ -2752,15 +2752,6 @@ const char * const openvrml_node_vrml97::text_metatype::id =
  * @see http://freetype.org/freetype2/docs/reference/ft2-base_interface.html#FT_Library
  */
 
-namespace {
-    //
-    // We need to call FcFini once (and only once) when we're finished with
-    // the library (i.e., shutdown).
-    //
-    OPENVRML_LOCAL size_t fc_use_count = 0;
-    OPENVRML_LOCAL boost::mutex fc_use_count_mutex;
-}
-
 /**
  * @brief Construct.
  *
@@ -2771,17 +2762,9 @@ text_metatype(openvrml::browser & browser):
     node_metatype(text_metatype::id, browser)
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
-    {
-        using boost::mutex;
-        using boost::unique_lock;
-
-        unique_lock<mutex> lock(fc_use_count_mutex);
-        if (fc_use_count++ == 0) {
-            FcBool fc_succeeded = FcInit();
-            if (!fc_succeeded) {
-                browser.err("error initializing fontconfig library");
-            }
-        }
+    FcBool fc_succeeded = FcInit();
+    if (!fc_succeeded) {
+        browser.err("error initializing fontconfig library");
     }
 
     FT_Error ft_error = 0;
@@ -2802,12 +2785,6 @@ openvrml_node_vrml97::text_metatype::~text_metatype() OPENVRML_NOTHROW
     if (ft_error) {
         this->browser().err("error shutting down FreeType library");
     }
-
-    using boost::mutex;
-    using boost::unique_lock;
-
-    unique_lock<mutex> lock(fc_use_count_mutex);
-    if (--fc_use_count == 0) { FcFini(); }
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 

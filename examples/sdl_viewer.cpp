@@ -31,6 +31,8 @@
 # include <openvrml/gl/viewer.h>
 # ifdef _WIN32
 #   include <windows.h>
+# elif defined(OPENVRML_ENABLE_RENDER_TEXT_NODE)
+#   include <fontconfig/fontconfig.h>
 # endif
 
 extern "C" Uint32 update_timer_callback(Uint32 interval, void * param);
@@ -114,6 +116,10 @@ int main(int argc, char * argv[])
         cerr << ex.what() << endl;
         return EXIT_FAILURE;
     }
+
+# if defined(OPENVRML_ENABLE_RENDER_TEXT_NODE) && !defined(_WIN32)
+    FcFini();
+# endif
 
 # ifdef _WIN32
     fclose(out);
