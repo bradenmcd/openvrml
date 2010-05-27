@@ -118,6 +118,12 @@ int main(int argc, char * argv[])
     }
 
 # if defined(OPENVRML_ENABLE_RENDER_TEXT_NODE) && !defined(_WIN32)
+    //
+    // Most applications can ignore this part.  FcFini cleans up Fontconfig
+    // resources that valgrind would otherwise report as leaks.  Calling it is
+    // not a strict requirement; but note that it must be called at most once
+    // by an application.
+    //
     FcFini();
 # endif
 
