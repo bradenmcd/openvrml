@@ -458,16 +458,6 @@ do_read(const std::vector<unsigned char> & data)
         image.comp(this->cinfo_.num_components);
         image.resize(this->cinfo_.image_width, this->cinfo_.image_height);
 
-        const JDIMENSION samples_per_row =
-            this->cinfo_.output_width * this->cinfo_.num_components;
-        static const JDIMENSION num_rows = 1;
-        this->scanlines =
-            (*this->cinfo_.mem->alloc_sarray)(
-                reinterpret_cast<j_common_ptr>(&this->cinfo_),
-                JPOOL_IMAGE,
-                samples_per_row,
-                num_rows);
-
         this->decoder_state = jpeg_reader::start_decompress;
     }
     case jpeg_reader::start_decompress:
@@ -481,6 +471,16 @@ do_read(const std::vector<unsigned char> & data)
         if (!jpeg_start_decompress(&this->cinfo_)) {
             return; // Input suspended.
         }
+
+        const JDIMENSION samples_per_row =
+            this->cinfo_.output_width * this->cinfo_.out_color_components;
+        static const JDIMENSION num_rows = 1;
+        this->scanlines =
+            (*this->cinfo_.mem->alloc_sarray)(
+                reinterpret_cast<j_common_ptr>(&this->cinfo_),
+                JPOOL_IMAGE,
+                samples_per_row,
+                num_rows);
 
         this->decoder_state = this->cinfo_.buffered_image
             ? jpeg_reader::decompress_progressive
