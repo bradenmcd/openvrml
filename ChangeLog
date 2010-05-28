@@ -1,3 +1,17 @@
+2010-05-28 Braden McDaniel  <braden@endoframe.com>
+
+	Use jpeg_decompress_struct.out_color_components to determine the
+	scan line buffer size.  This addresses a memory corruption issue
+	when reading grayscale JPEGs.
+
+	* src/node/vrml97/image_stream_listener.cpp
+	(openvrml_node_vrml97::image_stream_listener::jpeg_reader::do_read(const
+	std::vector<unsigned char> &)): Use
+	jpeg_decompress_struct.out_color_components to determine the scan
+	line buffer size.  This member isn't set until after the call to
+	jpeg_start_decompress; so move the buffer allocation to the
+	start_decompress section.
+
 2010-05-27 Braden McDaniel  <braden@endoframe.com>
 
 	FcFini cannot be called safely from library code.  Calling it is
