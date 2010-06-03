@@ -1,4 +1,4 @@
-AC_INIT([OpenVRML], [0.18.99], [openvrml-develop@lists.sourceforge.net])
+AC_INIT([OpenVRML], [0.18.6], [openvrml-develop@lists.sourceforge.net])
 AC_PREREQ([2.59])
 AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Braden McDaniel])
 AC_CONFIG_MACRO_DIR([m4])
@@ -131,16 +131,38 @@ PKG_CHECK_MODULES([PNG], [libpng], , [have_libpng=no])
 # fcfreetype.h is C++-safe in fontconfig >= 2.3.0.
 #
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.3.0], , [have_fontconfig=no])
-PKG_CHECK_MODULES([FREETYPE], [freetype2 >= 2.2], , [have_freetype=no])
+PKG_CHECK_MODULES([FREETYPE], [freetype2], , [have_freetype=no])
+#
+# FreeType >= 2.2 uses const in callback function signatures.  This
+# doesn't cause an error in C; but it does in C++.
+#
+AS_IF([test X$have_freetype != Xno],
+      [AC_MSG_CHECKING([if FreeType callback function signatures use const])
+       AC_CACHE_VAL([ov_cv_ft_const],
+[AC_LANG_PUSH([C++])
+save_CXXFLAGS="${CXXFLAGS}"
+CXXFLAGS="${CXXFLAGS} ${FREETYPE_CFLAGS}"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+                  [#include <ft2build.h>
+#include FT_OUTLINE_H
+int moveTo(const FT_Vector *, void *);],
+                  [FT_Outline_MoveToFunc f = moveTo])],
+                  [ov_cv_ft_const=const],
+                  [ov_cv_ft_const= ])
+CXXFLAGS="${save_CXXFLAGS}"
+AC_LANG_POP])
+       AS_IF([test -n "$ov_cv_ft_const"],
+             [AC_MSG_RESULT([yes])],
+             [AC_MSG_RESULT([no])])
+])
 
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [mozilla-js >= 1.8.1.8], , [have_libmozjs=no])
-#
-# JS_BeginRequest should be there only if SpiderMonkey was built with
-# -DJS_THREADSAFE.
-#
-AC_CHECK_LIB([js], [JS_BeginRequest], [have_libjs=yes], [have_libjs=no])
-
+PKG_CHECK_MODULES([JS], [xulrunner-js], ,
+                  [PKG_CHECK_MODULES([JS], [firefox-js], ,
+                                     [PKG_CHECK_MODULES([JS], [seamonkey-js], ,
+                                                        [PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], ,
+                                                                           [have_libmozjs=no])])])])
+AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 #
 # Ensure that we can, in fact, find and use the SpiderMonkey headers.
 #
@@ -207,7 +229,20 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
                   [OPENVRML_GL_HAVE_OPENGL_GLU_H=0])
 AC_SUBST([OPENVRML_GL_HAVE_OPENGL_GLU_H])
 
-PKG_CHECK_MODULES([SDL], [sdl], [have_sdl=yes], [have_sdl=no])
+AC_PATH_PROG([SDL_CONFIG], [sdl-config])
+have_sdl=no
+#
+# sdl-config sometimes emits an rpath flag pointing at its library
+# installation directory.  We don't want this, as it prevents users from
+# linking sdl-viewer against, for example, a locally compiled libGL when a
+# version of the library also exists in SDL's library installation
+# directory, typically /usr/lib.
+#
+AS_IF([test -n "${SDL_CONFIG}"],
+      [have_sdl=yes SDL_CFLAGS=`$SDL_CONFIG --cflags` SDL_LIBS=`$SDL_CONFIG --libs`
+       SDL_LIBS=`echo $SDL_LIBS | sed 's/-Wl,-rpath,[[^ ]]* //'`])
+AC_SUBST([SDL_CFLAGS])
+AC_SUBST([SDL_LIBS])
 
 #
 # Use exception specifications?
@@ -239,7 +274,7 @@ AC_ARG_ENABLE([png-textures],
               [AC_HELP_STRING([--disable-png-textures],
                               [disable support for rendering PNG textures])])
 AS_IF([test X$enable_png_textures != Xno],
-      [AS_IF([test X$have_libpng = Xno -a -z "${PNG_LIBS+x}"],
+      [AS_IF([test X$have_libpng = Xno],
              [AC_MSG_FAILURE([libpng is required for PNG texture support])])
        AC_DEFINE([OPENVRML_ENABLE_PNG_TEXTURES], [1],
                  [Defined if support for rendering PNG textures is enabled.])])
@@ -269,7 +304,9 @@ AS_IF([test X$enable_render_text_node != Xno],
        AS_IF([test X$have_freetype = Xno -a -z "${FREETYPE_LIBS+x}"],
              [AC_MSG_FAILURE([FreeType is required for rendering Text nodes])])
        AC_DEFINE([OPENVRML_ENABLE_RENDER_TEXT_NODE], [1],
-                 [Defined if support for rendering Text nodes is enabled.])])
+                 [Defined if support for rendering Text nodes is enabled.])
+       AC_DEFINE_UNQUOTED([OPENVRML_FT_CONST], [$ov_cv_ft_const],
+                          [const for FreeType callback function signatures.])])
 
 #
 # Script node JavaScript support
@@ -282,12 +319,30 @@ AC_ARG_WITH([libjs],
             [AC_HELP_STRING([--with-libjs],
                             [use libjs for JavaScript support])])
 AS_IF([test X$enable_script_node_javascript = Xno],
-      [JS_CFLAGS="" JS_LIBS=""],
-      [AS_IF([test X$with_libjs = Xyes -a X$have_libjs = Xyes],
-             [AS_IF([test -z "${JS_CFLAGS+x}"], [JS_CFLAGS="-DXP_UNIX -DJS_THREADSAFE"])
-              AS_IF([test -z "${JS_LIBS+x}"], [JS_LIBS="-ljs"])])
-       AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "${JS_LIBS+x}" \) -o X$have_jsapi_h != Xyes],
-             [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support.  If you are trying to build --with-libjs, make sure that libjs has been built with thread safety enabled.])])])
+[JS_CFLAGS="" JS_LIBS=""],
+[AS_IF([test X$with_libjs = Xyes -a X$have_libjs = Xyes],
+       [AS_IF([test -z "${JS_CFLAGS+x}"], [JS_CFLAGS=""])
+        AS_IF([test -z "${JS_LIBS+x}"], [JS_LIBS="-ljs"])])
+AS_IF([test \( \( X$have_libmozjs = Xno -o \( X$with_libjs = Xyes -a X$have_libjs = Xno \) \) -a -z "${JS_LIBS+x}" \) -o X$have_jsapi_h != Xyes],
+      [AC_MSG_FAILURE([SpiderMonkey is required for Script node JavaScript support])])
+#
+# Figure out whether we need to add -DJS_THREADSAFE to JS_CFLAGS.
+#
+# libmozjs from Firefox 2.0 needs -DJS_THREADSAFE; but the Cflags from
+# the pkg-config metadata don't include it.  And if we're using the stand-
+# alone SpiderMonkey, we don't have any pkg-config metadata to go on.
+#
+# Fortunately, there are a few library symbols that should be defined
+# only if the installed binary was built with JS_THREADSAFE.  We'll
+# try to link with them.
+#
+AS_IF([test "X$JS_CFLAGS" = "X`echo "$JS_CFLAGS" | sed s/JS_THREADSAFE//`"],
+[ov_save_LDFLAGS=$LDFLAGS
+LDFLAGS="$JS_LIBS $LDFLAGS"
+AC_LINK_IFELSE([AC_LANG_CALL([], [JS_BeginRequest])],
+	       [JS_CFLAGS="$JS_CFLAGS -DJS_THREADSAFE"])
+LDFLAGS=$ov_save_LDFLAGS
+])])
 AC_SUBST([JS_CFLAGS])
 AC_SUBST([JS_LIBS])
 
@@ -297,10 +352,7 @@ AM_CONDITIONAL([ENABLE_SCRIPT_NODE_JAVASCRIPT],
 #
 # Script node Java support
 #
-AC_ARG_VAR([JAVA_HOME], [Path to Java installation])
-AS_IF([test -z "${JRE_HOME+x}"],
-      [AS_IF([test -n "${JAVA_HOME+x}"], [JRE_HOME=$JAVA_HOME])])
-AC_ARG_VAR([JRE_HOME], [Path to Java Runtime Environment [default=JAVA_HOME/jre]])
+AC_ARG_VAR([JAVA_HOME], [Path to Java Runtime Environment])
 AC_ARG_ENABLE([script-node-java],
               [AC_HELP_STRING([--disable-script-node-java],
                               [disable Script node Java support])])
@@ -317,12 +369,12 @@ AS_IF([test X$enable_script_node_java != Xno],
        [AC_MSG_FAILURE([The Java Native Interface is required for Script node Java support.])])
 AC_DEFINE_UNQUOTED([OPENVRML_JNI_CONST], [$ov_cv_jni_const],
                    [const for JNI function signatures.])
-AS_IF([test -z "${JRE_HOME+x}" -a -z "${JAVA_HOME+x}"],
-[AC_MSG_WARN([Neither JRE_HOME nor JAVA_HOME has been set.  If neither of these is set at build time, at least one of them must be set at run time to locate libjvm.])],
+AS_IF([test -z "${JAVA_HOME+x}"],
+[AC_MSG_WARN([JAVA_HOME has not been set.  JAVA_HOME must be set at run time to locate libjvm.])],
 [ov_save_LDFLAGS=$LDFLAGS
-LDFLAGS="-L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JRE_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
+LDFLAGS="-L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/client -L$JAVA_HOME/lib/$OPENVRML_JVM_ARCH/server $LDFLAGS"
 AC_CHECK_LIB([jvm], [JNI_CreateJavaVM], [LIBS=$LIBS],
-             [AC_MSG_WARN([no libjvm found at JRE_HOME])])
+             [AC_MSG_WARN([no libjvm found at JAVA_HOME])])
 LDFLAGS=$ov_save_LDFLAGS
 ])
 java_subdir=java])
@@ -401,10 +453,10 @@ AM_CONDITIONAL([ENABLE_MOZILLA_PLUGIN],
 AC_ARG_ENABLE([examples],
               [AC_HELP_STRING([--disable-examples],
                               [do not build the example programs])])
-AS_IF([test X$enable_examples != Xno -a \( X$have_sdl != Xyes -o -z "${SDL_LIBS+x}" \)],
+AS_IF([test "X$enable_examples" != "Xno" -a "X$have_sdl" != "Xyes"],
       [AC_MSG_FAILURE([SDL is required for the example programs])])
 AM_CONDITIONAL([ENABLE_EXAMPLES],
-               [test X$enable_examples != Xno -a X$have_sdl = Xyes])
+               [test "X$enable_examples" != "Xno" -a "X$have_sdl" = "Xyes"])
 
 #
 # Apply Rez to executables? (Only seem to need this if we're using the Apple

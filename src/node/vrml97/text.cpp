@@ -3,8 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2010
-//   Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -42,8 +41,8 @@
 #   endif
 # endif
 # include <boost/array.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ptr_container/ptr_vector.hpp>
-# include <boost/scope_exit.hpp>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
@@ -1240,6 +1239,7 @@ namespace {
     {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using std::vector;
+        using namespace boost::multi_index::detail;  // for scope_guard
 
         FT_Error error = FT_Err_Ok;
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_SCALE);
@@ -1247,9 +1247,7 @@ namespace {
         FT_Glyph glyph;
         error = FT_Get_Glyph(face->glyph, &glyph);
         assert(error == FT_Err_Ok);
-        BOOST_SCOPE_EXIT((&glyph)) {
-            FT_Done_Glyph(glyph);
-        } BOOST_SCOPE_EXIT_END
+        scope_guard glyph_guard = make_guard(FT_Done_Glyph, glyph);
         static FT_Outline_Funcs outlineFuncs = { moveTo_,
                                                  lineTo_,
                                                  conicTo_,
@@ -2342,6 +2340,8 @@ namespace {
     {
         using std::vector;
 # ifdef _WIN32
+        using namespace boost::multi_index::detail;  // for scope_guard
+
         LOGFONT lf;
         lf.lfHeight =         0;
         lf.lfWidth =          0;
@@ -2358,9 +2358,7 @@ namespace {
         lf.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
 
         HDC hdc = CreateCompatibleDC(0);
-        BOOST_SCOPE_EXIT((hdc)) {
-            DeleteDC(hdc);
-        } BOOST_SCOPE_EXIT_END
+        scope_guard hdc_guard = make_guard(&DeleteDC, hdc);
         HFONT hfont = CreateFontIndirect(&lf);
         SelectObject(hdc, hfont);
         TCHAR faceName[256] = {};
@@ -2388,9 +2386,7 @@ namespace {
                 KEY_READ,
                 &fontsKey);
         if (result != ERROR_SUCCESS) { /* bail */ }
-        BOOST_SCOPE_EXIT((fontsKey)) {
-            RegCloseKey(fontsKey);
-        } BOOST_SCOPE_EXIT_END
+        scope_guard fontsKey_guard = make_guard(&RegCloseKey, fontsKey);
 
         DWORD maxValueNameLen, maxValueLen;
         result = RegQueryInfoKey(fontsKey,
@@ -2455,6 +2451,7 @@ namespace {
         face_index = 0;
 # else
         using std::string;
+        using namespace boost::multi_index::detail;  // for scope_guard
 
         string fontName;
         //
@@ -2497,9 +2494,9 @@ namespace {
             FcNameParse(unsigned_char_string(fontName.begin(),
                                              fontName.end()).c_str());
         if (!initialPattern) { throw std::bad_alloc(); }
-        BOOST_SCOPE_EXIT((initialPattern)) {
-            FcPatternDestroy(initialPattern);
-        } BOOST_SCOPE_EXIT_END
+        scope_guard initialPattern_guard =
+            make_guard(&FcPatternDestroy, initialPattern);
+        boost::ignore_unused_variable_warning(initialPattern_guard);
 
         //
         // Set the language.
@@ -2518,9 +2515,9 @@ namespace {
             FcFontMatch(0, initialPattern, &result);
         if (result != FcResultMatch) { throw FontconfigError(result); }
         assert(matchedPattern);
-        BOOST_SCOPE_EXIT((matchedPattern)) {
-            FcPatternDestroy(matchedPattern);
-        } BOOST_SCOPE_EXIT_END
+        scope_guard matchedPattern_guard =
+            make_guard(&FcPatternDestroy, matchedPattern);
+        boost::ignore_unused_variable_warning(matchedPattern_guard);
 
         FcChar8 * filename_c_str = 0;
         result = FcPatternGetString(matchedPattern,
@@ -2788,15 +2785,92 @@ openvrml_node_vrml97::text_metatype::~text_metatype() OPENVRML_NOTHROW
 # endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 }
 
-# define TEXT_INTERFACE_SEQ                              \
-    ((exposedfield, mfstring, "string", string_))        \
-    ((exposedfield, sfnode,   "fontStyle", font_style_)) \
-    ((exposedfield, mffloat,  "length",    length_))     \
-    ((exposedfield, sffloat,  "maxExtent", max_extent_)) \
-    ((exposedfield, sfnode,   "metadata",  metadata))    \
-    ((field,        sfbool,   "solid",     solid_))
+/**
+ * @brief Create a node_type.
+ *
+ * @param id            the name for the new node_type.
+ * @param interfaces    the interfaces for the new node_type.
+ *
+ * @return a boost::shared_ptr<node_type> to a node_type capable of
+ *         creating Text nodes.
+ *
+ * @exception openvrml::unsupported_interface if @p interfaces includes an interface
+ *                                  not supported by text_metatype.
+ * @exception std::bad_alloc        if memory allocation fails.
+ */
+const boost::shared_ptr<openvrml::node_type>
+openvrml_node_vrml97::text_metatype::
+do_create_type(const std::string & id,
+               const openvrml::node_interface_set & interfaces) const
+    OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc)
+{
+    using namespace openvrml;
+    using namespace openvrml::node_impl_util;
 
-OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(openvrml_node_vrml97,
-                                              text_metatype,
-                                              text_node,
-                                              TEXT_INTERFACE_SEQ)
+    typedef boost::array<node_interface, 6> supported_interfaces_t;
+    static const supported_interfaces_t supported_interfaces = {
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mfstring_id,
+                       "string"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "fontStyle"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::mffloat_id,
+                       "length"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sffloat_id,
+                       "maxExtent"),
+        node_interface(node_interface::exposedfield_id,
+                       field_value::sfnode_id,
+                       "metadata"),
+        node_interface(node_interface::field_id,
+                       field_value::sfbool_id,
+                       "solid")
+    };
+
+    typedef node_impl_util::node_type_impl<text_node> node_type_t;
+
+    const boost::shared_ptr<node_type> type(new node_type_t(*this, id));
+    node_type_t & textNodeType = static_cast<node_type_t &>(*type);
+    for (node_interface_set::const_iterator interface(interfaces.begin());
+         interface != interfaces.end();
+         ++interface) {
+        supported_interfaces_t::const_iterator supported_interface =
+            supported_interfaces.begin() - 1;
+        if (*interface == *++supported_interface) {
+            textNodeType.add_exposedfield(
+                supported_interface->field_type,
+                supported_interface->id,
+                &text_node::string_);
+        } else if (*interface == *++supported_interface) {
+            textNodeType.add_exposedfield(
+                supported_interface->field_type,
+                supported_interface->id,
+                &text_node::font_style_);
+        } else if (*interface == *++supported_interface) {
+            textNodeType.add_exposedfield(
+                supported_interface->field_type,
+                supported_interface->id,
+                &text_node::length_);
+        } else if (*interface == *++supported_interface) {
+            textNodeType.add_exposedfield(
+                supported_interface->field_type,
+                supported_interface->id,
+                &text_node::max_extent_);
+        } else if (*interface == *++supported_interface) {
+            textNodeType.add_exposedfield(
+                supported_interface->field_type,
+                supported_interface->id,
+                &text_node::metadata);
+        } else if (*interface == *++supported_interface) {
+            textNodeType.add_field(
+                supported_interface->field_type,
+                supported_interface->id,
+                &text_node::solid_);
+        } else {
+            throw unsupported_interface(*interface);
+        }
+    }
+    return type;
+}

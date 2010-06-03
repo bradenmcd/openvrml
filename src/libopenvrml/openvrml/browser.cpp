@@ -3,8 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-//   Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +32,7 @@
 # include <boost/function.hpp>
 # include <boost/functional.hpp>
 # include <boost/lexical_cast.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 # include <algorithm>
 # include <functional>
 # include <cerrno>
@@ -47,6 +47,8 @@
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
+
+using namespace boost::multi_index::detail;  // for scope_guard
 
 /**
  * @file openvrml/browser.h
@@ -1087,22 +1089,6 @@ openvrml::node_metatype_registry::register_node_metatype(
 /**
  * @internal
  *
- * @var boost::shared_mutex openvrml::browser::node_metatype_registry_mutex_
- *
- * @brief Mutex to protect @c #node_metatype_registry_.
- */
-
-/**
- * @internal
- *
- * @var boost::scoped_ptr<openvrml::node_metatype_registry> openvrml::browser::node_metatype_registry_
- *
- * @brief The @c browser's @c node_type_registry.
- */
-
-/**
- * @internal
- *
  * @var std::auto_ptr<openvrml::null_node_metatype> openvrml::browser::null_node_metatype_
  *
  * @brief &ldquo;Null&rdquo; class object for default nodes (e.g.,
@@ -1497,8 +1483,6 @@ openvrml::browser::~browser() OPENVRML_NOTHROW
     shared_lock<shared_mutex> scene_lock(this->scene_mutex_);
     if (this->scene_) { this->scene_->shutdown(now); }
 
-    shared_lock<shared_mutex>
-        node_metatype_registry_lock(this->node_metatype_registry_mutex_);
     this->node_metatype_registry_->impl_->shutdown(now);
     assert(this->viewpoint_list_.empty());
     assert(this->scoped_lights_.empty());
@@ -1529,11 +1513,6 @@ add_node_metatype(const node_metatype_id & id,
                   const boost::shared_ptr<openvrml::node_metatype> & metatype)
     OPENVRML_THROW2(std::invalid_argument, std::bad_alloc)
 {
-    using boost::shared_lock;
-    using boost::shared_mutex;
-
-    shared_lock<shared_mutex>
-        node_metatype_registry_lock(this->node_metatype_registry_mutex_);
     this->node_metatype_registry_->impl_->register_node_metatype(id, metatype);
 }
 
@@ -1549,11 +1528,6 @@ const boost::shared_ptr<openvrml::node_metatype>
 openvrml::browser::node_metatype(const node_metatype_id & id) const
     OPENVRML_NOTHROW
 {
-    using boost::shared_lock;
-    using boost::shared_mutex;
-
-    shared_lock<shared_mutex>
-        node_metatype_registry_lock(this->node_metatype_registry_mutex_);
     return this->node_metatype_registry_->impl_->find(id);
 }
 
@@ -1903,9 +1877,7 @@ void openvrml::browser::set_world(resource_istream & in)
         using boost::upgrade_to_unique_lock;
         using local::uri;
 
-        upgrade_lock<shared_mutex>
-            scene_lock(this->scene_mutex_),
-            node_metatype_registry_lock(this->node_metatype_registry_mutex_);
+        upgrade_lock<shared_mutex> scene_lock(this->scene_mutex_);
 
         //
         // Clear out the current scene.
@@ -1921,9 +1893,7 @@ void openvrml::browser::set_world(resource_istream & in)
                      browser_event(*this, browser_event::shutdown)));
 
         {
-            upgrade_to_unique_lock<shared_mutex>
-                scene_write_lock(scene_lock),
-                node_metatype_registry_write_lock(node_metatype_registry_lock);
+            upgrade_to_unique_lock<shared_mutex> scene_write_lock(scene_lock);
 
             this->scene_.reset();
             assert(this->viewpoint_list_.empty());
@@ -1995,9 +1965,7 @@ openvrml::browser::replace_world(
 {
     using boost::shared_lock;
     using boost::shared_mutex;
-    shared_lock<shared_mutex>
-        scene_lock(this->scene_mutex_),
-        node_metatype_registry_lock(this->node_metatype_registry_mutex_);
+    shared_lock<shared_mutex> lock(this->scene_mutex_);
     const double now = browser::current_time();
     this->scene_->nodes(nodes);
     this->scene_->initialize(now);
@@ -2345,7 +2313,6 @@ void openvrml::browser::render()
 
     shared_lock<shared_mutex>
         scene_lock(this->scene_mutex_),
-        node_metatype_registry_lock(this->node_metatype_registry_mutex_),
         active_viewpoint_lock_(this->active_viewpoint_mutex_);
 
     if (!this->viewer_) { return; }
