@@ -1,3 +1,17 @@
+2010-06-02 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.18.6 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Update to 9:4:0.
+
 2010-05-28 Braden McDaniel  <braden@endoframe.com>
 
 	Use jpeg_decompress_struct.out_color_components to determine the
