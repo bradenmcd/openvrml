@@ -307,6 +307,11 @@ namespace openvrml {
             {}
         } on_mfcolorrgba;
 
+        struct on_mfdouble_t {
+            void operator()(const std::vector<double> & /* val */) const
+            {}
+        } on_mfdouble;
+
         struct on_mfimage_t {
             void operator()(const std::vector<image> & /* val */) const
             {}
@@ -652,6 +657,13 @@ namespace openvrml {
 
             static const boost::spirit::classic::functor_parser<
                 typename base_t::template mftype_parser<
+                    boost::spirit::classic::real_parser<
+                        double,
+                        boost::spirit::classic::real_parser_policies<double> > > >
+                mfdouble_p;
+
+            static const boost::spirit::classic::functor_parser<
+                typename base_t::template mftype_parser<
                     boost::spirit::classic::functor_parser<openvrml::image_parser> > >
                 mfimage_p;
 
@@ -692,6 +704,9 @@ namespace openvrml {
                 case field_value::mfcolorrgba_id:
                     r = mfcolorrgba_p[base_t::self.actions.on_mfcolorrgba];
                     break;
+                case field_value::mfdouble_id:
+                    r = mfdouble_p[base_t::self.actions.on_mfdouble];
+                    break;
                 case field_value::mfimage_id:
                     r = mfimage_p[base_t::self.actions.on_mfimage];
                     break;
@@ -728,6 +743,23 @@ namespace openvrml {
         template mftype_parser<
             boost::spirit::classic::functor_parser<openvrml::bool_parser>
         >(bool_p);
+
+    template <typename Actions, typename ErrorHandler>
+    template <typename ScannerT>
+    const boost::spirit::classic::functor_parser<
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
+        template mftype_parser<
+            boost::spirit::classic::real_parser<
+                double,
+                boost::spirit::classic::real_parser_policies<double> > > >
+    x3d_vrml_grammar<Actions, ErrorHandler>::definition<ScannerT>::mfdouble_p =
+        typename vrml97_grammar<Actions, ErrorHandler>::template definition<ScannerT>::
+        template mftype_parser<
+            boost::spirit::classic::real_parser<
+               double,
+               boost::spirit::classic::real_parser_policies<double>
+            >
+        >(boost::spirit::classic::real_p);
 
     template <typename Actions, typename ErrorHandler>
     template <typename ScannerT>
