@@ -1205,6 +1205,7 @@ namespace openvrml {
                 on_sfvec3d(*this),
                 on_mfbool(*this),
                 on_mfcolorrgba(*this),
+                on_mfdouble(*this),
                 on_mfimage(*this),
                 on_mfvec2d(*this),
                 on_mfvec3d(*this),
@@ -1369,6 +1370,23 @@ namespace openvrml {
             private:
                 vrml97_parse_actions & actions_;
             } on_mfcolorrgba;
+
+            struct on_mfdouble_t {
+                explicit on_mfdouble_t(vrml97_parse_actions & actions):
+                    actions_(actions)
+                {}
+
+                void operator()(const std::vector<double> & val) const
+                {
+                    assert(!actions_.ps.empty());
+                    assert(!actions_.ps.top().node_data_.empty());
+                    actions_.ps.top().node_data_.top()
+                        .current_field_value->second->assign(mfdouble(val));
+                }
+
+            private:
+                vrml97_parse_actions & actions_;
+            } on_mfdouble;
 
             struct on_mfimage_t {
                 explicit on_mfimage_t(vrml97_parse_actions & actions):
