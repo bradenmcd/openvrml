@@ -230,6 +230,7 @@ namespace {
     void image_texture_node::do_render_texture(openvrml::viewer & v)
     {
         this->update_texture();
+        boost::shared_lock<boost::shared_mutex> lock(this->image_mutex_);
         v.insert_texture(*this, true);
     }
 
