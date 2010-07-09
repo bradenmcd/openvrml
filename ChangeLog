@@ -1,5 +1,17 @@
 2010-07-09 Braden McDaniel  <braden@endoframe.com>
 
+	Removed OPENVRML_API from event listener/emitter class templates.
+
+	These trigger "inconsistent dll linkage" warnings from the
+	Microsoft compiler.  For gcc's purposes, forcing symbol visibility
+	for templates should be unnecessary.
+
+	* src/libopenvrml/openvrml/event.h
+	(field_value_listener): Removed OPENVRML_API.
+	(field_value_emitter): Removed OPENVRML_API.
+
+2010-07-09 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/local/parse_vrml.h
 	(openvrml::local::x3d_vrml_parse_actions::on_mfdouble): Added
 	semantic action for mfdouble.
