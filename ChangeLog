@@ -1,3 +1,9 @@
+2010-07-09 Braden McDaniel  <braden@endoframe.com>
+
+	* src/node/vrml97/image_texture.cpp
+	(image_texture_node::do_render_texture(openvrml::viewer &)): Lock
+	the image_mutex_ before rendering the texture.
+
 2010-06-06 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/x3d_vrml_grammar.h: Added MFDouble
