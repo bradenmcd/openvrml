@@ -130,6 +130,7 @@ namespace {
         max_extent_exposedfield max_extent_;
         openvrml::sfbool solid_;
 
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         class glyph_geometry {
             std::vector<openvrml::vec2f> coord_;
             std::vector<openvrml::int32> coord_index_;
@@ -225,7 +226,6 @@ namespace {
 
         boost::scoped_ptr<text_geometry> text_geometry_;
 
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         typedef std::vector<std::vector<char32_t> > ucs4_string_t;
         typedef std::map<FT_UInt, glyph_geometry> glyph_geometry_map_t;
 
@@ -620,6 +620,8 @@ namespace {
      * @brief maxExtent exposedField.
      */
 
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+
     /**
      * @internal
      *
@@ -653,8 +655,6 @@ namespace {
      * @brief The distance the pen should advance vertically after drawing the
      *      glyph.
      */
-
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     /**
      * @internal
@@ -1219,7 +1219,6 @@ namespace {
         }
         return 0;
     }
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     /**
      * @brief Construct from a set of contours.
@@ -1238,7 +1237,6 @@ namespace {
         advance_width_(0),
         advance_height_(0)
     {
-# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using std::vector;
 
         FT_Error error = FT_Err_Ok;
@@ -1282,7 +1280,6 @@ namespace {
             get_polygons_(glyphContours.contours);
         std::for_each(polygons.begin(), polygons.end(),
                       draw_glyph_polygon(this->coord_, this->coord_index_));
-# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
     }
 
     /**
@@ -1923,6 +1920,7 @@ namespace {
      * glyph_geometry_map for rapid retrieval the next time the glyph is
      * encountered.
      */
+# endif // OPENVRML_ENABLE_RENDER_TEXT_NODE
 
     /**
      * @var text_node::text_geometry text_node::text_geometry_
@@ -1958,8 +1956,10 @@ namespace {
      */
     text_node::~text_node() OPENVRML_NOTHROW
     {
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         // shutdown sets this->face to 0.
         assert(this->face == 0);
+# endif
     }
 
     /**
@@ -1984,6 +1984,7 @@ namespace {
     void text_node::do_render_geometry(openvrml::viewer & v,
                                        openvrml::rendering_context)
     {
+# ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
         using openvrml::int32;
         if (this->text_geometry_) {
             v.insert_shell(*this,
@@ -1997,6 +1998,7 @@ namespace {
                            this->text_geometry_->tex_coord(),
                            std::vector<int32>()); // texCoordIndex
         }
+# endif
         if (this->font_style_.value()) {
             this->font_style_.value()->modified(false);
         }
