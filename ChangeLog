@@ -1,3 +1,9 @@
+2010-07-12 Braden McDaniel  <braden@endoframe.com>
+
+	* src/node/vrml/text.cpp
+	(openvrml_node_vrml97::text_metatype::text_metatype(openvrml::browser&):
+	Only call FcInit for non-Windows platforms.
+
 2010-07-10 Braden McDaniel  <braden@endoframe.com>
 
 	* src/node/vrml97/text.cpp: Fixed to compile without

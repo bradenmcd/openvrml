@@ -2764,10 +2764,12 @@ text_metatype(openvrml::browser & browser):
     node_metatype(text_metatype::id, browser)
 {
 # ifdef OPENVRML_ENABLE_RENDER_TEXT_NODE
+#   ifndef _WIN32
     FcBool fc_succeeded = FcInit();
     if (!fc_succeeded) {
         browser.err("error initializing fontconfig library");
     }
+#   endif
 
     FT_Error ft_error = 0;
     ft_error = FT_Init_FreeType(&this->freeTypeLibrary);
