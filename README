@@ -308,10 +308,6 @@ to compile OpenVRML without the GNU build tools.
      Include support for rendering text using the Text node.  Requires
      fontconfig and FreeType.
 
- OPENVRML_FT_CONST
-     Define to "const" if "const" should be used in FreeType callback
-     function signatures; define to empty otherwise.
-
  OPENVRML_JNI_CONST
      Define to "const" if "const" should be used in JNI function
      signatures; define to empty otherwise.

@@ -1,5 +1,9 @@
 2010-08-01 Braden McDaniel  <braden@endoframe.com>
 
+	* README: Removed obsolete reference to OPENVRML_FT_CONST.
+
+2010-08-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comments
 	for OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE and supporting
 	macros.
