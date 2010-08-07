@@ -31,13 +31,15 @@
  *
  * @internal
  *
+ * @hideinitializer
+ *
  * @brief Get an element of a node interface tuple.
  *
  * @param index an index value from 0&ndash;3.
  * @param tuple a node interface
  *              <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/tuples.html">tuple</a>
  *              as described for use with
- *              @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ *              @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  */
 
 /**
@@ -45,18 +47,22 @@
  *
  * @internal
  *
+ * @hideinitializer
+ *
  * @brief Create an @c openvrml::node_interface from an interface tuple.
  *
  * @param interface_tuple   a node interface
  *                          <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/tuples.html">tuple</a>
  *                          as described for use with
- *                          @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ *                          @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  */
 
 /**
  * @def OPENVRML_DEFINE_SUPPORTED_INTERFACES_ELEM(r, data, i, elem)
  *
  * @internal
+ *
+ * @hideinitializer
  *
  * @brief A helper macro used with
  *        @c <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/ref/seq_for_each_i.html">
@@ -68,7 +74,7 @@
  * @param elem  a node interface
  *              <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/tuples.html">tuple</a>
  *              as described for use with
- *              @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ *              @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  */
 
 /**
@@ -76,17 +82,19 @@
  *
  * @internal
  *
+ * @hideinitializer
+ *
  * @brief The type of an array of supported @c openvrml::node_interface%s for
  *        a @c openvrml::node_metatype.
  *
  * This is a helper macro used in the implementation of
- * @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ * @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  *
  * @param interface_seq a <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/sequences.html">
  *                      Boost.Preprocessor sequence</a> of
  *                      <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/tuples.html">tuples</a>,
  *                      as provided to
- *                      @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ *                      @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  */
 
 /**
@@ -94,13 +102,15 @@
  *
  * @internal
  *
- * @brief A helper macro used to implement @c OPENVRML_ADD_INTERFACE_TUPLE.
+ * @hideinitializer
+ *
+ * @brief A helper macro used to implement @c #OPENVRML_ADD_INTERFACE_TUPLE.
  *
  * @param node_type_obj         a concrete @c openvrml::node_type instance.
  * @param interface_type        a node interface type name, in all lower-case, as
  *                              described for use in the interface tuple
  *                              provided to
- *                              @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ *                              @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  * @param supported_interface   a @c openvrml::node_interface.
  * @param node                  a @c openvrml::node instance type.
  * @param handler               the name of a @p node member function that
@@ -112,8 +122,10 @@
  *
  * @internal
  *
+ * @hideinitializer
+ *
  * @brief A helper macro used to implement
- *        @c OPENVRML_ADD_INTERFACE_ALTERNATIVE.
+ *        @c #OPENVRML_ADD_INTERFACE_ALTERNATIVE.
  *
  * @param node_type_obj         a concrete @c openvrml::node_type instance.
  * @param node_instance_type    a concrete @c openvrml::node instance type.
@@ -121,13 +133,15 @@
  * @param interface_tuple       a node interface
  *                              <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/tuples.html">tuple</a>
  *                              as described for use with
- *                              @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ *                              @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  */
 
 /**
  * @def OPENVRML_ADD_INTERFACE_ALTERNATIVE(r, data, elem)
  *
  * @internal
+ *
+ * @hideinitializer
  *
  * @brief A helper macro used with
  *        @c <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/ref/seq_for_each.html">
@@ -144,15 +158,27 @@
  * @param elem  
  *
  * This macro is used in the implementation of
- * @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
+ * @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
  */
 
 /**
  * @def OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(namespace_scope, node_metatype_type, node_instance_type, interface_seq)
  *
+ * @hideinitializer
+ *
  * @brief Implement @c openvrml::node_metatype::do_create_type.
  *
- * @p interface_seq consists of tuples of the following form:
+ * Most significantly, @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE
+ * generates a concrete @c openvrml::node_type implementation; by using this
+ * macro to implement @c openvrml::node_metatype::do_create_type, one can
+ * avoid manually creating a concrete @c openvrml::node_type.
+ *
+ * @c OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE is instantiated using a
+ * <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/index.html">
+ * Boost.Preprocessor</a> <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/sequences.html">sequence</a> of
+ * <a href="http://www.boost.org/doc/libs/release/libs/preprocessor/doc/data/tuples.html">
+ * tuples</a>.  @p interface_seq consists of tuples of the following form:
+ *
  * <pre>
  * (@e interface-type, @e value-type, @e interface-id, @e handler)
  * </pre>
@@ -195,6 +221,8 @@
  *                              defining the supported interfaces for the node
  *                              implementation and the @p node_instance_type
  *                              member that implements them.
+ *
+ * @sa openvrml::node_metatype::do_create_type
  */
 
 /**
@@ -406,9 +434,16 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
 /**
  * @class openvrml::node_impl_util::node_type_impl openvrml/node_impl_util.h
  *
- * @brief A template for concrete @c node_types.
+ * @brief A template for concrete @c node_type%s.
+ *
+ * @c node_type_impl is instantiated by
+ * @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE to provide a concrete
+ * @c node_type implementation.  Most node implementations can simply use that
+ * macro and consider this class template an implementation detail.
  *
  * @tparam Node a concrete node type.
+ *
+ * @sa OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE
  */
 
 /**
@@ -1187,7 +1222,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  * @brief Concrete pointer-to-member wrapper.
  *
  * @tparam EventEmitterMember   the type of an @c openvrml::event_emitter
- *                              member of Node.
+ *                              member of @p Node.
  */
 
 /**
@@ -1204,7 +1239,7 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  *
  * @brief Make an @c #event_emitter_ptr_ptr to a field member of a node.
  *
- * @tparam EventEmitterMember   an @c event_emitter member of Node.
+ * @tparam EventEmitterMember   an @c event_emitter member of @p Node.
  * @tparam DeducedNode          the deduced type of the node may differ from
  *                              its actual concrete type in the contexts in
  *                              which this function is used.  We @c static_cast

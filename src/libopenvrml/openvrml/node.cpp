@@ -725,8 +725,8 @@ bool openvrml::operator!=(const node_metatype_id & lhs,
  * @c node_metatype can be thought of as a &ldquo;supertype&rdquo; of sorts.
  * A given node implementation can support as many node types as there are
  * unique combinations of the interfaces it supports.  The most readily
- * apparent role of the @c node_metatype object for a node implementation is to
- * serve as a factory for these @c node_type%s.
+ * apparent role of the @c node_metatype object for a node implementation is
+ * to serve as a factory for these @c node_type%s.
  */
 
 /**
@@ -887,6 +887,9 @@ openvrml::node_metatype::create_type(const std::string & id,
  *
  * @brief Create a new @c node_type.
  *
+ * Most %node implementations can use
+ * @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE to implement this function.
+ *
  * @param[in] id            the name for the new @c node_type.
  * @param[in] interfaces    a @c node_interface_set containing the
  *                          interfaces for the new type.
@@ -899,6 +902,7 @@ openvrml::node_metatype::create_type(const std::string & id,
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @sa #create_type
+ * @sa OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
@@ -983,6 +987,18 @@ do_create_type(const std::string &, const node_interface_set &) const
  * @class openvrml::node_type openvrml/node.h
  *
  * @brief Type information object for @c node%s.
+ *
+ * Each implementation of a %node in %OpenVRML must have an associated
+ * concrete @c node_type that is capable of creating @c node%s with any subset
+ * of the implementation's supported %node interfaces.  Because these can be
+ * somewhat tedious to create, %OpenVRML includes a good deal of machinery to
+ * facilitate the implementation of these classes.  For most %node
+ * implementations, using @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE to
+ * implement @c node_metatype::do_create_type will generate an appropriate
+ * concrete @c node_type.
+ *
+ * @sa node_metatype::create_type
+ * @sa OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE
  */
 
 /**
