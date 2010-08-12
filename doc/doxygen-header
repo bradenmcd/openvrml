@@ -12,50 +12,22 @@
 <link rel="index" href="functions" title="OpenVRML Compound Members">
 <link rel="appendix" href="conformance" title="Conformance Test Results">
 <style type="text/css">
+@import url("doxygen.css");
 @import url("tabs.css");
 @import url("http://openvrml.org/openvrml.css");
+
+body, table, div, p, dl {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+a:hover {
+  text-decoration: none;
+}
 
 h2 {
   border-bottom-style: solid;
   border-bottom-width: 1px;
-}
-
-/*
- * Doxygen as of 1.5.4-20071217 uses the class "navpath" instead of "nav".
- * For now, we'll do both.
- */
-
-div.nav,
-div.navpath {
-  background-color: transparent;
-  text-align: left;
-  margin-top: 1em;
-  margin-bottom: 1em;
-  border-color: black;
-  border-left: none;
-  border-right: none;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-}
-
-div.nav :link, div.nav :visited,
-div.navpath :link, div.navpath :visited {
-  border-width: 1px;
-  border-style: solid;
-  border-color: silver;
-  padding: 2px;
-}
-
-div.nav :link:hover, div.nav :visited:hover,
-div.navpath :link:hover, div.navpath :visited:hover {
-  border-style: outset;
-  border-color: gray;
-}
-
-div.nav :active,
-div.navpath :active {
-  border-style: inset;
-  border-color: gray;
 }
 
 .body td {
@@ -91,9 +63,13 @@ h1 {
   line-height: 1.2em;
 }
 
+table.memberdecls {
+  width: 100%;
+}
+
 td.memItemLeft, td.memItemRight,
 td.memTemplParams, td.memTemplItemLeft, td.memTemplItemRight,
-.memtemplate, .memname td {
+.memtemplate, .memname td, .navpath li {
   font-family: Consolas, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Lucida Console", LucidaTypewriter, monospace;
 }
 
@@ -187,21 +163,8 @@ td.invalid {
   font-weight: inherit;
 }
 
-div.tabs {
-  background-image: url("tab_b-openvrml.png");
-}
-
-div.tabs span {
-  background-image: url("tab_l-openvrml.png");
-}
-
-div.tabs a {
-  background-image: url("tab_r-openvrml.png");
-  border-bottom: 1px solid #a5a5a5;
-}
-
-div.tabs a:link, div.tabs a:visited, div.tabs a:active, div.tabs a:hover {
-  color: black;
+.tablist a, .tablist a:hover {
+  border-style: none;
 }
 
 table {
@@ -216,7 +179,7 @@ table {
   margin-right: 10%;
 }
 
-h1 + h3 {
+h3.version {
   text-align: center;
 }
 
@@ -258,6 +221,18 @@ h1 + h3 {
 .seqnav tr th {
   background-color: transparent;
   border-style: none;
+}
+
+div.header {
+  background-image: url("nav_h-openvrml.png");
+  background-color: rgb(98%, 98%, 98%);
+  border-color: black;
+}
+
+address.footer {
+  text-align: left;
+  padding-right: 0;
+  line-height: 3.0ex;
 }
 </style>
 </head>

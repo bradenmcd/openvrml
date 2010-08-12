@@ -1,3 +1,14 @@
+2010-08-12 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for Doxygen 1.7.1.
+
+	* doc/Doxyfile
+	* doc/Makefile.am
+	* doc/doxygen-header
+	* doc/manual/tab_l-openvrml.png: Removed.
+	* doc/manual/tab_b-openvrml.png: Removed.
+	* doc/manual/tab_r-openvrml.png: Removed.
+
 2010-08-07 Braden McDaniel  <braden@endoframe.com>
 
 	Doc-comment improvements.
