@@ -59,20 +59,25 @@ DOXYGEN_OUTPUT_FILES = \
         $(srcdir)/manual/*.html \
         $(srcdir)/manual/*.map \
         $(srcdir)/manual/*.md5 \
+        $(srcdir)/manual/*__incl.png \
         $(srcdir)/manual/*inherit__graph*.png \
+        $(srcdir)/manual/bc_s.png \
+        $(srcdir)/manual/closed.png \
         $(srcdir)/manual/doxygen.png \
         $(srcdir)/manual/formula.repository \
         $(srcdir)/manual/form_*.png \
-        $(srcdir)/manual/graph_legend.dot \
         $(srcdir)/manual/graph_legend.png \
-        $(srcdir)/manual/tab_?.gif
+        $(srcdir)/manual/nav_f.png \
+        $(srcdir)/manual/nav_h.png \
+        $(srcdir)/manual/open.png \
+        $(srcdir)/manual/tab_a.png \
+        $(srcdir)/manual/tab_b.png \
+        $(srcdir)/manual/tab_h.png \
+        $(srcdir)/manual/tab_s.png
 
 CUSTOMIZED_IMAGES = \
         $(srcdir)/manual/OGL_sm_wht.png \
-        $(srcdir)/manual/x3d-white-on-black.png \
-        $(srcdir)/manual/tab_b-openvrml.png \
-        $(srcdir)/manual/tab_l-openvrml.png \
-        $(srcdir)/manual/tab_r-openvrml.png
+        $(srcdir)/manual/x3d-white-on-black.png
 
 JAVADOC_FILES = \
         $(srcdir)/javadoc/*.html \
