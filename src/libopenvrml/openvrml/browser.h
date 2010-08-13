@@ -22,7 +22,6 @@
 # ifndef OPENVRML_BROWSER_H
 #   define OPENVRML_BROWSER_H
 
-#   include <boost/thread.hpp>
 #   include <openvrml/script.h>
 
 namespace openvrml {
