@@ -1,3 +1,15 @@
+2010-08-13 Braden McDaniel  <braden@endoframe.com>
+
+	Doc-comment improvements: mark private data member documentation
+	"@internal".
+
+	* src/libopenvrml/openvrml/browser.cpp
+	* src/libopenvrml/openvrml/field_value.cpp
+	* src/libopenvrml/openvrml/frustum.cpp
+	* src/libopenvrml/openvrml/node_impl_util.cpp
+	* src/libopenvrml/openvrml/script.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
 2010-08-12 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node_impl_util.h

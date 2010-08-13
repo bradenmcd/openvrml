@@ -496,12 +496,16 @@ extern "C" void OPENVRML_GL_CALLBACK_ tess_error(const GLenum error_code)
  */
 
 /**
+ * @internal
+ *
  * @var size_t openvrml::gl::viewer::modelview_matrix_stack::size
  *
  * @brief The current stack depth.
  */
 
 /**
+ * @internal
+ *
  * @var std::stack<openvrml::mat4f> openvrml::gl::viewer::modelview_matrix_stack::spillover
  *
  * @brief Any matrices that won't fit on the OpenGL modelview matrix stack get

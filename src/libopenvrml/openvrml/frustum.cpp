@@ -142,6 +142,8 @@ openvrml::frustum::frustum(float fovy,
 }
 
 /**
+ * @internal
+ *
  * @brief Update the plane equations.
  *
  * The plane equations are derived from the other members.
