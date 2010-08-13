@@ -1,5 +1,10 @@
 2010-08-13 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node_impl_util.cpp: Doc-comment
+	improvements.
+
+2010-08-13 Braden McDaniel  <braden@endoframe.com>
+
 	Doc-comment improvements: mark private data member documentation
 	"@internal".
 
