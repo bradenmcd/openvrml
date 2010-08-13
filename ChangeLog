@@ -1,5 +1,11 @@
 2010-08-12 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::ptr_to_polymorphic_mem): deref will
+	never throw; use OPENVRML_NOTHROW.
+
+2010-08-12 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml/openvrml/browser.h: Doesn't need to include
 	<boost/thread.hpp>.
 

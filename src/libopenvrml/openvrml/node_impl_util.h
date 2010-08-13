@@ -109,8 +109,9 @@ namespace openvrml {
         class ptr_to_polymorphic_mem {
         public:
             virtual ~ptr_to_polymorphic_mem() OPENVRML_NOTHROW = 0;
-            virtual MemberBase & deref(Object & obj) = 0;
-            virtual const MemberBase & deref(const Object & obj) = 0;
+            virtual MemberBase & deref(Object & obj) OPENVRML_NOTHROW = 0;
+            virtual const MemberBase & deref(const Object & obj)
+                OPENVRML_NOTHROW = 0;
         };
 
         template <typename MemberBase, typename Object>
@@ -129,8 +130,9 @@ namespace openvrml {
             explicit ptr_to_polymorphic_mem_impl(Member Object::* ptr_to_mem);
             virtual ~ptr_to_polymorphic_mem_impl() OPENVRML_NOTHROW;
 
-            virtual MemberBase & deref(Object & obj);
-            virtual const MemberBase & deref(const Object & obj);
+            virtual MemberBase & deref(Object & obj) OPENVRML_NOTHROW;
+            virtual const MemberBase & deref(const Object & obj)
+                OPENVRML_NOTHROW;
         };
 
         template <typename MemberBase, typename Member, typename Object>
@@ -147,7 +149,7 @@ namespace openvrml {
         template <typename MemberBase, typename Member, typename Object>
         MemberBase &
         ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        deref(Object & obj)
+        deref(Object & obj) OPENVRML_NOTHROW
         {
             return obj.*this->ptr_to_mem;
         }
@@ -155,7 +157,7 @@ namespace openvrml {
         template <typename MemberBase, typename Member, typename Object>
         const MemberBase &
         ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        deref(const Object & obj)
+        deref(const Object & obj) OPENVRML_NOTHROW
         {
             return obj.*this->ptr_to_mem;
         }
