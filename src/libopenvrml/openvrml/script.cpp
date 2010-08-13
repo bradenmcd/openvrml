@@ -581,6 +581,8 @@ find_using_uri_scheme(const std::string & uri_scheme) const
 }
 
 /**
+ * @internal
+ *
  * @var boost::scoped_ptr<openvrml::script_factory_registry::impl> openvrml::script_factory_registry::impl_
  *
  * @brief A pointer to the implementation instance.
@@ -708,24 +710,32 @@ openvrml::script_node::script_factory_registry_;
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::script_node & openvrml::script_node::eventout::node_
  *
  * @brief The containing @c script_node.
  */
 
 /**
+ * @internal
+ *
  * @var boost::scoped_ptr<openvrml::field_value> openvrml::script_node::eventout::value_
  *
  * @brief The value.
  */
 
 /**
+ * @internal
+ *
  * @var bool openvrml::script_node::eventout::modified_
  *
  * @brief Flag to indicate whether @a value_ has been modified.
  */
 
 /**
+ * @internal
+ *
  * @var boost::scoped_ptr<openvrml::event_emitter> openvrml::script_node::eventout::emitter_
  *
  * @brief Event emitter.
@@ -1758,18 +1768,24 @@ openvrml::script_node::metadata_changed_emitter::do_eventout_id() const
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::script_node::set_metadata_listener openvrml::script_node::set_metadata_listener_
  *
  * @brief @c set_metadata @c eventIn handler.
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::sfnode openvrml::script_node::metadata_
  *
  * @brief @c metadata field value.
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::script_node::metadata_changed_emitter openvrml::script_node::metadata_changed_emitter_
  *
  * @brief @c metadata_changed @c eventOut emitter.

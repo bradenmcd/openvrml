@@ -993,12 +993,16 @@ void openvrml::browser_listener::browser_changed(const browser_event & event)
  */
 
 /**
+ * @internal
+ *
  * @var boost::scoped_ptr<openvrml::local::node_metatype_registry_impl> openvrml::node_metatype_registry::impl_
  *
  * @brief A pointer to the implementation object.
  */
 
 /**
+ * @internal
+ *
  * @brief Construct.
  *
  * @param[in] b a @c browser.
@@ -1301,12 +1305,16 @@ openvrml::node_metatype_registry::register_node_metatype(
  */
 
 /**
+ * @internal
+ *
  * @var bool openvrml::browser::modified_
  *
  * @brief Flag to indicate whether the @c browser has been modified.
  */
 
 /**
+ * @internal
+ *
  * @var boost::shared_mutex openvrml::browser::modified_mutex_
  *
  * @brief Mutex protecting @c #modified_.
@@ -1392,24 +1400,32 @@ double openvrml::browser::current_time() OPENVRML_NOTHROW
 }
 
 /**
+ * @internal
+ *
  * @var boost::mutex openvrml::browser::out_mutex_
  *
  * @brief Mutex guarding @c #out_.
  */
 
 /**
+ * @internal
+ *
  * @var std::ostream & openvrml::browser::out_
  *
  * @brief Output stream, generally for console output.
  */
 
 /**
+ * @internal
+ *
  * @var boost::mutex openvrml::browser::err_mutex_
  *
  * @brief Mutex guarding @c #err_.
  */
 
 /**
+ * @internal
+ *
  * @var std::ostream & openvrml::browser::err_
  *
  * @brief Error output stream.

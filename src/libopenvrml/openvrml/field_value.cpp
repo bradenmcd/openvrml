@@ -207,6 +207,8 @@ openvrml::field_value::counted_impl_base::clone() const OPENVRML_THROW1(std::bad
  */
 
 /**
+ * @internal
+ *
  * @var std::auto_ptr<openvrml::field_value::counted_impl_base> openvrml::field_value::counted_impl_
  *
  * @brief Reference-counted implementation.

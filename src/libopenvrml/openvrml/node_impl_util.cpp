@@ -105,6 +105,8 @@
  */
 
 /**
+ * @internal
+ *
  * @var Member Object::* openvrml::node_impl_util::ptr_to_polymorphic_mem_impl::ptr_to_mem
  *
  * @brief Pointer-to-member.
@@ -276,6 +278,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::node_interface_set openvrml::node_impl_util::node_type_impl<Node>::interfaces_
  *
  * @brief The set of @c node_interfaces for the
@@ -283,6 +287,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @typedef std::map<std::string, openvrml::node_impl_util::node_type_impl<Node>::field_ptr_ptr> openvrml::node_impl_util::node_type_impl<Node>::field_value_map_t
  *
  * @brief Map of pointers to @c openvrml::field_value node
@@ -290,6 +296,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @typedef std::map<std::string, openvrml::node_impl_util::node_type_impl<Node>::event_listener_ptr_ptr> openvrml::node_impl_util::node_type_impl<Node>::event_listener_map_t
  *
  * @brief Map of pointers to @c openvrml::event_listener node
@@ -297,6 +305,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @typedef std::map<std::string, openvrml::node_impl_util::node_type_impl<Node>::event_emitter_ptr_ptr> openvrml::node_impl_util::node_type_impl<Node>::event_emitter_map_t
  *
  * @brief Map of pointers to @c openvrml::event_emitter node
@@ -304,6 +314,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::node_impl_util::node_type_impl<Node>::field_value_map_t openvrml::node_impl_util::node_type_impl<Node>::field_value_map
  *
  * @brief Map of pointers to @c openvrml::field_value node
@@ -311,6 +323,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::node_impl_util::node_type_impl<Node>::event_listener_map_t openvrml::node_impl_util::node_type_impl<Node>::event_listener_map
  *
  * @brief Map of pointers to @c openvrml::event_listener node
@@ -318,6 +332,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::node_impl_util::node_type_impl<Node>::event_emitter_map_t openvrml::node_impl_util::node_type_impl<Node>::event_emitter_map
  *
  * @brief Map of pointers to @c openvrml::event_emitter node
@@ -337,18 +353,24 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @typedef openvrml::node_impl_util::node_type_impl<Node> openvrml::node_impl_util::event_listener_base<Node>::node_type_t
  *
  * @brief The concrete @c node_type.
  */
 
 /**
+ * @internal
+ *
  * @typedef openvrml::node_impl_util::event_listener_base<Node>::node_type_t::event_listener_map_t openvrml::node_impl_util::event_listener_base<Node>::event_listener_map_t
  *
  * @brief The map of @c event_listeners.
  */
 
 /**
+ * @internal
+ *
  * @struct openvrml::node_impl_util::event_listener_base::event_listener_equal_to
  *
  * @brief A model of
@@ -418,24 +440,32 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @var openvrml::node * openvrml::node_impl_util::event_emitter_base::node_
  *
  * @brief The @c node with which the @c event_emitter is associated.
  */
 
 /**
+ * @internal
+ *
  * @typedef openvrml::node_impl_util::node_type_impl<Node> openvrml::node_impl_util::event_emitter_base::node_type_t
  *
  * @brief The concrete @c node_type.
  */
 
 /**
+ * @internal
+ *
  * @typedef openvrml::node_impl_util::event_emitter_base::node_type_t::event_emitter_map_t openvrml::node_impl_util::event_emitter_base::event_emitter_map_t
  *
  * @brief The map of @c event_emitters.
  */
 
 /**
+ * @internal
+ *
  * @struct openvrml::node_impl_util::event_emitter_base::event_emitter_equal_to
  *
  * @brief A model of
@@ -448,6 +478,8 @@ openvrml::node_impl_util::abstract_node_type::~abstract_node_type()
  */
 
 /**
+ * @internal
+ *
  * @var const openvrml::node_impl_util::event_emitter_base<Node> * openvrml::node_impl_util::event_emitter_base::event_emitter_equal_to::emitter_
  *
  * @brief The @c event_emitter to test against.
