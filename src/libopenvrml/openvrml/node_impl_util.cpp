@@ -206,7 +206,11 @@
  * @endcode
  *
  * In this example, @c set_wiggly_listener, @c wiggly, and @c height_field are
- * all members of the @c my_node class.
+ * all members of the @c my_node class.  @c set_wiggly_listener is an instance
+ * of a class that inherits
+ * @c openvrml::node_field_value_listener@<openvrml::sfbool>; @c wiggly is an
+ * instance of @c openvrml::sfbool; and @c height_field is an instance of
+ * @c openvrml::exposedfield@<openvrml::mffloat>.
  *
  * @param namespace_scope       the namespace scope where @p node_instance_type
  *                              is defined.
@@ -237,12 +241,15 @@
  * more concise by abstracting and providing code that many node
  * implementations are likely to have in common.
  *
- * In particular, @c node_type_impl centralizes the logic for
- * generalized field access. By using an instance of this class
- * template for your @c openvrml::node_type implementation you can
- * avoid a lot of tedious and repetitive code to implement
- * @c openvrml::node::do_field, @c openvrml::node::do_event_listener, and
- * @c openvrml::node::do_event_emitter.
+ * In particular, @c node_type_impl centralizes the logic for generalized
+ * field access. By using an instance of this class template for your @c
+ * openvrml::node_type implementation you can avoid a lot of tedious and
+ * repetitive code to implement @c openvrml::node::do_field,
+ * @c openvrml::node::do_event_listener, and
+ * @c openvrml::node::do_event_emitter.  Most %node implementations can take
+ * advantage of this simply by using the
+ * @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE macro when implementing a
+ * concrete @c openvrml::node_metatype.
  */
 
 /**
