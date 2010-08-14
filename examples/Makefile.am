@@ -29,4 +29,6 @@ pretty_print_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml
 pretty_print_LDADD = $(top_builddir)/src/libopenvrml/libopenvrml.la
 
-EXTRA_DIST = $(sdl_viewer_SOURCES) $(pretty_print_SOURCES)
+EXTRA_DIST = $(sdl_viewer_SOURCES) $(pretty_print_SOURCES) \
+        pretty-print.vcxproj \
+        sdl-viewer.vcxproj

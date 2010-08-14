@@ -86,6 +86,8 @@ EXTRA_DIST = \
         package.m4 \
         testsuite.at \
         testsuite \
+        parse-x3dvrml.vcxproj \
+        parse-vrml97.vcxproj \
         vrml97/bad/unrecognized-node.wrl \
         vrml97/bad/unrecognized-field.wrl \
         vrml97/bad/value-for-eventin-in-proto.wrl \

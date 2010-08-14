@@ -3574,8 +3574,10 @@ const openvrml::mat4f openvrml::operator*(const mat4f & lhs, const mat4f & rhs)
 
 namespace {
 
-    OPENVRML_LOCAL float det3(const openvrml::mat4f & mat,
-                              int r1, int r2, int r3, int c1, int c2, int c3)
+    OPENVRML_LOCAL
+    float det3(const openvrml::mat4f & mat,
+               const size_t r1, const size_t r2, const size_t r3,
+               const size_t c1, const size_t c2, const size_t c3)
         OPENVRML_NOTHROW
     {
         return mat[r1][c1] * mat[r2][c2] * mat[r3][c3]

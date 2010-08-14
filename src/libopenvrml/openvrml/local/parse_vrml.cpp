@@ -47,8 +47,8 @@ namespace {
         {}
 
         template <typename ScannerT, typename ErrorT>
-        boost::spirit::classic::error_status<> operator()(const ScannerT & scan,
-                                                 const ErrorT & err) const
+        boost::spirit::classic::error_status<>
+        operator()(const ScannerT & scan, const ErrorT & err) const
         {
             using std::endl;
             using std::string;
@@ -79,8 +79,8 @@ namespace {
             // need enough information to create an invalid_vrml exception in
             // parse_vrml.
             //
-            this->error_.line = fpos.line;
-            this->error_.column = fpos.column;
+            this->error_.line = static_cast<size_t>(fpos.line);
+            this->error_.column = static_cast<size_t>(fpos.column);
             this->error_.message = x3d_vrml_parse_error_msg(err.descriptor);
 
             return error_status<>(error_status<>::fail);

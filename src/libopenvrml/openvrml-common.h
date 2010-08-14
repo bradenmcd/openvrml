@@ -21,7 +21,11 @@
 # ifndef OPENVRML_COMMON_H
 #   define OPENVRML_COMMON_H
 
-#   include <openvrml-config.h>
+#   ifdef _WIN32
+#     include <openvrml-config-win32.h>
+#   else
+#     include <openvrml-config.h>
+#   endif
 
 #   ifndef BOOST_SPIRIT_THREADSAFE
 #     define BOOST_SPIRIT_THREADSAFE
