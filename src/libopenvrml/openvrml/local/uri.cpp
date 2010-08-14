@@ -145,93 +145,96 @@ void openvrml::local::uri::swap(uri & id) OPENVRML_NOTHROW
     using std::string;
     using std::swap;
 
-    const string::size_type id_scheme_begin_distance =
+    typedef std::iterator_traits<string::const_iterator>::difference_type
+        diff_t;
+
+    const diff_t id_scheme_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.scheme_begin);
-    const string::size_type id_scheme_end_distance =
+    const diff_t id_scheme_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.scheme_end);
-    const string::size_type id_scheme_specific_part_begin_distance =
+    const diff_t id_scheme_specific_part_begin_distance =
         distance<string::const_iterator>(id.str_.begin(),
                                          id.scheme_specific_part_begin);
-    const string::size_type id_scheme_specific_part_end_distance =
+    const diff_t id_scheme_specific_part_end_distance =
         distance<string::const_iterator>(id.str_.begin(),
                                          id.scheme_specific_part_end);
-    const string::size_type id_authority_begin_distance =
+    const diff_t id_authority_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.authority_begin);
-    const string::size_type id_authority_end_distance =
+    const diff_t id_authority_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.authority_end);
-    const string::size_type id_userinfo_begin_distance =
+    const diff_t id_userinfo_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.userinfo_begin);
-    const string::size_type id_userinfo_end_distance =
+    const diff_t id_userinfo_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.userinfo_end);
-    const string::size_type id_host_begin_distance =
+    const diff_t id_host_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.host_begin);
-    const string::size_type id_host_end_distance =
+    const diff_t id_host_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.host_end);
-    const string::size_type id_port_begin_distance =
+    const diff_t id_port_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.port_begin);
-    const string::size_type id_port_end_distance =
+    const diff_t id_port_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.port_end);
-    const string::size_type id_path_begin_distance =
+    const diff_t id_path_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.path_begin);
-    const string::size_type id_path_end_distance =
+    const diff_t id_path_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.path_end);
-    const string::size_type id_query_begin_distance =
+    const diff_t id_query_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.query_begin);
-    const string::size_type id_query_end_distance =
+    const diff_t id_query_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.query_end);
-    const string::size_type id_fragment_begin_distance =
+    const diff_t id_fragment_begin_distance =
         distance<string::const_iterator>(id.str_.begin(), id.fragment_begin);
-    const string::size_type id_fragment_end_distance =
+    const diff_t id_fragment_end_distance =
         distance<string::const_iterator>(id.str_.begin(), id.fragment_end);
 
-    const string::size_type this_scheme_begin_distance =
+    const diff_t this_scheme_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->scheme_begin);
-    const string::size_type this_scheme_end_distance =
+    const diff_t this_scheme_end_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->scheme_end);
-    const string::size_type this_scheme_specific_part_begin_distance =
+    const diff_t this_scheme_specific_part_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->scheme_specific_part_begin);
-    const string::size_type this_scheme_specific_part_end_distance =
+    const diff_t this_scheme_specific_part_end_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->scheme_specific_part_end);
-    const string::size_type this_authority_begin_distance =
+    const diff_t this_authority_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->authority_begin);
-    const string::size_type this_authority_end_distance =
+    const diff_t this_authority_end_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->authority_end);
-    const string::size_type this_userinfo_begin_distance =
+    const diff_t this_userinfo_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->userinfo_begin);
-    const string::size_type this_userinfo_end_distance =
+    const diff_t this_userinfo_end_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->userinfo_end);
-    const string::size_type this_host_begin_distance =
+    const diff_t this_host_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->host_begin);
-    const string::size_type this_host_end_distance =
+    const diff_t this_host_end_distance =
         distance<string::const_iterator>(this->str_.begin(), this->host_end);
-    const string::size_type this_port_begin_distance =
+    const diff_t this_port_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->port_begin);
-    const string::size_type this_port_end_distance =
+    const diff_t this_port_end_distance =
         distance<string::const_iterator>(this->str_.begin(), this->port_end);
-    const string::size_type this_path_begin_distance =
+    const diff_t this_path_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->path_begin);
-    const string::size_type this_path_end_distance =
+    const diff_t this_path_end_distance =
         distance<string::const_iterator>(this->str_.begin(), this->path_end);
-    const string::size_type this_query_begin_distance =
+    const diff_t this_query_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->query_begin);
-    const string::size_type this_query_end_distance =
+    const diff_t this_query_end_distance =
         distance<string::const_iterator>(this->str_.begin(), this->query_end);
-    const string::size_type this_fragment_begin_distance =
+    const diff_t this_fragment_begin_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->fragment_begin);
-    const string::size_type this_fragment_end_distance =
+    const diff_t this_fragment_end_distance =
         distance<string::const_iterator>(this->str_.begin(),
                                          this->fragment_end);
 

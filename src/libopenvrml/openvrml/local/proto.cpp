@@ -376,7 +376,6 @@ namespace {
         const node_path_t & path,
         const std::vector<boost::intrusive_ptr<openvrml::node> > & root)
     {
-        using boost::next;
         using boost::prior;
         using openvrml::node;
         using openvrml::field_value;
@@ -396,7 +395,7 @@ namespace {
                 } else if (path_element->field_type == field_value::mfnode_id)
                 {
                     result = result->field<mfnode>(path_element->field_id)
-                        .value()[next(path_element)->index].get();
+                        .value()[boost::next(path_element)->index].get();
                 } else {
                     assert(!"invalid path_element->field_type");
                 }
@@ -676,15 +675,19 @@ private:
                         //
                         node_interface_set::const_iterator
                             proto_interface =
-                            find_if(this->node_metatype.interfaces_.begin(),
-                                    this->node_metatype.interfaces_.end(),
-                                    bind(logical_or<bool>(),
-                                         bind(node_interface_matches_exposedfield(),
-                                              _1,
-                                              is_mapping->first),
-                                         bind(node_interface_matches_field(),
-                                              _1,
-                                              is_mapping->first)));
+                            find_if(
+                                this->node_metatype.interfaces_.begin(),
+                                this->node_metatype.interfaces_.end(),
+                                boost::bind(
+                                    logical_or<bool>(),
+                                    boost::bind(
+                                        node_interface_matches_exposedfield(),
+                                        _1,
+                                        is_mapping->first),
+                                    boost::bind(
+                                        node_interface_matches_field(),
+                                        _1,
+                                        is_mapping->first)));
 
                         if (proto_interface
                             != this->node_metatype.interfaces_.end()) {

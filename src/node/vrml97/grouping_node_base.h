@@ -170,7 +170,7 @@ namespace openvrml_node_vrml97 {
 
         Derived & group = dynamic_cast<Derived &>(this->node());
 
-        typedef std::vector<boost::intrusive_ptr<node> > children_t;
+        typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
         children_t children = group.children_.value();
 
         for (children_t::const_iterator n = value.value().begin();

@@ -1973,7 +1973,7 @@ script_node(script_node_metatype & class_,
         initial_value_map::const_iterator initial_value;
         pair<string, shared_ptr<field_value> > field_value;
         auto_ptr<openvrml::field_value> cloned_field_value;
-        bool succeeded;
+        bool succeeded = false;
         switch (interface_->type) {
         case node_interface::eventin_id:
             listener = create_listener(interface_->field_type,

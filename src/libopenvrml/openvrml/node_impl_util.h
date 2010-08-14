@@ -560,7 +560,7 @@ namespace openvrml {
                 explicit exposedfield(
                     openvrml::node & node,
                     const typename FieldValue::value_type & value =
-#   if defined(_MSC_VER) && (_MSC_VER == 1400 || _MSC_VER == 1500)
+#   if defined(_MSC_VER) && (_MSC_VER == 1400 || _MSC_VER == 1500 || _MSC_VER == 1600)
                     FieldValue::value_type()
 #   else
                     typename FieldValue::value_type()

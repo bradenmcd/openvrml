@@ -36,7 +36,7 @@ void openvrml::local::throw_runtime_error_from_win32_system_error(LONG result)
                   result,
                   LANG_USER_DEFAULT,
                   reinterpret_cast< LPTSTR >(&buf),
-                  0,
+                  DWORD(0),
                   0);
 
     throw std::runtime_error(buf);

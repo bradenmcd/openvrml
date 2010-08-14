@@ -194,14 +194,19 @@ namespace openvrml {
         using boost::bind;
         node_interface_set::const_iterator pos =
             find_if(interfaces.begin(), interfaces.end(),
-                    bind(node_interface_matches_field(), _1, id));
+                    boost::bind(node_interface_matches_field(), _1, id));
         if (pos == interfaces.end()) {
             using std::logical_or;
             pos =
                 find_if(interfaces.begin(), interfaces.end(),
-                        bind(logical_or<bool>(),
-                             bind(node_interface_matches_eventin(), _1, id),
-                             bind(node_interface_matches_eventout(), _1, id)));
+                        boost::bind(
+                            logical_or<bool>(),
+                            boost::bind(node_interface_matches_eventin(),
+                                        _1,
+                                        id),
+                            boost::bind(node_interface_matches_eventout(),
+                                        _1,
+                                        id)));
         }
         return pos;
     }

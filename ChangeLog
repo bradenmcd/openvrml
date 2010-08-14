@@ -1,3 +1,156 @@
+2010-08-14 Braden McDaniel  <braden@endoframe.com>
+
+	Added Visual C++ 2010 project files.  These files are now
+	interspersed in the source directories.
+
+	* Makefile.am
+	(EXTRA_DIST): Add OpenVRML.sln.
+	* OpenVRML.sln: Added file.
+	* examples/sdl_viewer.cpp
+	(resource_fetcher::do_get_resource(const
+	std::string&)::file_resource_istream::do_type() const): Fully
+	qualify boost::next.
+	* examples/Makefile.am
+	(EXTRA_DIST): Add Visual Studio 2010 project files.
+	* examples/sdl-viewer.vcxproj: Added file.
+	* examples/pretty-print.vcxproj: Added file.
+	* ide-projects/Makefile.am: Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/OpenVRML.sln: Removed
+	file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/javascript/javascript.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc:
+	Moved to src/libopenvrml/openvrml.rc.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h:
+	Moved to src/libopenvrml/openvrml-config-win32.h.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-dl/openvrml-dl.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc:
+	Moved to src/libopenvrml-gl/openvrml-gl.rc.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl-config.h:
+	Moved to src/libopenvrml-gl/openvrml-gl-config-win32.h.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-vrml97/parse-vrml97.vcproj: Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/parse-x3dvrml/parse-x3dvrml.vcproj: Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/pretty-print/pretty-print.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/sdl-viewer/sdl-viewer.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/vrml97/vrml97.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-cad-geometry/x3d-cad-geometry.vcproj: Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-core/x3d-core.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-dis/x3d-dis.vcproj: Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-environmental-effects/x3d-environmental-effects.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-event-utilities/x3d-event-utilities.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geometry2d/x3d-geometry2d.vcproj: Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-geospatial/x3d-geospatial.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-grouping/x3d-grouping.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-h-anim/x3d-h-anim.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-interpolation/x3d-interpolation.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-key-device-sensor/x3d-key-device-sensor.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-networking/x3d-networking.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-nurbs/x3d-nurbs.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-rendering/x3d-rendering.vcproj: Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-shape/x3d-shape.vcproj:
+	Removed file.
+	* ide-projects/Windows/VisualC9_0/OpenVRML/x3d-texturing/x3d-texturing.vcproj:
+	Removed file.
+	* src/Makefile.am
+	(EXTRA_DIST): Add Visual C++ project files, resource scripts, and
+	Windows-specific config headers.
+	* src/libopenvrml/openvrml/basetypes.cpp
+	(det3(const openvrml::mat4f &, size_t, size_t, size_t, size_t,
+	size_t, size_t)): Use size_t instead of int to suppress a warning
+	from the Microsoft compiler.
+	* src/libopenvrml/openvrml/local/error.cpp
+	(openvrml::local::throw_runtime_error_from_win32_system_error(LONG)):
+	Cast to DWORD to suppress a warning from the Microsoft compiler.
+	* src/libopenvrml/openvrml/local/parse_vrml.cpp
+	(error_handler::operator()(const ScannerT &, const ErrorT &)
+	const): static_cast to size_t to suppress warnings from the
+	Microsoft compiler.
+	* src/libopenvrml/openvrml/local/proto.cpp
+	(resolve_node_path(const node_path_t &, const
+	std::vector<boost::intrusive_ptr<openvrml::node> > &)): Fully
+	qualify boost::next.
+	(field_value_cloner::clone_node(const
+	boost::intrusive_ptr<openvrml::node> &)): Fully qualify
+	boost::bind.
+	* src/libopenvrml/openvrml/local/uri.cpp
+	(openvrml::local::uri::swap(uri &)): Use difference_type instead
+	of size_type to suppress a warning from the Microsoft compiler.
+	* src/libopenvrml/openvrml/script.cpp
+	(openvrml::script_node::script_node(script_node_metatype &, const
+	boost::shared_ptr<openvrml::scope> &, const node_interface_set &,
+	const initial_value_map &)): Initialize "succeeded" to suppress
+	warning.
+	* src/libopenvrml/openvrml/node_impl_util.h
+	(openvrml::node_impl_util::exposedfield<FieldValue>::exposedfield(openvrml::node&,
+	const typename FieldValue::value_type &)): cl 16.0 still has the
+	"typename" bustage.
+	* src/libopenvrml/openvrml/node.h
+	(openvrml::find_interface(const node_interface_set &, const
+	std::string &)): Fully qualify boost::bind.
+	* src/libopenvrml/openvrml.rc: Moved from
+	ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc.
+	* src/libopenvrml/openvrml-config-win32.h: Moved from
+	ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-config.h.
+	* src/libopenvrml/openvrml.vcxproj: Added file.
+	* src/libopenvrml/openvrml-common.h: Include
+	<openvrml-config-win32.h> on Windows.
+	* src/libopenvrml-gl/openvrml-gl.rc: Moved from
+	ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc.
+	* src/libopenvrml-gl/openvrml-gl-config-win32.h: Moved from
+	ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml-gl-config.h.
+	* src/libopenvrml-gl/openvrml-gl.vcxproj: Added file.
+	* src/libopenvrml-gl/openvrml-gl-common.h: Include
+	<openvrml-gl-config-win32.h> on Windows.
+	* src/local/libopenvrml-dl/openvrml-dl.vcxproj: Added file.
+	* src/node/vrml97/grouping_node_base.h
+	(openvrml_node_vrml97::grouping_node_base<Derived>::add_children_listener::do_process_event(const
+	openvrml::mfnode &, double)): The Microsoft compiler requires
+	openvrml::node to be fully qualified here.
+	* src/node/vrml97/vrml97.vcxproj: Added file.
+	* src/node/x3d-cad-geometry/x3d-cad-geometry.vcxproj: Added file.
+	* src/node/x3d-core/x3d-core.vcxproj: Added file.
+	* src/node/x3d-dis/x3d-dis.vcxproj: Added file.
+	* src/node/x3d-environmental-effects/x3d-environmental-effects.vcxproj:
+	Added file.
+	* src/node/x3d-event-utilities/x3d-event-utilities.vcxproj: Added
+	file.
+	* src/node/x3d-geometry2d/x3d-geometry2d.vcxproj: Added file.
+	* src/node/x3d-geospatial/x3d-geospatial.vcxproj: Added file.
+	* src/node/x3d-grouping/x3d-grouping.vcxproj: Added file.
+	* src/node/x3d-h-anim/x3d-h-anim.vcxproj: Added file.
+	* src/node/x3d-interpolation/x3d-interpolation.vcxproj: Added
+	file.
+	* src/node/x3d-key-device-sensor/x3d-key-device-sensor.vcxproj:
+	Added file.
+	* src/node/x3d-networking/x3d-networking.vcxproj: Added file.
+	* src/node/x3d-nurbs/x3d-nurbs.vcxproj: Added file.
+	* src/node/x3d-rendering/x3d-rendering.vcxproj: Added file.
+	* src/node/x3d-shape/x3d-shape.vcxproj: Added file.
+	* src/node/x3d-texturing/x3d-texturing.vcxproj: Added file.
+	* src/script/javascript.vcxproj: Added file.
+	* tests/parse-vrml97.vcxproj: Added file.
+	* tests/parse-x3dvrml.vcxproj: Added file.
+	* tests/Makefile.am
+	(EXTRA_DIST): Add Visual Studio 2010 project files.
+
 2010-08-13 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/node_impl_util.cpp: Doc-comment

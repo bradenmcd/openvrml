@@ -21,6 +21,10 @@
 # ifndef OPENVRML_GL_COMMON_H
 #   define OPENVRML_GL_COMMON_H
 
-#   include <openvrml-gl-config.h>
+#   ifdef _WIN32
+#     include <openvrml-gl-config-win32.h>
+#   else
+#     include <openvrml-gl-config.h>
+#   endif
 
 # endif // OPENVRML_GL_COMMON_H
