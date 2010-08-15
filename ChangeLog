@@ -1,3 +1,7 @@
+2010-08-15 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Removed reference to ide-projects/Makefile.
+
 2010-08-14 Braden McDaniel  <braden@endoframe.com>
 
 	Added Visual C++ 2010 project files.  These files are now

@@ -4,7 +4,6 @@ AC_COPYRIGHT([Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([Makefile]
                 [doc/Makefile]
-                [ide-projects/Makefile]
                 [models/Makefile]
                 [models/audio/Makefile]
                 [models/textures/Makefile]
