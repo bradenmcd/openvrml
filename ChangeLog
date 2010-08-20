@@ -1,6 +1,12 @@
 2010-08-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/event.h
+	(openvrml::event_emitter::listeners<FieldValue>() const): Must use
+	dynamic_cast due to virtual inheritance.
+
+2010-08-20 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/event.h
 	(openvrml::event_emitter): Changed add and remove member function
 	templates from public to protected access.
 
