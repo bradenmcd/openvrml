@@ -177,15 +177,15 @@ namespace openvrml {
         const std::string eventout_id() const OPENVRML_NOTHROW;
         double last_time() const OPENVRML_NOTHROW;
 
+    protected:
+        explicit event_emitter(const field_value & value) OPENVRML_NOTHROW;
+
         template <typename FieldValue>
         bool add(field_value_listener<FieldValue> & listener)
             OPENVRML_THROW1(std::bad_alloc);
         template <typename FieldValue>
         bool remove(field_value_listener<FieldValue> & listener)
             OPENVRML_NOTHROW;
-
-    protected:
-        explicit event_emitter(const field_value & value) OPENVRML_NOTHROW;
 
         template <typename FieldValue>
         const std::set<field_value_listener<FieldValue> *> listeners() const

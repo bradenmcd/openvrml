@@ -1,3 +1,9 @@
+2010-08-20 Braden McDaniel  <braden@endoframe.com>
+
+	* src/libopenvrml/openvrml/event.h
+	(openvrml::event_emitter): Changed add and remove member function
+	templates from public to protected access.
+
 2010-08-19 Braden McDaniel  <braden@endoframe.com>
 
 	Added an accessor to get the set of listeners listening to an
