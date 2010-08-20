@@ -229,8 +229,10 @@ namespace openvrml {
             field_value_listener<FieldValue> *
             operator()(event_listener * listener) const OPENVRML_NOTHROW
             {
-                return boost::polymorphic_downcast<
-                    field_value_listener<FieldValue> *>(listener);
+                field_value_listener<FieldValue> * const result =
+                    dynamic_cast<field_value_listener<FieldValue> *>(listener);
+                assert(result);
+                return result;
             }
         };
         boost::shared_lock<boost::shared_mutex> lock(this->listeners_mutex_);
