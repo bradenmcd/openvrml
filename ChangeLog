@@ -1,3 +1,16 @@
+2010-08-19 Braden McDaniel  <braden@endoframe.com>
+
+	Added an accessor to get the set of listeners listening to an
+	event emitter.
+
+	* src/libopenvrml/openvrml/event.cpp: Added doc-comments for
+	listener accessors.
+	* src/libopenvrml/openvrml/event.h
+	(openvrml::event_emitter::listeners<FieldValue>() const): Added
+	member function template to get (a copy of) the set of listeners.
+	(openvrml::field_value_emitter<FieldValue>::listeners() const):
+	Added member function template to get the set of listeners.
+
 2010-08-15 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Removed reference to ide-projects/Makefile.

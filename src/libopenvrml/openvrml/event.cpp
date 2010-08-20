@@ -545,6 +545,16 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  */
 
 /**
+ * @fn const std::set<field_value_listener<FieldValue> *> event_emitter::listeners() const
+ *
+ * @brief The event listeners currently listening to the emitter.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
+ * @return the event listeners currently listening to the emitter.
+ */
+
+/**
  * @fn void openvrml::event_emitter::emit_event<FieldValue>(double timestamp)
  *
  * @brief Emit an event.
@@ -633,6 +643,16 @@ double openvrml::event_emitter::last_time() const OPENVRML_NOTHROW
  *
  * @return @c true if @p listener was removed; @c false if @p listener was not
  *         removed (if it was not registered for the emitter).
+ */
+
+/**
+ * @fn const std::set<field_value_listener<FieldValue> *> field_value_emitter<FieldValue>::listeners() const
+ *
+ * @brief The event listeners currently listening to the emitter.
+ *
+ * @tparam FieldValue   a @link FieldValueConcept Field Value@endlink.
+ *
+ * @return the event listeners currently listening to the emitter.
  */
 
 /**

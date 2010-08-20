@@ -188,6 +188,10 @@ namespace openvrml {
         explicit event_emitter(const field_value & value) OPENVRML_NOTHROW;
 
         template <typename FieldValue>
+        const std::set<field_value_listener<FieldValue> *> listeners() const
+            OPENVRML_THROW1(std::bad_alloc);
+
+        template <typename FieldValue>
         void emit_event(double timestamp) OPENVRML_THROW1(std::bad_alloc);
 
     private:
@@ -214,6 +218,27 @@ namespace openvrml {
         using boost::shared_mutex;
         unique_lock<shared_mutex> lock(this->listeners_mutex_);
         return (this->listeners_.erase(&listener) > 0);
+    }
+
+    template <typename FieldValue>
+    const std::set<field_value_listener<FieldValue> *>
+    event_emitter::listeners() const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        struct cast {
+            field_value_listener<FieldValue> *
+            operator()(event_listener * listener) const OPENVRML_NOTHROW
+            {
+                return boost::polymorphic_downcast<
+                    field_value_listener<FieldValue> *>(listener);
+            }
+        };
+        boost::shared_lock<boost::shared_mutex> lock(this->listeners_mutex_);
+        std::set<field_value_listener<FieldValue> *> result;
+        std::transform(this->listeners_.begin(), this->listeners_.end(),
+                       inserter(result, result.begin()),
+                       cast());
+        return result;
     }
 
     template <typename FieldValue>
@@ -252,6 +277,9 @@ namespace openvrml {
             OPENVRML_THROW1(std::bad_alloc);
         bool remove(field_value_listener<FieldValue> & listener)
             OPENVRML_NOTHROW;
+
+        const std::set<field_value_listener<FieldValue> *> listeners() const
+            OPENVRML_THROW1(std::bad_alloc);
 
     private:
         virtual void emit_event(double timestamp)
@@ -293,6 +321,14 @@ namespace openvrml {
     remove(field_value_listener<FieldValue> & listener) OPENVRML_NOTHROW
     {
         return this->event_emitter::template remove<FieldValue>(listener);
+    }
+
+    template <typename FieldValue>
+    const std::set<field_value_listener<FieldValue> *>
+    field_value_emitter<FieldValue>::listeners() const
+        OPENVRML_THROW1(std::bad_alloc)
+    {
+        return this->event_emitter::template listeners<FieldValue>();
     }
 
     typedef field_value_emitter<sfbool> sfbool_emitter;
