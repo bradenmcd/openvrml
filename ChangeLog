@@ -1,3 +1,24 @@
+2010-09-13 Braden McDaniel  <braden@endoframe.com>
+
+	Add (partially) parsed nodes to the scene in the event of an
+	exception during parsing; ensure that the browser::initialized
+	event gets send and scene::scene_loaded gets called in the event
+	of an exception during parsing.
+
+	* src/libopenvrml/openvrml/local/parse_vrml.h
+	(openvrml::local::vrml97_parse_actions::~vrml97_parse_actions()):
+	Add (partially) parsed nodes to the scene if the parse_scope stack
+	is not empty (that is, parsing was terminated prior to the end of
+	correctly formed input).
+	* src/libopenvrml/openvrml/scene.cpp
+	(openvrml::scene::load(resource_istream &)): Ensure that
+	scene_loaded gets called in the event of an exception during
+	parsing.
+	* src/libopenvrml/openvrml/browser.cpp
+	(openvrml::browser::set_world(resource_istream &)): Ensure that
+	the browser::initialized event gets sent in the event of an
+	exception during parsing.
+
 2010-08-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/event.h

@@ -33,6 +33,7 @@
 # include <boost/function.hpp>
 # include <boost/functional.hpp>
 # include <boost/lexical_cast.hpp>
+# include <boost/scope_exit.hpp>
 # include <algorithm>
 # include <functional>
 # include <cerrno>
@@ -1913,6 +1914,22 @@ void openvrml::browser::set_world(resource_istream & in)
     using std::for_each;
     using boost::shared_lock;
     using boost::shared_mutex;
+
+    //
+    // Ensure that the "initialized" event is sent even if parsing throws.
+    //
+    browser & self = *this;
+    shared_mutex & listeners_mutex = this->listeners_mutex_;
+    std::set<browser_listener *> & listeners = this->listeners_;
+
+    BOOST_SCOPE_EXIT((&self)(&listeners_mutex)(&listeners)) {
+        shared_lock<shared_mutex> listeners_lock(listeners_mutex);
+        for_each(listeners.begin(), listeners.end(),
+                 boost::bind2nd(
+                     boost::mem_fun(&browser_listener::browser_changed),
+                     browser_event(self, browser_event::initialized)));
+    } BOOST_SCOPE_EXIT_END
+
     {
         using std::string;
         using boost::upgrade_lock;
@@ -1993,11 +2010,6 @@ void openvrml::browser::set_world(resource_istream & in)
         this->modified(true);
         this->new_view = true; // Force resetUserNav
     } // unlock this->scene_mutex_, this->active_viewpoint_mutex_
-
-    shared_lock<shared_mutex> listeners_lock(this->listeners_mutex_);
-    for_each(this->listeners_.begin(), this->listeners_.end(),
-             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
-                            browser_event(*this, browser_event::initialized)));
 }
 
 /**
