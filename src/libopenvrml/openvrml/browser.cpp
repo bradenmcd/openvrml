@@ -1873,6 +1873,18 @@ const std::string openvrml::browser::world_url() const
     return this->scene_->url(); // Throws std::bad_alloc.
 }
 
+void openvrml::browser::send_initialized()
+{
+    using boost::shared_lock;
+    using boost::shared_mutex;
+
+    shared_lock<shared_mutex> listeners_lock(this->listeners_mutex_);
+    for_each(this->listeners_.begin(), this->listeners_.end(),
+             boost::bind2nd(
+                 boost::mem_fun(&browser_listener::browser_changed),
+                 browser_event(*this, browser_event::initialized)));
+}
+
 /**
  * @brief Set the world from a stream.
  *
@@ -1887,6 +1899,13 @@ void openvrml::browser::set_world(resource_istream & in)
     using std::for_each;
     using boost::shared_lock;
     using boost::shared_mutex;
+
+    //
+    // Ensure that the "initialized" event is sent even if parsing throws.
+    //
+    scope_guard initialized_event_guard =
+        make_obj_guard(*this, &browser::send_initialized);
+
     {
         using std::string;
         using boost::upgrade_lock;
@@ -1963,11 +1982,6 @@ void openvrml::browser::set_world(resource_istream & in)
         this->modified(true);
         this->new_view = true; // Force resetUserNav
     } // unlock this->scene_mutex_, this->active_viewpoint_mutex_
-
-    shared_lock<shared_mutex> listeners_lock(this->listeners_mutex_);
-    for_each(this->listeners_.begin(), this->listeners_.end(),
-             boost::bind2nd(boost::mem_fun(&browser_listener::browser_changed),
-                            browser_event(*this, browser_event::initialized)));
 }
 
 /**

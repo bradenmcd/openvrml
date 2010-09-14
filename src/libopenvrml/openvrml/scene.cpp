@@ -3,7 +3,7 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -25,10 +25,13 @@
 # include <openvrml/local/parse_vrml.h>
 # include <private.h>
 # include <boost/function.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
+
+using namespace boost::multi_index::detail;  // for scope_guard
 
 /**
  * @file openvrml/scene.h
@@ -161,6 +164,9 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
 /**
  * @brief Load the @c scene from a stream.
  *
+ * This function calls @c #scene_loaded once parsing the scene from @p in has
+ * completed.
+ *
  * @param[in,out] in    an input stream.
  *
  * @exception bad_media_type    if @p in.type() is not
@@ -171,6 +177,12 @@ openvrml::scene * openvrml::scene::parent() const OPENVRML_NOTHROW
  */
 void openvrml::scene::load(resource_istream & in)
 {
+    //
+    // Ensure that scene_loaded gets called even if parsing throws.
+    //
+    scope_guard scene_loaded_guard =
+        make_obj_guard(*this, &scene::scene_loaded);
+
     {
         using boost::unique_lock;
         using boost::shared_mutex;
@@ -185,7 +197,6 @@ void openvrml::scene::load(resource_istream & in)
         local::parse_vrml(in, in.url(), in.type(),
                           *this, this->nodes_, this->meta_);
     }
-    this->scene_loaded();
 }
 
 /**

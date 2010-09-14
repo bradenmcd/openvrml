@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2009  Braden McDaniel
+// Copyright 2009, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -85,6 +85,75 @@ namespace openvrml {
                 nodes_(nodes)
             {}
 
+            ~vrml97_parse_actions()
+            {
+                //
+                // If the parse scope stack is not empty, we must have hit a
+                // parse error.  Since all inner scopes are associated with
+                // PROTOs, we'll just drop them.  Back up to the top-level
+                // parse scope and use whatever nodes we have there.
+                //
+                if (!this->ps.empty()) {
+                    while (this->ps.size() > 1) { this->ps.pop(); }
+
+                    parse_scope & ps = this->ps.top();
+
+                    //
+                    // When we start out, the children stack is one bigger
+                    // than the node_data stack.  The node_data stack doesn't
+                    // get pushed until we start parsing a node; and it gets
+                    // popped when we finish parsing a node.  Once we start
+                    // parsing a contained node, children gets pushed again
+                    // and it's again one bigger than node_data.
+                    //
+                    // So, if the node_data and children stacks are the same
+                    // size, that means we started parsing a node, but haven't
+                    // gotten as far as parsing any contained nodes.  In this
+                    // case, just go ahead and call on_node_finish to create
+                    // the "current" node and pop the node_data stack.
+                    //
+                    if (ps.node_data_.size() == ps.children.size()) {
+                        this->on_node_finish();
+                    }
+
+                    try {
+                        while (ps.children.size() > 1) {
+                            assert(!ps.node_data_.empty());
+                            node_data & nd = ps.node_data_.top();
+                            assert(nd.current_field_value);
+                            const field_value::type_id current_field_type =
+                                nd.current_field_value->second->type();
+                            if (current_field_type == field_value::sfnode_id) {
+                                nd.current_field_value->second->assign(
+                                    sfnode(ps.children.top().front()));
+                            } else if (current_field_type
+                                       == field_value::mfnode_id) {
+                                nd.current_field_value->second->assign(
+                                    mfnode(ps.children.top()));
+                            } else {
+                                assert(false);
+                            }
+                            ps.children.pop();
+
+                            this->on_node_finish();
+                        }
+
+                        this->on_scene_finish();
+
+                    } catch (std::exception & ex) {
+                        //
+                        // Known possible exceptions here are std::bad_alloc,
+                        // std::bad_cast, and openvrml::unsupported_interface.
+                        // We're in a destructor here, so we don't want to
+                        // throw.
+                        //
+                        this->scene_.browser().err(
+                            "caught exception while constructing scene from "
+                            "invalid data: " + std::string(ex.what()));
+                    }
+                }
+            }
+
             struct on_scene_start_t {
                 explicit on_scene_start_t(vrml97_parse_actions & actions):
                     actions_(actions)
@@ -144,6 +213,7 @@ namespace openvrml {
                         add_route(*from, r->eventout, *to, r->eventin);
                     }
                     this->actions_.ps.pop();
+                    assert(this->actions_.ps.empty());
                 }
 
             private:
@@ -760,7 +830,7 @@ namespace openvrml {
                             .current_field_value->second->assign(
                                 sfnode(ps.children.top().front()));
                     }
-                    actions_.ps.top().children.pop();
+                    ps.children.pop();
                 }
 
             private:
@@ -775,13 +845,13 @@ namespace openvrml {
                 void operator()() const
                 {
                     assert(!this->actions_.ps.empty());
-                    assert(!this->actions_.ps.top().node_data_.empty());
-                    assert(!this->actions_.ps.top().children.empty());
-                    this->actions_.ps.top().node_data_.top()
-                        .current_field_value->second
-                        ->assign(
-                            mfnode(this->actions_.ps.top().children.top()));
-                    this->actions_.ps.top().children.pop();
+                    parse_scope & ps = this->actions_.ps.top();
+
+                    assert(!ps.node_data_.empty());
+                    assert(!ps.children.empty());
+                    ps.node_data_.top().current_field_value->second
+                        ->assign(mfnode(ps.children.top()));
+                    ps.children.pop();
                 }
 
             private:
@@ -1180,6 +1250,9 @@ namespace openvrml {
             //
             // We push a parse_scope onto the stack
             // * at the scene root
+            // * when starting a PROTO definition
+            // * when starting an SFNode or MFNode PROTO default value
+            //
             std::stack<parse_scope> ps;
 
         private:
