@@ -36,6 +36,13 @@
       <field id="texture"          type="SFNode" access-type="inputOutput" />
       <field id="textureTransform" type="SFNode" access-type="inputOutput" />
     </node>
+    <node id="LineProperties"
+          metatype-id="urn:X-openvrml:node:LineProperties">
+      <field id="metadata"             type="SFNode" access-type="inputOutput" />
+      <field id="applied"              type="SFBool" access-type="inputOutput" />
+      <field id="linetype"             type="SFInt32" access-type="inputOutput" />
+      <field id="linewidthScaleFactor" type="SFFloat" access-type="inputOutput" />
+    </node>
   </level>
   <level>
     <node id="Appearance"
@@ -46,6 +53,14 @@
       <field id="material"         type="SFNode" access-type="inputOutput" />
       <field id="texture"          type="SFNode" access-type="inputOutput" />
       <field id="textureTransform" type="SFNode" access-type="inputOutput" />
+    </node>
+    <node id="FillProperties"
+          metatype-id="urn:X-openvrml:node:FillProperties">
+      <field id="metadata"   type="SFNode" access-type="inputOutput" />
+      <field id="filled"     type="SFBool" access-type="inputOutput" />
+      <field id="hatchColor" type="SFColor" access-type="inputOutput" />
+      <field id="hatched"    type="SFBool" access-type="inputOutput" />
+      <field id="hatchStyle" type="SFInt32" access-type="inputOutput" />
     </node>
   </level>
 </component>
