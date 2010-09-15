@@ -1,3 +1,8 @@
+2010-09-15 Braden McDaniel  <braden@endoframe.com>
+
+	* src/script/javascript.cpp: JS_NewDoubleValue is deprecated; use
+	JS_NewNumberValue instead.
+
 2010-09-14 Braden McDaniel  <braden@endoframe.com>
 
 	* data/component/shape.xml: Added missing descriptions of

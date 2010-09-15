@@ -1331,7 +1331,7 @@ namespace {
             using openvrml::sffloat;
             const sffloat & f =
                 *polymorphic_downcast<const sffloat *>(&fieldValue);
-            if (!JS_NewDoubleValue(cx, f.value(), &rval)) {
+            if (!JS_NewNumberValue(cx, f.value(), &rval)) {
                 rval = JSVAL_NULL;
             }
         }
@@ -1342,7 +1342,7 @@ namespace {
             using openvrml::sfdouble;
             const sfdouble & f =
                 *polymorphic_downcast<const sfdouble *>(&fieldValue);
-            if (!JS_NewDoubleValue(cx, f.value(), &rval)) {
+            if (!JS_NewNumberValue(cx, f.value(), &rval)) {
                 rval = JSVAL_NULL;
             }
         }
@@ -1403,7 +1403,7 @@ namespace {
         {
             const openvrml::sftime & sftime =
                 *polymorphic_downcast<const openvrml::sftime *>(&fieldValue);
-            if (!JS_NewDoubleValue(cx, sftime.value(), &rval)) {
+            if (!JS_NewNumberValue(cx, sftime.value(), &rval)) {
                 rval = JSVAL_NULL;
             }
         }
@@ -1957,7 +1957,7 @@ namespace {
 
         size_t i;
         for (i = 0; i < numFloats; ++i) {
-            if (!JS_NewDoubleValue(cx, floats[i], &jsvec[i])) {
+            if (!JS_NewNumberValue(cx, floats[i], &jsvec[i])) {
                 return JS_FALSE;
             }
             if (!JS_AddRoot(cx, &jsvec[i])) { return JS_FALSE; }
@@ -2823,7 +2823,7 @@ namespace {
         if (JSVAL_IS_INT(id)
             && JSVAL_TO_INT(id) >= 0
             && JSVAL_TO_INT(id) < 3) {
-            if (!JS_NewDoubleValue(cx, thisColor.value()[JSVAL_TO_INT(id)], rval))
+            if (!JS_NewNumberValue(cx, thisColor.value()[JSVAL_TO_INT(id)], rval))
             {
                 return JS_FALSE;
             }
@@ -3681,7 +3681,7 @@ namespace {
 
         if (JSVAL_IS_INT(id)
             && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4) {
-            if (!JS_NewDoubleValue(cx, thisRot.value()[JSVAL_TO_INT(id)], rval)) {
+            if (!JS_NewNumberValue(cx, thisRot.value()[JSVAL_TO_INT(id)], rval)) {
                 return JS_FALSE;
             }
         }
@@ -4164,7 +4164,7 @@ namespace {
             const sfvec2_t & thisVec =
                 *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
-            if (!JS_NewDoubleValue(cx, thisVec.value()[JSVAL_TO_INT(id)], rval)) {
+            if (!JS_NewNumberValue(cx, thisVec.value()[JSVAL_TO_INT(id)], rval)) {
                 return JS_FALSE;
             }
         }
@@ -4347,7 +4347,7 @@ namespace {
             *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
         const jsdouble result = thisVec.value().dot(argVec.value());
-        if (!JS_NewDoubleValue(cx, result, rval)) { return JS_FALSE; }
+        if (!JS_NewNumberValue(cx, result, rval)) { return JS_FALSE; }
         return JS_TRUE;
     }
 
@@ -4367,7 +4367,7 @@ namespace {
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
-        if (!JS_NewDoubleValue(cx, thisVec.value().length(), rval)) {
+        if (!JS_NewNumberValue(cx, thisVec.value().length(), rval)) {
             return JS_FALSE;
         }
         return JS_TRUE;
@@ -4783,7 +4783,7 @@ namespace {
             const sfvec3_t & thisVec =
                 *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
-            if (!JS_NewDoubleValue(cx, thisVec.value()[JSVAL_TO_INT(id)], vp)) {
+            if (!JS_NewNumberValue(cx, thisVec.value()[JSVAL_TO_INT(id)], vp)) {
                 return JS_FALSE;
             }
         }
@@ -5024,7 +5024,7 @@ namespace {
             *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
         const jsdouble result = thisVec.value().dot(argVec.value());
-        if (!JS_NewDoubleValue(cx, result, rval)) { return JS_FALSE; }
+        if (!JS_NewNumberValue(cx, result, rval)) { return JS_FALSE; }
         return JS_TRUE;
     }
 
@@ -5044,7 +5044,7 @@ namespace {
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
-        if (!JS_NewDoubleValue(cx, thisVec.value().length(), rval)) {
+        if (!JS_NewNumberValue(cx, thisVec.value().length(), rval)) {
             return JS_FALSE;
         }
         return JS_TRUE;
@@ -5749,7 +5749,7 @@ namespace {
             //
             try {
                 for (size_t i = length; i < newArray.size(); ++i) {
-                    if (!JS_NewDoubleValue(cx, 0.0, &newArray[i])) {
+                    if (!JS_NewNumberValue(cx, 0.0, &newArray[i])) {
                         throw std::bad_alloc();
                     }
                 }
@@ -6142,7 +6142,7 @@ namespace {
         MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mffloatObj));
         for (size_t i = 0; i < floats.size(); ++i) {
-            if (!JS_NewDoubleValue(cx, floats[i], &mfdata->array[i])) {
+            if (!JS_NewNumberValue(cx, floats[i], &mfdata->array[i])) {
                 return JS_FALSE;
             }
         }
@@ -6214,7 +6214,7 @@ namespace {
         MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mfdoubleObj));
         for (size_t i = 0; i < doubles.size(); ++i) {
-            if (!JS_NewDoubleValue(cx, doubles[i], &mfdata->array[i])) {
+            if (!JS_NewNumberValue(cx, doubles[i], &mfdata->array[i])) {
                 return JS_FALSE;
             }
         }
@@ -7191,7 +7191,7 @@ namespace {
         MFData * const mfdata =
             static_cast<MFData *>(JS_GetPrivate(cx, mftimeObj));
         for (size_t i = 0; i < times.size(); ++i) {
-            if (!JS_NewDoubleValue(cx, times[i], &mfdata->array[i])) {
+            if (!JS_NewNumberValue(cx, times[i], &mfdata->array[i])) {
                 return JS_FALSE;
             }
         }
@@ -7601,7 +7601,7 @@ namespace {
             const float (&row)[4] =
                 *static_cast<float (*)[4]>(JS_GetPrivate(cx, obj));
 
-            if (!JS_NewDoubleValue(cx, row[JSVAL_TO_INT(id)], vp)) {
+            if (!JS_NewNumberValue(cx, row[JSVAL_TO_INT(id)], vp)) {
                 return JS_FALSE;
             }
         }
