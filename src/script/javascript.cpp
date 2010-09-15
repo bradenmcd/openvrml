@@ -2210,14 +2210,12 @@ namespace {
                                uintN, jsval *, jsval * const rval)
             OPENVRML_NOTHROW
         {
-            script * const s =
-                static_cast<script *>(JS_GetContextPrivate(cx));
+            script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
-            float speed = s->script_node().node::type().metatype()
-                .browser().current_speed();
-            *rval = DOUBLE_TO_JSVAL(JS_NewDouble( cx, speed ));
-            return JS_TRUE;
+            const jsdouble speed =
+                s->script_node().type().metatype().browser().current_speed();
+            return JS_NewNumberValue(cx, speed, rval);
         }
 
         JSBool getCurrentFrameRate(JSContext * const cx,
@@ -2230,11 +2228,9 @@ namespace {
             script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
-            jsdouble * d = JS_NewDouble(cx,
-                                        s->script_node().node::type().metatype()
-                                        .browser().frame_rate());
-            *rval = DOUBLE_TO_JSVAL(d);
-            return JS_TRUE;
+            const jsdouble frame_rate =
+                s->script_node().type().metatype().browser().frame_rate();
+            return JS_NewNumberValue(cx, frame_rate, rval);
         }
 
         JSBool getWorldURL(JSContext * const cx,
