@@ -40,6 +40,30 @@ using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 
+# if OPENVRML_JSPROPERTYOP_USES_JSID
+    typedef jsid jspropertyop_id;
+# else
+    typedef jsval jspropertyop_id;
+# endif
+
+    JSBool jspropertyop_id_is_int(const jspropertyop_id id)
+    {
+# if OPENVRML_JSPROPERTYOP_USES_JSID
+        return JSID_IS_INT(id);
+# else
+        return JSVAL_IS_INT(id);
+# endif
+    }
+
+    ::int32 jspropertyop_id_to_int(const jspropertyop_id id)
+    {
+# if OPENVRML_JSPROPERTYOP_USES_JSID
+        return JSID_TO_INT(id);
+# else
+        return JSVAL_TO_INT(id);
+# endif
+    }
+
     class SFNode;
     class MFNode;
 
@@ -100,7 +124,7 @@ namespace {
 
     private:
         static JSBool field_setProperty(JSContext * cx, JSObject * obj,
-                                        jsval id, jsval * val)
+                                        jspropertyop_id id, jsval * val)
             OPENVRML_NOTHROW;
 
         virtual void do_initialize(double timeStamp);
@@ -361,10 +385,12 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&rgb)[3])
             OPENVRML_NOTHROW;
-        static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
-        static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
+        static JSBool getProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
+        static JSBool setProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool setHSV(JSContext * cx, JSObject * obj,
                              uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
@@ -394,10 +420,12 @@ namespace {
                                  uint32 x, uint32 y, uint32 comp,
                                  JSObject * pixels_obj)
             OPENVRML_NOTHROW;
-        static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
-        static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
+        static JSBool getProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
+        static JSBool setProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
     };
 
     class OPENVRML_JAVASCRIPT_LOCAL SFNode : public sfield {
@@ -421,10 +449,10 @@ namespace {
                                  JSString * vrmlstring)
             OPENVRML_NOTHROW;
         static JSBool getProperty(JSContext * cx, JSObject * obj,
-                                  jsval id, jsval * vp)
+                                  jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool setProperty(JSContext * cx, JSObject * obj,
-                                  jsval id, jsval * vp)
+                                  jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
     };
 
@@ -448,10 +476,12 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&rot)[4])
             OPENVRML_NOTHROW;
-        static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
-        static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
+        static JSBool getProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
+        static JSBool setProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool getAxis(JSContext * cx, JSObject * obj,
                               uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
@@ -485,11 +515,11 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&vec)[2])
             OPENVRML_NOTHROW;
-        static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * rval)
+        static JSBool getProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * rval)
             OPENVRML_NOTHROW;
-        static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp)
+        static JSBool setProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool add(JSContext * cx, JSObject * obj,
                           uintN argc, jsval * argv, jsval * rval)
@@ -560,10 +590,12 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&vec)[3])
             OPENVRML_NOTHROW;
-        static JSBool getProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
-        static JSBool setProperty(JSContext * cx, JSObject * obj, jsval id,
-                                  jsval * vp) OPENVRML_NOTHROW;
+        static JSBool getProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
+        static JSBool setProperty(JSContext * cx, JSObject * obj,
+                                  jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool add(JSContext * cx, JSObject * obj,
                           uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
         static JSBool cross(JSContext * cx, JSObject * obj,
@@ -640,9 +672,11 @@ namespace {
             OPENVRML_NOTHROW;
 
         static JSBool getElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                 jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool getLength(JSContext * cx, JSObject * obj,
-                                jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
 
     private:
         MField();
@@ -663,9 +697,11 @@ namespace {
                                 uintN argc, jsval * argv, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                 jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool setLength(JSContext * cx, JSObject * obj,
-                                jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool toString(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
@@ -692,9 +728,11 @@ namespace {
                                 uintN argc, jsval * argv, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                 jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool setLength(JSContext * cx, JSObject * obj,
-                                jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool toString(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
@@ -723,9 +761,9 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv);
         static JSBool setElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp);
+                                 jspropertyop_id id, jsval * vp);
         static JSBool setLength(JSContext * cx, JSObject * obj,
-                                jsval id, jsval * vp);
+                                jspropertyop_id id, jsval * vp);
         static JSBool toString(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval);
         static void finalize(JSContext * cx, JSObject * obj);
@@ -787,9 +825,9 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv);
         static JSBool setElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp);
+                                 jspropertyop_id id, jsval * vp);
         static JSBool setLength(JSContext * cx, JSObject * obj,
-                                jsval id, jsval * vp);
+                                jspropertyop_id id, jsval * vp);
         static JSBool toString(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval);
         static void finalize(JSContext * cx, JSObject * obj);
@@ -820,9 +858,11 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv) OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                 jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool setLength(JSContext * cx, JSObject * obj,
-                                jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool toString(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
@@ -863,9 +903,11 @@ namespace {
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv) OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                 jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool setLength(JSContext * cx, JSObject * obj,
-                                jsval id, jsval * vp) OPENVRML_NOTHROW;
+                                jspropertyop_id id, jsval * vp)
+            OPENVRML_NOTHROW;
         static JSBool toString(JSContext * cx, JSObject * obj,
                                uintN argc, jsval * argv, jsval * rval)
             OPENVRML_NOTHROW;
@@ -958,10 +1000,10 @@ namespace {
                                     jsval * vp)
                 OPENVRML_NOTHROW;
             static JSBool getElement(JSContext * cx, JSObject * obj,
-                                     jsval id, jsval * vp)
+                                     jspropertyop_id id, jsval * vp)
                 OPENVRML_NOTHROW;
             static JSBool setElement(JSContext * cx, JSObject * obj,
-                                     jsval id, jsval * vp)
+                                     jspropertyop_id id, jsval * vp)
                 OPENVRML_NOTHROW;
         };
 
@@ -977,10 +1019,10 @@ namespace {
                                  const jsdouble (&mat)[16])
             OPENVRML_NOTHROW;
         static JSBool getElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp)
+                                 jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
-                                 jsval id, jsval * vp)
+                                 jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool setTransform(JSContext * cx, JSObject * obj,
                                    uintN argc, jsval * argv, jsval * rval)
@@ -1020,7 +1062,7 @@ namespace {
 
     OPENVRML_JAVASCRIPT_LOCAL JSBool eventOut_setProperty(JSContext * cx,
                                                JSObject * obj,
-                                               jsval id,
+                                               jspropertyop_id id,
                                                jsval * val)
         OPENVRML_NOTHROW;
 
@@ -1609,7 +1651,7 @@ namespace {
 
     JSBool eventOut_setProperty(JSContext * const cx,
                                 JSObject *,
-                                const jsval id,
+                                const jspropertyop_id id,
                                 jsval * const val)
         OPENVRML_NOTHROW
     {
@@ -1664,7 +1706,7 @@ namespace {
 
     JSBool script::field_setProperty(JSContext * const cx,
                                      JSObject *,
-                                     const jsval id,
+                                     const jspropertyop_id id,
                                      jsval * const val)
         OPENVRML_NOTHROW
     {
@@ -2805,7 +2847,7 @@ namespace {
 
     JSBool SFColor::getProperty(JSContext * const cx,
                                 JSObject * const obj,
-                                const jsval id,
+                                const jspropertyop_id id,
                                 jsval * const rval)
         OPENVRML_NOTHROW
     {
@@ -2816,10 +2858,11 @@ namespace {
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
 
-        if (JSVAL_IS_INT(id)
-            && JSVAL_TO_INT(id) >= 0
-            && JSVAL_TO_INT(id) < 3) {
-            if (!JS_NewNumberValue(cx, thisColor.value()[JSVAL_TO_INT(id)], rval))
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0
+            && jspropertyop_id_to_int(id) < 3) {
+            if (!JS_NewNumberValue(cx, thisColor.value()[jspropertyop_id_to_int(id)],
+                                   rval))
             {
                 return JS_FALSE;
             }
@@ -2829,7 +2872,7 @@ namespace {
 
     JSBool SFColor::setProperty(JSContext * const cx,
                                 JSObject * const obj,
-                                const jsval id,
+                                const jspropertyop_id id,
                                 jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -2840,8 +2883,8 @@ namespace {
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
 
-        if (!JSVAL_IS_INT(id)
-            || JSVAL_TO_INT(id) < 0 || JSVAL_TO_INT(id) > 2) {
+        if (!jspropertyop_id_is_int(id)
+            || jspropertyop_id_to_int(id) < 0 || jspropertyop_id_to_int(id) > 2) {
             JS_ReportError(cx, "component index out of range");
             return JS_FALSE;
         }
@@ -2856,7 +2899,7 @@ namespace {
 
         openvrml::color val = thisColor.value();
 
-        switch (JSVAL_TO_INT(id)) {
+        switch (jspropertyop_id_to_int(id)) {
         case 0:
             val.r(float(d));
             break;
@@ -3134,7 +3177,7 @@ namespace {
  */
     JSBool SFImage::getProperty(JSContext * const cx,
                                 JSObject * const obj,
-                                const jsval id,
+                                const jspropertyop_id id,
                                 jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -3145,8 +3188,8 @@ namespace {
             *boost::polymorphic_downcast<openvrml::sfimage *>(
                 &sfdata.field_value());
 
-        if (JSVAL_IS_INT(id)) {
-            switch (JSVAL_TO_INT(id)) {
+        if (jspropertyop_id_is_int(id)) {
+            switch (jspropertyop_id_to_int(id)) {
             case 0:
                 *vp = INT_TO_JSVAL(thisImage.value().x());
                 break;
@@ -3169,7 +3212,8 @@ namespace {
  *
  * @todo Implement me!
  */
-    JSBool SFImage::setProperty(JSContext *, JSObject *, jsval , jsval *)
+    JSBool SFImage::setProperty(JSContext *, JSObject *,
+                                jspropertyop_id, jsval *)
         OPENVRML_NOTHROW
     {
         // ...
@@ -3365,7 +3409,7 @@ namespace {
 //
     JSBool SFNode::getProperty(JSContext * const cx,
                                JSObject * const obj,
-                               const jsval id,
+                               const jspropertyop_id id,
                                jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -3397,7 +3441,7 @@ namespace {
 
     JSBool SFNode::setProperty(JSContext * const cx,
                                JSObject * const obj,
-                               const jsval id,
+                               const jspropertyop_id id,
                                jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -3664,7 +3708,7 @@ namespace {
 
     JSBool SFRotation::getProperty(JSContext * const cx,
                                    JSObject * const obj,
-                                   const jsval id,
+                                   const jspropertyop_id id,
                                    jsval * const rval)
         OPENVRML_NOTHROW
     {
@@ -3675,9 +3719,10 @@ namespace {
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &sfdata.field_value());
 
-        if (JSVAL_IS_INT(id)
-            && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4) {
-            if (!JS_NewNumberValue(cx, thisRot.value()[JSVAL_TO_INT(id)], rval)) {
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 4) {
+            if (!JS_NewNumberValue(cx, thisRot.value()[jspropertyop_id_to_int(id)], rval))
+            {
                 return JS_FALSE;
             }
         }
@@ -3686,7 +3731,7 @@ namespace {
 
     JSBool SFRotation::setProperty(JSContext * const cx,
                                    JSObject * const obj,
-                                   const jsval id,
+                                   const jspropertyop_id id,
                                    jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -3697,15 +3742,15 @@ namespace {
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &sfdata.field_value());
 
-        if (JSVAL_IS_INT(id)
-            && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4) {
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 4) {
 
             jsdouble d;
             if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
 
             openvrml::vec3f axis = thisRot.value().axis();
             float angle = thisRot.value().angle();
-            switch (JSVAL_TO_INT(id)) {
+            switch (jspropertyop_id_to_int(id)) {
             case 0:
                 axis.x(float(d));
                 break;
@@ -4147,20 +4192,22 @@ namespace {
     template <typename SFVec2>
     JSBool sfvec2_jsobject<SFVec2>::getProperty(JSContext * const cx,
                                                 JSObject * const obj,
-                                                const jsval id,
+                                                const jspropertyop_id id,
                                                 jsval * const rval)
         OPENVRML_NOTHROW
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 2) {
             assert(JS_GetPrivate(cx, obj));
             const sfield::sfdata & sfdata =
                 *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
             const sfvec2_t & thisVec =
                 *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
-            if (!JS_NewNumberValue(cx, thisVec.value()[JSVAL_TO_INT(id)], rval)) {
+            if (!JS_NewNumberValue(cx, thisVec.value()[jspropertyop_id_to_int(id)],
+                                   rval)) {
                 return JS_FALSE;
             }
         }
@@ -4170,14 +4217,15 @@ namespace {
     template <typename SFVec2>
     JSBool sfvec2_jsobject<SFVec2>::setProperty(JSContext * const cx,
                                                 JSObject * const obj,
-                                                const jsval id,
+                                                const jspropertyop_id id,
                                                 jsval * const vp)
         OPENVRML_NOTHROW
     {
         typedef typename SFVec2::field_type sfvec2_t;
         typedef typename SFVec2::value_type vec2_t;
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 2) {
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 2) {
             assert(JS_GetPrivate(cx, obj));
             sfield::sfdata & sfdata =
                 *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
@@ -4192,7 +4240,7 @@ namespace {
             }
 
             vec2_t temp = thisVec.value();
-            switch (JSVAL_TO_INT(id)) {
+            switch (jspropertyop_id_to_int(id)) {
             case 0:
                 temp.x(d);
                 break;
@@ -4766,20 +4814,22 @@ namespace {
     template <typename SFVec3>
     JSBool sfvec3_jsobject<SFVec3>::getProperty(JSContext * const cx,
                                                 JSObject * const obj,
-                                                const jsval id,
+                                                const jspropertyop_id id,
                                                 jsval * const vp)
         OPENVRML_NOTHROW
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 3) {
             assert(JS_GetPrivate(cx, obj));
             const sfield::sfdata & sfdata =
                 *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
             const sfvec3_t & thisVec =
                 *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
-            if (!JS_NewNumberValue(cx, thisVec.value()[JSVAL_TO_INT(id)], vp)) {
+            if (!JS_NewNumberValue(cx, thisVec.value()[jspropertyop_id_to_int(id)],
+                                   vp)) {
                 return JS_FALSE;
             }
         }
@@ -4789,14 +4839,15 @@ namespace {
     template <typename SFVec3>
     JSBool sfvec3_jsobject<SFVec3>::setProperty(JSContext * const cx,
                                                 JSObject * const obj,
-                                                const jsval id,
+                                                const jspropertyop_id id,
                                                 jsval * const vp)
         OPENVRML_NOTHROW
     {
         typedef typename SFVec3::field_type sfvec3_t;
         typedef typename SFVec3::value_type vec3_t;
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 3) {
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 3) {
             assert(JS_GetPrivate(cx, obj));
             sfield::sfdata & sfdata =
                 *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
@@ -4811,7 +4862,7 @@ namespace {
             }
 
             vec3_t temp = thisVec.value();
-            switch (JSVAL_TO_INT(id)) {
+            switch (jspropertyop_id_to_int(id)) {
             case 0:
                 temp.x(d);
                 break;
@@ -5318,7 +5369,7 @@ namespace {
 
     JSBool MField::getElement(JSContext * const cx,
                               JSObject * const obj,
-                              const jsval id,
+                              const jspropertyop_id id,
                               jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -5328,17 +5379,17 @@ namespace {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
         assert(mfdata);
 
-        if (JSVAL_IS_INT(id)
-            && JSVAL_TO_INT(id) >= 0
-            && size_t(JSVAL_TO_INT(id)) < mfdata->array.size()) {
-            *vp = mfdata->array[JSVAL_TO_INT(id)];
+        if (jspropertyop_id_is_int(id)
+            && jspropertyop_id_to_int(id) >= 0
+            && size_t(jspropertyop_id_to_int(id)) < mfdata->array.size()) {
+            *vp = mfdata->array[jspropertyop_id_to_int(id)];
         }
         return JS_TRUE;
     }
 
     JSBool MField::getLength(JSContext * const cx,
                              JSObject * const obj,
-                             jsval,
+                             jspropertyop_id,
                              jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -5439,14 +5490,15 @@ namespace {
     template <typename Subclass>
     JSBool MFJSObject<Subclass>::setElement(JSContext * const cx,
                                             JSObject * const obj,
-                                            const jsval id,
+                                            const jspropertyop_id id,
                                             jsval * const vp)
         OPENVRML_NOTHROW
     {
         assert(cx);
         assert(obj);
         assert(vp);
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) > 0) {
+
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) > 0) {
             MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -5463,15 +5515,15 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
-                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+            if (size_t(jspropertyop_id_to_int(id)) >= mfdata->array.size()) {
+                jsval newLength = INT_TO_JSVAL(jspropertyop_id_to_int(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
             //
             // Put the new element in the array.
             //
-            mfdata->array[JSVAL_TO_INT(id)] = *vp;
+            mfdata->array[jspropertyop_id_to_int(id)] = *vp;
             mfdata->changed = true;
         }
         return JS_TRUE;
@@ -5480,7 +5532,7 @@ namespace {
     template <typename Subclass>
     JSBool MFJSObject<Subclass>::setLength(JSContext * const cx,
                                            JSObject * const obj,
-                                           jsval,
+                                           jspropertyop_id,
                                            jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -5670,11 +5722,11 @@ namespace {
     template <typename Subclass>
     JSBool MFJSDouble<Subclass>::setElement(JSContext * const cx,
                                             JSObject * const obj,
-                                            const jsval id,
+                                            const jspropertyop_id id,
                                             jsval * const vp)
         OPENVRML_NOTHROW
     {
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
             MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -5687,15 +5739,16 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
-                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+            if (size_t(jspropertyop_id_to_int(id)) >= mfdata->array.size()) {
+                jsval newLength = INT_TO_JSVAL(jspropertyop_id_to_int(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
             //
             // Put the new element in the array.
             //
-            if (!JS_NewNumberValue(cx, number, &mfdata->array[JSVAL_TO_INT(id)])) {
+            if (!JS_NewNumberValue(cx, number,
+                                   &mfdata->array[jspropertyop_id_to_int(id)])) {
                 return JS_FALSE;
             }
             mfdata->changed = true;
@@ -5706,7 +5759,7 @@ namespace {
     template <typename Subclass>
     JSBool MFJSDouble<Subclass>::setLength(JSContext * const cx,
                                            JSObject * const obj,
-                                           jsval,
+                                           jspropertyop_id,
                                            jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -5926,15 +5979,15 @@ namespace {
 
     JSBool MFBool::setElement(JSContext * const cx,
                               JSObject * const obj,
-                              const jsval id,
+                              const jspropertyop_id id,
                               jsval * const vp)
     {
         assert(cx);
         assert(obj);
         assert(vp);
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
-            const size_t index = JSVAL_TO_INT(id);
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
+            const size_t index = jspropertyop_id_to_int(id);
 
             MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -5943,7 +5996,7 @@ namespace {
             // Grow array if necessary.
             //
             if (index >= mfdata->array.size()) {
-                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+                jsval newLength = INT_TO_JSVAL(jspropertyop_id_to_int(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
@@ -5961,7 +6014,7 @@ namespace {
 
     JSBool MFBool::setLength(JSContext * const cx,
                              JSObject * const obj,
-                             jsval,
+                             jspropertyop_id,
                              jsval * const vp)
     {
         assert(cx);
@@ -6386,15 +6439,15 @@ namespace {
 
     JSBool MFInt32::setElement(JSContext * const cx,
                                JSObject * const obj,
-                               const jsval id,
+                               const jspropertyop_id id,
                                jsval * const vp)
     {
         assert(cx);
         assert(obj);
         assert(vp);
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
-            const size_t index = JSVAL_TO_INT(id);
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
+            const size_t index = jspropertyop_id_to_int(id);
 
             MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
@@ -6403,7 +6456,7 @@ namespace {
             // Grow array if necessary.
             //
             if (index >= mfdata->array.size()) {
-                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+                jsval newLength = INT_TO_JSVAL(jspropertyop_id_to_int(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
@@ -6423,7 +6476,7 @@ namespace {
 
     JSBool MFInt32::setLength(JSContext * const cx,
                               JSObject * const obj,
-                              jsval,
+                              jspropertyop_id,
                               jsval * const vp)
     {
         assert(cx);
@@ -6643,7 +6696,7 @@ namespace {
 
     JSBool MFNode::setElement(JSContext * const cx,
                               JSObject * const obj,
-                              const jsval id,
+                              const jspropertyop_id id,
                               jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -6651,7 +6704,7 @@ namespace {
         assert(obj);
         assert(vp);
 
-        if (!JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
+        if (!jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
             MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
@@ -6671,15 +6724,15 @@ namespace {
             //
             // Grow array if necessary.
             //
-            if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
-                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+            if (size_t(jspropertyop_id_to_int(id)) >= mfdata->array.size()) {
+                jsval newLength = INT_TO_JSVAL(jspropertyop_id_to_int(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
             //
             // Put the new element in the array.
             //
-            mfdata->array[JSVAL_TO_INT(id)] = *vp;
+            mfdata->array[jspropertyop_id_to_int(id)] = *vp;
             mfdata->changed = true;
         }
         return JS_TRUE;
@@ -6687,7 +6740,7 @@ namespace {
 
     JSBool MFNode::setLength(JSContext * const cx,
                              JSObject * const obj,
-                             jsval,
+                             jspropertyop_id,
                              jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -7026,19 +7079,19 @@ namespace {
 
     JSBool MFString::setElement(JSContext * const cx,
                                 JSObject * const obj,
-                                const jsval id,
+                                const jspropertyop_id id,
                                 jsval * const vp)
         OPENVRML_NOTHROW
     {
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0) {
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
             MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
             assert(mfdata);
 
             //
             // Grow array if necessary.
             //
-            if (size_t(JSVAL_TO_INT(id)) >= mfdata->array.size()) {
-                jsval newLength = INT_TO_JSVAL(JSVAL_TO_INT(id) + 1);
+            if (size_t(jspropertyop_id_to_int(id)) >= mfdata->array.size()) {
+                jsval newLength = INT_TO_JSVAL(jspropertyop_id_to_int(id) + 1);
                 if (!setLength(cx, obj, 0, &newLength)) { return JS_FALSE; }
             }
 
@@ -7051,7 +7104,7 @@ namespace {
             //
             // Put the new element in the array.
             //
-            mfdata->array[JSVAL_TO_INT(id)] = STRING_TO_JSVAL(str);
+            mfdata->array[jspropertyop_id_to_int(id)] = STRING_TO_JSVAL(str);
             mfdata->changed = true;
         }
         return JS_TRUE;
@@ -7059,7 +7112,7 @@ namespace {
 
     JSBool MFString::setLength(JSContext * const cx,
                                JSObject * const obj,
-                               jsval,
+                               jspropertyop_id,
                                jsval * const vp)
         OPENVRML_NOTHROW
     {
@@ -7585,39 +7638,41 @@ namespace {
 
     JSBool VrmlMatrix::Row::getElement(JSContext * const cx,
                                        JSObject * const obj,
-                                       const jsval id,
+                                       const jspropertyop_id id,
                                        jsval * const vp)
         OPENVRML_NOTHROW
     {
         assert(cx);
         assert(obj);
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4) {
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 4) {
             assert(JS_GetPrivate(cx, obj));
             const float (&row)[4] =
                 *static_cast<float (*)[4]>(JS_GetPrivate(cx, obj));
 
-            if (!JS_NewNumberValue(cx, row[JSVAL_TO_INT(id)], vp)) {
+            if (!JS_NewNumberValue(cx, row[jspropertyop_id_to_int(id)], vp)) {
                 return JS_FALSE;
             }
         }
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::Row::setElement(JSContext * const cx, JSObject * const obj,
-                                       const jsval id, jsval * const vp)
+    JSBool VrmlMatrix::Row::setElement(JSContext * const cx,
+                                       JSObject * const obj,
+                                       const jspropertyop_id id,
+                                       jsval * const vp)
         OPENVRML_NOTHROW
     {
         assert(cx);
         assert(obj);
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4) {
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 4) {
             jsdouble d;
             if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
 
             assert(JS_GetPrivate(cx, obj));
             float (&row)[4] = *static_cast<float (*)[4]>(JS_GetPrivate(cx, obj));
-            row[JSVAL_TO_INT(id)] = float(d);
+            row[jspropertyop_id_to_int(id)] = float(d);
         }
         return JS_TRUE;
     }
@@ -7720,14 +7775,14 @@ namespace {
 
     JSBool VrmlMatrix::getElement(JSContext * const cx,
                                   JSObject * const obj,
-                                  const jsval id,
+                                  const jspropertyop_id id,
                                   jsval * const vp)
         OPENVRML_NOTHROW
     {
         assert(cx);
         assert(obj);
 
-        if (JSVAL_IS_INT(id) && JSVAL_TO_INT(id) >= 0 && JSVAL_TO_INT(id) < 4) {
+        if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 4) {
             using openvrml::mat4f;
             mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
 
@@ -7738,14 +7793,15 @@ namespace {
                                                        JS_GetParent(cx, obj));
             if (!robj) { return JS_FALSE; }
 
-            float (&row)[4] = (*thisMat)[JSVAL_TO_INT(id)];
+            float (&row)[4] = (*thisMat)[jspropertyop_id_to_int(id)];
             if (!JS_SetPrivate(cx, robj, &row)) { return JS_FALSE; }
             *vp = OBJECT_TO_JSVAL(robj);
         }
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::setElement(JSContext *, JSObject *, jsval, jsval *)
+    JSBool VrmlMatrix::setElement(JSContext *, JSObject *,
+                                  jspropertyop_id, jsval *)
         OPENVRML_NOTHROW
     {
         return JS_TRUE;
