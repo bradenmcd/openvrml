@@ -149,6 +149,36 @@ AC_CHECK_HEADER([jsapi.h], [have_jsapi_h=yes], [have_jsapi_h=no])
 CPPFLAGS=$ov_save_CPPFLAGS
 
 #
+# The JSPropertyOp function signature changed from XULRunner 1.9.2 to
+# 1.9.3: the third argument changed from jsval to jsid.
+#
+AC_CACHE_CHECK([whether JSPropertyOp uses jsid],
+[ov_cv_jspropertyop_uses_jsid],
+[ov_cv_jspropertyop_uses_jsid=no
+#
+# Test using C++ since C probably doesn't care so much about the type.
+#
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[
+JSBool (*fn)(JSContext *, JSObject *, jsval, jsval*);
+JSPropertyOp op = fn;
+]])], ,
+[ov_cv_jspropertyop_uses_jsid=yes])
+AC_LANG_POP([C++])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_jspropertyop_uses_jsid = Xyes],
+      [jspropertyop_uses_jsid=1],
+      [jspropertyop_uses_jsid=0])
+AC_DEFINE_UNQUOTED([OPENVRML_JSPROPERTYOP_USES_JSID],
+                   [$jspropertyop_uses_jsid],
+                   [Whether JSPropertyOp function signatures use jsid])
+
+#
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
