@@ -1,5 +1,10 @@
 2010-09-18 Braden McDaniel  <braden@endoframe.com>
 
+	* src/Makefile.am (EXTRA_DIST): Fixed directory for openvrml-gl.rc
+	and openvrml-gl.vcxproj.
+
+2010-09-18 Braden McDaniel  <braden@endoframe.com>
+
 	SpiderMonkey included in the forthcoming XULRunner 1.9.3 includes
 	changes to the JSPropertyOp function signature: a parameter that
 	was a jsval in previous versions is now a jsid.  Test for this and
