@@ -924,8 +924,8 @@ EXTRA_DIST = \
         libopenvrml/openvrml.vcxproj \
         libopenvrml-gl/openvrml-gl-config.h.in \
         libopenvrml-gl/openvrml-gl-config-win32.h \
-        libopenvrml/openvrml-gl.rc \
-        libopenvrml/openvrml-gl.vcxproj \
+        libopenvrml-gl/openvrml-gl.rc \
+        libopenvrml-gl/openvrml-gl.vcxproj \
         node/vrml97/vrml97.vcxproj \
         node/x3d-core/x3d-core.vcxproj \
         node/x3d-event-utilities/x3d-event-utilities.vcxproj \
