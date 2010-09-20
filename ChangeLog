@@ -1,3 +1,12 @@
+2010-09-19 Braden McDaniel  <braden@endoframe.com>
+
+	SpiderMonkey included in the forthcoming XULRunner 1.9.3 removes
+	JS_AddRoot and JS_RemoveRoot and replaces them with type-specific
+	functions.  Test for this and adjust our usage accordingly.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
 2010-09-18 Braden McDaniel  <braden@endoframe.com>
 
 	* src/Makefile.am (EXTRA_DIST): Fixed directory for openvrml-gl.rc

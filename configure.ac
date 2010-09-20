@@ -179,6 +179,27 @@ AC_DEFINE_UNQUOTED([OPENVRML_JSPROPERTYOP_USES_JSID],
                    [Whether JSPropertyOp function signatures use jsid])
 
 #
+# XULRunner 1.9.3 replaced JS_{Add,Remove}Root with type-specific
+# functions.
+#
+AC_CACHE_CHECK([whether SpiderMonkey uses type-specific root functions],
+[ov_cv_js_uses_typed_root_functions],
+[ov_cv_js_uses_typed_root_functions=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_PUSH([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[JS_AddNamedRoot(0, 0);]])],
+[ov_cv_js_uses_typed_root_functions=yes])
+AC_LANG_POP([C])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_js_uses_typed_root_functions = Xyes],
+      [AC_DEFINE([OPENVRML_JS_HAS_TYPED_ROOT_FUNCTIONS], [1],
+                 [Defined if SpiderMonkey uses type-specific add/remove root functions])])
+
+#
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #

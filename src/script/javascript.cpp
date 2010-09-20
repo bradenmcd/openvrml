@@ -62,6 +62,26 @@ namespace {
 # endif
     }
 
+    OPENVRML_LOCAL JSBool add_value_root(JSContext * const cx,
+                                         jsval * const vp)
+    {
+# ifdef OPENVRML_JS_HAS_TYPED_ROOT_FUNCTIONS
+        return JS_AddValueRoot(cx, vp);
+# else
+        return JS_AddRoot(cx, vp);
+# endif
+    }
+
+    OPENVRML_LOCAL JSBool remove_value_root(JSContext * const cx,
+                                            jsval * const vp)
+    {
+# ifdef OPENVRML_JS_HAS_TYPED_ROOT_FUNCTIONS
+        return JS_RemoveValueRoot(cx, vp);
+# else
+        return JS_RemoveRoot(cx, vp);
+# endif
+    }
+
     class SFNode;
     class MFNode;
 
@@ -1266,7 +1286,7 @@ namespace {
                 assert(argv[i]);
                 jsargv[i] = vrmlFieldToJSVal(*argv[i]);
                 if (JSVAL_IS_GCTHING(jsargv[i])) {
-                    if (!JS_AddRoot(this->cx, &jsargv[i])) {
+                    if (!add_value_root(this->cx, &jsargv[i])) {
                         throw std::bad_alloc();
                     }
                 }
@@ -1284,7 +1304,7 @@ namespace {
             for (i = 0; i < argc; ++i) {
                 assert(jsargv[i] != JSVAL_NULL);
                 if (JSVAL_IS_GCTHING(jsargv[i])) {
-                    ok = JS_RemoveRoot(cx, &jsargv[i]);
+                    ok = remove_value_root(cx, &jsargv[i]);
                     assert(ok);
                 }
             }
@@ -2000,7 +2020,7 @@ namespace {
             if (!JS_NewNumberValue(cx, floats[i], &jsvec[i])) {
                 return JS_FALSE;
             }
-            if (!JS_AddRoot(cx, &jsvec[i])) { return JS_FALSE; }
+            if (!add_value_root(cx, &jsvec[i])) { return JS_FALSE; }
         }
 
         JSObject * arr = 0;
@@ -2009,7 +2029,7 @@ namespace {
             if (arr) { *rval = OBJECT_TO_JSVAL(arr); }
         }
 
-        for (size_t j = 0; j < i; ++j) { JS_RemoveRoot(cx, &jsvec[j]); }
+        for (size_t j = 0; j < i; ++j) { remove_value_root(cx, &jsvec[j]); }
 
         if (!arr) { return JS_FALSE; }
 
@@ -5346,11 +5366,11 @@ namespace {
         size_t i;
         try {
             for (i = 0; i < jsvalArray.size(); ++i) {
-                if (!JS_AddRoot(cx, &jsvalArray[i])) { throw bad_alloc(); }
+                if (!add_value_root(cx, &jsvalArray[i])) { throw bad_alloc(); }
             }
         } catch (bad_alloc &) {
             for (size_t j = 0; j < i - 1; ++j) {
-                JS_RemoveRoot(cx, &jsvalArray[j]);
+                remove_value_root(cx, &jsvalArray[j]);
             }
             throw;
         }
@@ -5360,7 +5380,7 @@ namespace {
         OPENVRML_NOTHROW
     {
         for (size_t i = 0; i < jsvalArray.size(); ++i) {
-            const JSBool ok = JS_RemoveRoot(cx, &jsvalArray[i]);
+            const JSBool ok = remove_value_root(cx, &jsvalArray[i]);
             assert(ok);
         }
     }
