@@ -124,7 +124,8 @@ libopenvrml_libopenvrml_la_LDFLAGS = \
 libopenvrml_libopenvrml_la_LIBADD = \
         local/libopenvrml-dl.la \
         -lboost_thread$(BOOST_LIB_SUFFIX) \
-        -lboost_filesystem$(BOOST_LIB_SUFFIX)
+        -lboost_filesystem$(BOOST_LIB_SUFFIX) \
+        -lboost_system$(BOOST_LIB_SUFFIX)
 
 local_libopenvrml_dl_la_SOURCES = \
         local/libopenvrml-dl/openvrml/local/dl.cpp \
@@ -134,6 +135,7 @@ local_libopenvrml_dl_la_CPPFLAGS = \
         -I$(top_srcdir)/src/libopenvrml
 local_libopenvrml_dl_la_LIBADD = \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
+        -lboost_system$(BOOST_LIB_SUFFIX) \
         -lltdl
 
 openvrmlscriptdir = $(pkglibdir)/script

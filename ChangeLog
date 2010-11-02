@@ -1,3 +1,15 @@
+2010-11-01 Braden McDaniel  <braden@endoframe.com>
+
+	Boost.Filesystem headers include inline functions that call
+	Boost.System functions.  Programs/libraries that use
+	Boost.Filesystem need to link with libboost_system as well as
+	libboost_filesystem.  The Mac OS X linker seems to be the only one
+	that actually cares about this detail.
+
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_LIBADD): Link with libboost_system.
+	(local_libopenvrml_dl_la_LIBADD): Link with libboost_system.
+
 2010-09-19 Braden McDaniel  <braden@endoframe.com>
 
 	SpiderMonkey included in the forthcoming XULRunner 1.9.3 removes
