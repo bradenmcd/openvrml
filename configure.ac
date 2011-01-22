@@ -149,6 +149,29 @@ AC_CHECK_HEADER([jsapi.h], [have_jsapi_h=yes], [have_jsapi_h=no])
 CPPFLAGS=$ov_save_CPPFLAGS
 
 #
+# jsval changed from being 32- to 64-bits in XULRunner 2.0.
+#
+AC_CACHE_CHECK([whether JSVAL_TO_DOUBLE returns a pointer],
+[ov_cv_jsval_to_double_returns_pointer],
+[ov_cv_jsval_to_double_returns_pointer=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_PUSH([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[
+jsval val;
+*JSVAL_TO_DOUBLE;
+]])],
+[ov_cv_jsval_to_double_returns_pointer=yes])
+AC_LANG_POP([C])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_jsval_to_double_returns_pointer = Xyes],
+      [AC_DEFINE([OPENVRML_JSVAL_TO_DOUBLE_RETURNS_POINTER], [1],
+                 [SpiderMonkey's JSVAL_TO_DOUBLE returns a pointer])])
+
+#
 # The JSPropertyOp function signature changed from XULRunner 1.9.2 to
 # 1.9.3: the third argument changed from jsval to jsid.
 #
