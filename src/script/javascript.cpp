@@ -84,6 +84,15 @@ namespace {
 # endif
     }
 
+    OPENVRML_LOCAL jsdouble jsval_to_double(const jsval val)
+    {
+# if OPENVRML_JSVAL_TO_DOUBLE_RETURNS_POINTER
+        return *JSVAL_TO_DOUBLE(val);
+# else
+        return JSVAL_TO_DOUBLE(val);
+# endif
+    }
+
     class SFNode;
     class MFNode;
 
@@ -5858,7 +5867,7 @@ namespace {
         out << '[';
         for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
             assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-            out << *JSVAL_TO_DOUBLE(mfdata->array[i]);
+            out << jsval_to_double(mfdata->array[i]);
             if ((i + 1) < mfdata->array.size()) { out << ", "; }
         }
         out << ']';
@@ -6237,7 +6246,7 @@ namespace {
         std::vector<float> temp = mffloat->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
             assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-            temp[i] = float(*JSVAL_TO_DOUBLE(mfdata->array[i]));
+            temp[i] = float(jsval_to_double(mfdata->array[i]));
         }
         mffloat->value(temp);
         return mffloat;
@@ -6309,7 +6318,7 @@ namespace {
         std::vector<double> temp = mfdouble->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
             assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-            temp[i] = *JSVAL_TO_DOUBLE(mfdata->array[i]);
+            temp[i] = jsval_to_double(mfdata->array[i]);
         }
         mfdouble->value(temp);
         return mfdouble;
@@ -7286,7 +7295,7 @@ namespace {
         std::vector<double> temp = mftime->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
             assert(JSVAL_IS_DOUBLE(mfdata->array[i]));
-            temp[i] = *JSVAL_TO_DOUBLE(mfdata->array[i]);
+            temp[i] = jsval_to_double(mfdata->array[i]);
         }
         mftime->value(temp);
         return mftime;
