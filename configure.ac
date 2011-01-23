@@ -132,8 +132,11 @@ PKG_CHECK_MODULES([PNG], [libpng], , [have_libpng=no])
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.3.0], , [have_fontconfig=no])
 PKG_CHECK_MODULES([FREETYPE], [freetype2 >= 2.2], , [have_freetype=no])
 
+#
+# Require at least XULRunner 1.9 for JS_EncodeString.
+#
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [mozilla-js >= 1.8.1.8], , [have_libmozjs=no])
+PKG_CHECK_MODULES([JS], [mozilla-js >= 1.9], , [have_libmozjs=no])
 #
 # JS_BeginRequest should be there only if SpiderMonkey was built with
 # -DJS_THREADSAFE.
