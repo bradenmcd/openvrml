@@ -161,7 +161,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 [[#include <jsapi.h>]],
 [[
 jsval val;
-*JSVAL_TO_DOUBLE;
+*JSVAL_TO_DOUBLE(val);
 ]])],
 [ov_cv_jsval_to_double_returns_pointer=yes])
 AC_LANG_POP([C])
