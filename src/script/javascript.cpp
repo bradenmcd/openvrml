@@ -1688,7 +1688,7 @@ namespace {
 
         JSString * const str = JS_ValueToString(cx, id);
         if (!str) { return JS_FALSE; }
-        const char * const eventId = JS_GetStringBytes(str);
+        const char * const eventId = JS_EncodeString(cx, str);
 
         //
         // The script object pointer is stored as private data in the
@@ -1743,7 +1743,7 @@ namespace {
 
         JSString * const str = JS_ValueToString(cx, id);
         if (!str) { return JS_FALSE; }
-        const char * const fieldId = JS_GetStringBytes(str);
+        const char * const fieldId = JS_EncodeString(cx, str);
 
         //
         // The script object pointer is stored as private data in the
@@ -2128,7 +2128,7 @@ namespace {
             //
             return auto_ptr<field_value>
                 (new sfstring(jsstring
-                              ? JS_GetStringBytes(jsstring)
+                              ? JS_EncodeString(cx, jsstring)
                               : ""));
         }
 
@@ -2244,7 +2244,7 @@ namespace {
                 JSString * const str = JS_ValueToString(cx, argv[i]);
                 if (!str) { return JS_FALSE; }
                 s->script_node().scene()->browser()
-                    .out(JS_GetStringBytes(str));
+                    .out(JS_EncodeString(cx, str));
             }
             return JS_TRUE;
         }
@@ -2437,7 +2437,7 @@ namespace {
             if (!str) { return JS_FALSE; }
 
             try {
-                std::istringstream in(JS_GetStringBytes(str));
+                std::istringstream in(JS_EncodeString(cx, str));
 
                 assert(s.script_node().scene());
                 openvrml::browser & browser = s.script_node().scene()->browser();
@@ -2496,7 +2496,7 @@ namespace {
                 return JS_FALSE;
             }
 
-            const char * const event = JS_GetStringBytes(event_str);
+            const char * const event = JS_EncodeString(cx, event_str);
 
             try {
                 s.script_node().scene()
@@ -2551,7 +2551,7 @@ namespace {
             //
             JSString * arg1_str = JS_ValueToString(cx, argv[1]);
             if (!arg1_str) { return JS_FALSE; }
-            const char * const fromEventOut = JS_GetStringBytes(arg1_str);
+            const char * const fromEventOut = JS_EncodeString(cx, arg1_str);
 
             //
             // Make sure our third argument (toNode) is a SFNode.
@@ -2576,7 +2576,7 @@ namespace {
             //
             JSString * arg3_str = JS_ValueToString(cx, argv[3]);
             if (!arg3_str) { return JS_FALSE; }
-            const char * const toEventIn = JS_GetStringBytes(arg3_str);
+            const char * const toEventIn = JS_EncodeString(cx, arg3_str);
 
             try {
                 add_route(*fromNode->value(),
@@ -2621,7 +2621,7 @@ namespace {
             //
             JSString * arg1_str = JS_ValueToString(cx, argv[1]);
             if (!arg1_str) { return JS_FALSE; }
-            const char * const fromEventOut = JS_GetStringBytes(arg1_str);
+            const char * const fromEventOut = JS_EncodeString(cx, arg1_str);
 
             //
             // Make sure our third argument (toNode) is a SFNode.
@@ -2639,7 +2639,7 @@ namespace {
             //
             JSString * arg3_str = JS_ValueToString(cx, argv[3]);
             if (!arg3_str) { return JS_FALSE; }
-            const char * const toEventIn = JS_GetStringBytes(arg3_str);
+            const char * const toEventIn = JS_EncodeString(cx, arg3_str);
 
             delete_route(*fromNode->value(),
                          fromEventOut,
@@ -2662,7 +2662,7 @@ namespace {
             assert(JS_GetContextPrivate(cx));
             script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
             openvrml::browser & browser = s.script_node().scene()->browser();
-            browser.description(JS_GetStringBytes(str));
+            browser.description(JS_EncodeString(cx, str));
             *rval = JSVAL_VOID;
             return JS_TRUE;
         }
@@ -3399,7 +3399,7 @@ namespace {
         assert(JS_GetContextPrivate(cx));
         script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
 
-        istringstream in(JS_GetStringBytes(vrmlstring));
+        istringstream in(JS_EncodeString(cx, vrmlstring));
 
         assert(s.script_node().scene());
         openvrml::browser & browser = s.script_node().scene()->browser();
@@ -3457,7 +3457,7 @@ namespace {
         script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
 
         try {
-            const char * eventOut = JS_GetStringBytes(JSVAL_TO_STRING(id));
+            const char * eventOut = JS_EncodeString(cx, JSVAL_TO_STRING(id));
             openvrml::event_emitter & emitter =
                 thisNode.value()->event_emitter(eventOut);
             *vp = s.vrmlFieldToJSVal(emitter.value());
@@ -3489,7 +3489,8 @@ namespace {
 
             boost::intrusive_ptr<openvrml::node> nodePtr = thisNode.value();
 
-            const char * const eventInId = JS_GetStringBytes(JSVAL_TO_STRING(id));
+            const char * const eventInId =
+                JS_EncodeString(cx, JSVAL_TO_STRING(id));
 
             try {
                 using boost::shared_ptr;
@@ -7046,7 +7047,7 @@ namespace {
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
             assert(JSVAL_IS_STRING(mfdata->array[i]));
             const char * const str =
-                JS_GetStringBytes(JSVAL_TO_STRING(mfdata->array[i]));
+                JS_EncodeString(cx, JSVAL_TO_STRING(mfdata->array[i]));
             temp[i] = str;
         }
         mfstring->value(temp);
@@ -7210,7 +7211,7 @@ namespace {
         for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
             assert(JSVAL_IS_STRING(mfdata->array[i]));
             out << '\"'
-                << JS_GetStringBytes(JSVAL_TO_STRING(mfdata->array[i]))
+                << JS_EncodeString(cx, JSVAL_TO_STRING(mfdata->array[i]))
                 << '\"';
             if ((i + 1) < mfdata->array.size()) { out << ", "; }
         }

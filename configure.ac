@@ -155,12 +155,11 @@ AC_LANG_POP])
              [AC_MSG_RESULT([no])])
 ])
 
+#
+# Require at least XULRunner 1.9 for JS_EncodeString.
+#
 have_libmozjs=yes
-PKG_CHECK_MODULES([JS], [xulrunner-js], ,
-                  [PKG_CHECK_MODULES([JS], [firefox-js], ,
-                                     [PKG_CHECK_MODULES([JS], [seamonkey-js], ,
-                                                        [PKG_CHECK_MODULES([JS], [mozilla-js >= 1.2.1], ,
-                                                                           [have_libmozjs=no])])])])
+PKG_CHECK_MODULES([JS], [mozilla-js >= 1.9], , [have_libmozjs=no])
 AC_CHECK_LIB([js], [JS_Init], [have_libjs=yes], [have_libjs=no])
 #
 # Ensure that we can, in fact, find and use the SpiderMonkey headers.
