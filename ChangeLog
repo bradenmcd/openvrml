@@ -1,3 +1,8 @@
+2011-01-23 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Fix test to check whether JSVAL_TO_DOUBLE returns
+	a pointer.
+
 2011-01-22 Braden McDaniel  <braden@endoframe.com>
 
 	SpiderMonkey included in the forthcoming XULRunner 2.0 changes the
