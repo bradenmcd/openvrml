@@ -1,3 +1,11 @@
+2011-01-24 Braden McDaniel  <braden@endoframe.com>
+
+	Newer SpiderMonkey (XULRunner 2.0) removes the fifth
+	JSFunctionSpec member.  Because this was always zero in OpenVRML's
+	usage, we can safely omit the definition of that member.
+
+	* src/script/javascript.cpp
+
 2011-01-23 Braden McDaniel  <braden@endoframe.com>
 
 	Don't hard-code Gtk/GNOME _DISABLE_DEPRECATED preprocessor

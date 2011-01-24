@@ -1153,10 +1153,9 @@ namespace {
                 "print",       // name
                 Global::print, // call
                 0,             // nargs
-                0,             // flags
-                0              // extra
+                0              // flags
             },
-            { 0, 0, 0, 0, 0 }
+            { 0, 0, 0, 0 }
         };
         JSBool ok = JS_DefineFunctions(cx, globalObj, globalFunctions);
         assert(ok);
@@ -1837,87 +1836,75 @@ namespace {
                     "getName",                     // name
                     Browser::getName,              // call
                     0,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "getVersion",                  // name
                     Browser::getVersion,           // call
                     0,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "getCurrentSpeed",             // name
                     Browser::getCurrentSpeed,      // call
                     0,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "getCurrentFrameRate",         // name
                     Browser::getCurrentFrameRate,  // call
                     0,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "getWorldURL",                 // name
                     Browser::getWorldURL,          // call
                     0,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "replaceWorld",                // name
                     Browser::replaceWorld,         // call
                     1,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "createVrmlFromString",        // name
                     Browser::createVrmlFromString, // call
                     1,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "createVrmlFromURL",           // name
                     Browser::createVrmlFromURL,    // call
                     3,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "addRoute",                    // name
                     Browser::addRoute,             // call
                     4,                             // nargs
-                    0,                             // flags
-                    0,                             // extra
+                    0                              // flags
                 },
                 {
                     "deleteRoute",                 // name
                     Browser::deleteRoute,          // call
                     4,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
                 {
                     "loadURL",                     // name
                     Browser::loadURL,              // call
                     2,                             // nargs
-                    0,                             // flags
-                    0,                             // extra
+                    0                              // flags
                 },
                 {
                     "setDescription",              // name
                     Browser::setDescription,       // call
                     1,                             // nargs
-                    0,                             // flags
-                    0                              // extra
+                    0                              // flags
                 },
-                { 0, 0, 0, 0, 0 }
+                { 0, 0, 0, 0 }
             };
 
         JSObject * const browserObj =
@@ -2755,10 +2742,10 @@ namespace {
 
         static JSFunctionSpec methods[] =
         // name, func ptr, argc
-            { { "setHSV", setHSV, 3, 0, 0 },
-              { "getHSV", getHSV, 0, 0, 0 },
-              { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "setHSV", setHSV, 3, 0 },
+              { "getHSV", getHSV, 0, 0 },
+              { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * const proto =
             JS_InitClass(cx, obj, 0, &jsclass,
@@ -3046,8 +3033,8 @@ namespace {
 
         static JSFunctionSpec methods[] =
         // name, func ptr, argc
-            { { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
                                               construct, 3, // constructor function, min arg count
@@ -3294,8 +3281,8 @@ namespace {
     OPENVRML_NOTHROW
     {
         static JSFunctionSpec methods[] =
-            { { "toString", SFNode::toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "toString", SFNode::toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
         JSClass & jsclass = s.sfnode_class;
@@ -3557,14 +3544,14 @@ namespace {
 
         static JSFunctionSpec methods[] =
         // name, func ptr, argc
-            { { "getAxis", getAxis, 0, 0, 0 },
-              { "inverse", inverse, 0, 0, 0 },
-              { "multiply", multiply, 1, 0, 0 },
-              { "multVec", multVec, 1, 0, 0 },
-              { "setAxis", setAxis, 1, 0, 0 },
-              { "slerp", slerp, 2, 0, 0 },
-              { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "getAxis", getAxis, 0, 0 },
+              { "inverse", inverse, 0, 0 },
+              { "multiply", multiply, 1, 0 },
+              { "multVec", multVec, 1, 0 },
+              { "setAxis", setAxis, 1, 0 },
+              { "slerp", slerp, 2, 0 },
+              { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * const proto =
             JS_InitClass(cx, obj, 0, &jsclass,
@@ -4097,16 +4084,16 @@ namespace {
 
         static JSFunctionSpec methods[] =
         /*    name          native          nargs    */
-            { { "add", add, 1, 0, 0 },
-              { "divide", divide, 1, 0, 0 },
-              { "dot", dot, 1, 0, 0 },
-              { "length", length, 0, 0, 0 },
-              { "multiply", multiply, 1, 0, 0 },
-              { "negate", negate, 0, 0, 0 },
-              { "normalize", normalize, 0, 0, 0 },
-              { "subtract", subtract, 1, 0, 0 },
-              { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "add", add, 1, 0 },
+              { "divide", divide, 1, 0 },
+              { "dot", dot, 1, 0 },
+              { "length", length, 0, 0 },
+              { "multiply", multiply, 1, 0 },
+              { "negate", negate, 0, 0 },
+              { "normalize", normalize, 0, 0 },
+              { "subtract", subtract, 1, 0 },
+              { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * const proto =
             JS_InitClass(cx, obj, 0, &SFVec2::jsclass,
@@ -4717,17 +4704,17 @@ namespace {
 
         static JSFunctionSpec methods[] =
         /*    name          native          nargs    */
-            { { "add", add, 1, 0, 0 },
-              { "cross", cross, 1, 0, 0 },
-              { "divide", divide, 1, 0, 0 },
-              { "dot", dot, 1, 0, 0 },
-              { "length", length, 0, 0, 0 },
-              { "multiply", multiply, 1, 0, 0 },
-              { "negate", negate, 0, 0, 0 },
-              { "normalize", normalize, 0, 0, 0 },
-              { "subtract", subtract, 1, 0, 0 },
-              { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "add", add, 1, 0 },
+              { "cross", cross, 1, 0 },
+              { "divide", divide, 1, 0 },
+              { "dot", dot, 1, 0 },
+              { "length", length, 0, 0 },
+              { "multiply", multiply, 1, 0 },
+              { "negate", negate, 0, 0 },
+              { "normalize", normalize, 0, 0 },
+              { "subtract", subtract, 1, 0 },
+              { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * const proto =
             JS_InitClass(cx, obj, 0, &SFVec3::jsclass,
@@ -5446,8 +5433,8 @@ namespace {
               { 0, 0, 0, 0, 0 } };
 
         static JSFunctionSpec methods[] =
-            { { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * proto = JS_InitClass(cx, obj, 0, &Subclass::jsclass,
                                         construct, 0, // constructor function, min arg count
@@ -5684,8 +5671,8 @@ namespace {
               { 0, 0, 0, 0, 0 } };
 
         static JSFunctionSpec methods[] =
-            { { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * proto = JS_InitClass(cx, obj, 0, &Subclass::jsclass,
                                         construct, 0, // constructor function, min arg count
@@ -6353,8 +6340,8 @@ namespace {
               { 0, 0, 0, 0, 0 } };
 
         static JSFunctionSpec methods[] =
-            { { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * proto =
             JS_InitClass(cx, obj, 0, &jsclass,
@@ -6593,8 +6580,8 @@ namespace {
               { 0, 0, 0, 0, 0 } };
 
         static JSFunctionSpec methods[] =
-            { { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * proto = JS_InitClass(cx, obj, 0, &jsclass,
                                         construct, 0, // constructor function, min arg count
@@ -6988,8 +6975,8 @@ namespace {
               { 0, 0, 0, 0, 0 } };
 
         static JSFunctionSpec methods[] =
-            { { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * proto =
             JS_InitClass(cx, obj, 0, &jsclass,
@@ -7730,16 +7717,16 @@ namespace {
     OPENVRML_NOTHROW
     {
         static JSFunctionSpec methods[] =
-            { { "setTransform", setTransform, 0, 0, 0 },
-              { "getTransform", getTransform, 0, 0, 0 },
-              { "inverse", inverse, 0, 0, 0 },
-              { "transpose", transpose, 0, 0, 0 },
-              { "multLeft", multLeft, 1, 0, 0 },
-              { "multRight", multRight, 1, 0, 0 },
-              { "multVecMatrix", multVecMatrix, 1, 0, 0 },
-              { "multMatrixVec", multMatrixVec, 1, 0, 0 },
-              { "toString", toString, 0, 0, 0 },
-              { 0, 0, 0, 0, 0 } };
+            { { "setTransform", setTransform, 0, 0 },
+              { "getTransform", getTransform, 0, 0 },
+              { "inverse", inverse, 0, 0 },
+              { "transpose", transpose, 0, 0 },
+              { "multLeft", multLeft, 1, 0 },
+              { "multRight", multRight, 1, 0 },
+              { "multVecMatrix", multVecMatrix, 1, 0 },
+              { "multMatrixVec", multMatrixVec, 1, 0 },
+              { "toString", toString, 0, 0 },
+              { 0, 0, 0, 0 } };
 
         JSObject * const proto = JS_InitClass(cx, obj, 0, &jsclass,
                                               construct, 0,
