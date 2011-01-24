@@ -1,5 +1,12 @@
 2011-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	Use JS_EncodeString instead of the obsolete JS_GetStringBytes.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
+2011-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	* configure.ac: Fix test to check whether JSVAL_TO_DOUBLE returns
 	a pointer.
 
