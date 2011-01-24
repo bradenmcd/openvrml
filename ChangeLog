@@ -1,5 +1,12 @@
 2011-01-23 Braden McDaniel  <braden@endoframe.com>
 
+	Don't hard-code Gtk/GNOME _DISABLE_DEPRECATED preprocessor
+	symbols, as this negatively affects forward compatibility.
+
+	* src/Makefile.am
+
+2011-01-23 Braden McDaniel  <braden@endoframe.com>
+
 	Use JS_EncodeString instead of the obsolete JS_GetStringBytes.
 
 	* configure.ac

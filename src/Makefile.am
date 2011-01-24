@@ -762,8 +762,7 @@ openvrml_xembed_openvrml_xembed_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
         -I$(top_builddir)/src/libopenvrml-gl \
-        -I$(top_srcdir)/src/libopenvrml-gl \
-        -DGTK_DISABLE_DEPRECATED
+        -I$(top_srcdir)/src/libopenvrml-gl
 openvrml_xembed_openvrml_xembed_CXXFLAGS = \
         $(PTHREAD_CFLAGS) \
         $(DBUS_G_CFLAGS) \
@@ -832,9 +831,6 @@ dist_openvrml_player_ui_DATA = openvrml-player/openvrml-player.ui
 endif
 
 openvrml_player_openvrml_player_CPPFLAGS = \
-        -DG_DISABLE_DEPRECATED \
-        -DGTK_DISABLE_DEPRECATED \
-        -DGNOME_DISABLE_DEPRECATED \
         -DOPENVRML_PLAYER_PKGDATADIR_=\"$(datadir)/openvrml-player\" \
         -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\" \
         -Iopenvrml-player \
@@ -888,7 +884,6 @@ endif
 
 mozilla_plugin_openvrml_la_CPPFLAGS = \
         -DMOZ_X11 \
-        -DGTK_DISABLE_DEPRECATED \
         -DOPENVRML_LIBEXECDIR_=\"$(libexecdir)\" \
         -Imozilla-plugin
 mozilla_plugin_openvrml_la_CXXFLAGS = \
