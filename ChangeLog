@@ -1,3 +1,12 @@
+2011-02-01 Braden McDaniel  <braden@endoframe.com>
+
+	Newer SpiderMonkey (XULRunner 2.0) changes the JSNative function
+	signature and the means of accessing argv, the "this" JSObject,
+	and the returned jsval.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
 2011-01-24 Braden McDaniel  <braden@endoframe.com>
 
 	Newer SpiderMonkey (XULRunner 2.0) removes the fifth
