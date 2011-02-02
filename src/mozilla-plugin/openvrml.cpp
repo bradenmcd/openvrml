@@ -356,12 +356,11 @@ NPError NP_Initialize(NPNetscapeFuncs * const mozTable,
     }
 # endif // defined MOZ_X11
 
-    return NPP_Initialize();
+    return NPERR_NO_ERROR;
 }
 
 NPError NP_Shutdown()
 {
-    NPP_Shutdown();
     return NPERR_NO_ERROR;
 }
 
@@ -389,14 +388,6 @@ char * NPP_GetMIMEDescription()
         "x-world/x-vrml:wrl:VRML world";
     return const_cast<char *>(&mimeDescription[0]);
 }
-
-NPError NPP_Initialize()
-{
-    return NPERR_NO_ERROR;
-}
-
-void NPP_Shutdown()
-{}
 
 /**
  * @internal
