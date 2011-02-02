@@ -91,42 +91,91 @@ namespace {
 # endif
     }
 
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_DECLARE_JSNATIVE(name)                      \
+    JSBool (name)(JSContext * cx, uintN argc, jsval * vp)
+# else
+#   define OPENVRML_DECLARE_JSNATIVE(name)                              \
+    JSBool (name)(JSContext * cx, JSObject * obj, uintN argc, jsval * argv, \
+                  jsval * rval)
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_DECLARE_MEMBER_JSNATIVE(class_name, name)           \
+    JSBool class_name::name(JSContext * cx, uintN argc, jsval * vp)
+# else
+#   define OPENVRML_DECLARE_MEMBER_JSNATIVE(class_name, name)   \
+    JSBool class_name::name(JSContext * cx, JSObject * obj,     \
+                            uintN argc, jsval * argv,           \
+                            jsval * rval)
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_DEFINE_JSNATIVE(name)                               \
+    JSBool (name)(JSContext * const cx, const uintN argc, jsval * const vp)
+# else
+#   define OPENVRML_DEFINE_JSNATIVE(name)                               \
+    JSBool (name)(JSContext * const cx, JSObject * obj,                 \
+                  const uintN argc, jsval * const argv, jsval * const rval)
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_DEFINE_MEMBER_JSNATIVE(class_name, name)            \
+    JSBool class_name::name(JSContext * const cx, const uintN argc,     \
+                            jsval * const vp)
+# else
+#   define OPENVRML_DEFINE_MEMBER_JSNATIVE(class_name, name)            \
+    JSBool class_name::name(JSContext * const cx, JSObject * obj,       \
+                            const uintN argc, jsval * const argv,       \
+                            jsval * const rval)
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_JS_ARGV(cx, vp) JS_ARGV(cx, vp)
+# else
+#   define OPENVRML_JS_ARGV(cx, vp) argv
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_JS_SET_RVAL(cx, vp, value) JS_SET_RVAL((cx), (vp), (value))
+# else
+#   define OPENVRML_JS_SET_RVAL(cx, vp, value) *rval = (value)
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_JS_RVAL(cx, vp) JS_RVAL((cx), (vp))
+# else
+#   define OPENVRML_JS_RVAL(cx, vp) *rval
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_JS_THIS_OBJECT(cx, vp) JS_THIS_OBJECT((cx), (vp))
+# else
+#   define OPENVRML_JS_THIS_OBJECT(cx, vp) obj
+# endif
+
+# ifdef OPENVRML_FAST_JSNATIVE
+#   define OPENVRML_JS_IS_CONSTRUCTING(cx, vp) JS_IsConstructing(cx, vp)
+# else
+#   define OPENVRML_JS_IS_CONSTRUCTING(cx, vp) JS_IsConstructing(cx)
+# endif
+
     class SFNode;
     class MFNode;
 
     namespace Browser {
-        OPENVRML_JAVASCRIPT_LOCAL
-        JSBool createVrmlFromURL(JSContext * cx, JSObject * obj,
-                                 uintN argc, jsval * argv,
-                                 jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL
-        JSBool addRoute(JSContext * cx, JSObject * obj,
-                        uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL
-        JSBool deleteRoute(JSContext * cx, JSObject * obj,
-                           uintN argc, jsval * argv,
-                           jsval * rval)
-            OPENVRML_NOTHROW;
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(createVrmlFromURL);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(addRoute);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(deleteRoute);
     }
 
     class OPENVRML_JAVASCRIPT_LOCAL script : public openvrml::script {
 
         friend class SFNode;
         friend class MFNode;
-        friend JSBool Browser::createVrmlFromURL(JSContext * cx,
-                                                 JSObject * obj,
-                                                 uintN argc, jsval * argv,
-                                                 jsval * rval)
-            OPENVRML_NOTHROW;
-        friend JSBool Browser::addRoute(JSContext * cx, JSObject * obj,
-                                        uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        friend JSBool Browser::deleteRoute(JSContext * cx, JSObject * obj,
-                                           uintN argc, jsval * argv,
-                                           jsval * rval)
-            OPENVRML_NOTHROW;
+        friend OPENVRML_DECLARE_MEMBER_JSNATIVE(Browser, createVrmlFromURL);
+        friend OPENVRML_DECLARE_MEMBER_JSNATIVE(Browser, addRoute);
+        friend OPENVRML_DECLARE_MEMBER_JSNATIVE(Browser, deleteRoute);
 
         static JSRuntime * rt;
         static size_t nInstances;
@@ -252,7 +301,7 @@ namespace {
             0,                // mark
             0                 // spare
         };
-        JSBool print(JSContext *, JSObject *, uintN, jsval *, jsval *);
+        OPENVRML_DECLARE_JSNATIVE(print);
     }
 
     namespace Browser {
@@ -276,78 +325,18 @@ namespace {
             0,                // mark
             0                 // spare
         };
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getName(JSContext * cx,
-                                      JSObject * obj,
-                                      uintN argc,
-                                      jsval * argv,
-                                      jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getVersion(JSContext * cx,
-                                         JSObject * obj,
-                                         uintN argc,
-                                         jsval * argv,
-                                         jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getCurrentSpeed(JSContext * cx,
-                                              JSObject * obj,
-                                              uintN argc,
-                                              jsval * argv,
-                                              jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getCurrentFrameRate(JSContext * cx,
-                                                  JSObject * obj,
-                                                  uintN argc,
-                                                  jsval * argv,
-                                                  jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool getWorldURL(JSContext * cx,
-                                          JSObject * obj,
-                                          uintN argc,
-                                          jsval * argv,
-                                          jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool replaceWorld(JSContext * cx,
-                                           JSObject * obj,
-                                           uintN argc,
-                                           jsval * argv,
-                                           jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool createVrmlFromString(JSContext * cx,
-                                                   JSObject * obj,
-                                                   uintN argc,
-                                                   jsval * argv,
-                                                   jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool createVrmlFromURL(JSContext * cx,
-                                                JSObject * obj,
-                                                uintN argc,
-                                                jsval * argv,
-                                                jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool addRoute(JSContext * cx,
-                                       JSObject * obj,
-                                       uintN argc,
-                                       jsval * argv,
-                                       jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool deleteRoute(JSContext * cx,
-                                          JSObject * obj,
-                                          uintN argc,
-                                          jsval * argv,
-                                          jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool loadURL(JSContext * cx,
-                                      JSObject * obj,
-                                      uintN argc,
-                                      jsval * argv,
-                                      jsval * rval)
-            OPENVRML_NOTHROW;
-        OPENVRML_JAVASCRIPT_LOCAL JSBool setDescription(JSContext * cx,
-                                             JSObject * obj,
-                                             uintN argc,
-                                             jsval * argv,
-                                             jsval * rval)
-            OPENVRML_NOTHROW;
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(getName);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(getVersion);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(getCurrentSpeed);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(getCurrentFrameRate);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(getWorldURL);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(replaceWorld);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(createVrmlFromString);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(createVrmlFromURL);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(addRoute);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(deleteRoute);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(loadURL);
+        OPENVRML_JAVASCRIPT_LOCAL OPENVRML_DECLARE_JSNATIVE(setDescription);
     }
 
     //
@@ -385,9 +374,7 @@ namespace {
 
     protected:
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(toString);
     private:
         sfield();
     };
@@ -406,9 +393,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
     private:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&rgb)[3])
             OPENVRML_NOTHROW;
@@ -418,12 +403,8 @@ namespace {
         static JSBool setProperty(JSContext * cx, JSObject * obj,
                                   jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool setHSV(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool getHSV(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(setHSV);
+        static OPENVRML_DECLARE_JSNATIVE(getHSV);
     };
 
     class OPENVRML_JAVASCRIPT_LOCAL SFImage : public sfield {
@@ -440,9 +421,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
     private:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uint32 x, uint32 y, uint32 comp,
                                  JSObject * pixels_obj)
@@ -469,9 +448,7 @@ namespace {
         static std::auto_ptr<openvrml::sfnode>
             createFromJSObject(JSContext * cx, JSObject * obj)
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval *)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  JSString * vrmlstring)
             OPENVRML_NOTHROW;
@@ -497,9 +474,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
     private:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval *)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&rot)[4])
             OPENVRML_NOTHROW;
@@ -509,24 +484,12 @@ namespace {
         static JSBool setProperty(JSContext * cx, JSObject * obj,
                                   jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool getAxis(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool inverse(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multiply(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multVec(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool setAxis(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool slerp(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(getAxis);
+        static OPENVRML_DECLARE_JSNATIVE(inverse);
+        static OPENVRML_DECLARE_JSNATIVE(multiply);
+        static OPENVRML_DECLARE_JSNATIVE(multVec);
+        static OPENVRML_DECLARE_JSNATIVE(setAxis);
+        static OPENVRML_DECLARE_JSNATIVE(slerp);
     };
 
     template <typename SFVec2>
@@ -536,9 +499,7 @@ namespace {
             OPENVRML_NOTHROW;
 
     protected:
-        static JSBool constructor(JSContext * cx, JSObject * obj,
-                                  uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(constructor);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&vec)[2])
             OPENVRML_NOTHROW;
@@ -548,30 +509,14 @@ namespace {
         static JSBool setProperty(JSContext * cx, JSObject * obj,
                                   jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool add(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool divide(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool dot(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool length(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multiply(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool negate(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool normalize(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool subtract(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(add);
+        static OPENVRML_DECLARE_JSNATIVE(divide);
+        static OPENVRML_DECLARE_JSNATIVE(dot);
+        static OPENVRML_DECLARE_JSNATIVE(length);
+        static OPENVRML_DECLARE_JSNATIVE(multiply);
+        static OPENVRML_DECLARE_JSNATIVE(negate);
+        static OPENVRML_DECLARE_JSNATIVE(normalize);
+        static OPENVRML_DECLARE_JSNATIVE(subtract);
     };
 
     class OPENVRML_JAVASCRIPT_LOCAL SFVec2f : public sfvec2_jsobject<SFVec2f> {
@@ -611,9 +556,7 @@ namespace {
             OPENVRML_NOTHROW;
 
     protected:
-        static JSBool constructor(JSContext * cx, JSObject * obj,
-                                  uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DEFINE_JSNATIVE(constructor);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&vec)[3])
             OPENVRML_NOTHROW;
@@ -623,31 +566,15 @@ namespace {
         static JSBool setProperty(JSContext * cx, JSObject * obj,
                                   jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool add(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
-        static JSBool cross(JSContext * cx, JSObject * obj,
-                            uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool divide(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool dot(JSContext * cx, JSObject * obj,
-                          uintN argc, jsval * argv, jsval * rval) OPENVRML_NOTHROW;
-        static JSBool length(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multiply(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool negate(JSContext * cx, JSObject * obj,
-                             uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool normalize(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool subtract(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DEFINE_JSNATIVE(add);
+        static OPENVRML_DEFINE_JSNATIVE(cross);
+        static OPENVRML_DEFINE_JSNATIVE(divide);
+        static OPENVRML_DEFINE_JSNATIVE(dot);
+        static OPENVRML_DEFINE_JSNATIVE(length);
+        static OPENVRML_DEFINE_JSNATIVE(multiply);
+        static OPENVRML_DEFINE_JSNATIVE(negate);
+        static OPENVRML_DEFINE_JSNATIVE(normalize);
+        static OPENVRML_DEFINE_JSNATIVE(subtract);
     };
 
     class OPENVRML_JAVASCRIPT_LOCAL SFVec3f : public sfvec3_jsobject<SFVec3f> {
@@ -720,18 +647,14 @@ namespace {
             OPENVRML_NOTHROW;
 
     protected:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * vp)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool setElement(JSContext * cx, JSObject * obj,
                                  jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool setLength(JSContext * cx, JSObject * obj,
                                 jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(toString);
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 
     private:
@@ -751,18 +674,14 @@ namespace {
             OPENVRML_NOTHROW;
 
     protected:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * vp)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool setElement(JSContext * cx, JSObject * obj,
                                  jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
         static JSBool setLength(JSContext * cx, JSObject * obj,
                                 jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(toString);
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 
     private:
@@ -782,17 +701,14 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
     private:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv,
-                                jsval * vp);
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv);
         static JSBool setElement(JSContext * cx, JSObject * obj,
                                  jspropertyop_id id, jsval * vp);
         static JSBool setLength(JSContext * cx, JSObject * obj,
                                 jspropertyop_id id, jsval * vp);
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval);
+        static OPENVRML_DECLARE_JSNATIVE(toString);
         static void finalize(JSContext * cx, JSObject * obj);
     };
 
@@ -846,17 +762,14 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
     private:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv,
-                                jsval * vp);
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv);
         static JSBool setElement(JSContext * cx, JSObject * obj,
                                  jspropertyop_id id, jsval * vp);
         static JSBool setLength(JSContext * cx, JSObject * obj,
                                 jspropertyop_id id, jsval * vp);
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval);
+        static OPENVRML_DECLARE_JSNATIVE(toString);
         static void finalize(JSContext * cx, JSObject * obj);
     };
 
@@ -879,9 +792,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
     private:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv,
-                                jsval * vp) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv) OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
@@ -890,9 +801,7 @@ namespace {
         static JSBool setLength(JSContext * cx, JSObject * obj,
                                 jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(toString);
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
     };
 
@@ -924,9 +833,7 @@ namespace {
             OPENVRML_THROW2(bad_conversion, std::bad_alloc);
 
     private:
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv,
-                                jsval * vp) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  uintN argc, jsval * argv) OPENVRML_NOTHROW;
         static JSBool setElement(JSContext * cx, JSObject * obj,
@@ -935,9 +842,7 @@ namespace {
         static JSBool setLength(JSContext * cx, JSObject * obj,
                                 jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(toString);
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
     };
 
@@ -1022,10 +927,7 @@ namespace {
 
             static JSObject * initClass(JSContext * cx, JSObject * obj)
                 OPENVRML_NOTHROW;
-            static JSBool construct(JSContext * cx, JSObject * obj,
-                                    uintN argc, jsval * argv,
-                                    jsval * vp)
-                OPENVRML_NOTHROW;
+            static OPENVRML_DECLARE_JSNATIVE(construct);
             static JSBool getElement(JSContext * cx, JSObject * obj,
                                      jspropertyop_id id, jsval * vp)
                 OPENVRML_NOTHROW;
@@ -1038,10 +940,7 @@ namespace {
 
         static JSObject * initClass(JSContext * cx, JSObject * obj)
             OPENVRML_NOTHROW;
-        static JSBool construct(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv,
-                                jsval * vp)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
                                  const jsdouble (&mat)[16])
             OPENVRML_NOTHROW;
@@ -1051,33 +950,15 @@ namespace {
         static JSBool setElement(JSContext * cx, JSObject * obj,
                                  jspropertyop_id id, jsval * vp)
             OPENVRML_NOTHROW;
-        static JSBool setTransform(JSContext * cx, JSObject * obj,
-                                   uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool getTransform(JSContext * cx, JSObject * obj,
-                                   uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool inverse(JSContext * cx, JSObject * obj,
-                              uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool transpose(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multLeft(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multRight(JSContext * cx, JSObject * obj,
-                                uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multVecMatrix(JSContext * cx, JSObject * obj,
-                                    uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool multMatrixVec(JSContext * cx, JSObject * obj,
-                                    uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
-        static JSBool toString(JSContext * cx, JSObject * obj,
-                               uintN argc, jsval * argv, jsval * rval)
-            OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSNATIVE(setTransform);
+        static OPENVRML_DECLARE_JSNATIVE(getTransform);
+        static OPENVRML_DECLARE_JSNATIVE(inverse);
+        static OPENVRML_DECLARE_JSNATIVE(transpose);
+        static OPENVRML_DECLARE_JSNATIVE(multLeft);
+        static OPENVRML_DECLARE_JSNATIVE(multRight);
+        static OPENVRML_DECLARE_JSNATIVE(multVecMatrix);
+        static OPENVRML_DECLARE_JSNATIVE(multMatrixVec);
+        static OPENVRML_DECLARE_JSNATIVE(toString);
         static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
 
     private:
@@ -2219,14 +2100,14 @@ namespace {
 
     namespace Global {
 
-        JSBool print(JSContext * const cx, JSObject *,
-                     const uintN argc, jsval * const argv, jsval *)
+        OPENVRML_DEFINE_JSNATIVE(print)
         {
             script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
             for (uintN i = 0; i < argc; i++) {
-                JSString * const str = JS_ValueToString(cx, argv[i]);
+                JSString * const str =
+                    JS_ValueToString(cx, OPENVRML_JS_ARGV(cx, vp)[i]);
                 if (!str) { return JS_FALSE; }
                 s->script_node().scene()->browser()
                     .out(JS_EncodeString(cx, str));
@@ -2238,84 +2119,74 @@ namespace {
 
     namespace Browser {
 
-        JSBool getName(JSContext * const cx, JSObject *,
-                       uintN, jsval *, jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(getName)
         {
             script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
             const char * const name =
                 s->script_node().node::type().metatype().browser().name();
-            *rval = STRING_TO_JSVAL(JS_InternString(cx, name));
+            OPENVRML_JS_SET_RVAL(cx, vp,
+                                 STRING_TO_JSVAL(JS_InternString(cx, name)));
             return JS_TRUE;
         }
 
-        JSBool getVersion(JSContext * const cx, JSObject *,
-                          uintN, jsval *, jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(getVersion)
         {
             script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
             const char * const version =
                 s->script_node().node::type().metatype().browser().version();
-            *rval = STRING_TO_JSVAL(JS_InternString(cx, version));
+            OPENVRML_JS_SET_RVAL(cx, vp,
+                                 STRING_TO_JSVAL(JS_InternString(cx, version)));
             return JS_TRUE;
         }
 
-        JSBool getCurrentSpeed(JSContext * const cx, JSObject *,
-                               uintN, jsval *, jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(getCurrentSpeed)
         {
             script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
             const jsdouble speed =
                 s->script_node().type().metatype().browser().current_speed();
-            return JS_NewNumberValue(cx, speed, rval);
+            jsval result_val;
+            const JSBool result = JS_NewNumberValue(cx, speed, &result_val);
+            OPENVRML_JS_SET_RVAL(cx, vp, result_val);
+            return result;
         }
 
-        JSBool getCurrentFrameRate(JSContext * const cx,
-                                   JSObject *,
-                                   uintN,
-                                   jsval *,
-                                   jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(getCurrentFrameRate)
         {
             script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
             const jsdouble frame_rate =
                 s->script_node().type().metatype().browser().frame_rate();
-            return JS_NewNumberValue(cx, frame_rate, rval);
+            jsval result_val;
+            const JSBool result =
+                JS_NewNumberValue(cx, frame_rate, &result_val);
+            OPENVRML_JS_SET_RVAL(cx, vp, result_val);
+            return result;
         }
 
-        JSBool getWorldURL(JSContext * const cx,
-                           JSObject *,
-                           uintN,
-                           jsval *,
-                           jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(getWorldURL)
         {
             script * const s = static_cast<script *>(JS_GetContextPrivate(cx));
             assert(s);
 
             const std::string url =
                 s->script_node().node::type().metatype().browser().world_url();
-            *rval = STRING_TO_JSVAL(JS_InternString(cx, url.c_str()));
+            OPENVRML_JS_SET_RVAL(cx, vp,
+                                 STRING_TO_JSVAL(
+                                     JS_InternString(cx, url.c_str())));
             return JS_TRUE;
         }
 
 
 // No events will be processed after loadURL.
 
-        JSBool loadURL(JSContext * const cx,
-                       JSObject *,
-                       const uintN argc,
-                       jsval * const argv,
-                       jsval *)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(loadURL)
         {
             using std::auto_ptr;
 
@@ -2330,8 +2201,12 @@ namespace {
                     // Make sure our first argument (the URL) is an MFString.
                     //
                     JSObject * arg0_obj;
-                    if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
-                    if (!JS_InstanceOf(cx, arg0_obj, &MFString::jsclass, argv)) {
+                    if (!JS_ValueToObject(cx, OPENVRML_JS_ARGV(cx, vp)[0],
+                                          &arg0_obj)) {
+                        return JS_FALSE;
+                    }
+                    if (!JS_InstanceOf(cx, arg0_obj, &MFString::jsclass,
+                                       OPENVRML_JS_ARGV(cx, vp))) {
                         return JS_FALSE;
                     }
 
@@ -2346,8 +2221,12 @@ namespace {
                     // Make sure our second argument is an MFString
                     //
                     JSObject * arg1_obj;
-                    if (!JS_ValueToObject(cx, argv[1], &arg1_obj)) { return JS_FALSE; }
-                    if (!JS_InstanceOf(cx, arg1_obj, &MFString::jsclass, argv)) {
+                    if (!JS_ValueToObject(cx, OPENVRML_JS_ARGV(cx, vp)[1],
+                                          &arg1_obj)) {
+                        return JS_FALSE;
+                    }
+                    if (!JS_InstanceOf(cx, arg1_obj, &MFString::jsclass,
+                                       OPENVRML_JS_ARGV(cx, vp))) {
                         return JS_FALSE;
                     }
 
@@ -2374,12 +2253,7 @@ namespace {
 
 // This does return, but no events will be processed after it is called.
 
-        JSBool replaceWorld(JSContext * const cx,
-                            JSObject *,
-                            uintN,
-                            jsval * const argv,
-                            jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(replaceWorld)
         {
             using std::auto_ptr;
 
@@ -2390,8 +2264,11 @@ namespace {
             // Make sure our argument is an MFNode.
             //
             JSObject * arg_obj;
-            if (!JS_ValueToObject(cx, argv[0], &arg_obj)) { return JS_FALSE; }
-            if (!JS_InstanceOf(cx, arg_obj, &MFNode::jsclass, argv)) {
+            if (!JS_ValueToObject(cx, OPENVRML_JS_ARGV(cx, vp)[0], &arg_obj)) {
+                return JS_FALSE;
+            }
+            if (!JS_InstanceOf(cx, arg_obj, &MFNode::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
 
@@ -2401,16 +2278,11 @@ namespace {
 
             s.script_node().scene()->browser().replace_world(nodes->value());
 
-            *rval = JSVAL_VOID;
+            OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
             return JS_TRUE;
         }
 
-        JSBool createVrmlFromString(JSContext * const cx,
-                                    JSObject * const obj,
-                                    uintN,
-                                    jsval * const argv,
-                                    jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(createVrmlFromString)
         {
             assert(JS_GetContextPrivate(cx));
             script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
@@ -2418,7 +2290,7 @@ namespace {
             //
             // Make sure our argument is a string.
             //
-            JSString * str = JS_ValueToString(cx, argv[0]);
+            JSString * str = JS_ValueToString(cx, OPENVRML_JS_ARGV(cx, vp)[0]);
             if (!str) { return JS_FALSE; }
 
             try {
@@ -2430,9 +2302,13 @@ namespace {
                     browser.create_vrml_from_stream(in);
 
                 if (nodes.empty()) {
-                    *rval = JSVAL_NULL;
+                    OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_NULL);
                 } else {
-                    if (!MFNode::toJsval(nodes, cx, obj, rval)) { return JS_FALSE; }
+                    if (!MFNode::toJsval(nodes, cx,
+                                         OPENVRML_JS_THIS_OBJECT(cx, vp),
+                                         &OPENVRML_JS_RVAL(cx, vp))) {
+                        return JS_FALSE;
+                    }
                 }
             } catch (std::exception & ex) {
                 JS_ReportError(cx, ex.what());
@@ -2446,23 +2322,19 @@ namespace {
 
 // createVrmlFromURL( MFString url, SFNode node, SFString event )
 
-        JSBool createVrmlFromURL(JSContext * const cx,
-                                 JSObject *,
-                                 const uintN argc,
-                                 jsval * const argv,
-                                 jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(createVrmlFromURL)
         {
             using std::auto_ptr;
 
             JSObject * url_obj = 0, * node_obj = 0;
             JSString * event_str = 0;
-            if (!JS_ConvertArguments(cx, argc, argv, "ooS",
+            if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "ooS",
                                      &url_obj, &node_obj, &event_str)) {
                 return JS_FALSE;
             }
 
-            if (!JS_InstanceOf(cx, url_obj, &MFString::jsclass, argv)) {
+            if (!JS_InstanceOf(cx, url_obj, &MFString::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             auto_ptr<openvrml::mfstring> url(MFString::createFromJSObject(cx,
@@ -2471,7 +2343,8 @@ namespace {
 
             script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
             JSClass & sfnode_jsclass = s.sfnode_class;
-            if (!JS_InstanceOf(cx, node_obj, &sfnode_jsclass, argv)) {
+            if (!JS_InstanceOf(cx, node_obj, &sfnode_jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             auto_ptr<openvrml::sfnode> node(SFNode::createFromJSObject(cx, node_obj));
@@ -2496,18 +2369,13 @@ namespace {
                 return JS_FALSE;
             }
 
-            *rval = JSVAL_VOID;
+            OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
             return JS_TRUE;
         }
 
 // addRoute(SFNode fromNode, String fromEventOut, SFNode toNode, String toEvent)
 
-        JSBool addRoute(JSContext * const cx,
-                        JSObject *,
-                        uintN,
-                        jsval * const argv,
-                        jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(addRoute)
         {
             using std::auto_ptr;
 
@@ -2515,10 +2383,13 @@ namespace {
             // Make sure our first argument (fromNode) is a SFNode.
             //
             JSObject * arg0_obj;
-            if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
+            if (!JS_ValueToObject(cx, OPENVRML_JS_ARGV(cx, vp)[0], &arg0_obj)) {
+                return JS_FALSE;
+            }
             script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
             JSClass & sfnode_jsclass = s.sfnode_class;
-            if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass, argv)) {
+            if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             auto_ptr<openvrml::sfnode> fromNode =
@@ -2534,7 +2405,8 @@ namespace {
             //
             // Makes sure our second argument (fromEventOut) is a string.
             //
-            JSString * arg1_str = JS_ValueToString(cx, argv[1]);
+            JSString * arg1_str =
+                JS_ValueToString(cx, OPENVRML_JS_ARGV(cx, vp)[1]);
             if (!arg1_str) { return JS_FALSE; }
             const char * const fromEventOut = JS_EncodeString(cx, arg1_str);
 
@@ -2542,8 +2414,11 @@ namespace {
             // Make sure our third argument (toNode) is a SFNode.
             //
             JSObject * arg2_obj;
-            if (!JS_ValueToObject(cx, argv[2], &arg2_obj)) { return JS_FALSE; }
-            if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass, argv)) {
+            if (!JS_ValueToObject(cx, OPENVRML_JS_ARGV(cx, vp)[2], &arg2_obj)) {
+                return JS_FALSE;
+            }
+            if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             auto_ptr<openvrml::sfnode> toNode =
@@ -2559,7 +2434,8 @@ namespace {
             //
             // Makes sure our fourth argument (toEventIn) is a string.
             //
-            JSString * arg3_str = JS_ValueToString(cx, argv[3]);
+            JSString * arg3_str =
+                JS_ValueToString(cx, OPENVRML_JS_ARGV(cx, vp)[3]);
             if (!arg3_str) { return JS_FALSE; }
             const char * const toEventIn = JS_EncodeString(cx, arg3_str);
 
@@ -2573,18 +2449,13 @@ namespace {
                 return JS_FALSE;
             }
 
-            *rval = JSVAL_VOID;
+            OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
             return JS_TRUE;
         }
 
 // deleteRoute(SFNode fromNode, String fromEventOut, SFNode toNode, String toEvent)
 
-        JSBool deleteRoute(JSContext * const cx,
-                           JSObject *,
-                           uintN,
-                           jsval * const argv,
-                           jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(deleteRoute)
         {
             using std::auto_ptr;
 
@@ -2592,10 +2463,13 @@ namespace {
             // Make sure our first argument (fromNode) is a SFNode.
             //
             JSObject * arg0_obj;
-            if (!JS_ValueToObject(cx, argv[0], &arg0_obj)) { return JS_FALSE; }
+            if (!JS_ValueToObject(cx, OPENVRML_JS_ARGV(cx, vp)[0], &arg0_obj)) {
+                return JS_FALSE;
+            }
             script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
             JSClass & sfnode_jsclass = s.sfnode_class;
-            if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass, argv)) {
+            if (!JS_InstanceOf(cx, arg0_obj, &sfnode_jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             auto_ptr<openvrml::sfnode> fromNode =
@@ -2604,7 +2478,8 @@ namespace {
             //
             // Makes sure our second argument (fromEventOut) is a string.
             //
-            JSString * arg1_str = JS_ValueToString(cx, argv[1]);
+            JSString * arg1_str =
+                JS_ValueToString(cx, OPENVRML_JS_ARGV(cx, vp)[1]);
             if (!arg1_str) { return JS_FALSE; }
             const char * const fromEventOut = JS_EncodeString(cx, arg1_str);
 
@@ -2612,8 +2487,11 @@ namespace {
             // Make sure our third argument (toNode) is a SFNode.
             //
             JSObject * arg2_obj;
-            if (!JS_ValueToObject(cx, argv[2], &arg2_obj)) { return JS_FALSE; }
-            if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass, argv)) {
+            if (!JS_ValueToObject(cx, OPENVRML_JS_ARGV(cx, vp)[2], &arg2_obj)) {
+                return JS_FALSE;
+            }
+            if (!JS_InstanceOf(cx, arg2_obj, &sfnode_jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             auto_ptr<openvrml::sfnode> toNode =
@@ -2622,7 +2500,8 @@ namespace {
             //
             // Makes sure our fourth argument (toEventIn) is a string.
             //
-            JSString * arg3_str = JS_ValueToString(cx, argv[3]);
+            JSString * arg3_str =
+                JS_ValueToString(cx, OPENVRML_JS_ARGV(cx, vp)[3]);
             if (!arg3_str) { return JS_FALSE; }
             const char * const toEventIn = JS_EncodeString(cx, arg3_str);
 
@@ -2631,24 +2510,19 @@ namespace {
                          *toNode->value(),
                          toEventIn);
 
-            *rval = JSVAL_VOID;
+            OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
             return JS_TRUE;
         }
 
-        JSBool setDescription(JSContext * const cx,
-                              JSObject *,
-                              uintN,
-                              jsval * const argv,
-                              jsval * const rval)
-            OPENVRML_NOTHROW
+        OPENVRML_DEFINE_JSNATIVE(setDescription)
         {
-            JSString * str = JS_ValueToString(cx, argv[0]);
+            JSString * str = JS_ValueToString(cx, OPENVRML_JS_ARGV(cx, vp)[0]);
             if (!str) { return JS_FALSE; }
             assert(JS_GetContextPrivate(cx));
             script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
             openvrml::browser & browser = s.script_node().scene()->browser();
             browser.description(JS_EncodeString(cx, str));
-            *rval = JSVAL_VOID;
+            OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
             return JS_TRUE;
         }
 
@@ -2694,19 +2568,18 @@ namespace {
         JS_SetPrivate(cx, obj, 0);
     }
 
-    JSBool sfield::toString(JSContext * const cx, JSObject * const obj,
-                            uintN, jsval *, jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfield, toString)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         std::ostringstream out;
         out << sfdata.field_value();
         JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
         if (!jsstr) { return JS_FALSE; }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 
@@ -2801,27 +2674,29 @@ namespace {
                 sfdata.field_value().clone().release()));
     }
 
-    JSBool SFColor::construct(JSContext * const cx,
-                              JSObject * obj,
-                              const uintN argc,
-                              jsval * const argv,
-                              jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFColor, construct)
     {
         jsdouble rgb[3] = {};
-        if (!JS_ConvertArguments(cx, argc, argv, "/ddd",
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "/ddd",
                                  &rgb[0], &rgb[1], &rgb[2])) {
             return JS_FALSE;
         }
 
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return initObject(cx, obj, rgb);
     }
 
@@ -2934,22 +2809,19 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool SFColor::setHSV(JSContext * const cx,
-                           JSObject * const obj,
-                           const uintN argc,
-                           jsval * const argv,
-                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFColor, setHSV)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         openvrml::sfcolor & thisColor =
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
 
         jsdouble h = 0.0, s = 0.0, v = 0.0;
-        if (!JS_ConvertArguments(cx, argc, argv, "/ddd", &h, &s, &v)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp),
+                                 "/ddd", &h, &s, &v)) {
             return JS_FALSE;
         }
 
@@ -2969,21 +2841,17 @@ namespace {
         openvrml::color val = thisColor.value();
         val.hsv(float(h), float(s), float(v));
         thisColor.value(val);
-        *rval = JSVAL_VOID;
+        OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
         sfdata.changed = true;
         return JS_TRUE;
     }
 
-    JSBool SFColor::getHSV(JSContext * const cx,
-                           JSObject * const obj,
-                           uintN,
-                           jsval *,
-                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFColor, getHSV)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfcolor & thisColor =
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
@@ -2991,7 +2859,7 @@ namespace {
         float hsv[3];
         thisColor.value().hsv(hsv);
 
-        return floatsToJSArray(3, hsv, cx, rval);
+        return floatsToJSArray(3, hsv, cx, &OPENVRML_JS_RVAL(cx, vp));
     }
 
 
@@ -3093,32 +2961,35 @@ namespace {
                 sfdata.field_value().clone().release()));
     }
 
-    JSBool SFImage::construct(JSContext * const cx,
-                              JSObject * obj,
-                              const uintN argc,
-                              jsval * const argv,
-                              jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFImage, construct)
     {
         uint32 x = 0, y = 0, comp = 0;
         JSObject * pixels = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "uuuo",
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "uuuo",
                                  &x, &y, &comp, &pixels)) {
             return JS_FALSE;
         }
 
-        if (pixels && !JS_InstanceOf(cx, pixels, &MFInt32::jsclass, argv)) {
+        if (pixels && !JS_InstanceOf(cx, pixels, &MFInt32::jsclass,
+                                     OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return initObject(cx, obj, x, y, comp, pixels);
     }
 
@@ -3349,28 +3220,32 @@ namespace {
                 sfdata.field_value().clone().release()));
     }
 
-    JSBool SFNode::construct(JSContext * const cx,
-                             JSObject * obj,
-                             const uintN argc,
-                             jsval * const argv,
-                             jsval * rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFNode, construct)
     {
         JSString * vrmlstring = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "S", &vrmlstring)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "S",
+                                 &vrmlstring)) {
             return JS_FALSE;
         }
 
         script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
         JSClass & jsclass = s.sfnode_class;
+
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return initObject(cx, obj, vrmlstring);
     }
 
@@ -3606,21 +3481,19 @@ namespace {
                 sfdata.field_value().clone().release()));
     }
 
-    JSBool SFRotation::construct(JSContext * const cx,
-                                 JSObject * obj,
-                                 const uintN argc,
-                                 jsval * const argv,
-                                 jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, construct)
     {
         jsdouble rot[4] = { 0.0, 1.0, 0.0, 0.0 };
-        if (argc > 1 && JSVAL_IS_OBJECT(argv[0]) && JSVAL_IS_NUMBER(argv[1])) {
+        if (argc > 1 && JSVAL_IS_OBJECT(OPENVRML_JS_ARGV(cx, vp)[0])
+            && JSVAL_IS_NUMBER(OPENVRML_JS_ARGV(cx, vp)[1])) {
             JSObject * axis_obj = 0;
-            if (!JS_ConvertArguments(cx, argc, argv, "od", &axis_obj, &rot[3])) {
+            if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "od",
+                                     &axis_obj, &rot[3])) {
                 return JS_FALSE;
             }
             if (axis_obj
-                && !JS_InstanceOf(cx, axis_obj, &SFVec3f::jsclass, argv)) {
+                && !JS_InstanceOf(cx, axis_obj, &SFVec3f::jsclass,
+                                  OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, axis_obj));
@@ -3632,16 +3505,19 @@ namespace {
             rot[0] = axis.value().x();
             rot[1] = axis.value().y();
             rot[2] = axis.value().z();
-        } else if (argc > 1 && JSVAL_IS_OBJECT(argv[0])
-                   && JSVAL_IS_OBJECT(argv[1])) {
+        } else if (argc > 1 && JSVAL_IS_OBJECT(OPENVRML_JS_ARGV(cx, vp)[0])
+                   && JSVAL_IS_OBJECT(OPENVRML_JS_ARGV(cx, vp)[1])) {
             JSObject * from_obj = 0, * to_obj = 0;
-            if (!JS_ConvertArguments(cx, argc, argv, "oo", &from_obj, &to_obj)) {
+            if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "oo",
+                                     &from_obj, &to_obj)) {
                 return JS_FALSE;
             }
             if ((from_obj
-                 && !JS_InstanceOf(cx, from_obj, &SFVec3f::jsclass, argv))
+                 && !JS_InstanceOf(cx, from_obj, &SFVec3f::jsclass,
+                                   OPENVRML_JS_ARGV(cx, vp)))
                 || (to_obj
-                    && !JS_InstanceOf(cx, to_obj, &SFVec3f::jsclass, argv))) {
+                    && !JS_InstanceOf(cx, to_obj, &SFVec3f::jsclass,
+                                      OPENVRML_JS_ARGV(cx, vp)))) {
                 return JS_FALSE;
             }
 
@@ -3666,19 +3542,27 @@ namespace {
             rot[2] = axis.z();
             rot[3] = acos(from_vec.value().dot(to_vec.value())
                           / (from_vec.value().length() * to_vec.value().length()));
-        } else if (!JS_ConvertArguments(cx, argc, argv, "/dddd",
+        } else if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp),
+                                        "/dddd",
                                         &rot[0], &rot[1], &rot[2], &rot[3])) {
             return JS_FALSE;
         }
 
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return initObject(cx, obj, rot);
     }
 
@@ -3793,21 +3677,19 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool SFRotation::getAxis(JSContext * const cx,
-                               JSObject * const obj,
-                               uintN,
-                               jsval *,
-                               jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, getAxis)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
 
-        JSObject * const robj = JS_ConstructObject(cx, &SFVec3f::jsclass, 0, obj);
+        JSObject * const robj =
+            JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
+                               OPENVRML_JS_THIS_OBJECT(cx, vp));
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -3818,26 +3700,23 @@ namespace {
                 &robj_sfdata.field_value());
 
         resultVec.value(thisRot.value().axis());
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool SFRotation::inverse(JSContext * const cx,
-                               JSObject * const obj,
-                               uintN,
-                               jsval *,
-                               jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, inverse)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
 
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -3850,29 +3729,27 @@ namespace {
                 &robj_sfdata.field_value());
 
         resultRot.value(thisRot.value().inverse());
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool SFRotation::multiply(JSContext * const cx,
-                                JSObject * const obj,
-                                const uintN argc,
-                                jsval * const argv,
-                                jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, multiply)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
 
         JSObject * rot_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &rot_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &rot_obj)) {
             return JS_FALSE;
         }
-        if (rot_obj && !JS_InstanceOf(cx, rot_obj, &SFRotation::jsclass, argv)) {
+        if (rot_obj && !JS_InstanceOf(cx, rot_obj, &SFRotation::jsclass,
+                                      OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -3887,7 +3764,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -3900,29 +3778,27 @@ namespace {
                 &robj_sfdata.field_value());
 
         resultRot.value(thisRot.value() * argRot.value());
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool SFRotation::multVec(JSContext * const cx,
-                               JSObject * const obj,
-                               const uintN argc,
-                               jsval * const argv,
-                               jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, multVec)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
 
         JSObject * vec_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &vec_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &vec_obj)) {
             return JS_FALSE;
         }
-        if (vec_obj && !JS_InstanceOf(cx, vec_obj, &SFVec3f::jsclass, argv)) {
+        if (vec_obj && !JS_InstanceOf(cx, vec_obj, &SFVec3f::jsclass,
+                                      OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -3937,7 +3813,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -3952,29 +3829,27 @@ namespace {
         resultVec.value(argVec.value()
                         * openvrml::make_rotation_mat4f(thisRot.value()));
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool SFRotation::setAxis(JSContext * const cx,
-                               JSObject * const obj,
-                               const uintN argc,
-                               jsval * const argv,
-                               jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, setAxis)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
 
         JSObject * vec_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &vec_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &vec_obj)) {
             return JS_FALSE;
         }
-        if (vec_obj && !JS_InstanceOf(cx, vec_obj, &SFVec3f::jsclass, argv)) {
+        if (vec_obj && !JS_InstanceOf(cx, vec_obj, &SFVec3f::jsclass,
+                                      OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -3994,30 +3869,28 @@ namespace {
         temp.axis(argVec.value());
         thisRot.value(temp);
         obj_sfdata.changed = true;
-        *rval = JSVAL_VOID;
+        OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
         return JS_TRUE;
     }
 
-    JSBool SFRotation::slerp(JSContext * const cx,
-                             JSObject * const obj,
-                             const uintN argc,
-                             jsval * const argv,
-                             jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, slerp)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
 
         JSObject * dest_obj = 0;
         jsdouble t = 0.0;
-        if (!JS_ConvertArguments(cx, argc, argv, "od", &dest_obj, &t)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "od",
+                                 &dest_obj, &t)) {
             return JS_FALSE;
         }
-        if (dest_obj && !JS_InstanceOf(cx, dest_obj, &SFRotation::jsclass, argv)) {
+        if (dest_obj && !JS_InstanceOf(cx, dest_obj, &SFRotation::jsclass,
+                                       OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -4032,12 +3905,13 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, robj));
         sfield::sfdata & robj_sfdata =
             *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
         openvrml::sfrotation & resultRot =
@@ -4046,7 +3920,7 @@ namespace {
 
         resultRot.value(thisRot.value().slerp(dest.value(), float(t)));
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
@@ -4147,26 +4021,29 @@ namespace {
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::constructor(JSContext * const cx,
-                                                JSObject * obj,
-                                                const uintN argc,
-                                                jsval * const argv,
-                                                jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, constructor)
     {
         jsdouble vec[2] = {};
-        if (!JS_ConvertArguments(cx, argc, argv, "/dd", &vec[0], &vec[1])) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "/dd",
+                                 &vec[0], &vec[1])) {
             return JS_FALSE;
         }
 
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &SFVec2::jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return initObject(cx, obj, vec);
     }
 
@@ -4272,18 +4149,14 @@ namespace {
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::add(JSContext * const cx,
-                                        JSObject * const obj,
-                                        const uintN argc,
-                                        jsval * const argv,
-                                        jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, add)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4291,11 +4164,13 @@ namespace {
         // Make sure our argument is an SFVec2f.
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
         assert(arg_obj);
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -4309,7 +4184,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4322,23 +4198,19 @@ namespace {
 
         resultVec.value(thisVec.value() + argVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::divide(JSContext * const cx,
-                                           JSObject * const obj,
-                                           const uintN argc,
-                                           jsval * const argv,
-                                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, divide)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4346,7 +4218,8 @@ namespace {
         // Make sure our argument is a number.
         //
         jsdouble divisor = 0.0;
-        if (!JS_ConvertArguments(cx, argc, argv, "d", &divisor)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "d",
+                                 &divisor)) {
             return JS_FALSE;
         }
 
@@ -4354,7 +4227,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4367,23 +4241,19 @@ namespace {
 
         resultVec.value(thisVec.value() / divisor);
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::dot(JSContext * const cx,
-                                        JSObject * const obj,
-                                        const uintN argc,
-                                        jsval * const argv,
-                                        jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, dot)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
@@ -4391,11 +4261,13 @@ namespace {
         // Make sure our argument is an SFVec2.
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
         assert(arg_obj);
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -4406,45 +4278,40 @@ namespace {
             *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
         const jsdouble result = thisVec.value().dot(argVec.value());
-        if (!JS_NewNumberValue(cx, result, rval)) { return JS_FALSE; }
-        return JS_TRUE;
+        jsval result_val;
+        const JSBool retval = JS_NewNumberValue(cx, result, &result_val);
+        OPENVRML_JS_SET_RVAL(cx, vp, result_val);
+        return retval;
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::length(JSContext * const cx,
-                                           JSObject * const obj,
-                                           uintN,
-                                           jsval *,
-                                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, length)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
-        if (!JS_NewNumberValue(cx, thisVec.value().length(), rval)) {
-            return JS_FALSE;
-        }
-        return JS_TRUE;
+        jsval result_val;
+        const JSBool retval =
+            JS_NewNumberValue(cx, thisVec.value().length(), &result_val);
+        OPENVRML_JS_SET_RVAL(cx, vp, result_val);
+        return retval;
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::multiply(JSContext * const cx,
-                                             JSObject * const obj,
-                                             const uintN argc,
-                                             jsval * const argv,
-                                             jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, multiply)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4452,7 +4319,8 @@ namespace {
         // Make sure our argument is a number.
         //
         jsdouble factor = 0.0;
-        if (!JS_ConvertArguments(cx, argc, argv, "d", &factor)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "d",
+                                 &factor)) {
             return JS_FALSE;
         }
 
@@ -4460,7 +4328,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4473,23 +4342,19 @@ namespace {
 
         resultVec.value(thisVec.value() * factor);
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::negate(JSContext * const cx,
-                                           JSObject * const obj,
-                                           uintN,
-                                           jsval *,
-                                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, negate)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4497,7 +4362,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4510,23 +4376,19 @@ namespace {
 
         resultVec.value(-thisVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::normalize(JSContext * const cx,
-                                              JSObject * const obj,
-                                              uintN,
-                                              jsval *,
-                                              jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, normalize)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4534,7 +4396,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4547,23 +4410,19 @@ namespace {
 
         resultVec.value(thisVec.value().normalize());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec2>
-    JSBool sfvec2_jsobject<SFVec2>::subtract(JSContext * const cx,
-                                             JSObject * const obj,
-                                             const uintN argc,
-                                             jsval * const argv,
-                                             jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec2_jsobject<SFVec2>, subtract)
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4571,11 +4430,13 @@ namespace {
         // Make sure our argument is an SFVec2f.
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
         assert(arg_obj);
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec2::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -4589,7 +4450,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4602,7 +4464,7 @@ namespace {
 
         resultVec.value(thisVec.value() - argVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
@@ -4769,27 +4631,29 @@ namespace {
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::constructor(JSContext * const cx,
-                                                JSObject * obj,
-                                                const uintN argc,
-                                                jsval * const argv,
-                                                jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, constructor)
     {
         jsdouble vec[3] = {};
-        if (!JS_ConvertArguments(cx, argc, argv, "/ddd",
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "/ddd",
                                  &vec[0], &vec[1], &vec[2])) {
             return JS_FALSE;
         }
 
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &SFVec3::jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return initObject(cx, obj, vec);
     }
 
@@ -4897,18 +4761,14 @@ namespace {
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::add(JSContext * const cx,
-                                        JSObject * const obj,
-                                        const uintN argc,
-                                        jsval * const argv,
-                                        jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, add)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -4916,11 +4776,13 @@ namespace {
         // Make sure our argument is an SFVec3f.
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
         assert(arg_obj);
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -4934,7 +4796,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4947,23 +4810,19 @@ namespace {
 
         resultVec.value(thisVec.value() + argVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::cross(JSContext * const cx,
-                                          JSObject * const obj,
-                                          const uintN argc,
-                                          jsval * const argv,
-                                          jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, cross)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -4971,11 +4830,13 @@ namespace {
         // Make sure our argument is an SFVec3f.
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
         assert(arg_obj);
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -4989,7 +4850,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) {return JS_FALSE; }
@@ -5002,23 +4864,19 @@ namespace {
 
         resultVec.value(thisVec.value() * argVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::divide(JSContext * const cx,
-                                           JSObject * const obj,
-                                           const uintN argc,
-                                           jsval * const argv,
-                                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, divide)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5026,7 +4884,8 @@ namespace {
         // Make sure our argument is a number.
         //
         jsdouble divisor = 0.0;
-        if (!JS_ConvertArguments(cx, argc, argv, "d", &divisor)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "d",
+                                 &divisor)) {
             return JS_FALSE;
         }
 
@@ -5034,7 +4893,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5047,23 +4907,19 @@ namespace {
 
         resultVec.value(thisVec.value() / divisor);
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::dot(JSContext * const cx,
-                                        JSObject * const obj,
-                                        const uintN argc,
-                                        jsval * const argv,
-                                        jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, dot)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5071,11 +4927,13 @@ namespace {
         // Make sure our argument is an SFVec3[df].
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
         assert(arg_obj);
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec3::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -5086,45 +4944,40 @@ namespace {
             *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
         const jsdouble result = thisVec.value().dot(argVec.value());
-        if (!JS_NewNumberValue(cx, result, rval)) { return JS_FALSE; }
-        return JS_TRUE;
+        jsval result_val;
+        const JSBool retval = JS_NewNumberValue(cx, result, &result_val);
+        OPENVRML_JS_SET_RVAL(cx, vp, result_val);
+        return retval;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::length(JSContext * const cx,
-                                           JSObject * const obj,
-                                           uintN,
-                                           jsval *,
-                                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, length)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
-        if (!JS_NewNumberValue(cx, thisVec.value().length(), rval)) {
-            return JS_FALSE;
-        }
-        return JS_TRUE;
+        jsval result_val;
+        const JSBool retval =
+            JS_NewNumberValue(cx, thisVec.value().length(), &result_val);
+        OPENVRML_JS_SET_RVAL(cx, vp, result_val);
+        return retval;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::multiply(JSContext * const cx,
-                                             JSObject * const obj,
-                                             const uintN argc,
-                                             jsval * const argv,
-                                             jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, multiply)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5132,7 +4985,8 @@ namespace {
         // Make sure our argument is a number.
         //
         jsdouble factor = 0.0;
-        if (!JS_ConvertArguments(cx, argc, argv, "d", &factor)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "d",
+                                 &factor)) {
             return JS_FALSE;
         }
 
@@ -5140,7 +4994,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5153,23 +5008,19 @@ namespace {
 
         resultVec.value(thisVec.value() * factor);
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::negate(JSContext * const cx,
-                                           JSObject * const obj,
-                                           uintN,
-                                           jsval *,
-                                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, negate)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5177,7 +5028,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5190,23 +5042,19 @@ namespace {
 
         resultVec.value(-thisVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::normalize(JSContext * const cx,
-                                              JSObject * const obj,
-                                              uintN,
-                                              jsval *,
-                                              jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, normalize)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5214,7 +5062,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5227,23 +5076,19 @@ namespace {
 
         resultVec.value(thisVec.value().normalize());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
     template <typename SFVec3>
-    JSBool sfvec3_jsobject<SFVec3>::subtract(JSContext * const cx,
-                                             JSObject * const obj,
-                                             const uintN argc,
-                                             jsval * const argv,
-                                             jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(sfvec3_jsobject<SFVec3>, subtract)
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5251,11 +5096,13 @@ namespace {
         // Make sure our argument is an SFVec3f.
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
         assert(arg_obj);
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -5269,7 +5116,8 @@ namespace {
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5282,7 +5130,7 @@ namespace {
 
         resultVec.value(thisVec.value() - argVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
@@ -5445,26 +5293,24 @@ namespace {
     }
 
     template <typename Subclass>
-    JSBool MFJSObject<Subclass>::construct(JSContext * const cx,
-                                           JSObject * obj,
-                                           const uintN argc,
-                                           jsval * const argv,
-                                           jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFJSObject<Subclass>, construct)
     {
-        assert(cx);
-        assert(obj);
-        assert(rval);
-
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &Subclass::jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
-        return initObject(cx, obj, argc, argv);
+# endif
+        return initObject(cx, obj, argc, OPENVRML_JS_ARGV(cx, vp));
     }
 
     template <typename Subclass>
@@ -5614,17 +5460,11 @@ namespace {
     }
 
     template <typename Subclass>
-    JSBool MFJSObject<Subclass>::toString(JSContext * const cx,
-                                          JSObject * const obj,
-                                          uintN, jsval *,
-                                          jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFJSObject<Subclass>, toString)
     {
-        assert(cx);
-        assert(obj);
-        assert(rval);
-
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata =
+            static_cast<MFData *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -5642,7 +5482,7 @@ namespace {
 
         JSString * jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
         if (!jsstr) { return JS_FALSE; }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 
@@ -5683,22 +5523,24 @@ namespace {
     }
 
     template <typename Subclass>
-    JSBool MFJSDouble<Subclass>::construct(JSContext * const cx,
-                                           JSObject * obj,
-                                           const uintN argc,
-                                           jsval * const argv,
-                                           jsval * rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFJSDouble<Subclass>, construct)
     {
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &Subclass::jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
-        return initObject(cx, obj, argc, argv);
+# endif
+        return initObject(cx, obj, argc, OPENVRML_JS_ARGV(cx, vp));
     }
 
     template <typename Subclass>
@@ -5840,13 +5682,11 @@ namespace {
     }
 
     template <typename Subclass>
-    JSBool MFJSDouble<Subclass>::toString(JSContext * const cx,
-                                          JSObject * const obj,
-                                          uintN, jsval *,
-                                          jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFJSDouble<Subclass>, toString)
     {
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata =
+            static_cast<MFData *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -5860,7 +5700,7 @@ namespace {
 
         JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
         if (!jsstr) { return JS_FALSE; }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 
@@ -5943,23 +5783,24 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool MFBool::construct(JSContext * const cx, JSObject * obj,
-                             const uintN argc, jsval * const argv,
-                             jsval * const rval)
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFBool, construct)
     {
-        assert(cx);
-        assert(obj);
-        assert(rval);
-
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
-        return initObject(cx, obj, argc, argv);
+# endif
+        return initObject(cx, obj, argc, OPENVRML_JS_ARGV(cx, vp));
     }
 
     JSBool MFBool::initObject(JSContext * const cx,
@@ -6054,16 +5895,11 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool MFBool::toString(JSContext * const cx,
-                            JSObject * const obj,
-                            uintN,
-                            jsval *,
-                            jsval * const rval)
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFBool, toString)
     {
-        assert(cx);
-        assert(obj);
-
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata =
+            static_cast<MFData *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -6076,7 +5912,7 @@ namespace {
 
         JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
         if (!jsstr) { return JS_FALSE; }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 
@@ -6401,23 +6237,24 @@ namespace {
         return mfint32;
     }
 
-    JSBool MFInt32::construct(JSContext * const cx, JSObject * obj,
-                              const uintN argc, jsval * const argv,
-                              jsval * const rval)
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFInt32, construct)
     {
-        assert(cx);
-        assert(obj);
-        assert(rval);
-
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
-        return initObject(cx, obj, argc, argv);
+# endif
+        return initObject(cx, obj, argc, OPENVRML_JS_ARGV(cx, vp));
     }
 
     JSBool MFInt32::initObject(JSContext * const cx,
@@ -6516,16 +6353,11 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool MFInt32::toString(JSContext * const cx,
-                             JSObject * const obj,
-                             uintN,
-                             jsval *,
-                             jsval * const rval)
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFInt32, toString)
     {
-        assert(cx);
-        assert(obj);
-
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata =
+            static_cast<MFData *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -6538,7 +6370,7 @@ namespace {
 
         JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
         if (!jsstr) { return JS_FALSE; }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 
@@ -6687,26 +6519,24 @@ namespace {
         return mfnode;
     }
 
-    JSBool MFNode::construct(JSContext * const cx,
-                             JSObject * obj,
-                             const uintN argc,
-                             jsval * const argv,
-                             jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFNode, construct)
     {
-        assert(cx);
-        assert(obj);
-        assert(rval);
-
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
-        return initObject(cx, obj, argc, argv);
+# endif
+        return initObject(cx, obj, argc, OPENVRML_JS_ARGV(cx, vp));
     }
 
     JSBool MFNode::setElement(JSContext * const cx,
@@ -6823,17 +6653,11 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool MFNode::toString(JSContext * const cx,
-                            JSObject * const obj,
-                            uintN,
-                            jsval *,
-                            jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFNode, toString)
     {
-        assert(cx);
-        assert(obj);
-
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata =
+            static_cast<MFData *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -6850,7 +6674,7 @@ namespace {
 
         JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
         if (!jsstr) { return JS_FALSE; }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 
@@ -7039,26 +6863,24 @@ namespace {
         return mfstring;
     }
 
-    JSBool MFString::construct(JSContext * const cx,
-                               JSObject * obj,
-                               const uintN argc,
-                               jsval * const argv,
-                               jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFString, construct)
     {
-        assert(cx);
-        assert(obj);
-        assert(rval);
-
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
-        return initObject(cx, obj, argc, argv);
+# endif
+        return initObject(cx, obj, argc, OPENVRML_JS_ARGV(cx, vp));
     }
 
     JSBool MFString::initObject(JSContext * const cx,
@@ -7181,14 +7003,11 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool MFString::toString(JSContext * const cx,
-                              JSObject * const obj,
-                              uintN,
-                              jsval *,
-                              jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(MFString, toString)
     {
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata =
+            static_cast<MFData *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -7204,7 +7023,7 @@ namespace {
 
         JSString * const jsstr = JS_NewStringCopyZ(cx, out.str().c_str());
         if (!jsstr) { return JS_FALSE; }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 
@@ -7633,21 +7452,23 @@ namespace {
                             0, 0);
     }
 
-    JSBool VrmlMatrix::Row::construct(JSContext * const cx,
-                                      JSObject * obj,
-                                      uintN,
-                                      jsval *,
-                                      jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix::Row, construct)
     {
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return JS_TRUE;
     }
 
@@ -7737,15 +7558,11 @@ namespace {
         return proto;
     }
 
-    JSBool VrmlMatrix::construct(JSContext * const cx,
-                                 JSObject * obj,
-                                 const uintN argc,
-                                 jsval * const argv,
-                                 jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, construct)
     {
         jsdouble mat[16] = {};
-        if (!JS_ConvertArguments(cx, argc, argv, "dddddddddddddddd",
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp),
+                                 "dddddddddddddddd",
                                  &mat[0], &mat[1], &mat[2], &mat[3],
                                  &mat[4], &mat[5], &mat[6], &mat[7],
                                  &mat[8], &mat[9], &mat[10], &mat[11],
@@ -7753,14 +7570,21 @@ namespace {
             return JS_FALSE;
         }
 
+# ifdef OPENVRML_FAST_JSNATIVE
+        JSObject * obj = 0;
+# endif
+# ifndef OPENVRML_FAST_JSNATIVE
         //
         // If called without new, replace obj with a new object.
         //
-        if (!JS_IsConstructing(cx)) {
+        if (!OPENVRML_JS_IS_CONSTRUCTING(cx, vp)) {
+# endif
             obj = JS_NewObject(cx, &jsclass, 0, 0);
             if (!obj) { return JS_FALSE; }
-            *rval = OBJECT_TO_JSVAL(obj);
+            OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+# ifndef OPENVRML_FAST_JSNATIVE
         }
+# endif
         return initObject(cx, obj, mat);
     }
 
@@ -7822,16 +7646,8 @@ namespace {
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::setTransform(JSContext * const cx,
-                                    JSObject * const obj,
-                                    const uintN argc,
-                                    jsval * const argv,
-                                    jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, setTransform)
     {
-        assert(cx);
-        assert(obj);
-
         using boost::polymorphic_downcast;
         using openvrml::mat4f;
         using openvrml::rotation;
@@ -7843,7 +7659,7 @@ namespace {
 
         JSObject * translation_obj = 0, * rotation_obj = 0, * scale_obj = 0,
             * scale_orientation_obj = 0, * center_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "/ooooo",
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "/ooooo",
                                  &translation_obj, &rotation_obj, &scale_obj,
                                  &scale_orientation_obj, &center_obj)) {
             return JS_FALSE;
@@ -7856,7 +7672,8 @@ namespace {
         vec3f center = make_vec3f(0.0, 0.0, 0.0);
 
         if (translation_obj) {
-            if (!JS_InstanceOf(cx, translation_obj, &SFVec3f::jsclass, argv)) {
+            if (!JS_InstanceOf(cx, translation_obj, &SFVec3f::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, translation_obj));
@@ -7867,8 +7684,8 @@ namespace {
         }
 
         if (rotation_obj) {
-            if (!JS_InstanceOf(cx, rotation_obj, &SFRotation::jsclass, argv))
-            {
+            if (!JS_InstanceOf(cx, rotation_obj, &SFRotation::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, rotation_obj));
@@ -7879,7 +7696,8 @@ namespace {
         }
 
         if (scale_obj) {
-            if (!JS_InstanceOf(cx, scale_obj, &SFVec3f::jsclass, argv)) {
+            if (!JS_InstanceOf(cx, scale_obj, &SFVec3f::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, scale_obj));
@@ -7890,9 +7708,8 @@ namespace {
         }
 
         if (scale_orientation_obj) {
-            if (!JS_InstanceOf(cx, scale_orientation_obj,
-                               &SFRotation::jsclass, argv))
-            {
+            if (!JS_InstanceOf(cx, scale_orientation_obj, &SFRotation::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, scale_orientation_obj));
@@ -7904,7 +7721,8 @@ namespace {
         }
 
         if (center_obj) {
-            if (!JS_InstanceOf(cx, center_obj, &SFVec3f::jsclass, argv)) {
+            if (!JS_InstanceOf(cx, center_obj, &SFVec3f::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, center_obj));
@@ -7914,7 +7732,9 @@ namespace {
                 ->value();
         }
 
-        mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        mat4f * const thisMat =
+            static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
         *thisMat = make_transformation_mat4f(translation,
@@ -7922,16 +7742,11 @@ namespace {
                                              scale,
                                              scale_orientation,
                                              center);
-        *rval = JSVAL_VOID;
+        OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::getTransform(JSContext * const cx,
-                                    JSObject * const obj,
-                                    const uintN argc,
-                                    jsval * const argv,
-                                    jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, getTransform)
     {
         using boost::polymorphic_downcast;
         using openvrml::mat4f;
@@ -7940,16 +7755,15 @@ namespace {
         using openvrml::sfrotation;
         using openvrml::sfvec3f;
 
-        assert(cx);
-        assert(obj);
-
         JSObject * translation_obj = 0, * rotation_obj = 0, * scale_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "/ooo",
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "/ooo",
                                  &translation_obj, &rotation_obj, &scale_obj)) {
             return JS_FALSE;
         }
 
-        const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        const mat4f * const thisMat =
+            static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
         vec3f translation;
@@ -7959,7 +7773,8 @@ namespace {
         thisMat->transformation(translation, rot, scale);
 
         if (translation_obj) {
-            if (!JS_InstanceOf(cx, translation_obj, &SFVec3f::jsclass, argv)) {
+            if (!JS_InstanceOf(cx, translation_obj, &SFVec3f::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, translation_obj));
@@ -7970,8 +7785,8 @@ namespace {
         }
 
         if (rotation_obj) {
-            if (!JS_InstanceOf(cx, rotation_obj, &SFRotation::jsclass, argv))
-            {
+            if (!JS_InstanceOf(cx, rotation_obj, &SFRotation::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, rotation_obj));
@@ -7981,7 +7796,8 @@ namespace {
         }
 
         if (scale_obj) {
-            if (!JS_InstanceOf(cx, scale_obj, &SFVec3f::jsclass, argv)) {
+            if (!JS_InstanceOf(cx, scale_obj, &SFVec3f::jsclass,
+                               OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
             assert(JS_GetPrivate(cx, scale_obj));
@@ -7990,79 +7806,65 @@ namespace {
             polymorphic_downcast<sfvec3f *>(&sfdata.field_value())->value(scale);
         }
 
-        *rval = JSVAL_VOID;
+        OPENVRML_JS_SET_RVAL(cx, vp, JSVAL_VOID);
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::inverse(JSContext * const cx,
-                               JSObject * const obj,
-                               uintN,
-                               jsval *,
-                               jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, inverse)
     {
-        assert(cx);
-        assert(obj);
-
         using openvrml::mat4f;
 
-        JSObject * robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
-                                             JS_GetParent(cx, obj));
+        JSObject * const robj =
+            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                               JS_GetParent(cx,
+                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
-        const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        const mat4f * const thisMat =
+            static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
         mat4f * const newMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
         assert(newMat);
         *newMat = thisMat->inverse();
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::transpose(JSContext * const cx,
-                                 JSObject * const obj,
-                                 uintN,
-                                 jsval *,
-                                 jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, transpose)
     {
-        assert(cx);
-        assert(obj);
-
         using openvrml::mat4f;
 
-        JSObject * robj = JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
-                                             JS_GetParent(cx, obj));
+        JSObject * const robj =
+            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                               JS_GetParent(cx,
+                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
-        const mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        const mat4f * const thisMat =
+            static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
         mat4f * const newMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
         assert(newMat);
         *newMat = thisMat->transpose();
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::multLeft(JSContext * const cx,
-                                JSObject * const obj,
-                                const uintN argc,
-                                jsval * const argv,
-                                jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, multLeft)
     {
-        assert(cx);
-        assert(obj);
-
         using openvrml::mat4f;
 
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
-        if (!JS_InstanceOf(cx, arg_obj, &VrmlMatrix::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &VrmlMatrix::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -8070,17 +7872,18 @@ namespace {
         assert(arg_obj_private_data);
         const mat4f & argMat = *static_cast<mat4f *>(arg_obj_private_data);
 
-        void * obj_private_data = JS_GetPrivate(cx, obj);
+        void * obj_private_data =
+            JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         assert(obj_private_data);
         const mat4f & thisMat = *static_cast<mat4f *>(obj_private_data);
 
         //
         // Construct the result object.
         //
-        JSObject * const robj = JS_ConstructObject(cx,
-                                                   &VrmlMatrix::jsclass,
-                                                   0,
-                                                   JS_GetParent(cx, obj));
+        JSObject * const robj =
+            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                               JS_GetParent(cx,
+                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
         void * robj_private_data = JS_GetPrivate(cx, robj);
         assert(robj_private_data);
@@ -8088,44 +7891,39 @@ namespace {
 
         resultMat = argMat * thisMat;
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::multRight(JSContext * const cx,
-                                 JSObject * const obj,
-                                 const uintN argc,
-                                 jsval * const argv,
-                                 jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, multRight)
     {
-        assert(cx);
-        assert(obj);
-        assert(argc >= 1);
-
         using openvrml::mat4f;
 
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
-        if (!JS_InstanceOf(cx, arg_obj, &VrmlMatrix::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &VrmlMatrix::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
         assert(JS_GetPrivate(cx, arg_obj));
         const mat4f & argMat = *static_cast<mat4f *>(JS_GetPrivate(cx, arg_obj));
 
-        assert(JS_GetPrivate(cx, obj));
-        const mat4f & thisMat = *static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        const mat4f & thisMat =
+            *static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         //
         // Construct the result object.
         //
-        JSObject * const robj = JS_ConstructObject(cx,
-                                                   &VrmlMatrix::jsclass,
-                                                   0,
-                                                   JS_GetParent(cx, obj));
+        JSObject * const robj =
+            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+                               JS_GetParent(cx,
+                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
         void * private_data = JS_GetPrivate(cx, robj);
         assert(private_data);
@@ -8133,30 +7931,24 @@ namespace {
 
         resultMat = thisMat * argMat;
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::multVecMatrix(JSContext * const cx,
-                                     JSObject * const obj,
-                                     const uintN argc,
-                                     jsval * const argv,
-                                     jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, multVecMatrix)
     {
-        assert(cx);
-        assert(obj);
-
         using openvrml::mat4f;
 
         //
         // Make sure argument is an SFVec3f.
         //
         JSObject * arg_obj = 0;
-        if (!JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                 &arg_obj)) {
             return JS_FALSE;
         }
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -8167,14 +7959,17 @@ namespace {
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &arg_sfdata.field_value());
 
-        assert(JS_GetPrivate(cx, obj));
-        const mat4f & thisMat = *static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        const mat4f & thisMat =
+            *static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         //
         // Construct the result object.
         //
         static JSObject * const proto = 0;
-        JSObject * const parent = JS_GetParent(cx, obj);
+        JSObject * const parent =
+            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -8188,30 +7983,24 @@ namespace {
 
         resultVec.value(argVec.value() * thisMat);
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::multMatrixVec(JSContext * const cx,
-                                     JSObject * const obj,
-                                     const uintN argc,
-                                     jsval * const argv,
-                                     jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, multMatrixVec)
     {
-        assert(cx);
-        assert(obj);
-
         using openvrml::mat4f;
 
         //
         // Make sure argument is an SFVec3f.
         //
         JSObject * arg_obj = 0;
-        if (JS_ConvertArguments(cx, argc, argv, "o", &arg_obj)) {
+        if (JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "o",
+                                &arg_obj)) {
             return JS_FALSE;
         }
-        if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass, argv)) {
+        if (!JS_InstanceOf(cx, arg_obj, &SFVec3f::jsclass,
+                           OPENVRML_JS_ARGV(cx, vp))) {
             return JS_FALSE;
         }
 
@@ -8221,14 +8010,18 @@ namespace {
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &arg_sfdata.field_value());
 
-        assert(JS_GetPrivate(cx, obj));
-        const mat4f & thisMat = *static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        const mat4f & thisMat =
+            *static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         //
         // Construct the result object.
         //
-        JSObject * const robj = JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
-                                                   JS_GetParent(cx, obj));
+        JSObject * const robj =
+            JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
+                               JS_GetParent(cx,
+                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -8240,25 +8033,18 @@ namespace {
 
         resultVec.value(thisMat * argVec.value());
 
-        *rval = OBJECT_TO_JSVAL(robj);
+        OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
         return JS_TRUE;
     }
 
-    JSBool VrmlMatrix::toString(JSContext * const cx,
-                                JSObject * const obj,
-                                uintN,
-                                jsval *,
-                                jsval * const rval)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSNATIVE(VrmlMatrix, toString)
     {
-        assert(cx);
-        assert(obj);
-        assert(rval);
-
         using openvrml::mat4f;
 
-        assert(JS_GetPrivate(cx, obj));
-        const mat4f & thisMat = *static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        const mat4f & thisMat =
+            *static_cast<mat4f *>(
+                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         JSString * jsstr = 0;
         try {
@@ -8270,7 +8056,7 @@ namespace {
             JS_ReportOutOfMemory(cx);
             return JS_FALSE;
         }
-        *rval = STRING_TO_JSVAL(jsstr);
+        OPENVRML_JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(jsstr));
         return JS_TRUE;
     }
 

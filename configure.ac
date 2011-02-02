@@ -226,6 +226,26 @@ AS_IF([test X$ov_cv_js_uses_typed_root_functions = Xyes],
                  [Defined if SpiderMonkey uses type-specific add/remove root functions])])
 
 #
+# XULRunner 2.0 changes the type of JSNative to match that of JSFastNative.
+#
+AC_CACHE_CHECK([whether JSNative has the JSFastNative signature],
+[ov_cv_fast_jsnative],
+[ov_cv_fast_jsnative=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[JSBool (*f)(JSContext *, uintN, jsval *); JSNative g = f;]])],
+[ov_cv_fast_jsnative=yes])
+AC_LANG_POP([C++])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_fast_jsnative = Xyes],
+      [AC_DEFINE([OPENVRML_FAST_JSNATIVE], [1],
+                 [Defined if JSNative is the same as JSFastNative])])
+
+#
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
