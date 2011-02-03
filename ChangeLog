@@ -1,3 +1,8 @@
+2011-02-03 Braden McDaniel  <braden@endoframe.com>
+
+	* src/script/javascript.vcxproj: Define
+	OPENVRML_JSVAL_TO_DOUBLE_RETURNS_POINTER.
+
 2011-02-01 Braden McDaniel  <braden@endoframe.com>
 
 	* src/mozilla-plugin/openvrml.cpp: Removed obsolete NPP_Initialize
