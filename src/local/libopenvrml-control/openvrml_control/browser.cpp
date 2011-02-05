@@ -597,12 +597,12 @@ namespace {
 }
 
 struct OPENVRML_LOCAL openvrml_control::browser::initial_stream_reader {
-    initial_stream_reader(
-        const boost::shared_ptr<plugin_streambuf> & streambuf,
-        openvrml::browser & browser):
+    initial_stream_reader(const boost::shared_ptr<plugin_streambuf> & streambuf,
+                          openvrml::browser & browser)
+        throw ():
         streambuf_(streambuf),
         browser_(browser)
-        {}
+    {}
 
     void operator()() const throw ()
     {
@@ -611,7 +611,8 @@ struct OPENVRML_LOCAL openvrml_control::browser::initial_stream_reader {
 
         public:
             explicit plugin_istream(
-                const boost::shared_ptr<plugin_streambuf> & streambuf):
+                const boost::shared_ptr<plugin_streambuf> & streambuf)
+                throw ():
                 openvrml::resource_istream(streambuf.get()),
                 streambuf_(streambuf)
             {}
@@ -625,8 +626,7 @@ struct OPENVRML_LOCAL openvrml_control::browser::initial_stream_reader {
                 return this->streambuf_->url();
             }
 
-            virtual const std::string do_type() const
-                throw (std::bad_alloc)
+            virtual const std::string do_type() const throw (std::bad_alloc)
             {
                 return this->streambuf_->type();
             }
@@ -637,7 +637,16 @@ struct OPENVRML_LOCAL openvrml_control::browser::initial_stream_reader {
             }
         } in(this->streambuf_);
 
-        this->browser_.set_world(in);
+        try {
+            this->browser_.set_world(in);
+        } catch (const openvrml::invalid_vrml & ex) {
+            std::ostringstream out;
+            out << ex.url << ':' << ex.line << ':' << ex.column << ": error: "
+                << ex.what();
+            this->browser_.err(out.str());
+        } catch (const std::exception & ex) {
+            this->browser_.err(ex.what());
+        }
     }
 
 private:

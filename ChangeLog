@@ -1,3 +1,10 @@
+2011-02-05 Braden McDaniel  <braden@endoframe.com>
+
+	* src/local/libopenvrml-control/openvrml_control/browser.cpp
+	(openvrml_control::browser::initial_stream_reader::operator()
+	const): Catch any exceptions thrown from
+	openvrml::browser::set_world.
+
 2011-02-03 Braden McDaniel  <braden@endoframe.com>
 
 	* src/script/javascript.vcxproj: Define
