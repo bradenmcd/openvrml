@@ -70,7 +70,8 @@ libopenvrml_libopenvrml_la_CPPFLAGS = \
         -DOPENVRML_PKGDATADIR_=\"$(pkgdatadir)\" \
         -DOPENVRML_PKGLIBDIR_=\"$(pkglibdir)\" \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30 \
+        -DBOOST_FILESYSTEM_VERSION=2
 libopenvrml_libopenvrml_la_CXXFLAGS = \
         $(FREETYPE_CFLAGS) \
         $(PTHREAD_CFLAGS) \
@@ -132,7 +133,8 @@ local_libopenvrml_dl_la_SOURCES = \
         local/libopenvrml-dl/openvrml/local/dl.h
 local_libopenvrml_dl_la_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
-        -I$(top_srcdir)/src/libopenvrml
+        -I$(top_srcdir)/src/libopenvrml \
+        -DBOOST_FILESYSTEM_VERSION=2
 local_libopenvrml_dl_la_LIBADD = \
         -lboost_filesystem$(BOOST_LIB_SUFFIX) \
         -lboost_system$(BOOST_LIB_SUFFIX) \
@@ -175,7 +177,8 @@ script_java_la_CPPFLAGS = \
         -DJRE_HOME=\"$(JRE_HOME)\" \
         -DOPENVRML_JVM_ARCH=\"$(OPENVRML_JVM_ARCH)\" \
         -DBOOST_MPL_CFG_NO_PREPROCESSED_HEADERS \
-        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30
+        -DBOOST_MPL_LIMIT_VECTOR_SIZE=30 \
+        -DBOOST_FILESYSTEM_VERSION=2
 script_java_la_LDFLAGS = \
         -module \
         -no-undefined \
