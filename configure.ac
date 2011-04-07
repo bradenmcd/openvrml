@@ -246,6 +246,26 @@ AS_IF([test X$ov_cv_fast_jsnative = Xyes],
                  [Defined if JSNative is the same as JSFastNative])])
 
 #
+# XULRunner 2.0 changes the mutator type to JSStrictPropertyOp.
+#
+AC_CACHE_CHECK([whether SpiderMonkey has JSStrictPropertyOp],
+[ov_cv_js_has_strictpropertyop],
+[ov_cv_js_has_strictpropertyop=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_PUSH([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[JSStrictPropertyOp op;]])],
+[ov_cv_js_has_strictpropertyop=yes])
+AC_LANG_POP([C])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_js_has_strictpropertyop = Xyes],
+      [AC_DEFINE([OPENVRML_JS_HAS_STRICTPROPERTYOP], [1],
+                 [Defined if SpiderMonkey has JSStrictPropertyOp])])
+
+#
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
