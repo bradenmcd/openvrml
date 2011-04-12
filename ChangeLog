@@ -1,3 +1,10 @@
+2011-04-12 Braden McDaniel  <braden@endoframe.com>
+
+	Define BOOST_FILESYSTEM_VERSION=2 to compile with Boost 1.46.
+
+	* src/libopenvrml/openvrml.vcxproj
+	* src/local/libopenvrml-dl/openvrml-dl.vcxproj
+
 2011-04-07 Braden McDaniel  <braden@endoframe.com>
 
 	Newer SpiderMonkey (XULRunner 2.0) changes the type of property
