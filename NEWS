@@ -1,3 +1,15 @@
+Changes new in version 0.18.7, 17 April, 2011
+========================================================================
+
+- Build against XULRunner 2.0.
+
+- Added Visual C++ 2010 project files.
+
+- Fixed issues compiling with Text node rendering disabled.
+
+- Improved parser resilience.
+
+
 Changes new in version 0.18.6, 2 June, 2010
 ========================================================================
 
