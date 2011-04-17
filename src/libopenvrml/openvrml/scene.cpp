@@ -25,11 +25,13 @@
 # include <openvrml/local/parse_vrml.h>
 # include <private.h>
 # include <boost/function.hpp>
-# include <boost/scope_exit.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
+
+using namespace boost::multi_index::detail;  // for scope_guard
 
 /**
  * @file openvrml/scene.h
@@ -178,10 +180,8 @@ void openvrml::scene::load(resource_istream & in)
     //
     // Ensure that scene_loaded gets called even if parsing throws.
     //
-    scene & self = *this;
-    BOOST_SCOPE_EXIT((&self)) {
-        self.scene_loaded();
-    } BOOST_SCOPE_EXIT_END
+    scope_guard scene_loaded_guard =
+        make_obj_guard(*this, &scene::scene_loaded);
 
     {
         using boost::unique_lock;
