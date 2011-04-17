@@ -1,4 +1,4 @@
-# Doxyfile 1.7.1
+# Doxyfile 1.7.4
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -6,6 +6,8 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = OpenVRML
 PROJECT_NUMBER         = 0.18.6
+PROJECT_BRIEF          =
+PROJECT_LOGO           =
 OUTPUT_DIRECTORY       =
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
@@ -62,6 +64,7 @@ SORT_BRIEF_DOCS        = NO
 SORT_MEMBERS_CTORS_1ST = NO
 SORT_GROUP_NAMES       = NO
 SORT_BY_SCOPE_NAME     = YES
+STRICT_PROTO_MATCHING  = NO
 GENERATE_TODOLIST      = NO
 GENERATE_TESTLIST      = NO
 GENERATE_BUGLIST       = NO
@@ -111,6 +114,7 @@ IMAGE_PATH             =
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
+FILTER_SOURCE_PATTERNS =
 #---------------------------------------------------------------------------
 # configuration options related to source browsing
 #---------------------------------------------------------------------------
@@ -136,7 +140,6 @@ HTML_OUTPUT            = manual
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = doxygen-header
 HTML_FOOTER            = doxygen-footer
-HTML_TIMESTAMP         = NO
 HTML_STYLESHEET        =
 HTML_COLORSTYLE_HUE    = 0
 HTML_COLORSTYLE_SAT    = 0
@@ -174,6 +177,8 @@ TREEVIEW_WIDTH         = 250
 EXT_LINKS_IN_WINDOW    = NO
 FORMULA_FONTSIZE       = 10
 FORMULA_TRANSPARENT    = YES
+USE_MATHJAX            = NO
+MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
 SEARCHENGINE           = NO
 SERVER_BASED_SEARCH    = NO
 #---------------------------------------------------------------------------
@@ -282,6 +287,7 @@ DIRECTORY_GRAPH        = NO
 DOT_IMAGE_FORMAT       = png
 DOT_PATH               =
 DOTFILE_DIRS           =
+MSCFILE_DIRS           =
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 0
 DOT_TRANSPARENT        = YES

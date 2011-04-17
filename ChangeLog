@@ -1,3 +1,11 @@
+2011-04-16 Braden McDaniel  <braden@endoframe.com>
+
+	Update to Doxygen 1.4.7.
+
+	* doc/Doxyfile
+	* doc/Makefile.am
+	* doc/doxygen-header
+
 2011-04-12 Braden McDaniel  <braden@endoframe.com>
 
 	Define BOOST_FILESYSTEM_VERSION=2 to compile with Boost 1.46.

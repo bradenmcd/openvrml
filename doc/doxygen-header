@@ -234,6 +234,13 @@ address.footer {
   padding-right: 0;
   line-height: 3.0ex;
 }
+
+.body {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0.75em;
+}
 </style>
 </head>
 <body>
@@ -247,3 +254,4 @@ address.footer {
   </tr>
 </table>
 <div class="body">
+<div>

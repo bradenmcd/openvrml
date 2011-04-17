@@ -57,16 +57,18 @@ DOCUMENTED_SOURCE_FILES = \
 DOXYGEN_OUTPUT_FILES = \
         $(srcdir)/manual/*.css \
         $(srcdir)/manual/*.html \
+        $(srcdir)/manual/*.js \
         $(srcdir)/manual/*.map \
         $(srcdir)/manual/*.md5 \
         $(srcdir)/manual/*__incl.png \
-        $(srcdir)/manual/*inherit__graph*.png \
+        $(srcdir)/manual/*__inherit__graph*.png \
         $(srcdir)/manual/bc_s.png \
         $(srcdir)/manual/closed.png \
         $(srcdir)/manual/doxygen.png \
         $(srcdir)/manual/formula.repository \
         $(srcdir)/manual/form_*.png \
         $(srcdir)/manual/graph_legend.png \
+        $(srcdir)/manual/inherit_graph_*.png \
         $(srcdir)/manual/nav_f.png \
         $(srcdir)/manual/nav_h.png \
         $(srcdir)/manual/open.png \
