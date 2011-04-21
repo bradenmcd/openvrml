@@ -3,6 +3,20 @@
 	* tests/Makefile.am (AM_CPPFLAGS): Define
 	BOOST_FILESYSTEM_VERSION=2 to compile with Boost 1.46.
 
+2011-04-17 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.18.7 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Update to 9:5:1.
+
 2011-04-16 Braden McDaniel  <braden@endoframe.com>
 
 	Update to Doxygen 1.4.7.
