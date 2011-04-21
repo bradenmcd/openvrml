@@ -1,3 +1,8 @@
+2011-04-20 Braden McDaniel  <braden@endoframe.com>
+
+	* tests/Makefile.am (AM_CPPFLAGS): Define
+	BOOST_FILESYSTEM_VERSION=2 to compile with Boost 1.46.
+
 2011-04-16 Braden McDaniel  <braden@endoframe.com>
 
 	Update to Doxygen 1.4.7.
