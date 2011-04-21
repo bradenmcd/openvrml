@@ -1,7 +1,8 @@
 AM_CPPFLAGS = \
         -I$(top_builddir)/src/libopenvrml \
         -I$(top_srcdir)/src/libopenvrml \
-        -DBOOST_TEST_DYN_LINK
+        -DBOOST_TEST_DYN_LINK \
+        -DBOOST_FILESYSTEM_VERSION=2
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 
 TESTS_ENVIRONMENT = \
