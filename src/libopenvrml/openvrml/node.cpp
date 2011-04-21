@@ -725,8 +725,8 @@ bool openvrml::operator!=(const node_metatype_id & lhs,
  * @c node_metatype can be thought of as a &ldquo;supertype&rdquo; of sorts.
  * A given node implementation can support as many node types as there are
  * unique combinations of the interfaces it supports.  The most readily
- * apparent role of the @c node_metatype object for a node implementation is
- * to serve as a factory for these @c node_type%s.
+ * apparent role of the @c node_metatype object for a node implementation is to
+ * serve as a factory for these @c node_type%s.
  */
 
 /**
@@ -887,9 +887,6 @@ openvrml::node_metatype::create_type(const std::string & id,
  *
  * @brief Create a new @c node_type.
  *
- * Most %node implementations can use
- * @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE to implement this function.
- *
  * @param[in] id            the name for the new @c node_type.
  * @param[in] interfaces    a @c node_interface_set containing the
  *                          interfaces for the new type.
@@ -902,7 +899,6 @@ openvrml::node_metatype::create_type(const std::string & id,
  * @exception std::bad_alloc        if memory allocation fails.
  *
  * @sa #create_type
- * @sa OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE
  * @sa http://boost.org/libs/smart_ptr/shared_ptr.htm
  */
 
@@ -987,18 +983,6 @@ do_create_type(const std::string &, const node_interface_set &) const
  * @class openvrml::node_type openvrml/node.h
  *
  * @brief Type information object for @c node%s.
- *
- * Each implementation of a %node in %OpenVRML must have an associated
- * concrete @c node_type that is capable of creating @c node%s with any subset
- * of the implementation's supported %node interfaces.  Because these can be
- * somewhat tedious to create, %OpenVRML includes a good deal of machinery to
- * facilitate the implementation of these classes.  For most %node
- * implementations, using @c #OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE to
- * implement @c node_metatype::do_create_type will generate an appropriate
- * concrete @c node_type.
- *
- * @sa node_metatype::create_type
- * @sa OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE
  */
 
 /**
@@ -1417,14 +1401,363 @@ openvrml::field_value_type_mismatch::~field_value_type_mismatch() throw ()
  */
 
 /**
- * @internal
+ * @var class openvrml::node::field_value_listener<sfbool>
  *
- * @var class openvrml::node::exposedfield<FieldValue>
+ * @brief @c sfbool @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfcolor>
  *
- * @brief @c exposedfield<FieldValue>::do_process_event calls
- *        @c node::emit_event.
+ * @brief @c sfcolor @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfcolorrgba>
  *
- * @tparam FieldValue   a concrete @c field_value.
+ * @brief @c sfcolorrgba @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfdouble>
+ *
+ * @brief @c sfdouble @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sffloat>
+ *
+ * @brief @c sffloat @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfimage>
+ *
+ * @brief @c sfimage @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfint32>
+ *
+ * @brief @c sfint32 @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfnode>
+ *
+ * @brief @c sfnode @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfrotation>
+ *
+ * @brief @c sfrotation @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfstring>
+ *
+ * @brief @c sfstring @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sftime>
+ *
+ * @brief @c sftime @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfvec2d>
+ *
+ * @brief <code>sfvec2d</code> <code>field_value_listener</code>.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfvec2f>
+ *
+ * @brief @c sfvec2f @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfvec3d>
+ *
+ * @brief @c sfvec3d @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<sfvec3f>
+ *
+ * @brief @c sfvec3f @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfbool>
+ *
+ * @brief @c mfbool @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfcolor>
+ *
+ * @brief @c mfcolor @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfcolorrgba>
+ *
+ * @brief @c mfcolorrgba @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfdouble>
+ *
+ * @brief @c mfdouble @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mffloat>
+ *
+ * @brief @c mffloat @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfimage>
+ *
+ * @brief @c mfimage @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfint32>
+ *
+ * @brief @c mfint32 @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfnode>
+ *
+ * @brief @c mfnode @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfrotation>
+ *
+ * @brief @c mfrotation @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfstring>
+ *
+ * @brief @c mfstring @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mftime>
+ *
+ * @brief @c mftime @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfvec2d>
+ *
+ * @brief @c mfvec2d @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfvec2f>
+ *
+ * @brief @c mfvec2f @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfvec3d>
+ *
+ * @brief @c mfvec3d @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::field_value_listener<mfvec3f>
+ *
+ * @brief @c mfvec3f @c field_value_listener.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfbool>
+ *
+ * @brief @c sfbool @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfcolor>
+ *
+ * @brief @c sfcolor @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfcolorrgba>
+ *
+ * @brief @c sfcolorrgba @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfdouble>
+ *
+ * @brief @c sfdouble @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sffloat>
+ *
+ * @brief @c sffloat @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfimage>
+ *
+ * @brief @c sfimage @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfint32>
+ *
+ * @brief @c sfint32 @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfnode>
+ *
+ * @brief @c sfnode @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfrotation>
+ *
+ * @brief @c sfrotation @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfstring>
+ *
+ * @brief @c sfstring @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sftime>
+ *
+ * @brief @c sftime @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfvec2d>
+ *
+ * @brief @c sfvec2d @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfvec2f>
+ *
+ * @brief @c sfvec2f @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfvec3d>
+ *
+ * @brief @c sfvec3d @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<sfvec3f>
+ *
+ * @brief @c sfvec3f @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfbool>
+ *
+ * @brief @c mfbool @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfcolor>
+ *
+ * @brief @c mfcolor @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfcolorrgba>
+ *
+ * @brief @c mfcolorrgba @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfdouble>
+ *
+ * @brief @c mfdouble @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mffloat>
+ *
+ * @brief @c mffloat @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfimage>
+ *
+ * @brief @c mfimage @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfint32>
+ *
+ * @brief @c mfint32 @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfnode>
+ *
+ * @brief @c mfnode @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfrotation>
+ *
+ * @brief @c mfrotation @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfstring>
+ *
+ * @brief @c mfstring @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mftime>
+ *
+ * @brief @c mftime @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfvec2d>
+ *
+ * @brief @c mfvec2d @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfvec2f>
+ *
+ * @brief @c mfvec2f @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfvec3d>
+ *
+ * @brief @c mfvec3d @c exposedfield.
+ */
+
+/**
+ * @var class openvrml::node::exposedfield<mfvec3f>
+ *
+ * @brief @c mfvec3f @c exposedfield.
  */
 
 namespace {

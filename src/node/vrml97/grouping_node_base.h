@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2010  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,7 @@
 
 # include <openvrml/node_impl_util.h>
 # include <openvrml/viewer.h>
-# include <boost/scope_exit.hpp>
+# include <boost/multi_index/detail/scope_guard.hpp>
 
 namespace openvrml_node_vrml97 {
 
@@ -167,6 +167,7 @@ namespace openvrml_node_vrml97 {
         OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
+        using namespace boost::multi_index::detail;  // for scope_guard
 
         Derived & group = dynamic_cast<Derived &>(this->node());
 
@@ -189,21 +190,19 @@ namespace openvrml_node_vrml97 {
                     // Throws std::bad_alloc.
                     //
                     children.push_back(*n);
-                    bool succeeded = false;
-                    BOOST_SCOPE_EXIT_TPL((&succeeded)(&children)) {
-                        if (!succeeded) { children.pop_back(); }
-                    } BOOST_SCOPE_EXIT_END
+                    scope_guard guard =
+                        make_obj_guard(children, &children_t::pop_back);
                     child_node * const child =
                         node_cast<child_node *>(n->get());
                     if (child) {
                         child->relocate(); // Throws std::bad_alloc.
                     }
-                    succeeded = true;
+                    guard.dismiss();
                 }
             }
         }
 
-        group.children_.value(children);
+        group.children_.mfnode::value(children);
 
         group.node::modified(true);
         group.bounding_volume_dirty(true);
@@ -354,6 +353,7 @@ namespace openvrml_node_vrml97 {
         OPENVRML_THROW1(std::bad_alloc)
     {
         using namespace openvrml;
+        using namespace boost::multi_index::detail;  // for scope_guard
 
         typedef std::vector<boost::intrusive_ptr<openvrml::node> > children_t;
         children_t children;
@@ -367,14 +367,12 @@ namespace openvrml_node_vrml97 {
             // least.
             //
             children.push_back(*n); // Throws std::bad_alloc.
-            bool succeeded = false;
-            BOOST_SCOPE_EXIT_TPL((&succeeded)(&children)) {
-                if (!succeeded) { children.pop_back(); }
-            } BOOST_SCOPE_EXIT_END
+            scope_guard guard =
+                make_obj_guard(children, &children_t::pop_back);
             child_node * const child =
                 node_cast<child_node *>(n->get());
             if (child) { child->relocate(); } // Throws std::bad_alloc.
-            succeeded = true;
+            guard.dismiss();
         }
 
         this->children_.mfnode::value(children);

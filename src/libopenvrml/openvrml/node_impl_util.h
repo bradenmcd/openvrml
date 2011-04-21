@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2005, 2006, 2007, 2008, 2009  Braden McDaniel
+// Copyright 2005, 2006, 2007, 2008  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -21,85 +21,8 @@
 # ifndef OPENVRML_NODE_IMPL_UTIL
 #   define OPENVRML_NODE_IMPL_UTIL
 
-# include <openvrml/exposedfield.h>
-# include <boost/preprocessor/cat.hpp>
-# include <boost/preprocessor/punctuation/comma_if.hpp>
-# include <boost/preprocessor/seq/for_each.hpp>
-# include <boost/preprocessor/seq/for_each_i.hpp>
-# include <boost/preprocessor/seq/size.hpp>
-# include <boost/preprocessor/tuple/elem.hpp>
 # include <stack>
-
-# define OPENVRML_NODE_INTERFACE_TUPLE_ELEM(index, tuple) \
-    BOOST_PP_TUPLE_ELEM(4, index, tuple)
-
-# define OPENVRML_DEFINE_NODE_INTERFACE(interface_tuple) \
-    openvrml::node_interface(openvrml::node_interface::BOOST_PP_CAT(OPENVRML_NODE_INTERFACE_TUPLE_ELEM(0, interface_tuple), _id), \
-                             openvrml::field_value::BOOST_PP_CAT(OPENVRML_NODE_INTERFACE_TUPLE_ELEM(1, interface_tuple), _id), \
-                             OPENVRML_NODE_INTERFACE_TUPLE_ELEM(2, interface_tuple))
-
-# define OPENVRML_DEFINE_SUPPORTED_INTERFACES_ELEM(r, data, i, elem)    \
-    BOOST_PP_COMMA_IF(i) OPENVRML_DEFINE_NODE_INTERFACE(elem)
-
-# define OPENVRML_SUPPORTED_INTERFACES_TYPE(interface_seq)              \
-    boost::array<openvrml::node_interface, BOOST_PP_SEQ_SIZE(interface_seq)>
-
-# define OPENVRML_ADD_INTERFACE(node_type_obj, interface_type, supported_interface, node, handler) \
-    node_type_obj.BOOST_PP_CAT(add_, interface_type)(supported_interface->field_type, \
-                                                     supported_interface->id, \
-                                                     &node::handler)
-
-# define OPENVRML_ADD_INTERFACE_TUPLE(node_type_obj, node_instance_type, node_interface, interface_tuple) \
-    OPENVRML_ADD_INTERFACE(node_type_obj,                               \
-                           OPENVRML_NODE_INTERFACE_TUPLE_ELEM(0, interface_tuple), \
-                           node_interface,                              \
-                           node_instance_type,                          \
-                           OPENVRML_NODE_INTERFACE_TUPLE_ELEM(3, interface_tuple))
-
-# define OPENVRML_ADD_INTERFACE_ALTERNATIVE(r, data, elem)              \
-    if (*BOOST_PP_TUPLE_ELEM(4, 0, data) == *++BOOST_PP_TUPLE_ELEM(4, 1, data)) { \
-        OPENVRML_ADD_INTERFACE_TUPLE(BOOST_PP_TUPLE_ELEM(4, 2, data),   \
-                                     BOOST_PP_TUPLE_ELEM(4, 3, data),   \
-                                     BOOST_PP_TUPLE_ELEM(4, 1, data),   \
-                                     elem);                             \
-    } else
-
-# define OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE(namespace_scope, node_metatype_type, node_instance_type, interface_seq) \
-    const boost::shared_ptr<openvrml::node_type>                        \
-    namespace_scope::node_metatype_type::                               \
-    do_create_type(const std::string & id,                              \
-                   const openvrml::node_interface_set & interfaces) const \
-        OPENVRML_THROW2(openvrml::unsupported_interface, std::bad_alloc) \
-    {                                                                   \
-        typedef OPENVRML_SUPPORTED_INTERFACES_TYPE(interface_seq)       \
-            supported_interfaces_t;                                     \
-        static const supported_interfaces_t supported_interfaces = {    \
-            BOOST_PP_SEQ_FOR_EACH_I(                                    \
-                OPENVRML_DEFINE_SUPPORTED_INTERFACES_ELEM,              \
-                ~,                                                      \
-                interface_seq)                                          \
-        };                                                              \
-        typedef openvrml::node_impl_util::node_type_impl<node_instance_type> \
-            node_type_t;                                                \
-        const boost::shared_ptr<openvrml::node_type>                    \
-            type(new node_type_t(*this, id));                           \
-        node_type_t & node_type = static_cast<node_type_t &>(*type);    \
-        for (openvrml::node_interface_set::const_iterator interface_ =  \
-                 interfaces.begin();                                    \
-             interface_ != interfaces.end();                            \
-             ++interface_) {                                            \
-            supported_interfaces_t::const_iterator supported_interface = \
-                supported_interfaces.begin() - 1;                       \
-            BOOST_PP_SEQ_FOR_EACH(                                      \
-                OPENVRML_ADD_INTERFACE_ALTERNATIVE,                     \
-                (interface_, supported_interface, node_type, node_instance_type), \
-                interface_seq)                                          \
-            {                                                           \
-                throw openvrml::unsupported_interface(*interface_);     \
-            }                                                           \
-        }                                                               \
-        return type;                                                    \
-    }
+# include <openvrml/exposedfield.h>
 
 namespace openvrml {
 
@@ -109,9 +32,8 @@ namespace openvrml {
         class ptr_to_polymorphic_mem {
         public:
             virtual ~ptr_to_polymorphic_mem() OPENVRML_NOTHROW = 0;
-            virtual MemberBase & deref(Object & obj) OPENVRML_NOTHROW = 0;
-            virtual const MemberBase & deref(const Object & obj)
-                OPENVRML_NOTHROW = 0;
+            virtual MemberBase & deref(Object & obj) = 0;
+            virtual const MemberBase & deref(const Object & obj) = 0;
         };
 
         template <typename MemberBase, typename Object>
@@ -130,9 +52,8 @@ namespace openvrml {
             explicit ptr_to_polymorphic_mem_impl(Member Object::* ptr_to_mem);
             virtual ~ptr_to_polymorphic_mem_impl() OPENVRML_NOTHROW;
 
-            virtual MemberBase & deref(Object & obj) OPENVRML_NOTHROW;
-            virtual const MemberBase & deref(const Object & obj)
-                OPENVRML_NOTHROW;
+            virtual MemberBase & deref(Object & obj);
+            virtual const MemberBase & deref(const Object & obj);
         };
 
         template <typename MemberBase, typename Member, typename Object>
@@ -149,7 +70,7 @@ namespace openvrml {
         template <typename MemberBase, typename Member, typename Object>
         MemberBase &
         ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        deref(Object & obj) OPENVRML_NOTHROW
+        deref(Object & obj)
         {
             return obj.*this->ptr_to_mem;
         }
@@ -157,7 +78,7 @@ namespace openvrml {
         template <typename MemberBase, typename Member, typename Object>
         const MemberBase &
         ptr_to_polymorphic_mem_impl<MemberBase, Member, Object>::
-        deref(const Object & obj) OPENVRML_NOTHROW
+        deref(const Object & obj)
         {
             return obj.*this->ptr_to_mem;
         }

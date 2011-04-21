@@ -1,3 +1,18 @@
+2011-04-21 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.18.8 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
+	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Update to 10:0:1.  Previous change
+	was incorrect.
+
 2011-04-20 Braden McDaniel  <braden@endoframe.com>
 
 	* tests/Makefile.am (AM_CPPFLAGS): Define
@@ -185,18 +200,13 @@
 	(openvrml::browser::set_world(resource_istream &)): Ensure that
 	the browser::initialized event gets sent in the event of an
 	exception during parsing.
+	* src/libopenvrml/openvrml/browser.h
 
 2010-08-20 Braden McDaniel  <braden@endoframe.com>
 
 	* src/libopenvrml/openvrml/event.h
 	(openvrml::event_emitter::listeners<FieldValue>() const): Must use
 	dynamic_cast due to virtual inheritance.
-
-2010-08-20 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/event.h
-	(openvrml::event_emitter): Changed add and remove member function
-	templates from public to protected access.
 
 2010-08-19 Braden McDaniel  <braden@endoframe.com>
 
@@ -370,11 +380,6 @@
 
 2010-08-13 Braden McDaniel  <braden@endoframe.com>
 
-	* src/libopenvrml/openvrml/node_impl_util.cpp: Doc-comment
-	improvements.
-
-2010-08-13 Braden McDaniel  <braden@endoframe.com>
-
 	Doc-comment improvements: mark private data member documentation
 	"@internal".
 
@@ -384,12 +389,6 @@
 	* src/libopenvrml/openvrml/node_impl_util.cpp
 	* src/libopenvrml/openvrml/script.cpp
 	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
-
-2010-08-12 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/node_impl_util.h
-	(openvrml::node_impl_util::ptr_to_polymorphic_mem): deref will
-	never throw; use OPENVRML_NOTHROW.
 
 2010-08-12 Braden McDaniel  <braden@endoframe.com>
 
@@ -406,23 +405,6 @@
 	* doc/manual/tab_l-openvrml.png: Removed.
 	* doc/manual/tab_b-openvrml.png: Removed.
 	* doc/manual/tab_r-openvrml.png: Removed.
-
-2010-08-07 Braden McDaniel  <braden@endoframe.com>
-
-	Doc-comment improvements.
-
-	* src/libopenvrml/openvrml/node.cpp
-	* src/libopenvrml/openvrml/node_impl_util.cpp
-
-2010-08-01 Braden McDaniel  <braden@endoframe.com>
-
-	* README: Removed obsolete reference to OPENVRML_FT_CONST.
-
-2010-08-01 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comments
-	for OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE and supporting
-	macros.
 
 2010-07-12 Braden McDaniel  <braden@endoframe.com>
 
@@ -449,20 +431,9 @@
 
 2010-07-09 Braden McDaniel  <braden@endoframe.com>
 
-	* src/libopenvrml/openvrml/local/parse_vrml.h
-	(openvrml::local::x3d_vrml_parse_actions::on_mfdouble): Added
-	semantic action for mfdouble.
-
-2010-07-09 Braden McDaniel  <braden@endoframe.com>
-
 	* src/node/vrml97/image_texture.cpp
 	(image_texture_node::do_render_texture(openvrml::viewer &)): Lock
 	the image_mutex_ before rendering the texture.
-
-2010-06-06 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/x3d_vrml_grammar.h: Added MFDouble
-	parsing.
 
 2010-06-02 Braden McDaniel  <braden@endoframe.com>
 
@@ -699,34 +670,6 @@
 
 2010-04-28 Braden McDaniel  <braden@endoframe.com>
 
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::set_world(resource_istream &)): Corrected
-	variable name.
-
-2010-04-28 Braden McDaniel  <braden@endoframe.com>
-
-	Protect openvrml::browser::node_metatype_registry_ with a mutex.
-
-	* src/libopenvrml/openvrml/browser.h
-	(openvrml::browser): Added node_metatype_registry_mutex_.
-	* src/libopenvrml/openvrml/browser.cpp
-	(openvrml::browser::~browser()): Lock the
-	node_metatype_registry_mutex_.
-	(openvrml::browser::add_node_metatype(const node_metatype_id &,
-	const boost::shared_ptr<openvrml::node_metatype> &)): Lock the
-	node_metatype_registry_mutex_.
-	(openvrml::browser::node_metatype(const node_metatype_id &)
-	const): Lock the node_metatype_registry_mutex_.
-	(openvrml::browser::set_world(resource_istream &)): Lock the
-	node_metatype_registry_mutex_.
-	(openvrml::browser::replace_world(const
-	std::vector<boost::intrusive_ptr<node> > &)): Lock the
-	node_metatype_registry_mutex_.
-	(openvrml::browser::render()): Lock the
-	node_metatype_registry_mutex_.
-
-2010-04-28 Braden McDaniel  <braden@endoframe.com>
-
 	* src/node/vrml97/image_stream_listener.cpp
 	(openvrml_png_info_callback(png_structp, png_infop)): Added
 	missing "using" declaration.
@@ -786,34 +729,6 @@
 	* m4/ax_check_glu.m4
 	* m4/ax_pthread.m4: Added.
 
-2010-02-14 Braden McDaniel  <braden@endoframe.com>
-
-	Use Boost.ScopeExit instead of ScopeGuard.
-
-	* README: Note Boost 1.38 requirement.
-	* src/libopenvrml/openvrml/browser.cpp
-	* src/libopenvrml/openvrml/local/conf.cpp
-	* src/libopenvrml/openvrml/local/error.cpp
-	* src/libopenvrml/openvrml/local/externproto.cpp
-	* src/libopenvrml/openvrml/local/node_metatype_registry_impl.cpp
-	* src/libopenvrml/openvrml/local/uri.cpp
-	* src/libopenvrml/openvrml/local/xml_reader.cpp
-	* src/libopenvrml/openvrml/script.cpp
-	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
-	* src/mozilla-plugin/openvrml.cpp
-	* src/node/vrml97/grouping_node_base.h
-	* src/node/vrml97/image_stream_listener.cpp
-	* src/node/vrml97/text.cpp
-	* src/openvrml-player/curlbrowserhost.cpp
-	* src/openvrml-player/filechooserdialog.cpp
-	* src/openvrml-player/player.cpp
-	* src/openvrml-xembed/browser.cpp
-	* src/openvrml-xembed/browserfactory.cpp
-	* src/openvrml-xembed/main.cpp
-	* src/script/java.cpp
-	* src/script/javascript.cpp
-	* tests/browser.cpp
-
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.18.4 release.
@@ -826,6 +741,10 @@
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
 	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
 	* src/Makefile.am: Updated libopenvrml library version to 9:3:0.
+
+2010-02-13 Braden McDaniel  <braden@endoframe.com>
+
+	* configure.ac: Fixed check to see if JAVA_HOME is set.
 
 2010-02-13 Braden McDaniel  <braden@endoframe.com>
 
@@ -1053,167 +972,6 @@
 
 	* doc/Doxyfile: Upgraded for Doxygen 1.6.1.
 
-2009-11-25 Braden McDaniel  <braden@endoframe.com>
-
-	* src/node/vrml97/navigation_info.cpp
-	(NAVIGATION_INFO_INTERFACE_SEQ): Fixed typo in "visibilityLimit".
-
-2009-11-25 Braden McDaniel  <braden@endoframe.com>
-
-	Generate openvrml::node_type::do_create_type implementations using
-	the Boost.Preprocessor library.
-
-	* src/libopenvrml/openvrml/node_impl_util.cpp: Added doc-comment
-	for OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE.
-	* src/libopenvrml/openvrml/node_impl_util.h: Added
-	OPENVRML_NODE_IMPL_UTIL_DEFINE_DO_CREATE_TYPE and supporting
-	macros.
-	* src/node/vrml97/anchor.cpp
-	* src/node/vrml97/appearance.cpp
-	* src/node/vrml97/audio_clip.cpp
-	* src/node/vrml97/background.cpp
-	* src/node/vrml97/billboard.cpp
-	* src/node/vrml97/box.cpp
-	* src/node/vrml97/cad_assembly.cpp
-	* src/node/vrml97/cad_layer.cpp
-	* src/node/vrml97/collision.cpp
-	* src/node/vrml97/color.cpp
-	* src/node/vrml97/color_interpolator.cpp
-	* src/node/vrml97/cone.cpp
-	* src/node/vrml97/coordinate.cpp
-	* src/node/vrml97/coordinate_interpolator.cpp
-	* src/node/vrml97/cylinder.cpp
-	* src/node/vrml97/cylinder_sensor.cpp
-	* src/node/vrml97/directional_light.cpp
-	* src/node/vrml97/elevation_grid.cpp
-	* src/node/vrml97/extrusion.cpp
-	* src/node/vrml97/fog.cpp
-	* src/node/vrml97/font_style.cpp
-	* src/node/vrml97/group.cpp
-	* src/node/vrml97/image_texture.cpp
-	* src/node/vrml97/indexed_face_set.cpp
-	* src/node/vrml97/indexed_line_set.cpp
-	* src/node/vrml97/inline.cpp
-	* src/node/vrml97/lod.cpp
-	* src/node/vrml97/material.cpp
-	* src/node/vrml97/navigation_info.cpp
-	* src/node/vrml97/normal.cpp
-	* src/node/vrml97/normal_interpolator.cpp
-	* src/node/vrml97/orientation_interpolator.cpp
-	* src/node/vrml97/pixel_texture.cpp
-	* src/node/vrml97/plane_sensor.cpp
-	* src/node/vrml97/point_light.cpp
-	* src/node/vrml97/point_set.cpp
-	* src/node/vrml97/position_interpolator.cpp
-	* src/node/vrml97/proximity_sensor.cpp
-	* src/node/vrml97/scalar_interpolator.cpp
-	* src/node/vrml97/shape.cpp
-	* src/node/vrml97/sound.cpp
-	* src/node/vrml97/sphere.cpp
-	* src/node/vrml97/sphere_sensor.cpp
-	* src/node/vrml97/spot_light.cpp
-	* src/node/vrml97/switch.cpp
-	* src/node/vrml97/text.cpp
-	* src/node/vrml97/texture_coordinate.cpp
-	* src/node/vrml97/texture_transform.cpp
-	* src/node/vrml97/touch_sensor.cpp
-	* src/node/vrml97/transform.cpp
-	* src/node/vrml97/visibility_sensor.cpp
-	* src/node/vrml97/world_info.cpp
-	* src/node/vrml97/viewpoint.cpp
-	* src/node/x3d-cad-geometry/cad_face.cpp
-	* src/node/x3d-cad-geometry/indexed_quad_set.cpp
-	* src/node/x3d-core/metadata_double.cpp
-	* src/node/x3d-core/metadata_float.cpp
-	* src/node/x3d-core/metadata_integer.cpp
-	* src/node/x3d-core/metadata_set.cpp
-	* src/node/x3d-core/metadata_string.cpp
-	* src/node/x3d-dis/espdu_transform.cpp
-	* src/node/x3d-dis/receiver_pdu.cpp
-	* src/node/x3d-dis/signal_pdu.cpp
-	* src/node/x3d-dis/transmitter_pdu.cpp
-	* src/node/x3d-environmental-effects/texture_background.cpp
-	* src/node/x3d-event-utilities/boolean_filter.cpp
-	* src/node/x3d-event-utilities/boolean_sequencer.cpp
-	* src/node/x3d-event-utilities/boolean_toggle.cpp
-	* src/node/x3d-event-utilities/boolean_trigger.cpp
-	* src/node/x3d-event-utilities/integer_sequencer.cpp
-	* src/node/x3d-event-utilities/integer_trigger.cpp
-	* src/node/x3d-event-utilities/time_trigger.cpp
-	* src/node/x3d-geometry2d/arc_close2d.cpp
-	* src/node/x3d-geometry2d/arc2d.cpp
-	* src/node/x3d-geometry2d/circle2d.cpp
-	* src/node/x3d-geometry2d/disk2d.cpp
-	* src/node/x3d-geometry2d/polyline2d.cpp
-	* src/node/x3d-geometry2d/polypoint2d.cpp
-	* src/node/x3d-geometry2d/rectangle2d.cpp
-	* src/node/x3d-geometry2d/triangle_set2d.cpp
-	* src/node/x3d-geospatial/geo_coordinate.cpp
-	* src/node/x3d-geospatial/geo_elevation_grid.cpp
-	* src/node/x3d-geospatial/geo_location.cpp
-	* src/node/x3d-geospatial/geo_lod.cpp
-	* src/node/x3d-geospatial/geo_metadata.cpp
-	* src/node/x3d-geospatial/geo_origin.cpp
-	* src/node/x3d-geospatial/geo_position_interpolator.cpp
-	* src/node/x3d-geospatial/geo_touch_sensor.cpp
-	* src/node/x3d-geospatial/geo_viewpoint.cpp
-	* src/node/x3d-grouping/static_group.cpp
-	* src/node/x3d-h-anim/h_anim_displacer.cpp
-	* src/node/x3d-h-anim/h_anim_humanoid.cpp
-	* src/node/x3d-h-anim/h_anim_joint.cpp
-	* src/node/x3d-h-anim/h_anim_segment.cpp
-	* src/node/x3d-h-anim/h_anim_site.cpp
-	* src/node/x3d-interpolation/coordinate_interpolator2d.cpp
-	* src/node/x3d-interpolation/position_interpolator2d.cpp
-	* src/node/x3d-key-device-sensor/key_sensor.cpp
-	* src/node/x3d-key-device-sensor/string_sensor.cpp
-	* src/node/x3d-networking/load_sensor.cpp
-	* src/node/x3d-nurbs/contour_polyline2d.cpp
-	* src/node/x3d-nurbs/contour2d.cpp
-	* src/node/x3d-nurbs/coordinate_double.cpp
-	* src/node/x3d-nurbs/nurbs_curve.cpp
-	* src/node/x3d-nurbs/nurbs_curve2d.cpp
-	* src/node/x3d-nurbs/nurbs_orientation_interpolator.cpp
-	* src/node/x3d-nurbs/nurbs_patch_surface.cpp
-	* src/node/x3d-nurbs/nurbs_position_interpolator.cpp
-	* src/node/x3d-nurbs/nurbs_set.cpp
-	* src/node/x3d-nurbs/nurbs_surface_interpolator.cpp
-	* src/node/x3d-nurbs/nurbs_swept_surface.cpp
-	* src/node/x3d-nurbs/nurbs_swung_surface.cpp
-	* src/node/x3d-nurbs/nurbs_texture_coordinate.cpp
-	* src/node/x3d-nurbs/nurbs_trimmed_surface.cpp
-	* src/node/x3d-rendering/color_rgba.cpp
-	* src/node/x3d-rendering/indexed_triangle_fan_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_set.cpp
-	* src/node/x3d-rendering/indexed_triangle_strip_set.cpp
-	* src/node/x3d-rendering/triangle_fan_set.cpp
-	* src/node/x3d-rendering/triangle_set.cpp
-	* src/node/x3d-rendering/triangle_strip_set.cpp
-	* src/node/x3d-shape/fill_properties.cpp
-	* src/node/x3d-shape/line_properties.cpp
-	* src/node/x3d-texturing/multi_texture.cpp
-	* src/node/x3d-texturing/multi_texture_coordinate.cpp
-	* src/node/x3d-texturing/multi_texture_transform.cpp
-
-2009-11-24 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::node): Friendship with field_value_listener does not
-	appear to be necessary.
-	* src/libopenvrml/openvrml/node.cpp: Removed doc-comment for
-	field_value_listener friend.
-
-2009-11-24 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/node.cpp: Clean up obsolete
-	doc-comments.
-
-2009-11-24 Braden McDaniel  <braden@endoframe.com>
-
-	* src/libopenvrml/openvrml/node.h
-	(openvrml::node): Use friend templates for field_value_listener
-	and exposedfield.
-
 2009-11-02 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Updated copyright notice.
@@ -1226,44 +984,6 @@
 2009-11-01 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Require pkg-config >= 0.18.0.
-
-2009-11-01 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Use pkg-config to find SDL.
-
-2009-11-01 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Don't fail on missing libpng if PNG_LIBS has been
-	set.
-
-2009-11-01 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Improve error message when no SpiderMonkey is
-	found: account for the possibility that the installed libjs was
-	not built with -DJS_THREADSAFE.
-
-2009-11-01 Braden McDaniel  <braden@endoframe.com>
-
-	Require at least FreeType 2.2.
-
-	* configure.ac: Require FreeType >= 2.2.
-	* src/node/vrml97/text.cpp: Remove use of OPENVRML_FT_CONST.
-
-2009-11-01 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Set JS_CFLAGS (if it has not been set) when
-	building --with-libjs; ensure libjs was built with
-	-DJS_THREADSAFE.
-
-2009-10-31 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Require mozilla-js >= 1.8.1.8.  This means we
-	don't need to doctor JS_CFLAGS for -DJS_THREADSAFE anymore.
-
-2009-10-31 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Removed references to obsolete variants of
-	mozilla-js.pc.
 
 2009-10-31 Braden McDaniel  <braden@endoframe.com>
 
@@ -1307,56 +1027,11 @@
 
 2009-10-25 Braden McDaniel  <braden@endoframe.com>
 
-	* configure.ac: Improve warning message when JRE_HOME and
-	JAVA_HOME aren't set.
-
-2009-10-25 Braden McDaniel  <braden@endoframe.com>
-
 	* configure.ac: More GRE_PATH cleanup.
 
 2009-10-24 Braden McDaniel  <braden@endoframe.com>
 
 	* configure.ac: Clean up legacy cruft in handling of GRE_PATH.
-
-2009-10-22 Braden McDaniel  <braden@endoframe.com>
-
-	Set development version to 0.18.99.
-
-	* README
-	* configure.ac
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
-
-2009-10-22 Braden McDaniel  <braden@endoframe.com>
-
-	* configure.ac: Infer JRE_HOME from JAVA_HOME if only the latter
-	is set.
-
-2009-10-22 Braden McDaniel  <braden@endoframe.com>
-
-	Use boost::filesystem::path when setting the search path for
-	libjvm.
-
-	* src/script/java.cpp
-	(prepend_jre_home_libdirs_to_searchpath(const
-	boost::filesystem::path &)): Changed to take a
-	boost::filesystem::path.
-	(load_libjvm::load_libjvm()): Pass a boost::filesystem::path to
-	prepend_jre_home_libdirs_to_searchpath.
-
-2009-10-22 Braden McDaniel  <braden@endoframe.com>
-
-	Prefer JRE_HOME to locate libjvm rather than JAVA_HOME.
-
-	* configure.ac: Use JRE_HOME instead of JAVA_HOME.
-	* src/Makefile.am (script_java_la_CPPFLAGS): Define JRE_HOME
-	instead of JAVA_HOME.
-	* src/script/java.cpp
-	(prepend_jre_home_libdirs_to_searchpath(const std::string &)):
-	Changed function name.
-	(load_libjvm::load_libjvm()): First check JRE_HOME; then use
-	JAVA_HOME if JRE_HOME isn't set.
 
 2009-10-19 Braden McDaniel  <braden@endoframe.com>
 
