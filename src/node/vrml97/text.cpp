@@ -3,7 +3,8 @@
 // OpenVRML
 //
 // Copyright 1998  Chris Morley
-// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007  Braden McDaniel
+// Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2010
+//   Braden McDaniel
 // Copyright 2002  S. K. Bose
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -41,7 +42,7 @@
 #   endif
 # endif
 # include <boost/array.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/ptr_container/ptr_vector.hpp>
 
 # ifdef HAVE_CONFIG_H
@@ -1237,7 +1238,6 @@ namespace {
         advance_height_(0)
     {
         using std::vector;
-        using namespace boost::multi_index::detail;  // for scope_guard
 
         FT_Error error = FT_Err_Ok;
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_SCALE);
@@ -1245,7 +1245,9 @@ namespace {
         FT_Glyph glyph;
         error = FT_Get_Glyph(face->glyph, &glyph);
         assert(error == FT_Err_Ok);
-        scope_guard glyph_guard = make_guard(FT_Done_Glyph, glyph);
+        BOOST_SCOPE_EXIT((&glyph)) {
+            FT_Done_Glyph(glyph);
+        } BOOST_SCOPE_EXIT_END
         static FT_Outline_Funcs outlineFuncs = { moveTo_,
                                                  lineTo_,
                                                  conicTo_,
@@ -2342,8 +2344,6 @@ namespace {
     {
         using std::vector;
 # ifdef _WIN32
-        using namespace boost::multi_index::detail;  // for scope_guard
-
         LOGFONT lf;
         lf.lfHeight =         0;
         lf.lfWidth =          0;
@@ -2360,7 +2360,9 @@ namespace {
         lf.lfPitchAndFamily = VARIABLE_PITCH | FF_ROMAN;
 
         HDC hdc = CreateCompatibleDC(0);
-        scope_guard hdc_guard = make_guard(&DeleteDC, hdc);
+        BOOST_SCOPE_EXIT((hdc)) {
+            DeleteDC(hdc);
+        } BOOST_SCOPE_EXIT_END
         HFONT hfont = CreateFontIndirect(&lf);
         SelectObject(hdc, hfont);
         TCHAR faceName[256] = {};
@@ -2388,7 +2390,9 @@ namespace {
                 KEY_READ,
                 &fontsKey);
         if (result != ERROR_SUCCESS) { /* bail */ }
-        scope_guard fontsKey_guard = make_guard(&RegCloseKey, fontsKey);
+        BOOST_SCOPE_EXIT((fontsKey)) {
+            RegCloseKey(fontsKey);
+        } BOOST_SCOPE_EXIT_END
 
         DWORD maxValueNameLen, maxValueLen;
         result = RegQueryInfoKey(fontsKey,
@@ -2453,7 +2457,6 @@ namespace {
         face_index = 0;
 # else
         using std::string;
-        using namespace boost::multi_index::detail;  // for scope_guard
 
         string fontName;
         //
@@ -2496,9 +2499,9 @@ namespace {
             FcNameParse(unsigned_char_string(fontName.begin(),
                                              fontName.end()).c_str());
         if (!initialPattern) { throw std::bad_alloc(); }
-        scope_guard initialPattern_guard =
-            make_guard(&FcPatternDestroy, initialPattern);
-        boost::ignore_unused_variable_warning(initialPattern_guard);
+        BOOST_SCOPE_EXIT((initialPattern)) {
+            FcPatternDestroy(initialPattern);
+        } BOOST_SCOPE_EXIT_END
 
         //
         // Set the language.
@@ -2517,9 +2520,9 @@ namespace {
             FcFontMatch(0, initialPattern, &result);
         if (result != FcResultMatch) { throw FontconfigError(result); }
         assert(matchedPattern);
-        scope_guard matchedPattern_guard =
-            make_guard(&FcPatternDestroy, matchedPattern);
-        boost::ignore_unused_variable_warning(matchedPattern_guard);
+        BOOST_SCOPE_EXIT((matchedPattern)) {
+            FcPatternDestroy(matchedPattern);
+        } BOOST_SCOPE_EXIT_END
 
         FcChar8 * filename_c_str = 0;
         result = FcPatternGetString(matchedPattern,

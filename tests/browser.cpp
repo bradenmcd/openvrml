@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// Copyright 2005, 2006, 2007  Braden McDaniel
+// Copyright 2005, 2006, 2007, 2010  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -23,15 +23,13 @@
 # include <iostream>
 # include <sstream>
 # include <boost/filesystem/operations.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/thread.hpp>
 # include <boost/test/unit_test.hpp>
 # include "test_resource_fetcher.h"
 
 using namespace std;
 using namespace openvrml;
-using namespace boost::filesystem;
-using namespace boost::multi_index::detail; // for scope_guard
 
 BOOST_AUTO_TEST_CASE(create_vrml_from_stream)
 {
@@ -56,10 +54,9 @@ BOOST_AUTO_TEST_CASE(create_vrml_from_stream_with_externproto)
         file << "#VRML V2.0 utf8" << endl
              << "PROTO Node [] { Group {} }" << endl;
     }
-    scope_guard test_file_guard =
-        make_guard(&boost::filesystem::remove<boost::filesystem::path>,
-                   boost::filesystem::path("test.wrl"));
-    boost::ignore_unused_variable_warning(test_file_guard);
+    BOOST_SCOPE_EXIT() {
+        remove(boost::filesystem::path("test.wrl"));
+    } BOOST_SCOPE_EXIT_END
 
     const char vrmlstring[] = "EXTERNPROTO Node [] [ \"test.wrl\" ] Node {}";
     stringstream vrmlstream(vrmlstring);
@@ -110,10 +107,9 @@ BOOST_AUTO_TEST_CASE(create_vrml_from_url)
         file << "#VRML V2.0 utf8" << endl
 	     << "Shape {}" << endl;
     }
-    scope_guard test_file_guard =
-        make_guard(&boost::filesystem::remove<boost::filesystem::path>,
-                   boost::filesystem::path("test.wrl"));
-    boost::ignore_unused_variable_warning(test_file_guard);
+    BOOST_SCOPE_EXIT() {
+        remove(boost::filesystem::path("test.wrl"));
+    } BOOST_SCOPE_EXIT_END
 
     test_resource_fetcher fetcher;
     browser b(fetcher, std::cout, std::cerr);

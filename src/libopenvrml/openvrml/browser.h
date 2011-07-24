@@ -215,8 +215,6 @@ namespace openvrml {
                           std::vector<boost::intrusive_ptr<node> > & nodes,
                           std::map<std::string, std::string> & meta);
 
-        OPENVRML_LOCAL void send_initialized();
-
         boost::scoped_ptr<node_metatype_registry> node_metatype_registry_;
 
         const boost::scoped_ptr<null_node_metatype> null_node_metatype_;

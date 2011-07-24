@@ -1,6 +1,6 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// Copyright 2006, 2007, 2008  Braden McDaniel
+// Copyright 2006, 2007, 2008, 2010  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -19,9 +19,8 @@
 # include <curl/curl.h>
 # include <string>
 # include <vector>
-# include <boost/concept_check.hpp>
 # include <boost/lexical_cast.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 # include <boost/ref.hpp>
 # include <dbus/dbus-glib.h>
 # include <libgnomeui/libgnomeui.h>
@@ -34,8 +33,6 @@
 # ifdef HAVE_CONFIG_H
 #   include <config.h>
 # endif
-
-using namespace boost::multi_index::detail; // for scope_guard
 
 extern "C" {
     //
@@ -87,8 +84,9 @@ int main(int argc, char * argv[])
         g_critical("libcurl initialization failed");
         return EXIT_FAILURE;
     }
-    scope_guard curl_global_guard = make_guard(curl_global_cleanup);
-    boost::ignore_unused_variable_warning(curl_global_guard);
+    BOOST_SCOPE_EXIT() {
+        curl_global_cleanup();
+    } BOOST_SCOPE_EXIT_END
 
     gchar ** remaining_args = 0;
     GOptionEntry option_entries[] = {
@@ -123,7 +121,9 @@ int main(int argc, char * argv[])
             GNOME_PARAM_NONE);
 
     GError * error = 0;
-    scope_guard error_guard = make_guard(g_error_free, ref(error));
+    BOOST_SCOPE_EXIT((&error)) {
+        if (error) { g_error_free(error); }
+    } BOOST_SCOPE_EXIT_END
     GtkBuilder * const builder = builder_new(*program, &error);
     if (!builder) {
         g_critical("Failed to create UI builder: %s", error->message);
@@ -167,8 +167,6 @@ int main(int argc, char * argv[])
     gtk_widget_show_all(app_window);
 
     gtk_main();
-
-    error_guard.dismiss();
 }
 
 namespace {
@@ -251,8 +249,9 @@ openvrml_player_on_file_open_activated(GtkAction * /* action */,
         gchar * uri =
             gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(data->file_chooser));
         g_return_if_fail(uri);
-        scope_guard uri_guard = make_guard(g_free, uri);
-        boost::ignore_unused_variable_warning(uri_guard);
+        BOOST_SCOPE_EXIT((uri)) {
+            g_free(uri);
+        } BOOST_SCOPE_EXIT_END
         openvrml_player_curl_browser_host_load_url(data->browser_host, uri);
     }
 
@@ -277,8 +276,9 @@ void openvrml_player_on_filechooserdialog_response(GtkDialog * const dialog,
         gchar * uri = 0;
         uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(dialog));
         g_return_if_fail(uri);
-        scope_guard uri_guard = make_guard(g_free, uri);
-        boost::ignore_unused_variable_warning(uri_guard);
+        BOOST_SCOPE_EXIT((uri)) {
+            g_free(uri);
+        } BOOST_SCOPE_EXIT_END
         gtk_entry_set_text(location_entry, uri);
     }
 }

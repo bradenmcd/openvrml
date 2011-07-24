@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2009  Braden McDaniel
+// Copyright 2009, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -20,7 +20,6 @@
 
 # include "conf.h"
 # include "error.h"
-# include <boost/multi_index/detail/scope_guard.hpp>
 # include <boost/ref.hpp>
 # include <boost/tokenizer.hpp>
 # ifdef _WIN32
@@ -29,8 +28,6 @@
 # else
 #   include <cstdlib>
 # endif
-
-using namespace boost::multi_index::detail;  // for scope_guard
 
 namespace {
 

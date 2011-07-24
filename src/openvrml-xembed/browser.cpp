@@ -2,7 +2,7 @@
 //
 // OpenVRML XEmbed Control
 //
-// Copyright 2004, 2005, 2006, 2007, 2008  Braden N. McDaniel
+// Copyright 2004, 2005, 2006, 2007, 2008, 2010  Braden N. McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -18,7 +18,7 @@
 // with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include <boost/multi_index/detail/scope_guard.hpp>
+# include <boost/scope_exit.hpp>
 // Must include before X11 headers.
 # include <boost/numeric/conversion/converter.hpp>
 # include <X11/keysym.h>
@@ -32,8 +32,6 @@
 # include <gtk/gtkgl.h>
 # include <gtk/gtkdrawingarea.h>
 # include <dbus/dbus.h>
-
-using namespace boost::multi_index::detail; // for scope_guard
 
 GQuark openvrml_xembed_error_quark()
 {
@@ -321,6 +319,7 @@ openvrml_xembed_browser_new(DBusGProxy * const host_proxy,
                             const gchar * const host_name,
                             const GdkNativeWindow socket_id)
 {
+    bool succeeded = false;
     OpenvrmlXembedBrowser * const browser =
         OPENVRML_XEMBED_BROWSER(
             g_object_new(OPENVRML_XEMBED_TYPE_BROWSER,
@@ -329,21 +328,22 @@ openvrml_xembed_browser_new(DBusGProxy * const host_proxy,
                          "expect-initial-stream", expect_initial_stream,
                          static_cast<void *>(0)));
     if (!browser) { return 0; }
-    scope_guard browser_guard = make_guard(g_object_unref, browser);
+    BOOST_SCOPE_EXIT((&succeeded)(browser)) {
+        if (!succeeded) { g_object_unref(browser); }
+    } BOOST_SCOPE_EXIT_END
 
     GSource * const browser_ready_source =
         openvrml_xembed_browser_ready_source_new(browser, socket_id);
     if (!browser_ready_source) { return 0; }
-    scope_guard browser_ready_source_guard =
-        make_guard(g_object_unref, browser_ready_source);
+    BOOST_SCOPE_EXIT((&succeeded)(browser_ready_source)) {
+        if (!succeeded) { g_object_unref(browser_ready_source); }
+    } BOOST_SCOPE_EXIT_END
 
     gdk_threads_enter();
     g_source_attach(browser_ready_source, gtk_thread_context);
     gdk_threads_leave();
 
-    browser_ready_source_guard.dismiss();
-    browser_guard.dismiss();
-
+    succeeded = true;
     return browser;
 }
 
@@ -733,8 +733,9 @@ void openvrml_xembed_browser_plug_realize(GtkWidget * const widget)
                      NULL);
 
         g_assert(browser);
-        scope_guard browser_guard = make_guard(g_object_unref, browser);
-        boost::ignore_unused_variable_warning(browser_guard);
+        BOOST_SCOPE_EXIT((browser)) {
+            g_object_unref(browser);
+        } BOOST_SCOPE_EXIT_END
 
         browser_plug->priv->drawing_area =
             GTK_DRAWING_AREA(g_object_new(GTK_TYPE_DRAWING_AREA, 0));
@@ -1260,12 +1261,6 @@ void openvrml_xembed_browser_ready_finalize(GSource * /* source */)
 
 namespace {
 
-    void cleanup_private_connection(DBusConnection * const connection)
-    {
-        dbus_connection_close(connection);
-        dbus_connection_unref(connection);
-    }
-
     int browser_host_proxy::do_get_url(const std::string & url)
     {
         //
@@ -1275,7 +1270,9 @@ namespace {
         //
         DBusError error;
         dbus_error_init(&error);
-        scope_guard error_guard = make_guard(dbus_error_free, &error);
+        BOOST_SCOPE_EXIT((&error)) {
+            dbus_error_free(&error);
+        } BOOST_SCOPE_EXIT_END
         DBusConnection * const connection =
             dbus_bus_get_private(DBUS_BUS_SESSION, &error);
         if (!connection) {
@@ -1283,8 +1280,10 @@ namespace {
                       error.message);
             return -1;
         }
-        scope_guard connection_guard =
-            make_guard(cleanup_private_connection, connection);
+        BOOST_SCOPE_EXIT((connection)) {
+            dbus_connection_close(connection);
+            dbus_connection_unref(connection);
+        } BOOST_SCOPE_EXIT_END
 
         DBusMessage * const get_url_call =
             dbus_message_new_method_call(
@@ -1292,8 +1291,9 @@ namespace {
                 dbus_g_proxy_get_path(this->browser_.priv->control_host),
                 dbus_g_proxy_get_interface(this->browser_.priv->control_host),
                 "GetUrl");
-        scope_guard get_url_call_guard =
-            make_guard(dbus_message_unref, get_url_call);
+        BOOST_SCOPE_EXIT((get_url_call)) {
+            dbus_message_unref(get_url_call);
+        } BOOST_SCOPE_EXIT_END
 
         const char * const url_c_str = url.c_str();
         bool succeeded =
@@ -1314,8 +1314,9 @@ namespace {
             g_warning("error fetching resource: %s", error.message);
             return -1;
         }
-        scope_guard get_url_response_guard =
-            make_guard(dbus_message_unref, get_url_response);
+        BOOST_SCOPE_EXIT((get_url_response)) {
+            dbus_message_unref(get_url_response);
+        } BOOST_SCOPE_EXIT_END
 
         gint get_url_result = -1;
         succeeded =

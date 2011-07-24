@@ -1,6 +1,6 @@
 // -*- Mode: C++; indent-tabs-mode: nil; c-basic-offset: 4; fill-column: 78 -*-
 //
-// Copyright 2007  Braden McDaniel
+// Copyright 2007, 2010  Braden McDaniel
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the Free
@@ -17,11 +17,7 @@
 //
 
 # include <gtk/gtk.h>
-# include <boost/concept_check.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
 # include "filechooserdialog.h"
-
-using namespace boost::multi_index::detail; // for scope_guard
 
 G_DEFINE_TYPE(OpenvrmlPlayerFileChooserDialog,
               openvrml_player_file_chooser_dialog,
@@ -67,26 +63,19 @@ namespace {
 
         GtkFileFilter * const world_filter = gtk_file_filter_new();
         g_return_val_if_fail(world_filter, 0);
-        scope_guard world_filter_guard = make_guard(g_object_unref,
-                                                    world_filter);
-        boost::ignore_unused_variable_warning(world_filter_guard);
         gtk_file_filter_set_name(world_filter, "VRML/X3D worlds");
         gtk_file_filter_add_mime_type(world_filter, "x-world/x-vrml");
         gtk_file_filter_add_mime_type(world_filter, "model/vrml");
         gtk_file_filter_add_mime_type(world_filter, "model/x3d-vrml");
 
         gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(obj), world_filter);
-        world_filter_guard.dismiss();
 
         GtkFileFilter * const all_filter = gtk_file_filter_new();
         g_return_val_if_fail(all_filter, 0);
-        scope_guard all_filter_guard = make_guard(g_object_unref, all_filter);
-        boost::ignore_unused_variable_warning(all_filter_guard);
         gtk_file_filter_set_name(all_filter, "All files");
         gtk_file_filter_add_pattern(all_filter, "*");
 
         gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(obj), all_filter);
-        all_filter_guard.dismiss();
 
         return obj;
     }

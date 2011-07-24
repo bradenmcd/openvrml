@@ -2,7 +2,7 @@
 //
 // OpenVRML
 //
-// Copyright 2009  Braden McDaniel
+// Copyright 2009, 2010  Braden McDaniel
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by
@@ -25,9 +25,7 @@
 # include <openvrml/scene.h>
 # include <boost/function.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/multi_index/detail/scope_guard.hpp>
-
-using namespace boost::multi_index::detail;  // for scope_guard
+# include <boost/scope_exit.hpp>
 
 struct OPENVRML_LOCAL openvrml::local::externproto_node_metatype::load_proto {
     load_proto(externproto_node_metatype & externproto_class,
@@ -52,12 +50,9 @@ struct OPENVRML_LOCAL openvrml::local::externproto_node_metatype::load_proto {
                 using boost::shared_ptr;
                 using local::uri;
 
-                scope_guard guard =
-                    make_obj_guard(
-                        *this->externproto_node_metatype_,
-                        &externproto_node_metatype::
-                            clear_externproto_node_types);
-                boost::ignore_unused_variable_warning(guard);
+                BOOST_SCOPE_EXIT((&externproto_node_metatype_)) {
+                    externproto_node_metatype_->clear_externproto_node_types();
+                } BOOST_SCOPE_EXIT_END
 
                 auto_ptr<resource_istream> in =
                     this->scene_->get_resource(this->alt_uris_);
