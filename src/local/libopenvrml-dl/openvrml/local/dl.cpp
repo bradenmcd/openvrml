@@ -103,11 +103,13 @@ foreachfile(const std::vector<boost::filesystem::path> & search_path,
 int
 openvrml::local::dl::prepend_to_searchpath(const boost::filesystem::path & dir)
 {
+    const std::string & dir_str = dir.string();
+    const char * const dir_c_str = dir_str.c_str();
 # ifdef _WIN32
-    return SetDllDirectory(dir.directory_string().c_str());
+    return SetDllDirectory(dir_c_str);
 # else
     const char * const before = lt_dlgetsearchpath();
-    return lt_dlinsertsearchdir(before, dir.directory_string().c_str());
+    return lt_dlinsertsearchdir(before, dir_c_str);
 # endif
 }
 

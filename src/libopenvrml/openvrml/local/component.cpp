@@ -358,8 +358,7 @@ openvrml::local::component_registry::component_registry()
          entry != directory_iterator();
          ++entry) {
         if (!is_directory(entry->path())) try {
-            auto_ptr<component>
-                c(new component(entry->path().file_string()));
+            auto_ptr<component> c(new component(entry->path().string()));
             std::string key = c->id();
             succeeded = this->insert(key, c.release()).second;
             assert(succeeded);
