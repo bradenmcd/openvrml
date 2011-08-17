@@ -1,3 +1,20 @@
+2011-08-17 Braden McDaniel  <braden@endoframe.com>
+
+	Use the Boost.Filesystem version 3 API.
+
+	* src/Makefile.am
+	(libopenvrml_libopenvrml_la_CPPFLAGS): Removed
+	-DBOOST_FILESYSTEM_VERSION=2.
+	(local_libopenvrml_dl_la_CPPFLAGS): Removed
+	-DBOOST_FILESYSTEM_VERSION=2.
+	(script_java_la_CPPFLAGS): Removed -DBOOST_FILESYSTEM_VERSION=2.
+	* src/libopenvrml/openvrml/local/component.cpp
+	(openvrml::local::component_registry::component_registry()): Use
+	boost::filesystem::path::string.
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
+	(openvrml::local::dl::prepend_to_searchpath(const
+	boost::filesystem::path &)): Use boost::filesystem::path::string.
+
 2011-04-21 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.18.8 release.
