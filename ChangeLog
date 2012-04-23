@@ -1,3 +1,8 @@
+2012-04-23 Braden McDaniel  <braden@endoframe.com>
+
+	* src/script/javascript.cpp: More fallout from SpiderMonkey moves
+	away from using jsvals as ids.  Just mitigate this for now.
+
 2012-04-23 Tom Callaway <tcallawa@redhat.com>
 
 	libpng 1.5 removes direct access to struct members; use accessor
