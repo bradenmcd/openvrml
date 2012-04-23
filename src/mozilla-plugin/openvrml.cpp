@@ -215,7 +215,7 @@ void openvrml_np_browser_host_set_world_url(OpenvrmlNpBrowserHost * /* host */,
 {
 }
 
-char * NP_GetMIMEDescription()
+OPENVRML_NP_GETMIMEDESCRIPTION_CONST char * NP_GetMIMEDescription()
 {
     return NPP_GetMIMEDescription();
 }
@@ -380,13 +380,13 @@ NPError NP_GetValue(void *, NPPVariable variable, void * value)
     return err;
 }
 
-char * NPP_GetMIMEDescription()
+OPENVRML_NP_GETMIMEDESCRIPTION_CONST char * NPP_GetMIMEDescription()
 {
     static const char mimeDescription[] =
         "model/x3d-vrml:x3dv:X3D world;"
         "model/vrml:wrl:VRML world;"
         "x-world/x-vrml:wrl:VRML world";
-    return const_cast<char *>(&mimeDescription[0]);
+    return &mimeDescription[0];
 }
 
 /**

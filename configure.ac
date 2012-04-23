@@ -288,13 +288,27 @@ PKG_CHECK_MODULES([GNOMEUI],
                   [have_gnomeui=no])
 PKG_CHECK_MODULES([GIO], [gio-2.0], , [have_gio=no])
 PKG_CHECK_MODULES([CURL], [libcurl], , [have_libcurl=no])
-#
-# The Mozilla plug-in uses the npfunctions.h header introduced in
-# XULRunner 1.9.1.
-#
-PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 1.9.1],
+PKG_CHECK_MODULES([MOZILLA_PLUGIN], [mozilla-plugin >= 2],
                   [have_mozilla_plugin=yes],
                   [have_mozilla_plugin=no])
+AC_LANG_PUSH([C++])
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$MOZILLA_PLUGIN_CFLAGS $CPPFLAGS"
+AC_CACHE_CHECK([if NP_GetMIMEDescription returns const char *],
+               [ov_cv_np_getmimedescription_const_char],
+[ov_cv_np_getmimedescription_const_char=yes
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <npfunctions.h>
+char * NP_GetMIMEDescription() { return 0; }]],
+                                   [])],
+                  [ov_cv_np_getmimedescription_const_char=no])])
+CPPFLAGS=$ov_save_CPPFLAGS
+AC_LANG_POP([C++])
+ov_np_getmimedescription_const=
+AS_IF([test X$ov_cv_np_getmimedescription_const_char = Xyes],
+      [ov_np_getmimedescription_const=const])
+AC_DEFINE_UNQUOTED([OPENVRML_NP_GETMIMEDESCRIPTION_CONST],
+                   [$ov_np_getmimedescription_const],
+                   [const if NP_GetMIMEDescription returns const char *.])
 
 AC_PATH_XTRA
 AX_CHECK_GLU

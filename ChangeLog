@@ -1,3 +1,11 @@
+2012-04-23 Braden McDaniel  <braden@endoframe.com>
+
+	NP[P]_GetMIMEDescription returns const char * in recent variations of
+	NPAPI.
+
+	* configure.ac
+	* src/mozilla-plugin/openvrml.cpp
+
 2011-08-20 Braden McDaniel  <braden@endoframe.com>
 
 	Define BOOST_FILESYSTEM_VERSION=3 for compatibility with Boost
