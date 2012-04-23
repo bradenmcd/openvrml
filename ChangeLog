@@ -1,7 +1,15 @@
+2012-04-23 Tom Callaway <tcallawa@redhat.com>
+
+	libpng 1.5 removes direct access to struct members; use accessor
+	functions instead.
+
+	* src/node/vrml97/image_stream_listener.cpp
+	* src/node/vrml97/image_stream_listener.h
+
 2012-04-23 Braden McDaniel  <braden@endoframe.com>
 
-	NP[P]_GetMIMEDescription returns const char * in recent variations of
-	NPAPI.
+	NP[P]_GetMIMEDescription returns const char * in recent variations
+	of NPAPI.
 
 	* configure.ac
 	* src/mozilla-plugin/openvrml.cpp

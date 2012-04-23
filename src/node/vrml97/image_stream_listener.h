@@ -88,6 +88,8 @@ namespace openvrml_node_vrml97 {
             image_stream_listener & stream_listener;
             std::vector<png_byte> old_row;
             bool gray_palette;
+            png_uint_32 width;
+            png_size_t rowbytes;
 
             explicit png_reader(image_stream_listener & stream_listener);
             virtual ~png_reader() OPENVRML_NOTHROW;

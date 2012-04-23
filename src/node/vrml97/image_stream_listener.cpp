@@ -136,7 +136,9 @@ void openvrml_png_info_callback(png_structp png_ptr, png_infop info_ptr)
 
     png_read_update_info(png_ptr, info_ptr);
 
-    reader.old_row.resize(png_ptr->rowbytes);
+    reader.width = png_get_image_width(png_ptr, info_ptr);
+    reader.rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+    reader.old_row.resize(reader.rowbytes);
 }
 
 void openvrml_png_row_callback(png_structp png_ptr,
@@ -166,9 +168,7 @@ void openvrml_png_row_callback(png_structp png_ptr,
     // openvrml::image pixels start at the bottom left.
     //
     const size_t image_row = (image.y() - 1) - row_num;
-    const size_t bytes_per_row = png_ptr->rowbytes;
-    const size_t image_width = png_ptr->width;
-    for (size_t pixel_index = 0, byte_index = 0; pixel_index < image_width;
+    for (size_t pixel_index = 0, byte_index = 0; pixel_index < reader.width;
          ++pixel_index) {
         using openvrml::int32;
         int32 pixel = 0x00000000;
@@ -188,14 +188,14 @@ void openvrml_png_row_callback(png_structp png_ptr,
                 ++byte_index;
             }
         }
-        image.pixel(image_row * image_width + pixel_index, pixel);
+        image.pixel(image_row * reader.width + pixel_index, pixel);
     }
 
     reader.stream_listener.node_.modified(true);
 
-    assert(reader.old_row.size() >= bytes_per_row);
+    assert(reader.old_row.size() >= reader.rowbytes);
 
-    copy(new_row, new_row + bytes_per_row, reader.old_row.begin());
+    copy(new_row, new_row + reader.rowbytes, reader.old_row.begin());
 }
 
 void openvrml_png_end_callback(png_structp, png_infop)
