@@ -53,12 +53,31 @@ namespace {
 # endif
     }
 
-    ::int32 jspropertyop_id_to_int(const jspropertyop_id id)
+    int32_t jspropertyop_id_to_int(const jspropertyop_id id)
     {
 # if OPENVRML_JSPROPERTYOP_USES_JSID
         return JSID_TO_INT(id);
 # else
         return JSVAL_TO_INT(id);
+# endif
+    }
+
+    JSBool jspropertyop_id_is_string(const jspropertyop_id id)
+    {
+# if OPENVRML_JSPROPERTYOP_USES_JSID
+        return JSID_IS_STRING(id);
+# else
+        return JSVAL_IS_STRING(id);
+# endif
+    }
+
+    JSString * jspropertyop_id_to_string(JSContext * const cx,
+                                         const jspropertyop_id id)
+    {
+# if OPENVRML_JSPROPERTYOP_USES_JSID
+        return JSID_TO_STRING(id);
+# else
+        return JS_ValueToString(cx, id);
 # endif
     }
 
@@ -453,7 +472,7 @@ namespace {
     private:
         static OPENVRML_DECLARE_JSNATIVE(construct);
         static JSBool initObject(JSContext * cx, JSObject * obj,
-                                 uint32 x, uint32 y, uint32 comp,
+                                 uint32_t x, uint32_t y, uint32_t comp,
                                  JSObject * pixels_obj)
             OPENVRML_NOTHROW;
         static JSBool getProperty(JSContext * cx, JSObject * obj,
@@ -1553,7 +1572,7 @@ namespace {
     {
         using std::find_if;
 
-        JSString * const str = JS_ValueToString(cx, id);
+        JSString * const str = jspropertyop_id_to_string(cx, id);
         if (!str) { return JS_FALSE; }
         const char * const eventId = JS_EncodeString(cx, str);
 
@@ -1604,7 +1623,7 @@ namespace {
     {
         using std::find_if;
 
-        JSString * const str = JS_ValueToString(cx, id);
+        JSString * const str = jspropertyop_id_to_string(cx, id);
         if (!str) { return JS_FALSE; }
         const char * const fieldId = JS_EncodeString(cx, str);
 
@@ -1945,7 +1964,7 @@ namespace {
 
         case field_value::sfint32_id:
         {
-            ::int32 i;
+            int32_t i;
             if (!JS_ValueToECMAInt32(cx, v, &i)) {
                 throw bad_conversion("Numeric value expected.");
             }
@@ -2944,7 +2963,7 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFImage, construct)
     {
-        uint32 x = 0, y = 0, comp = 0;
+        uint32_t x = 0, y = 0, comp = 0;
         JSObject * pixels = 0;
         if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "uuuo",
                                  &x, &y, &comp, &pixels)) {
@@ -2981,9 +3000,9 @@ namespace {
 //
     JSBool SFImage::initObject(JSContext * const cx,
                                JSObject * const obj,
-                               const uint32 x,
-                               const uint32 y,
-                               const uint32 comp,
+                               const uint32_t x,
+                               const uint32_t y,
+                               const uint32_t comp,
                                JSObject * const pixels_obj)
         OPENVRML_NOTHROW
     {
@@ -3009,7 +3028,7 @@ namespace {
                     assert(JSVAL_IS_INT(mfdata->array[i]));
                     static const long byteMask[] =
                         { 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000 };
-                    ::int32 pixel;
+                    int32_t pixel;
                     if (!JS_ValueToInt32(cx, mfdata->array[i], &pixel)) {
                         return JS_FALSE;
                     }
@@ -3281,7 +3300,7 @@ namespace {
                                jsval * const vp)
         OPENVRML_NOTHROW
     {
-        if (!JSVAL_IS_STRING(id)) { return JS_TRUE; }
+        if (!jspropertyop_id_is_string(id)) { return JS_TRUE; }
 
         assert(JS_GetPrivate(cx, obj));
         const sfield::sfdata & sfdata =
@@ -3296,7 +3315,8 @@ namespace {
         script & s = *static_cast<script *>(JS_GetContextPrivate(cx));
 
         try {
-            const char * eventOut = JS_EncodeString(cx, JSVAL_TO_STRING(id));
+            const char * eventOut =
+                JS_EncodeString(cx, jspropertyop_id_to_string(cx, id));
             openvrml::event_emitter & emitter =
                 thisNode.value()->event_emitter(eventOut);
             *vp = s.vrmlFieldToJSVal(emitter.value());
@@ -3309,7 +3329,7 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSSTRICTPROPERTYOP(SFNode, setProperty)
     {
-        if (JSVAL_IS_STRING(id)) {
+        if (jspropertyop_id_is_string(id)) {
             using std::auto_ptr;
             using std::string;
 
@@ -3325,7 +3345,7 @@ namespace {
             boost::intrusive_ptr<openvrml::node> nodePtr = thisNode.value();
 
             const char * const eventInId =
-                JS_EncodeString(cx, JSVAL_TO_STRING(id));
+                JS_EncodeString(cx, jspropertyop_id_to_string(cx, id));
 
             try {
                 using boost::shared_ptr;
@@ -5366,7 +5386,7 @@ namespace {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
         assert(mfdata);
 
-        uint32 new_length;
+        uint32_t new_length;
         if (!JS_ValueToECMAUint32(cx, *vp, &new_length)) { return JS_FALSE; }
 
         if (new_length == mfdata->array.size()) {
@@ -5584,7 +5604,7 @@ namespace {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
         assert(mfdata);
 
-        uint32 new_length;
+        uint32_t new_length;
         if (!JS_ValueToECMAUint32(cx, *vp, &new_length)) { return JS_FALSE; }
 
         if (size_t(JSVAL_TO_INT(*vp)) == mfdata->array.size()) {
@@ -5835,7 +5855,7 @@ namespace {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
         assert(mfdata);
 
-        uint32 new_length;
+        uint32_t new_length;
         if (!JS_ValueToECMAUint32(cx, *vp, &new_length)) { return JS_FALSE; }
 
         try {
@@ -6239,7 +6259,7 @@ namespace {
                 // Convert the jsval to an int32 and back to a jsval in order
                 // to remove any decimal part.
                 //
-                ::int32 integer;
+                int32_t integer;
                 if (!JS_ValueToECMAInt32(cx, argv[i], &integer)) {
                     return JS_FALSE;
                 }
@@ -6282,7 +6302,7 @@ namespace {
             // Convert the jsval to an int32 and back to a jsval in order
             // to remove any decimal part.
             //
-            ::int32 i;
+            int32_t i;
             if (!JS_ValueToECMAInt32(cx, *vp, &i)) { return JS_FALSE; }
             if (!JS_NewNumberValue(cx, jsdouble(i), &mfdata->array[index])) {
                 return JS_FALSE;
@@ -6301,7 +6321,7 @@ namespace {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
         assert(mfdata);
 
-        uint32 new_length;
+        uint32_t new_length;
         if (!JS_ValueToECMAUint32(cx, *vp, &new_length)) { return JS_FALSE; }
 
         try {
@@ -6557,7 +6577,7 @@ namespace {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
         assert(mfdata);
 
-        uint32 new_length;
+        uint32_t new_length;
         if (!JS_ValueToECMAUint32(cx, *vp, &new_length)) { return JS_FALSE; }
 
         try {
@@ -6918,7 +6938,7 @@ namespace {
         MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
         assert(mfdata);
 
-        uint32 new_length;
+        uint32_t new_length;
         if (!JS_ValueToECMAUint32(cx, *vp, &new_length)) { return JS_FALSE; }
 
         try {
