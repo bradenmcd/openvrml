@@ -18,7 +18,6 @@
 // with this library; if not, see <http://www.gnu.org/licenses/>.
 //
 
-# include <boost/intrusive_ptr.hpp>
 # include <boost/scope_exit.hpp>
 # include <boost/ref.hpp>
 # include <gtk/gtk.h>
@@ -33,6 +32,20 @@
 # include "browserfactory.h"
 # include "browser-factory-server-glue.h"
 # include "browser.h"
+
+namespace {
+    G_GNUC_INTERNAL void intrusive_ptr_add_ref(GObject * const obj)
+    {
+        g_object_ref(obj);
+    }
+
+    G_GNUC_INTERNAL void intrusive_ptr_release(GObject * const obj)
+    {
+        g_object_unref(obj);
+    }
+}
+
+# include <boost/intrusive_ptr.hpp>
 
 G_DEFINE_TYPE(OpenvrmlXembedBrowserFactory,
               openvrml_xembed_browser_factory,
@@ -49,18 +62,6 @@ extern "C" {
                                                       guint property_id,
                                                       GValue * value,
                                                       GParamSpec * pspec);
-}
-
-namespace {
-    G_GNUC_INTERNAL void intrusive_ptr_add_ref(GObject * const obj)
-    {
-        g_object_ref(obj);
-    }
-
-    G_GNUC_INTERNAL void intrusive_ptr_release(GObject * const obj)
-    {
-        g_object_unref(obj);
-    }
 }
 
 //
