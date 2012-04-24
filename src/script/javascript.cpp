@@ -4058,7 +4058,8 @@ namespace {
             typedef typename SFVec2::field_type sfvec2_t;
             typedef typename SFVec2::value_type vec2_t;
 
-            const vec2_t vec2 = { { vec[0], vec[1] } };
+            const vec2_t vec2 = { { static_cast<float>(vec[0]),
+                                    static_cast<float>(vec[1]) } };
             auto_ptr<sfvec2_t> sfvec2(new sfvec2_t(vec2));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2.get()));
             sfvec2.release();
@@ -4665,7 +4666,9 @@ namespace {
         try {
             using std::auto_ptr;
 
-            const vec3_t vec3 = { { vec[0], vec[1], vec[2] } };
+            const vec3_t vec3 = { { static_cast<float>(vec[0]),
+                                    static_cast<float>(vec[1]),
+                                    static_cast<float>(vec[2]) } };
             auto_ptr<sfvec3_t> sfvec3(new sfvec3_t(vec3));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3.get()));
             sfvec3.release();
