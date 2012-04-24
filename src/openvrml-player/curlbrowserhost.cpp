@@ -808,14 +808,14 @@ openvrml_player_curl_browser_host_curl_source_callback(const gpointer data)
             //
             if (!stream_data->initialized()) {
                 const char * type = 0;
-                CURLcode result = curl_easy_getinfo(msg->easy_handle,
-                                                    CURLINFO_CONTENT_TYPE,
-                                                    &type);
+                curl_easy_getinfo(msg->easy_handle,
+                                  CURLINFO_CONTENT_TYPE,
+                                  &type);
                 if (!type) { type = "application/octet-stream"; }
                 const char * url = 0;
-                result = curl_easy_getinfo(msg->easy_handle,
-                                           CURLINFO_EFFECTIVE_URL,
-                                           &url);
+                curl_easy_getinfo(msg->easy_handle,
+                                  CURLINFO_EFFECTIVE_URL,
+                                  &url);
                 dbus_g_proxy_call_no_reply(
                     browser_host->priv->browser,
                     "NewStream",

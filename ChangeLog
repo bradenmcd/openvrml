@@ -1,3 +1,11 @@
+2012-04-23 Braden McDaniel  <braden@endoframe.com>
+
+	Quell warnings from gcc 4.7.
+
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+	* src/openvrml-player/curlbrowserhost.cpp
+	* src/script/javascript.cpp
+
 2012-04-23 Tom Callaway <tcallawa@redhat.com>
 
 	* src/openvrml-xembed/browserfactory.cpp: gcc 4.7 insists that

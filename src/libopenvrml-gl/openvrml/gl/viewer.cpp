@@ -1236,20 +1236,19 @@ void openvrml::gl::viewer::do_insert_background(const background_node & n)
             c0 = c1;
             ++c1;
 
-            double circ_angle0, circ_angle1 = 0.0;
+            double circ_angle = 0.0;
             double sha0 = sin(height_angle0), cha0 = cos(height_angle0);
             double sha1 = sin(height_angle1), cha1 = cos(height_angle1);
             double sca0, cca0;
-            double sca1 = sin(circ_angle1), cca1 = cos(circ_angle1);
+            double sca1 = sin(circ_angle), cca1 = cos(circ_angle);
 
             glBegin(GL_QUADS);
             for (size_t nc = 0; nc < nCirc; ++nc) {
-                circ_angle0 = circ_angle1;
-                circ_angle1 = (nc + 1) * cd;
+                circ_angle = (nc + 1) * cd;
                 sca0 = sca1;
-                sca1 = sin(circ_angle1);
+                sca1 = sin(circ_angle);
                 cca0 = cca1;
-                cca1 = cos(circ_angle1);
+                cca1 = cos(circ_angle);
 
                 glColor3fv(&(*c1)[0]);
                 glVertex3f(GLfloat(sha1 * cca0),
@@ -1281,20 +1280,19 @@ void openvrml::gl::viewer::do_insert_background(const background_node & n)
             c0 = c1;
             ++c1;
 
-            double circ_angle0, circ_angle1 = 0.0;
+            double circ_angle = 0.0;
             double sha0 = sin(height_angle0), cha0 = cos(height_angle0);
             double sha1 = sin(height_angle1), cha1 = cos(height_angle1);
             double sca0, cca0;
-            double sca1 = sin(circ_angle1), cca1 = cos(circ_angle1);
+            double sca1 = sin(circ_angle), cca1 = cos(circ_angle);
 
             glBegin(GL_QUADS);
             for (size_t nc = 0; nc < nCirc; ++nc) {
-                circ_angle0 = circ_angle1;
-                circ_angle1 = (nc + 1) * cd;
+                circ_angle = (nc + 1) * cd;
                 sca0 = sca1;
-                sca1 = sin(circ_angle1);
+                sca1 = sin(circ_angle);
                 cca0 = cca1;
-                cca1 = cos(circ_angle1);
+                cca1 = cos(circ_angle);
 
                 glColor3fv(&(*c1)[0]);
                 glVertex3f(GLfloat(sha1 * cca1),
