@@ -1,3 +1,12 @@
+2012-04-26 Braden McDaniel  <braden@endoframe.com>
+
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
+	(openvrml::local::dl::foreachfile(const
+	std::vector<boost::filesystem::path> &, int (*)(const std::string
+	&, void *), void *): Applying the stream output operator to a
+	boost::filesystem::path now yields a string within quotes; use
+	boost::filesystem::path::generic_string instead.
+
 2012-04-23 Braden McDaniel  <braden@endoframe.com>
 
 	Quell warnings from gcc 4.7.
