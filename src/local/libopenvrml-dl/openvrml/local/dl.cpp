@@ -85,7 +85,7 @@ foreachfile(const std::vector<boost::filesystem::path> & search_path,
     std::vector<boost::filesystem::path>::const_iterator dir =
         search_path.begin();
     while (dir != search_path.end()) {
-        path << *dir;
+        path << dir->generic_string();
         if (++dir != search_path.end()) { path << LT_PATHSEP_CHAR; }
     }
     ltforeachfile_data ltdata = { func, data };
