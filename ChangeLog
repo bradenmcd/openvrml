@@ -88,9 +88,9 @@
 	* NEWS
 	* configure.ac
 	* doc/Doxyfile
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/libopenvrml/openvrml.rc
+	* src/libopenvrml/openvrml.vcproj
+	* src/libopenvrml-gl/openvrml-gl.rc
 	* src/Makefile.am
 	(LIBOPENVRML_LIBRARY_VERSION): Update to 10:0:1.  Previous change
 	was incorrect.
@@ -108,9 +108,9 @@
 	* NEWS
 	* configure.ac
 	* doc/Doxyfile
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.rc
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml/openvrml.vcproj
-	* ide-projects/Windows/VisualC9_0/OpenVRML/openvrml-gl/openvrml-gl.rc
+	* src/libopenvrml/openvrml.rc
+	* src/libopenvrml/openvrml.vcproj
+	* src/libopenvrml-gl/openvrml-gl.rc
 	* src/Makefile.am
 	(LIBOPENVRML_LIBRARY_VERSION): Update to 9:5:1.
 
