@@ -1,5 +1,13 @@
 2012-04-26 Braden McDaniel  <braden@endoframe.com>
 
+	Define BOOST_FILESYSTEM_VERSION=3 for compatibility with Boost
+	1.44 and later (and consistency with Makefile.am).
+
+	* src/libopenvrml/openvrml.vcxproj
+	* src/local/libopenvrml-dl/openvrml-dl.vcxproj
+
+2012-04-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
 	(openvrml::local::dl::foreachfile(const
 	std::vector<boost::filesystem::path> &, int (*)(const std::string
