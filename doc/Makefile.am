@@ -87,7 +87,7 @@ JAVADOC_FILES = \
         $(srcdir)/javadoc/stylesheet.css
 
 JAVADOC_RESOURCES_FILES = \
-        $(srcdir)/javadoc/resources/inherit.gif
+        $(srcdir)/javadoc/resources/*
 
 JAVADOC_VRML_FILES = \
         $(srcdir)/javadoc/vrml/*.html
