@@ -264,13 +264,15 @@ namespace {
         friend OPENVRML_DECLARE_MEMBER_JSNATIVE(Browser, addRoute);
         friend OPENVRML_DECLARE_MEMBER_JSNATIVE(Browser, deleteRoute);
 
-        static JSRuntime * rt;
-        static size_t nInstances;
+        JSRuntime * rt;
 
         double d_timeStamp;
 
         JSContext * cx;
         JSClass & sfnode_class;
+# ifndef NDEBUG
+        boost::thread::id thread_id_;
+# endif
 
     public:
         script(openvrml::script_node & node,
@@ -1014,9 +1016,6 @@ namespace {
         VrmlMatrix();
     };
 
-    JSRuntime * script::rt = 0; // Javascript runtime singleton object
-    size_t script::nInstances = 0; // Number of distinct script objects
-
     OPENVRML_JAVASCRIPT_LOCAL
     OPENVRML_DECLARE_JSSTRICTPROPERTYOP(eventOut_setProperty);
 
@@ -1030,28 +1029,28 @@ namespace {
     script::
     script(openvrml::script_node & node,
            const boost::shared_ptr<openvrml::resource_istream> & source)
-    OPENVRML_THROW1(std::bad_alloc):
-    openvrml::script(node),
+        OPENVRML_THROW1(std::bad_alloc):
+        openvrml::script(node),
+        rt(0),
         cx(0),
         sfnode_class(this->direct_output()
                      ? SFNode::direct_output_jsclass
-                     : SFNode::jsclass)
+                     : SFNode::jsclass),
+        thread_id_(boost::this_thread::get_id())
     {
         using std::bad_alloc;
 
         //
         // Initialize the runtime.
         //
-        if (!rt && !(rt = JS_NewRuntime(MAX_HEAP_BYTES))) {
-            throw bad_alloc();
-        }
+        this->rt = JS_NewRuntime(MAX_HEAP_BYTES);
+        if (!this->rt) { throw bad_alloc(); }
 
         //
         // Initialize the context for this script object.
         //
-        if (!(this->cx = JS_NewContext(rt, STACK_CHUNK_BYTES))) {
-            throw bad_alloc();
-        }
+        this->cx = JS_NewContext(rt, STACK_CHUNK_BYTES);
+        if (!this->cx) { throw bad_alloc(); }
 
         //
         // Store a pointer to this script object in the context.
@@ -1131,17 +1130,12 @@ namespace {
                                source_str.c_str(), source_str.length(),
                                filename, lineno, &rval);
         OPENVRML_VERIFY_(ok);
-
-        ++nInstances;
     }
 
     script::~script()
     {
         JS_DestroyContext(this->cx);
-        if (--nInstances == 0) {
-            JS_DestroyRuntime(rt);
-            rt = 0;
-        }
+        JS_DestroyRuntime(this->rt);
     }
 
     void script::do_initialize(const double timestamp)
@@ -1187,13 +1181,7 @@ namespace {
                           const openvrml::field_value * const argv[])
     {
         assert(this->cx);
-
-# ifdef JS_THREADSAFE
-        JS_SetContextThread(this->cx);
-        BOOST_SCOPE_EXIT((cx)) {
-            JS_ClearContextThread(cx);
-        } BOOST_SCOPE_EXIT_END
-# endif
+        assert(this->thread_id_ == boost::this_thread::get_id());
 
         jsval fval, rval;
         JSObject * const globalObj = JS_GetGlobalObject(this->cx);
