@@ -1,5 +1,9 @@
 2012-04-29 Braden McDaniel  <braden@endoframe.com>
 
+	* src/script/javascript.cpp: Fix copy/paste error.
+
+2012-04-29 Braden McDaniel  <braden@endoframe.com>
+
 	* src/script/javascript.cpp: Fix
 	OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO conditional to be
 	#ifdef.
