@@ -1,3 +1,11 @@
+2012-04-28 Braden McDaniel  <braden@endoframe.com>
+
+	XULRunner 12.0 removes the JSObject* prototype argument from
+	JS_ConstructObject.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
 2012-04-27 Braden McDaniel  <braden@endoframe.com>
 
 	* doc/Makefile.am (JAVADOC_RESOURCES_FILES): javadoc does not

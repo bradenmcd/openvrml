@@ -110,6 +110,40 @@ namespace {
 # endif
     }
 
+    OPENVRML_LOCAL
+    JSObject *
+    js_construct_object(JSContext * const cx,
+                        JSClass * const clasp,
+                        JSObject * const proto,
+                        JSObject * const parent)
+    {
+        assert(!proto);
+# ifndef OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO
+        return JS_ConstructObject(cx, clasp, parent);
+# else
+        return JS_ConstructObject(cx, clasp, proto, parent);
+# endif
+    }
+
+    OPENVRML_LOCAL
+    JSObject *
+    js_construct_object_with_arguments(JSContext * const cx,
+                                       JSClass * const clasp,
+                                       JSObject * const proto,
+                                       JSObject * const parent,
+                                       const uintN argc,
+                                       jsval * const argv)
+    {
+        assert(!proto);
+# ifndef OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO
+        return js_construct_object_with_arguments(cx, clasp, parent, argc, argv);
+# else
+        return js_construct_object_with_arguments(cx, clasp, proto, parent,
+                                               argc, argv);
+# endif
+    }
+
+
 # ifdef OPENVRML_FAST_JSNATIVE
 #   define OPENVRML_DECLARE_JSNATIVE(name)                      \
     JSBool (name)(JSContext * cx, uintN argc, jsval * vp)
@@ -2640,7 +2674,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const sfcolorObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const sfcolorObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfcolorObj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, sfcolorObj));
@@ -3439,7 +3473,7 @@ namespace {
                                jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const sfrotationObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const sfrotationObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfrotationObj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, sfrotationObj));
@@ -3679,7 +3713,7 @@ namespace {
                 &obj_sfdata.field_value());
 
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
+            js_construct_object(cx, &SFVec3f::jsclass, 0,
                                OPENVRML_JS_THIS_OBJECT(cx, vp));
         if (!robj) { return JS_FALSE; }
 
@@ -3709,7 +3743,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFRotation::jsclass, proto, parent);
+            js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -3758,7 +3792,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFRotation::jsclass, proto, parent);
+            js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -3807,7 +3841,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -3899,7 +3933,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFRotation::jsclass, proto, parent);
+            js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -3976,7 +4010,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const sfvec2Obj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const sfvec2Obj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec2Obj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, sfvec2Obj));
@@ -4176,7 +4210,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4219,7 +4253,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4320,7 +4354,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4354,7 +4388,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4388,7 +4422,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4442,7 +4476,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec2::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4484,7 +4518,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const sfvec2dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const sfvec2dObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec2dObj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, sfvec2dObj));
@@ -4583,7 +4617,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const sfvec3fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const sfvec3fObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec3fObj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, sfvec3fObj));
@@ -4787,7 +4821,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4841,7 +4875,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) {return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4884,7 +4918,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -4985,7 +5019,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -5019,7 +5053,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -5053,7 +5087,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -5107,7 +5141,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -5148,7 +5182,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const sfvec3dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const sfvec3dObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec3dObj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, sfvec3dObj));
@@ -5416,7 +5450,7 @@ namespace {
             try {
                 for (size_t i = length; i < newArray.size(); ++i) {
                     JSObject * const element =
-                        JS_ConstructObject(cx, &Subclass::sfjsclass, 0, 0);
+                        js_construct_object(cx, &Subclass::sfjsclass, 0, 0);
                     if (!element) { throw std::bad_alloc(); }
                     newArray[i] = OBJECT_TO_JSVAL(element);
                 }
@@ -5746,7 +5780,7 @@ namespace {
                            jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfboolObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfboolObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfboolObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(bools.size());
@@ -5963,7 +5997,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfcolorObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfcolorObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfcolorObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(colors.size());
@@ -6014,7 +6048,7 @@ namespace {
         assert(obj);
         assert(rval);
 
-        JSObject * const mffloatObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mffloatObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mffloatObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(floats.size());
@@ -6089,7 +6123,7 @@ namespace {
         assert(obj);
         assert(rval);
 
-        JSObject * const mfdoubleObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfdoubleObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfdoubleObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(doubles.size());
@@ -6185,7 +6219,7 @@ namespace {
         assert(obj);
         assert(rval);
 
-        JSObject * const mfint32Obj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfint32Obj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfint32Obj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(int32s.size());
@@ -6450,7 +6484,7 @@ namespace {
         jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfnodeObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfnodeObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfnodeObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(nodes.size());
@@ -6610,8 +6644,9 @@ namespace {
 
                 for (size_t i = length; i < newArray.size(); ++i) {
                     JSObject * const element =
-                        JS_ConstructObjectWithArguments(cx, &sfnode_jsclass, 0, 0,
-                                                        1, &arg);
+                        js_construct_object_with_arguments(cx, &sfnode_jsclass,
+                                                           0, 0,
+                                                           1, &arg);
                     if (!element) { throw std::bad_alloc(); }
                     newArray[i] = OBJECT_TO_JSVAL(element);
                 }
@@ -6704,7 +6739,7 @@ namespace {
                                jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfrotationObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfrotationObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfrotationObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(rotations.size());
@@ -6807,7 +6842,7 @@ namespace {
         assert(cx);
         assert(obj);
         assert(rval);
-        JSObject * const mfstringObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfstringObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfstringObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(strings.size());
@@ -7050,7 +7085,7 @@ namespace {
                            jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mftimeObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mftimeObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mftimeObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(times.size());
@@ -7123,7 +7158,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfvec2fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfvec2fObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfvec2fObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(vec2fs.size());
@@ -7204,7 +7239,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfvec2dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfvec2dObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfvec2dObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(vec2ds.size());
@@ -7285,7 +7320,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfvec3fObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfvec3fObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfvec3fObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(vec3fs.size());
@@ -7367,7 +7402,7 @@ namespace {
                             jsval * const rval)
         OPENVRML_NOTHROW
     {
-        JSObject * const mfvec3dObj = JS_ConstructObject(cx, &jsclass, 0, obj);
+        JSObject * const mfvec3dObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!mfvec3dObj) { return JS_FALSE; }
 
         jsval length = INT_TO_JSVAL(vec3ds.size());
@@ -7624,7 +7659,7 @@ namespace {
             //
             // Construct the result object.
             //
-            JSObject * const robj = JS_ConstructObject(cx, &Row::jsclass, 0,
+            JSObject * const robj = js_construct_object(cx, &Row::jsclass, 0,
                                                        JS_GetParent(cx, obj));
             if (!robj) { return JS_FALSE; }
 
@@ -7809,7 +7844,7 @@ namespace {
         using openvrml::mat4f;
 
         JSObject * const robj =
-            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+            js_construct_object(cx, &VrmlMatrix::jsclass, 0,
                                JS_GetParent(cx,
                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
@@ -7831,7 +7866,7 @@ namespace {
         using openvrml::mat4f;
 
         JSObject * const robj =
-            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+            js_construct_object(cx, &VrmlMatrix::jsclass, 0,
                                JS_GetParent(cx,
                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
@@ -7875,7 +7910,7 @@ namespace {
         // Construct the result object.
         //
         JSObject * const robj =
-            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+            js_construct_object(cx, &VrmlMatrix::jsclass, 0,
                                JS_GetParent(cx,
                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
@@ -7915,7 +7950,7 @@ namespace {
         // Construct the result object.
         //
         JSObject * const robj =
-            JS_ConstructObject(cx, &VrmlMatrix::jsclass, 0,
+            js_construct_object(cx, &VrmlMatrix::jsclass, 0,
                                JS_GetParent(cx,
                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
@@ -7965,7 +8000,7 @@ namespace {
         JSObject * const parent =
             JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3f::jsclass, proto, parent);
+            js_construct_object(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
@@ -8013,9 +8048,9 @@ namespace {
         // Construct the result object.
         //
         JSObject * const robj =
-            JS_ConstructObject(cx, &SFVec3f::jsclass, 0,
-                               JS_GetParent(cx,
-                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
+            js_construct_object(cx, &SFVec3f::jsclass, 0,
+                                JS_GetParent(cx,
+                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
         assert(JS_GetPrivate(cx, robj));
