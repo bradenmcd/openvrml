@@ -118,7 +118,7 @@ namespace {
                         JSObject * const parent)
     {
         assert(!proto);
-# ifndef OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO
+# ifdef OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO
         return JS_ConstructObject(cx, clasp, parent);
 # else
         return JS_ConstructObject(cx, clasp, proto, parent);
@@ -135,7 +135,7 @@ namespace {
                                        jsval * const argv)
     {
         assert(!proto);
-# ifndef OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO
+# ifdef OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO
         return js_construct_object_with_arguments(cx, clasp, parent, argc, argv);
 # else
         return js_construct_object_with_arguments(cx, clasp, proto, parent,
