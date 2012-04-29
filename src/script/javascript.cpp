@@ -1035,8 +1035,10 @@ namespace {
         cx(0),
         sfnode_class(this->direct_output()
                      ? SFNode::direct_output_jsclass
-                     : SFNode::jsclass),
-        thread_id_(boost::this_thread::get_id())
+                     : SFNode::jsclass)
+# ifndef NDEBUG
+        ,thread_id_(boost::this_thread::get_id())
+# endif
     {
         using std::bad_alloc;
 

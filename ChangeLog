@@ -1,5 +1,12 @@
 2012-04-29 Braden McDaniel  <braden@endoframe.com>
 
+	* src/script/javascript.cpp
+	(script::script(openvrml::script_node &, const
+	boost::shared_ptr<openvrml::resource_istream> &)): Make
+	initialization of thread_id_ conditional on NDEBUG.
+
+2012-04-29 Braden McDaniel  <braden@endoframe.com>
+
 	* src/script/javascript.cpp: As of XULRunner 12.0, JSRuntime
 	should now be used by a single thread.  For now, at least, employ
 	a JSRuntime for each Script node.
