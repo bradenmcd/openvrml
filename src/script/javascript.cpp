@@ -136,9 +136,9 @@ namespace {
     {
         assert(!proto);
 # ifdef OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO
-        return js_construct_object_with_arguments(cx, clasp, parent, argc, argv);
+        return JS_ConstructObjectWithArguments(cx, clasp, parent, argc, argv);
 # else
-        return js_construct_object_with_arguments(cx, clasp, proto, parent,
+        return JS_ConstructObjectWithArguments(cx, clasp, proto, parent,
                                                argc, argv);
 # endif
     }
