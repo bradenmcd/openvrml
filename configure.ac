@@ -266,6 +266,26 @@ AS_IF([test X$ov_cv_js_has_strictpropertyop = Xyes],
                  [Defined if SpiderMonkey has JSStrictPropertyOp])])
 
 #
+# XULRunner 12.0 removes the JSObject* prototype argument from
+# JS_ConstructObject.
+#
+AC_CACHE_CHECK([whether JS_ConstructObject is missing the prototype argument],
+[ov_cv_js_constructobject_without_proto],
+[ov_cv_js_constructobject_without_proto=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_ASSERT([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[JS_ConstructObject(0, 0, 0)]])],
+[ov_cv_js_constructobject_without_proto=yes])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_js_constructobject_without_proto = Xyes],
+      [AC_DEFINE([OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO], [1],
+                 [Defined if JS_ConstructObject is missing the prototype argument])])
+
+#
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
