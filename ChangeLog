@@ -1,3 +1,37 @@
+2012-05-01 Braden McDaniel  <braden@endoframe.com>
+
+	Project file clean-up.  Remove references to site-specific library
+	directories; these should be set in user (site-specific)
+	properties.  Reorganize preprocessor symbol definitions to
+	leverage commonality between Debug and Release configurations and
+	remove unneeded definitions.
+
+	* examples/pretty-print.vcxproj
+	* examples/sdl-viewer.vcxproj
+	* src/libopenvrml/openvrml.vcxproj
+	* src/libopenvrml-gl/openvrml-gl.vcxproj
+	* src/local/libopenvrml-dl/openvrml-dl.vcxproj
+	* src/node/vrml97/vrml97.vcxproj
+	* src/node/x3d-cad-geometry/x3d-cad-geometry.vcxproj
+	* src/node/x3d-core/x3d-core.vcxproj
+	* src/node/x3d-dis/x3d-dis.vcxproj
+	* src/node/x3d-environmental-effects/x3d-environmental-effects.vcxproj
+	* src/node/x3d-event-utilities/x3d-event-utilities.vcxproj
+	* src/node/x3d-geometry2d/x3d-geometry2d.vcxproj
+	* src/node/x3d-geospatial/x3d-geospatial.vcxproj
+	* src/node/x3d-grouping/x3d-grouping.vcxproj
+	* src/node/x3d-h-anim/x3d-h-anim.vcxproj
+	* src/node/x3d-interpolation/x3d-interpolation.vcxproj
+	* src/node/x3d-key-device-sensor/x3d-key-device-sensor.vcxproj
+	* src/node/x3d-networking/x3d-networking.vcxproj
+	* src/node/x3d-nurbs/x3d-nurbs.vcxproj
+	* src/node/x3d-rendering/x3d-rendering.vcxproj
+	* src/node/x3d-shape/x3d-shape.vcxproj
+	* src/node/x3d-texturing/x3d-texturing.vcxproj
+	* src/script/javascript.vcxproj
+	* tests/parse-vrml97.vcxproj
+	* tests/parse-x3dvrml.vcxproj
+
 2012-04-29 Braden McDaniel  <braden@endoframe.com>
 
 	* src/script/javascript.cpp
