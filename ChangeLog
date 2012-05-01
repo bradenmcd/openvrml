@@ -1,5 +1,13 @@
 2012-05-01 Braden McDaniel  <braden@endoframe.com>
 
+	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
+	(foreachfile(const std::vector<boost::filesystem::path> &, int
+	(*)(const std::string &, void *), void *)): Boost.Filesystem 3
+	doesn't have path::external_file_string; use generic_string
+	instead.
+
+2012-05-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/libopenvrml-gl/openvrml-gl.vcxproj: Generate openvrml-gl.lib
 	into arch-specific subdirectory.
 
