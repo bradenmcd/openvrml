@@ -69,7 +69,7 @@ namespace openvrml {
     inline const float & color::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
-        assert(index < 3);
+        assert(index < 3UL);
         return this->rgb[index];
     }
 
@@ -145,7 +145,7 @@ namespace openvrml {
     inline const float & color_rgba::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
-        assert(index < 4);
+        assert(index < 4ul);
         return this->rgba[index];
     }
 
@@ -240,7 +240,7 @@ namespace openvrml {
     inline const float & vec2f::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
-        assert(index < 2);
+        assert(index < 2ul);
         return this->vec[index];
     }
 
@@ -325,7 +325,7 @@ namespace openvrml {
     inline const double & vec2d::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
-        assert(index < 2);
+        assert(index < 2ul);
         return this->vec[index];
     }
 
@@ -425,7 +425,7 @@ namespace openvrml {
     inline const float & vec3f::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
-        assert(index < 3);
+        assert(index < 3ul);
         return this->vec[index];
     }
 
@@ -538,7 +538,7 @@ namespace openvrml {
     inline const double & vec3d::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
-        assert(index < 3);
+        assert(index < 3ul);
         return this->vec[index];
     }
 
@@ -644,7 +644,7 @@ namespace openvrml {
     inline const float & rotation::operator[](const std::size_t index) const
         OPENVRML_NOTHROW
     {
-        assert(index < 4);
+        assert(index < 4ul);
         return this->rot[index];
     }
 
@@ -734,13 +734,13 @@ namespace openvrml {
 
     inline float (&mat4f::operator[](std::size_t index) OPENVRML_NOTHROW)[4]
     {
-        assert(index < 4);
+        assert(index < 4ul);
         return this->mat[index];
     }
 
     inline const float (&mat4f::operator[](std::size_t index) const OPENVRML_NOTHROW)[4]
     {
-        assert(index < 4);
+        assert(index < 4ul);
         return this->mat[index];
     }
 
@@ -813,13 +813,13 @@ namespace openvrml {
 
     inline const float & quatf::operator[](std::size_t index) const OPENVRML_NOTHROW
     {
-        assert(index < 4);
+        assert(index < 4ul);
         return this->quat[index];
     }
 
     inline float & quatf::operator[](std::size_t index) OPENVRML_NOTHROW
     {
-        assert(index < 4);
+        assert(index < 4ul);
         return this->quat[index];
     }
 

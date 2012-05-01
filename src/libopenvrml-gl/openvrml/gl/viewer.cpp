@@ -74,12 +74,6 @@ namespace {
     const double pi_4   = 0.78539816339744830962;
     const double inv_pi = 0.31830988618379067154;
 
-    template <typename Float>
-    OPENVRML_GL_LOCAL inline Float fabs(const Float f)
-    {
-        return f < 0.0 ? -f : f;
-    }
-
     struct OPENVRML_GL_LOCAL fequal_t {
         template <typename Float>
         bool operator()(Float a, Float b) const
@@ -2138,7 +2132,7 @@ namespace {
 
                 GLdouble v[3];
                 // Mesa tesselator doesn;t like closed polys
-                size_t j = equalEndpts ? 1 : 0;
+                size_t j = equalEndpts ? 1ul : 0ul;
                 for (; j < cs.size(); ++j) {
                     v[0] = c[j + n].x();
                     v[1] = c[j + n].y();
@@ -2525,7 +2519,8 @@ namespace {
                     spine_point->x(), spine_point->y(), spine_point->z(), 1.0);
 
             const vector<vec3f>::size_type spine_index =
-                std::distance(spine.begin(), spine_point);
+                static_cast<std::size_t>(std::distance(spine.begin(),
+                                                       spine_point));
 
             if (!orientation.empty()) {
                 const vector<rotation>::size_type index =
@@ -2704,8 +2699,8 @@ openvrml::gl::viewer::do_insert_line_set(const geometry_node & n,
     glBegin(GL_LINE_STRIP);
     if (!color.empty() && color_per_face) {
         const size_t color_index = !colorIndex.empty()
-                                 ? colorIndex.front()
-                                 : 0;
+                                 ? static_cast<std::size_t>(colorIndex.front())
+                                 : 0ul;
         glColor3fv(&color[color_index][0]);
     }
 
@@ -2720,7 +2715,7 @@ openvrml::gl::viewer::do_insert_line_set(const geometry_node & n,
                                   ? int32(colorIndex[nl])
                                   : int32(nl);
                 if (size_t(index) < color.size()) {
-                    glColor3fv(&color[index][0]);
+                    glColor3fv(&color[static_cast<std::size_t>(index)][0]);
                 }
             }
         } else {
@@ -2729,11 +2724,12 @@ openvrml::gl::viewer::do_insert_line_set(const geometry_node & n,
                                   ? colorIndex[i]
                                   : coordIndex[i];
                 if (size_t(index) < color.size()) {
-                    glColor3fv(&color[index][0]);
+                    glColor3fv(&color[static_cast<std::size_t>(index)][0]);
                 }
             }
             if (size_t(coordIndex[i]) < coord.size()) {
-                glVertex3fv(&coord[coordIndex[i]][0]);
+                glVertex3fv(
+                    &coord[static_cast<std::size_t>(coordIndex[i])][0]);
             }
         }
     }
@@ -2887,10 +2883,12 @@ namespace {
                         && s->coordIndex[i1] >= 0
                         && s->coordIndex[i1 + 1] >= 0
                         && s->coordIndex[i1 + 2] >= 0) {
-                        N = indexFaceNormal(s->coordIndex[i1],
-                                            s->coordIndex[i1 + 1],
-                                            s->coordIndex[i1 + 2],
-                                            s->coord);
+                        N =
+                            indexFaceNormal(
+                                static_cast<std::size_t>(s->coordIndex[i1]),
+                                static_cast<std::size_t>(s->coordIndex[i1 + 1]),
+                                static_cast<std::size_t>(s->coordIndex[i1 + 2]),
+                                s->coord);
 
                         // Flip normal if primitiv-orientation is clockwise
                         if (!(s->mask & viewer::mask_ccw)) { N = -N; }
@@ -2903,18 +2901,20 @@ namespace {
 
             if (s->coordIndex[i] >= 0) {
                 // Per-vertex attributes
-                const size_t color_index = (i < s->colorIndex.size())
-                                         ? s->colorIndex[i]
-                                         : s->coordIndex[i];
+                const size_t color_index =
+                    static_cast<std::size_t>(
+                        (i < s->colorIndex.size()) ? s->colorIndex[i]
+                                                   : s->coordIndex[i]);
                 if (color_index < s->color.size()
                     && (s->mask & viewer::mask_color_per_vertex)) {
                     glColor3fv(&s->color[color_index][0]);
                 }
 
                 if (s->mask & viewer::mask_normal_per_vertex) {
-                    const size_t normal_index = (i < s->normalIndex.size())
-                                              ? s->normalIndex[i]
-                                              : s->coordIndex[i];
+                    const size_t normal_index =
+                        static_cast<std::size_t>(
+                            (i < s->normalIndex.size()) ? s->normalIndex[i]
+                                                        : s->coordIndex[i]);
                     if (normal_index < s->normal.size()) {
                         glNormal3fv(&s->normal[normal_index][0]);
                     } else {
@@ -2922,17 +2922,21 @@ namespace {
                     }
                 }
 
-                const vec3f & v = s->coord[s->coordIndex[i]];
-                const size_t tex_coord_index = (i < s->texCoordIndex.size())
-                                             ? s->texCoordIndex[i]
-                                             : s->coordIndex[i];
+                const vec3f & v =
+                    s->coord[static_cast<std::size_t>(s->coordIndex[i])];
+                const size_t tex_coord_index =
+                    static_cast<std::size_t>(
+                        (i < s->texCoordIndex.size()) ? s->texCoordIndex[i]
+                                                      : s->coordIndex[i]);
                 if (tex_coord_index < s->texCoord.size()) {
                     glTexCoord2fv(&s->texCoord[tex_coord_index][0]);
                 } else {
                     float c0, c1;
-                    c0 = (v[s->texAxes[0]] - s->texParams[0])
+                    c0 = (v[static_cast<std::size_t>(s->texAxes[0])]
+                          - s->texParams[0])
                         * s->texParams[1];
-                    c1 = (v[s->texAxes[1]] - s->texParams[2])
+                    c1 = (v[static_cast<std::size_t>(s->texAxes[1])]
+                          - s->texParams[2])
                         * s->texParams[3];
                     glTexCoord2f(c0, c1);
                 }
@@ -3011,11 +3015,14 @@ namespace {
                 //
                 while (coord_index[i + 1] != -1) { ++i; }
             } else if (coord_index[i] != -1) {
-                gluTessVertex(&tessobj,
-                              const_cast<GLdouble *>(
-                                  vertices[coord_index[i]].coord),
-                              &const_cast<vertex_data &>(
-                                  vertices[coord_index[i]]));
+                gluTessVertex(
+                    &tessobj,
+                    const_cast<GLdouble *>(
+                        vertices[
+                            static_cast<std::size_t>(coord_index[i])].coord),
+                    &const_cast<vertex_data &>(
+                        vertices[
+                            static_cast<std::size_t>(coord_index[i])]));
             } else {
                 gluTessEndContour(&tessobj);
                 gluTessEndPolygon(&tessobj);
@@ -3143,7 +3150,8 @@ do_insert_shell(const geometry_node & n,
                      ++i) {
                     if (color_index[i] < 0) { continue; }
                     if (!(size_t(coord_index[i]) < coord.size())) { continue; }
-                    vertices[coord_index[i]].color = &color[color_index[i]];
+                    vertices[static_cast<std::size_t>(coord_index[i])].color =
+                        &color[static_cast<std::size_t>(color_index[i])];
                 }
             }
         }
@@ -3160,7 +3168,8 @@ do_insert_shell(const geometry_node & n,
                      ++i) {
                     if (normal_index[i] < 0) { continue; }
                     if (!(size_t(coord_index[i]) < coord.size())) { continue; }
-                    vertices[coord_index[i]].normal = &normal[normal_index[i]];
+                    vertices[static_cast<std::size_t>(coord_index[i])].normal =
+                        &normal[static_cast<std::size_t>(normal_index[i])];
                 }
             }
         }
@@ -3176,8 +3185,10 @@ do_insert_shell(const geometry_node & n,
                  i < tex_coord_index.size();
                  ++i) {
                 if (tex_coord_index[i] < 0) { continue; }
-                vertices[tex_coord_index[i]].tex_coord =
-                    &tex_coord[tex_coord_index[i]];
+                vertices[static_cast<std::size_t>(tex_coord_index[i])]
+                    .tex_coord =
+                        &tex_coord[static_cast<std::size_t>(
+                            tex_coord_index[i])];
             }
         }
 
@@ -3698,7 +3709,7 @@ void openvrml::gl::viewer::do_insert_texture(const texture_node & n,
     const texture_map_t::const_iterator texture = this->texture_map_.find(&n);
     if (texture != this->texture_map_.end()) {
         // Enable blending if needed.
-        const int32 comp = n.image().comp();
+        const int32 comp = static_cast<int32>(n.image().comp());
         if (this->blend && (comp == 2 || comp == 4)) { glEnable(GL_BLEND); }
         glBindTexture(GL_TEXTURE_2D, texture->second);
         return;
@@ -3718,8 +3729,8 @@ void openvrml::gl::viewer::do_insert_texture(const texture_node & n,
     if (width > max_texture_size) { width = max_texture_size; }
     if (height > max_texture_size) { height = max_texture_size; }
 
-    while (!power_of_2(width)) { --width; }
-    while (!power_of_2(height)) { --height; }
+    while (!power_of_2(static_cast<std::size_t>(width))) { --width; }
+    while (!power_of_2(static_cast<std::size_t>(height))) { --height; }
 
     vector<GLubyte> rescaled_pixels;
 

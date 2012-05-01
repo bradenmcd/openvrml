@@ -1,5 +1,17 @@
 2012-05-01 Braden McDaniel  <braden@endoframe.com>
 
+	Suppress various warnings from the Microsoft compiler
+	version 16.00.40219.01.
+
+	* src/libopenvrml/openvrml/basetypes.h
+	* src/libopenvrml/openvrml/scene.cpp
+	* src/libopenvrml/openvrml/local/component.cpp
+	* src/libopenvrml/openvrml/local/component.h
+	* src/libopenvrml/openvrml/local/error.cpp
+	* src/libopenvrml-gl/openvrml/gl/viewer.cpp
+
+2012-05-01 Braden McDaniel  <braden@endoframe.com>
+
 	* src/local/libopenvrml-dl/openvrml/local/dl.cpp
 	(foreachfile(const std::vector<boost::filesystem::path> &, int
 	(*)(const std::string &, void *), void *)): Boost.Filesystem 3
