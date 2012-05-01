@@ -423,7 +423,9 @@ namespace {
                     const resource_istream::int_type c = this->in_->get();
                     if (c != resource_istream::traits_type::eof()) {
                         data.push_back(
-                            resource_istream::traits_type::to_char_type(c));
+                            static_cast<unsigned char>(
+                                resource_istream::traits_type::
+                                    to_char_type(c)));
                     } else {
                         break;
                     }

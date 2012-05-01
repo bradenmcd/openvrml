@@ -379,11 +379,11 @@ const openvrml::local::component_registry openvrml::local::component_registry_;
 
 void
 openvrml::local::profile::
-add_component(const std::string & name, const int level)
+add_component(const std::string & name, const size_t level)
     OPENVRML_THROW1(std::bad_alloc)
 {
     //get the existing/new support level
-    int & comp_level = components_[name];
+    size_t & comp_level = components_[name];
 
     //update the support level.
     comp_level = std::max(level, comp_level);

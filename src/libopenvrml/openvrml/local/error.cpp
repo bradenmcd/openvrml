@@ -25,7 +25,7 @@
 void openvrml::local::throw_runtime_error_from_win32_system_error(LONG result)
     OPENVRML_THROW1(std::runtime_error)
 {
-    static const LPCVOID source;
+    static const LPCVOID source = 0;
     LPTSTR buf = 0;
     BOOST_SCOPE_EXIT((&buf)) {
         LocalFree(buf);
@@ -33,10 +33,10 @@ void openvrml::local::throw_runtime_error_from_win32_system_error(LONG result)
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM
                   | FORMAT_MESSAGE_ALLOCATE_BUFFER,
                   source,
-                  result,
+                  static_cast<DWORD>(result),
                   LANG_USER_DEFAULT,
-                  reinterpret_cast< LPTSTR >(&buf),
-                  DWORD(0),
+                  reinterpret_cast<LPTSTR>(&buf),
+                  static_cast<DWORD>(0),
                   0);
 
     throw std::runtime_error(buf);

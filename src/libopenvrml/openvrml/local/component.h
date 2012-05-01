@@ -108,11 +108,11 @@ namespace openvrml {
 
 
         class OPENVRML_LOCAL profile {
-            typedef std::map<std::string, int> map_t;
+            typedef std::map<std::string, size_t> map_t;
             map_t components_;
 
         protected:
-            void add_component(const std::string & name, int level)
+            void add_component(const std::string & name, size_t level)
                 OPENVRML_THROW1(std::bad_alloc);
 
         public:
