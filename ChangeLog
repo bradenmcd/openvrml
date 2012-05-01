@@ -1,5 +1,10 @@
 2012-05-01 Braden McDaniel  <braden@endoframe.com>
 
+	* src/libopenvrml-gl/openvrml-gl.vcxproj: Generate openvrml-gl.lib
+	into arch-specific subdirectory.
+
+2012-05-01 Braden McDaniel  <braden@endoframe.com>
+
 	Project file clean-up.  Remove references to site-specific library
 	directories; these should be set in user (site-specific)
 	properties.  Reorganize preprocessor symbol definitions to
