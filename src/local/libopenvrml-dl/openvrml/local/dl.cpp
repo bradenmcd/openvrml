@@ -75,7 +75,7 @@ foreachfile(const std::vector<boost::filesystem::path> & search_path,
         for (directory_iterator entry(*dir);
              entry != directory_iterator();
              ++entry) {
-            result = (func)(entry->path().external_file_string(), data);
+            result = (func)(entry->path().generic_string(), data);
             if (result != 0) { return result; }
         }
     } catch (boost::filesystem::filesystem_error &) {}
@@ -144,7 +144,7 @@ const std::string openvrml::local::dl::error()
                                           reinterpret_cast<LPSTR>(&buf),
                                           buf_size,
                                           args);
-    assert(buf_chars != 0); // If FormatMessage failed, just give up.
+    assert(buf_chars != DWORD(0)); // If FormatMessage failed, just give up.
     const std::string buf_str(buf ? buf : "");
     return buf_str;
 # else
