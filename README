@@ -1,7 +1,7 @@
-OpenVRML library version 0.18.99
+OpenVRML library version 0.18.9
 Copyright 1998, 1999, 2000 Chris Morley <cmorley@vermontel.net>
-Copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
-   Braden McDaniel <braden@endoframe.com>
+Copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+   2011, 2012 Braden McDaniel <braden@endoframe.com>
 Portions Copyright SGI and others
 
 Available from <http://openvrml.org>
@@ -307,6 +307,10 @@ to compile OpenVRML without the GNU build tools.
  OPENVRML_ENABLE_RENDER_TEXT_NODE
      Include support for rendering text using the Text node.  Requires
      fontconfig and FreeType.
+
+ OPENVRML_FT_CONST
+     Define to "const" if "const" should be used in FreeType callback
+     function signatures; define to empty otherwise.
 
  OPENVRML_JNI_CONST
      Define to "const" if "const" should be used in JNI function
