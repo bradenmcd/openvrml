@@ -1,3 +1,18 @@
+2012-05-05 Braden McDaniel  <braden@endoframe.com>
+
+	Updates for 0.18.9 release.
+
+	* README
+	* NEWS
+	* configure.ac
+	* doc/Doxyfile
+	* src/libopenvrml/openvrml.rc
+	* src/libopenvrml/openvrml.vcproj
+	* src/libopenvrml-gl/openvrml-gl.rc
+	* src/Makefile.am
+	(LIBOPENVRML_LIBRARY_VERSION): Update to 10:1:1.
+	(LIBOPENVRML_GL_LIBRARY_VERSION): Update to 8:1:0.
+
 2012-05-01 Braden McDaniel  <braden@endoframe.com>
 
 	Suppress various warnings from the Microsoft compiler
