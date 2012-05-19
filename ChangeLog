@@ -1,3 +1,8 @@
+2012-05-19 Braden McDaniel  <braden@endoframe.com>
+
+	* src/Makefile.am (EXTRA_DIST): Add openvrml-dl project file to
+	the distribution.
+
 2012-05-05 Braden McDaniel  <braden@endoframe.com>
 
 	Updates for 0.18.9 release.
