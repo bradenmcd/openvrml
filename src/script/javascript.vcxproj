@@ -64,7 +64,6 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>mozjs.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -79,9 +78,6 @@
       <AdditionalIncludeDirectories>..\libopenvrml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>XP_WIN;JS_THREADSAFE;_SCL_SECURE_NO_WARNINGS;OPENVRML_USE_DLL;BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS;BOOST_MPL_LIMIT_VECTOR_SIZE=30;OPENVRML_JAVASCRIPT_API=__declspec(dllexport);OPENVRML_JAVASCRIPT_LOCAL=;OPENVRML_JS_HAS_TYPED_ROOT_FUNCTIONS=1;OPENVRML_JSPROPERTYOP_USES_JSID=1;OPENVRML_FAST_JSNATIVE=1;OPENVRML_JS_HAS_STRICTPROPERTYOP=1;OPENVRML_JS_CONSTRUCTOBJECT_WITHOUT_PROTO=1;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>mozjs.lib;%(AdditionalDependencies)</AdditionalDependencies>
