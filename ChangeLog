@@ -1,5 +1,11 @@
 2012-07-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/script/javascript.cpp: Remove uses of jsdouble and uintN.
+	Current XULRunner nolonger defines these; and this should be
+	reasonably backward-compatible.
+
+2012-07-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/Makefile.am (EXTRA_DIST): Add missing project files
 	javascript.vcxproj and x3d-interpolation.vcxproj.
 
