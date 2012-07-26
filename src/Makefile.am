@@ -928,22 +928,24 @@ EXTRA_DIST = \
         libopenvrml-gl/openvrml-gl.vcxproj \
         local/libopenvrml-dl/openvrml-dl.vcxproj \
         node/vrml97/vrml97.vcxproj \
-        node/x3d-core/x3d-core.vcxproj \
-        node/x3d-event-utilities/x3d-event-utilities.vcxproj \
-        node/x3d-grouping/x3d-grouping.vcxproj \
-        node/x3d-shape/x3d-shape.vcxproj \
-        node/x3d-rendering/x3d-rendering.vcxproj \
-        node/x3d-geometry2d/x3d-geometry2d.vcxproj \
-        node/x3d-texturing/x3d-texturing.vcxproj \
-        node/x3d-environmental-effects/x3d-environmental-effects.vcxproj \
-        node/x3d-networking/x3d-networking.vcxproj \
-        node/x3d-key-device-sensor/x3d-key-device-sensor.vcxproj \
-        node/x3d-nurbs/x3d-nurbs.vcxproj \
-        node/x3d-geospatial/x3d-geospatial.vcxproj \
-        node/x3d-h-anim/x3d-h-anim.vcxproj \
-        node/x3d-dis/x3d-dis.vcxproj \
         node/x3d-cad-geometry/x3d-cad-geometry.vcxproj \
-        openvrml-xembed/org.openvrml.BrowserControl.service.in
+        node/x3d-core/x3d-core.vcxproj \
+        node/x3d-dis/x3d-dis.vcxproj \
+        node/x3d-environmental-effects/x3d-environmental-effects.vcxproj \
+        node/x3d-event-utilities/x3d-event-utilities.vcxproj \
+        node/x3d-h-anim/x3d-h-anim.vcxproj \
+        node/x3d-geometry2d/x3d-geometry2d.vcxproj \
+        node/x3d-geospatial/x3d-geospatial.vcxproj \
+        node/x3d-grouping/x3d-grouping.vcxproj \
+        node/x3d-interpolation/x3d-interpolation.vcxproj \
+        node/x3d-key-device-sensor/x3d-key-device-sensor.vcxproj \
+        node/x3d-networking/x3d-networking.vcxproj \
+        node/x3d-nurbs/x3d-nurbs.vcxproj \
+        node/x3d-rendering/x3d-rendering.vcxproj \
+        node/x3d-shape/x3d-shape.vcxproj \
+        node/x3d-texturing/x3d-texturing.vcxproj \
+        openvrml-xembed/org.openvrml.BrowserControl.service.in \
+        script/javascript.vcxproj
 
 CLEANFILES = $(BUILT_SOURCES)
 
