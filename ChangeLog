@@ -1,5 +1,12 @@
 2012-07-26 Braden McDaniel  <braden@endoframe.com>
 
+	* src/script/javascript.cpp: JS_RemoveValueRoot no longer returns
+	a value; simply change the existing wrapper to return void.
+	Should be backward compatible (since we could never do anything
+	useful with failure here).
+
+2012-07-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/script/javascript.cpp: Remove uses of jsdouble and uintN.
 	Current XULRunner nolonger defines these; and this should be
 	reasonably backward-compatible.
