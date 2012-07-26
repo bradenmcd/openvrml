@@ -286,6 +286,25 @@ AS_IF([test X$ov_cv_js_constructobject_without_proto = Xyes],
                  [Defined if JS_ConstructObject is missing the prototype argument])])
 
 #
+# XULRunner 14.0 removes JS_FinalizeStub.
+#
+AC_CACHE_CHECK([whether SpiderMonkey has JS_FinalizeStub],
+[ov_cv_js_has_finalizestub],
+[ov_cv_js_has_finalizestub=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_ASSERT([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h]],
+[[JS_FinalizeStub(0, 0)]])],
+[ov_cv_js_has_finalizestub=yes])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_js_has_finalizestub = Xyes],
+      [AC_DEFINE([OPENVRML_JS_HAS_FINALIZESTUB], [1],
+                 [Defined if JS_FinalizeStub is declared in jsapi.h])])
+
+#
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
