@@ -91,13 +91,13 @@ namespace {
 # endif
     }
 
-    OPENVRML_LOCAL JSBool remove_value_root(JSContext * const cx,
-                                            jsval * const vp)
+    OPENVRML_LOCAL void remove_value_root(JSContext * const cx,
+                                          jsval * const vp)
     {
 # ifdef OPENVRML_JS_HAS_TYPED_ROOT_FUNCTIONS
-        return JS_RemoveValueRoot(cx, vp);
+        JS_RemoveValueRoot(cx, vp);
 # else
-        return JS_RemoveRoot(cx, vp);
+        JS_RemoveRoot(cx, vp);
 # endif
     }
 
@@ -1229,8 +1229,7 @@ namespace {
             for (i = 0; i < argc; ++i) {
                 assert(jsargv[i] != JSVAL_NULL);
                 if (JSVAL_IS_GCTHING(jsargv[i])) {
-                    ok = remove_value_root(cx, &jsargv[i]);
-                    assert(ok);
+                    remove_value_root(cx, &jsargv[i]);
                 }
             }
 
@@ -5238,8 +5237,7 @@ namespace {
         OPENVRML_NOTHROW
     {
         for (size_t i = 0; i < jsvalArray.size(); ++i) {
-            const JSBool ok = remove_value_root(cx, &jsvalArray[i]);
-            assert(ok);
+            remove_value_root(cx, &jsvalArray[i]);
         }
     }
 
