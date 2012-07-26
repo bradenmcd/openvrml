@@ -1,3 +1,8 @@
+2012-07-26 Braden McDaniel  <braden@endoframe.com>
+
+	* src/Makefile.am (EXTRA_DIST): Add missing project files
+	javascript.vcxproj and x3d-interpolation.vcxproj.
+
 2012-05-21 Braden McDaniel  <braden@endoframe.com>
 
 	Apply /Ox consistently in all projects.  In the absense of any
