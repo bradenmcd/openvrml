@@ -1,5 +1,12 @@
 2012-07-26 Braden McDaniel  <braden@endoframe.com>
 
+	XULRunner 14.0 removes JS_FinalizeStub.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
+2012-07-26 Braden McDaniel  <braden@endoframe.com>
+
 	* src/script/javascript.cpp: JS_RemoveValueRoot no longer returns
 	a value; simply change the existing wrapper to return void.
 	Should be backward compatible (since we could never do anything

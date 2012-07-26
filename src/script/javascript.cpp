@@ -378,7 +378,11 @@ namespace {
             JS_EnumerateStub, // enumerate
             JS_ResolveStub,   // resolve
             JS_ConvertStub,   // convert
+#ifdef OPENVRML_JS_HAS_FINALIZESTUB
             JS_FinalizeStub,  // finalize
+#else
+            0,                // finalize
+#endif
             0,                // getObjectOps
             0,                // checkAccess
             0,                // call
@@ -402,7 +406,11 @@ namespace {
             JS_EnumerateStub, // enumerate
             JS_ResolveStub,   // resolve
             JS_ConvertStub,   // convert
+#ifdef OPENVRML_JS_HAS_FINALIZESTUB
             JS_FinalizeStub,  // finalize
+#else
+            0,                // finalize
+#endif
             0,                // getObjectOps
             0,                // checkAccess
             0,                // call
@@ -7457,7 +7465,11 @@ namespace {
         JS_EnumerateStub,    // enumerate
         JS_ResolveStub,      // resolve
         JS_ConvertStub,      // convert
+#ifdef OPENVRML_JS_HAS_FINALIZESTUB
         JS_FinalizeStub,     // finalize
+#else
+        0,                   // finalize
+#endif
         0,                   // getObjectOps
         0,                   // checkAccess
         0,                   // call
