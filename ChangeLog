@@ -1,5 +1,13 @@
 2012-07-26 Braden McDaniel  <braden@endoframe.com>
 
+	XULRunner 14.0 removes the JSContext argument from
+	JS_{Get,Set}Private.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
+2012-07-26 Braden McDaniel  <braden@endoframe.com>
+
 	XULRunner 14.0 removes JS_FinalizeStub.
 
 	* configure.ac

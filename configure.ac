@@ -236,7 +236,7 @@ CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
 AC_LANG_PUSH([C++])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 [[#include <jsapi.h>]],
-[[JSBool (*f)(JSContext *, uintN, jsval *); JSNative g = f;]])],
+[[JSBool (*f)(JSContext *, unsigned, jsval *); JSNative g = f;]])],
 [ov_cv_fast_jsnative=yes])
 AC_LANG_POP([C++])
 CPPFLAGS=$ov_save_CPPFLAGS
@@ -294,8 +294,8 @@ AC_CACHE_CHECK([whether SpiderMonkey has JS_FinalizeStub],
 ov_save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
 AC_LANG_ASSERT([C])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[[#include <jsapi.h]],
+AC_LINK_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
 [[JS_FinalizeStub(0, 0)]])],
 [ov_cv_js_has_finalizestub=yes])
 CPPFLAGS=$ov_save_CPPFLAGS
@@ -303,6 +303,25 @@ CPPFLAGS=$ov_save_CPPFLAGS
 AS_IF([test X$ov_cv_js_has_finalizestub = Xyes],
       [AC_DEFINE([OPENVRML_JS_HAS_FINALIZESTUB], [1],
                  [Defined if JS_FinalizeStub is declared in jsapi.h])])
+
+#
+# XULRunner 14.0 removes the JSContext argument from JS_{Set,Get}Private.
+#
+AC_CACHE_CHECK([whether SpiderMonkey JS_SetPrivate is used without a JSContext],
+[ov_cv_js_private_without_context],
+[ov_cv_js_private_without_context=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_ASSERT([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[JS_SetPrivate(0, 0)]])],
+[ov_cv_js_private_without_context=yes])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_js_private_without_context = Xyes],
+      [AC_DEFINE([OPENVRML_JS_PRIVATE_WITHOUT_CONTEXT], [1],
+                 [Defined if JS_SetContext does not take a JSContext argument])])
 
 #
 # openvrml-xembed and openvrml-player both use GOption, which was
