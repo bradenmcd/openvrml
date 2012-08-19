@@ -1,5 +1,15 @@
 2012-08-19 Braden McDaniel  <braden@endoframe.com>
 
+	XULRunner 14.0 replaces the JSContext* argument to JSFinalizeOp
+	with JSFreeOp* and removes the JSContext* argument from
+	JS_GetParent.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
+
+2012-08-19 Braden McDaniel  <braden@endoframe.com>
+
 	* src/script/javascript.cpp: JS_SetPrivate no longer returns a
 	boolean value.
 

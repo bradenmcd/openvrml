@@ -324,6 +324,45 @@ AS_IF([test X$ov_cv_js_private_without_context = Xyes],
                  [Defined if JS_SetContext does not take a JSContext argument])])
 
 #
+# XULRunner 14.0 replaces the JSContext* argument to JSFinalizeOp with
+# JSFreeOp*.
+#
+AC_CACHE_CHECK([whether SpiderMonkey JSFinalizeOp uses JSFreeOp],
+[ov_cv_jsfinalizeop_uses_jsfreeop],
+[ov_cv_jsfinalizeop_uses_jsfreeop=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_ASSERT([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[JSFreeOp * fop = 0; JSFinalizeOp finalize = 0; finalize(fop, 0)]])],
+[ov_cv_jsfinalizeop_uses_jsfreeop=yes])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_jsfinalizeop_uses_jsfreeop = Xyes],
+      [AC_DEFINE([OPENVRML_JS_FINALIZEOP_USES_FREEOP], [1],
+                 [Defined if JSFinalizeOp takes a JSFreeOp argument])])
+
+#
+# XULRunner 14.0 removes the JSContext argument from JS_GetParent.
+#
+AC_CACHE_CHECK([whether SpiderMonkey JS_GetParent is used without a JSContext],
+[ov_cv_js_getparent_without_context],
+[ov_cv_js_getparent_without_context=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+AC_LANG_ASSERT([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[JS_GetParent(0)]])],
+[ov_cv_js_getparent_without_context=yes])
+CPPFLAGS=$ov_save_CPPFLAGS
+])
+AS_IF([test X$ov_cv_js_getparent_without_context = Xyes],
+      [AC_DEFINE([OPENVRML_JS_GETPARENT_WITHOUT_CONTEXT], [1],
+                 [Defined if JS_GetParent does not take a JSContext argument])])
+
+#
 # openvrml-xembed and openvrml-player both use GOption, which was
 # introduced in GLib 2.6.
 #
