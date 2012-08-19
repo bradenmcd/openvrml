@@ -2779,7 +2779,7 @@ namespace {
                                          float(rgb[2]))));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfcolor.get()));
             sfcolor.release();
-            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, sfdata.get());
             sfdata.release();
         } catch (std::exception & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -2984,7 +2984,7 @@ namespace {
             std::auto_ptr<sfield::sfdata> sfdata(
                 new sfield::sfdata(sfimageClone.get()));
             sfimageClone.release();
-            if (!js_set_private(cx, sfimageObj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, sfimageObj, sfdata.get());
             sfdata.release();
         } catch (std::exception & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -3098,7 +3098,7 @@ namespace {
                             openvrml::image(x, y, comp, pixels)));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfimage.get()));
             sfimage.release();
-            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, sfdata.get());
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -3241,7 +3241,7 @@ namespace {
             auto_ptr<openvrml::sfnode> sfnodeClone(new openvrml::sfnode(node));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfnodeClone.get()));
             sfnodeClone.release();
-            if (!js_set_private(cx, sfnodeObj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, sfnodeObj, sfdata.get());
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -3335,7 +3335,7 @@ namespace {
             auto_ptr<openvrml::sfnode> sfnode(new openvrml::sfnode(nodes[0]));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfnode.get()));
             sfnode.release();
-            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, sfdata.get());
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -3641,7 +3641,7 @@ namespace {
                                             float(rot[3]))));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfrotation.get()));
             sfrotation.release();
-            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, sfdata.get());
             sfdata.release();
         } catch (std::exception & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -4116,7 +4116,7 @@ namespace {
             auto_ptr<sfvec2_t> sfvec2(new sfvec2_t(vec2));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2.get()));
             sfvec2.release();
-            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, sfdata.get());
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -4725,7 +4725,7 @@ namespace {
             auto_ptr<sfvec3_t> sfvec3(new sfvec3_t(vec3));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3.get()));
             sfvec3.release();
-            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, sfdata.get());
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -5379,7 +5379,7 @@ namespace {
             //
             AddRoots(cx, mfdata->array);
 
-            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, mfdata.get());
             mfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -5595,7 +5595,7 @@ namespace {
                 }
             }
 
-            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, mfdata.get());
 
             //
             // Protect array values from gc.
@@ -5857,7 +5857,7 @@ namespace {
                 }
                 mfdata->array[i] = BOOLEAN_TO_JSVAL(boolean);
             }
-            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, mfdata.get());
             mfdata.release();
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -6323,7 +6323,7 @@ namespace {
                     return JS_FALSE;
                 }
             }
-            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, mfdata.get());
             mfdata.release();
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -6487,7 +6487,7 @@ namespace {
                 }
                 mfdata->array[i] = argv[i];
             }
-            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, mfdata.get());
             mfdata.release();
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -6950,7 +6950,7 @@ namespace {
             //
             AddRoots(cx, mfdata->array);
 
-            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, mfdata.get());
             mfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -7658,7 +7658,7 @@ namespace {
                     float(mat[4]), float(mat[5]), float(mat[6]), float(mat[7]),
                     float(mat[8]), float(mat[9]), float(mat[10]), float(mat[11]),
                     float(mat[12]), float(mat[13]), float(mat[14]), float(mat[15]))));
-            if (!js_set_private(cx, obj, mat_ptr.get())) { return JS_FALSE; }
+            js_set_private(cx, obj, mat_ptr.get());
             mat_ptr.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -7688,7 +7688,7 @@ namespace {
             if (!robj) { return JS_FALSE; }
 
             float (&row)[4] = (*thisMat)[jspropertyop_id_to_int(id)];
-            if (!js_set_private(cx, robj, &row)) { return JS_FALSE; }
+            js_set_private(cx, robj, &row));
             *vp = OBJECT_TO_JSVAL(robj);
         }
         return JS_TRUE;
