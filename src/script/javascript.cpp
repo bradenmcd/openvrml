@@ -143,6 +143,27 @@ namespace {
 # endif
     }
 
+    OPENVRML_LOCAL
+    void * js_get_private(JSContext * const cx, JSObject * const obj)
+    {
+# ifdef OPENVRML_JS_PRIVATE_WITHOUT_CONTEXT
+        return JS_GetPrivate(obj);
+# else
+        return JS_GetPrivate(cx, obj);
+# endif
+    }
+
+    OPENVRML_LOCAL
+    void js_set_private(JSContext * const cx, JSObject * const obj,
+                        void * const data)
+    {
+# ifdef OPENVRML_JS_PRIVATE_WITHOUT_CONTEXT
+        JS_SetPrivate(obj, data);
+# else
+        JS_SetPrivate(cx, obj, data);
+# endif
+    }
+
 
 # ifdef OPENVRML_FAST_JSNATIVE
 #   define OPENVRML_DECLARE_JSNATIVE(name)                      \
@@ -1258,7 +1279,7 @@ namespace {
                 if (JSVAL_IS_OBJECT(val)) {
                     field_data * fieldData =
                         static_cast<field_data *>
-                        (JS_GetPrivate(this->cx, JSVAL_TO_OBJECT(val)));
+                        (js_get_private(this->cx, JSVAL_TO_OBJECT(val)));
                     if (fieldData->changed) {
                         using std::auto_ptr;
                         auto_ptr<openvrml::field_value> fieldValue =
@@ -2600,16 +2621,16 @@ namespace {
     void sfield::finalize(JSContext * const cx, JSObject * const obj)
         OPENVRML_NOTHROW
     {
-        delete static_cast<field_data *>(JS_GetPrivate(cx, obj));
-        JS_SetPrivate(cx, obj, 0);
+        delete static_cast<field_data *>(js_get_private(cx, obj));
+        js_set_private(cx, obj, 0);
     }
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(sfield, toString)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         std::ostringstream out;
         out << sfdata.field_value();
@@ -2675,9 +2696,9 @@ namespace {
         JSObject * const sfcolorObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfcolorObj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, sfcolorObj));
+        assert(js_get_private(cx, sfcolorObj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfcolorObj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, sfcolorObj));
 
         try {
             boost::polymorphic_downcast<openvrml::sfcolor *>(&sfdata.field_value())
@@ -2701,9 +2722,9 @@ namespace {
         if (!obj || !JS_InstanceOf(cx, obj, &SFColor::jsclass, 0)) {
             throw bad_conversion("SFColor object expected.");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
 
         return auto_ptr<openvrml::sfcolor>(
             boost::polymorphic_downcast<openvrml::sfcolor *>(
@@ -2758,7 +2779,7 @@ namespace {
                                          float(rgb[2]))));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfcolor.get()));
             sfcolor.release();
-            if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::exception & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -2776,9 +2797,9 @@ namespace {
                                 jsval * const rval)
         OPENVRML_NOTHROW
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         const openvrml::sfcolor & thisColor =
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
@@ -2797,9 +2818,9 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSSTRICTPROPERTYOP(SFColor, setProperty)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         openvrml::sfcolor & thisColor =
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
@@ -2843,10 +2864,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFColor, setHSV)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         openvrml::sfcolor & thisColor =
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
@@ -2880,10 +2901,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFColor, getHSV)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfcolor & thisColor =
             *boost::polymorphic_downcast<openvrml::sfcolor *>(
                 &sfdata.field_value());
@@ -2963,7 +2984,7 @@ namespace {
             std::auto_ptr<sfield::sfdata> sfdata(
                 new sfield::sfdata(sfimageClone.get()));
             sfimageClone.release();
-            if (!JS_SetPrivate(cx, sfimageObj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, sfimageObj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::exception & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -2985,9 +3006,9 @@ namespace {
         if (!JS_InstanceOf(cx, obj, &SFImage::jsclass, 0)) {
             throw bad_conversion("SFImage object expected.");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         return auto_ptr<openvrml::sfimage>(
             boost::polymorphic_downcast<openvrml::sfimage *>(
                 sfdata.field_value().clone().release()));
@@ -3051,7 +3072,7 @@ namespace {
             if (pixels_obj) {
                 assert(JS_InstanceOf(cx, pixels_obj, &MFInt32::jsclass, 0));
                 MField::MFData * const mfdata =
-                    static_cast<MField::MFData *>(JS_GetPrivate(cx, pixels_obj));
+                    static_cast<MField::MFData *>(js_get_private(cx, pixels_obj));
 
                 pixels_t::iterator pixelPtr = pixels.begin();
                 for (MField::JsvalArray::size_type i(0);
@@ -3077,7 +3098,7 @@ namespace {
                             openvrml::image(x, y, comp, pixels)));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfimage.get()));
             sfimage.release();
-            if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -3098,9 +3119,9 @@ namespace {
                                 jsval * const vp)
         OPENVRML_NOTHROW
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         const openvrml::sfimage & thisImage =
             *boost::polymorphic_downcast<openvrml::sfimage *>(
                 &sfdata.field_value());
@@ -3220,7 +3241,7 @@ namespace {
             auto_ptr<openvrml::sfnode> sfnodeClone(new openvrml::sfnode(node));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfnodeClone.get()));
             sfnodeClone.release();
-            if (!JS_SetPrivate(cx, sfnodeObj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, sfnodeObj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -3242,9 +3263,9 @@ namespace {
         if (!JS_InstanceOf(cx, obj, &sfnode_jsclass, 0)) {
             throw bad_conversion("SFNode object expected.");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         return auto_ptr<openvrml::sfnode>(
             boost::polymorphic_downcast<openvrml::sfnode *>(
                 sfdata.field_value().clone().release()));
@@ -3314,7 +3335,7 @@ namespace {
             auto_ptr<openvrml::sfnode> sfnode(new openvrml::sfnode(nodes[0]));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfnode.get()));
             sfnode.release();
-            if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -3334,9 +3355,9 @@ namespace {
     {
         if (!jspropertyop_id_is_string(id)) { return JS_TRUE; }
 
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         const openvrml::sfnode & thisNode =
             *boost::polymorphic_downcast<openvrml::sfnode *>(
                 &sfdata.field_value());
@@ -3365,9 +3386,9 @@ namespace {
             using std::auto_ptr;
             using std::string;
 
-            assert(JS_GetPrivate(cx, obj));
+            assert(js_get_private(cx, obj));
             sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
             openvrml::sfnode & thisNode =
                 *boost::polymorphic_downcast<openvrml::sfnode *>(
                     &sfdata.field_value());
@@ -3474,9 +3495,9 @@ namespace {
         JSObject * const sfrotationObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfrotationObj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, sfrotationObj));
+        assert(js_get_private(cx, sfrotationObj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfrotationObj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, sfrotationObj));
 
         try {
             boost::polymorphic_downcast<openvrml::sfrotation *>(
@@ -3500,9 +3521,9 @@ namespace {
         if (!JS_InstanceOf(cx, obj, &SFRotation::jsclass, 0)) {
             throw bad_conversion("SFRotation object expected.");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         return auto_ptr<openvrml::sfrotation>(
             boost::polymorphic_downcast<openvrml::sfrotation *>(
                 sfdata.field_value().clone().release()));
@@ -3523,9 +3544,9 @@ namespace {
                                   OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, axis_obj));
+            assert(js_get_private(cx, axis_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, axis_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, axis_obj));
             const openvrml::sfvec3f & axis =
                 *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                     &sfdata.field_value());
@@ -3548,16 +3569,16 @@ namespace {
                 return JS_FALSE;
             }
 
-            assert(JS_GetPrivate(cx, from_obj));
+            assert(js_get_private(cx, from_obj));
             const sfield::sfdata & from_sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, from_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, from_obj));
             const openvrml::sfvec3f & from_vec =
                 *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                     &from_sfdata.field_value());
 
-            assert(JS_GetPrivate(cx, to_obj));
+            assert(js_get_private(cx, to_obj));
             const sfield::sfdata & to_sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, to_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, to_obj));
             const openvrml::sfvec3f & to_vec =
                 *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                     &to_sfdata.field_value());
@@ -3620,7 +3641,7 @@ namespace {
                                             float(rot[3]))));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfrotation.get()));
             sfrotation.release();
-            if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::exception & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -3638,9 +3659,9 @@ namespace {
                                    jsval * const rval)
         OPENVRML_NOTHROW
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &sfdata.field_value());
@@ -3657,9 +3678,9 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSSTRICTPROPERTYOP(SFRotation, setProperty)
     {
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &sfdata.field_value());
@@ -3702,10 +3723,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, getAxis)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
@@ -3715,9 +3736,9 @@ namespace {
                                OPENVRML_JS_THIS_OBJECT(cx, vp));
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         const sfield::sfdata & robj_sfdata =
-            *static_cast<sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfdata *>(js_get_private(cx, robj));
         openvrml::sfvec3f & resultVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &robj_sfdata.field_value());
@@ -3729,10 +3750,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, inverse)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
@@ -3744,9 +3765,9 @@ namespace {
             js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         const sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         openvrml::sfrotation & resultRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &robj_sfdata.field_value());
@@ -3758,10 +3779,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, multiply)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
@@ -3776,9 +3797,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, rot_obj));
+        assert(js_get_private(cx, rot_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfdata *>(JS_GetPrivate(cx, rot_obj));
+            *static_cast<sfdata *>(js_get_private(cx, rot_obj));
         const openvrml::sfrotation & argRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &arg_sfdata.field_value());
@@ -3793,9 +3814,9 @@ namespace {
             js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         const sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         openvrml::sfrotation & resultRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &robj_sfdata.field_value());
@@ -3807,10 +3828,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, multVec)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
@@ -3825,9 +3846,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, vec_obj));
+        assert(js_get_private(cx, vec_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfdata *>(JS_GetPrivate(cx, vec_obj));
+            *static_cast<sfdata *>(js_get_private(cx, vec_obj));
         const openvrml::sfvec3f & argVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &arg_sfdata.field_value());
@@ -3842,9 +3863,9 @@ namespace {
             js_construct_object(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfdata *>(js_get_private(cx, robj));
         openvrml::sfvec3f & resultVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &robj_sfdata.field_value());
@@ -3858,10 +3879,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, setAxis)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
@@ -3876,9 +3897,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, vec_obj));
+        assert(js_get_private(cx, vec_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, vec_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, vec_obj));
         const openvrml::sfvec3f & argVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &arg_sfdata.field_value());
@@ -3898,10 +3919,10 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, slerp)
     {
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const openvrml::sfrotation & thisRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &obj_sfdata.field_value());
@@ -3917,9 +3938,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, dest_obj));
+        assert(js_get_private(cx, dest_obj));
         const sfield::sfdata & dest_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, dest_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, dest_obj));
         const openvrml::sfrotation & dest =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &dest_sfdata.field_value());
@@ -3934,9 +3955,9 @@ namespace {
             js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         openvrml::sfrotation & resultRot =
             *boost::polymorphic_downcast<openvrml::sfrotation *>(
                 &robj_sfdata.field_value());
@@ -4011,9 +4032,9 @@ namespace {
         JSObject * const sfvec2Obj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec2Obj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, sfvec2Obj));
+        assert(js_get_private(cx, sfvec2Obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfvec2Obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, sfvec2Obj));
 
         try {
             boost::polymorphic_downcast<field_type *>(&sfdata.field_value())
@@ -4036,9 +4057,9 @@ namespace {
         if (!JS_InstanceOf(cx, obj, &jsclass, 0)) {
             throw bad_conversion("SFVec2f object expected.");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         return auto_ptr<field_type>(boost::polymorphic_downcast<field_type *>(
                                         sfdata.field_value().clone().release()));
     }
@@ -4095,7 +4116,7 @@ namespace {
             auto_ptr<sfvec2_t> sfvec2(new sfvec2_t(vec2));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec2.get()));
             sfvec2.release();
-            if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -4116,9 +4137,9 @@ namespace {
 
         if (jspropertyop_id_is_int(id)
             && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 2) {
-            assert(JS_GetPrivate(cx, obj));
+            assert(js_get_private(cx, obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
             const sfvec2_t & thisVec =
                 *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
@@ -4139,9 +4160,9 @@ namespace {
 
         if (jspropertyop_id_is_int(id)
             && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 2) {
-            assert(JS_GetPrivate(cx, obj));
+            assert(js_get_private(cx, obj));
             sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
             sfvec2_t & thisVec =
                 *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
@@ -4174,10 +4195,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4195,9 +4216,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const sfvec2_t & argVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
@@ -4211,9 +4232,9 @@ namespace {
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec2_t & resultVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
@@ -4228,10 +4249,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4254,9 +4275,9 @@ namespace {
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec2_t & resultVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
@@ -4271,10 +4292,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
@@ -4292,9 +4313,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const sfvec2_t & argVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
@@ -4310,10 +4331,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&sfdata.field_value());
 
@@ -4329,10 +4350,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4355,9 +4376,9 @@ namespace {
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec2_t & resultVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
@@ -4372,10 +4393,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4389,9 +4410,9 @@ namespace {
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec2_t & resultVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
@@ -4406,10 +4427,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4423,9 +4444,9 @@ namespace {
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec2_t & resultVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
@@ -4440,10 +4461,10 @@ namespace {
     {
         typedef typename SFVec2::field_type sfvec2_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec2_t & thisVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&obj_sfdata.field_value());
 
@@ -4461,9 +4482,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const sfvec2_t & argVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&arg_sfdata.field_value());
 
@@ -4477,9 +4498,9 @@ namespace {
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec2_t & resultVec =
             *boost::polymorphic_downcast<sfvec2_t *>(&robj_sfdata.field_value());
 
@@ -4519,9 +4540,9 @@ namespace {
         JSObject * const sfvec2dObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec2dObj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, sfvec2dObj));
+        assert(js_get_private(cx, sfvec2dObj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfvec2dObj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, sfvec2dObj));
 
         try {
             boost::polymorphic_downcast<openvrml::sfvec2d *>(
@@ -4544,9 +4565,9 @@ namespace {
         if (!JS_InstanceOf(cx, obj, &SFVec2d::jsclass, 0)) {
             throw bad_conversion("SFVec2d object expected");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         return auto_ptr<openvrml::sfvec2d>(
             boost::polymorphic_downcast<openvrml::sfvec2d *>(
                 sfdata.field_value().clone().release()));
@@ -4618,9 +4639,9 @@ namespace {
         JSObject * const sfvec3fObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec3fObj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, sfvec3fObj));
+        assert(js_get_private(cx, sfvec3fObj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfvec3fObj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, sfvec3fObj));
 
         try {
             boost::polymorphic_downcast<openvrml::sfvec3f *>(
@@ -4643,9 +4664,9 @@ namespace {
         if (!JS_InstanceOf(cx, obj, &SFVec3f::jsclass, 0)) {
             throw bad_conversion("SFVec3f object expected.");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         return auto_ptr<openvrml::sfvec3f>(
             boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 sfdata.field_value().clone().release()));
@@ -4704,7 +4725,7 @@ namespace {
             auto_ptr<sfvec3_t> sfvec3(new sfvec3_t(vec3));
             auto_ptr<sfield::sfdata> sfdata(new sfield::sfdata(sfvec3.get()));
             sfvec3.release();
-            if (!JS_SetPrivate(cx, obj, sfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, sfdata.get())) { return JS_FALSE; }
             sfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -4724,9 +4745,9 @@ namespace {
 
         if (jspropertyop_id_is_int(id)
             && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 3) {
-            assert(JS_GetPrivate(cx, obj));
+            assert(js_get_private(cx, obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
             const sfvec3_t & thisVec =
                 *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
@@ -4747,9 +4768,9 @@ namespace {
 
         if (jspropertyop_id_is_int(id)
             && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 3) {
-            assert(JS_GetPrivate(cx, obj));
+            assert(js_get_private(cx, obj));
             sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
             sfvec3_t & thisVec =
                 *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
@@ -4785,10 +4806,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -4806,9 +4827,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const sfvec3_t & argVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
@@ -4822,9 +4843,9 @@ namespace {
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec3_t & resultVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
@@ -4839,10 +4860,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -4860,9 +4881,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const sfvec3_t & argVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
@@ -4876,9 +4897,9 @@ namespace {
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) {return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfdata *>(js_get_private(cx, robj));
         sfvec3_t & resultVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
@@ -4893,10 +4914,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -4919,9 +4940,9 @@ namespace {
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec3_t & resultVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
@@ -4936,10 +4957,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -4957,9 +4978,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const sfvec3_t & argVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
@@ -4975,10 +4996,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&sfdata.field_value());
 
@@ -4994,10 +5015,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5020,9 +5041,9 @@ namespace {
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec3_t & resultVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
@@ -5037,10 +5058,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5054,9 +5075,9 @@ namespace {
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         const sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec3_t & resultVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
@@ -5071,10 +5092,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5088,9 +5109,9 @@ namespace {
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec3_t & resultVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
@@ -5105,10 +5126,10 @@ namespace {
     {
         typedef typename SFVec3::field_type sfvec3_t;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfield::sfdata & obj_sfdata =
             *static_cast<sfield::sfdata *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const sfvec3_t & thisVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&obj_sfdata.field_value());
 
@@ -5126,9 +5147,9 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const sfvec3_t & argVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&arg_sfdata.field_value());
 
@@ -5142,9 +5163,9 @@ namespace {
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         sfvec3_t & resultVec =
             *boost::polymorphic_downcast<sfvec3_t *>(&robj_sfdata.field_value());
 
@@ -5183,9 +5204,9 @@ namespace {
         JSObject * const sfvec3dObj = js_construct_object(cx, &jsclass, 0, obj);
         if (!sfvec3dObj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, sfvec3dObj));
+        assert(js_get_private(cx, sfvec3dObj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, sfvec3dObj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, sfvec3dObj));
 
         try {
             boost::polymorphic_downcast<openvrml::sfvec3d *>(
@@ -5208,9 +5229,9 @@ namespace {
         if (!JS_InstanceOf(cx, obj, &SFVec3d::jsclass, 0)) {
             throw bad_conversion("SFVec3d object expected");
         }
-        assert(JS_GetPrivate(cx, obj));
+        assert(js_get_private(cx, obj));
         const sfield::sfdata & sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, obj));
         return auto_ptr<openvrml::sfvec3d>(
             boost::polymorphic_downcast<openvrml::sfvec3d *>(
                 sfdata.field_value().clone().release()));
@@ -5258,7 +5279,7 @@ namespace {
         assert(cx);
         assert(obj);
         assert(vp);
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         if (jspropertyop_id_is_int(id)
@@ -5279,7 +5300,7 @@ namespace {
         assert(obj);
         assert(vp);
         const MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         *vp = INT_TO_JSVAL(mfdata->array.size());
@@ -5358,7 +5379,7 @@ namespace {
             //
             AddRoots(cx, mfdata->array);
 
-            if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
             mfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -5375,7 +5396,7 @@ namespace {
         assert(vp);
 
         if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) > 0) {
-            MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
             assert(mfdata);
 
             //
@@ -5417,7 +5438,7 @@ namespace {
         assert(obj);
         assert(vp);
 
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         uint32_t new_length;
@@ -5478,7 +5499,7 @@ namespace {
     {
         MFData * const mfdata =
             static_cast<MFData *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -5487,7 +5508,7 @@ namespace {
             assert(JSVAL_IS_OBJECT(mfdata->array[i]));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>
-                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                (js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
             out << sfdata->field_value();
             if ((i + 1) < mfdata->array.size()) { out << ", "; }
@@ -5506,11 +5527,11 @@ namespace {
     {
         assert(cx);
         assert(obj);
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
             delete mfdata;
-            JS_SetPrivate(cx, obj, 0);
+            js_set_private(cx, obj, 0);
         }
     }
 
@@ -5574,7 +5595,7 @@ namespace {
                 }
             }
 
-            if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
 
             //
             // Protect array values from gc.
@@ -5594,7 +5615,7 @@ namespace {
     OPENVRML_DEFINE_MEMBER_JSSTRICTPROPERTYOP(MFJSDouble<Subclass>, setElement)
     {
         if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
-            MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
             assert(mfdata);
 
             //
@@ -5635,7 +5656,7 @@ namespace {
         assert(obj);
         assert(vp);
 
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         uint32_t new_length;
@@ -5695,7 +5716,7 @@ namespace {
     {
         MFData * const mfdata =
             static_cast<MFData *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -5717,11 +5738,11 @@ namespace {
     void MFJSDouble<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
         OPENVRML_NOTHROW
     {
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
             delete mfdata;
-            JS_SetPrivate(cx, obj, 0);
+            js_set_private(cx, obj, 0);
         }
     }
 
@@ -5758,7 +5779,7 @@ namespace {
         }
 
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfbool>
             mfbool(new openvrml::mfbool(mfdata->array.size()));
@@ -5787,7 +5808,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfboolObj));
+            static_cast<MFData *>(js_get_private(cx, mfboolObj));
         for (size_t i = 0; i < bools.size(); ++i) {
             mfdata->array[i] = BOOLEAN_TO_JSVAL(bools[i]);
         }
@@ -5836,7 +5857,7 @@ namespace {
                 }
                 mfdata->array[i] = BOOLEAN_TO_JSVAL(boolean);
             }
-            if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
             mfdata.release();
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -5854,7 +5875,7 @@ namespace {
         if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
             const size_t index = jspropertyop_id_to_int(id);
 
-            MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
             assert(mfdata);
 
             //
@@ -5886,7 +5907,7 @@ namespace {
         assert(obj);
         assert(vp);
 
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         uint32_t new_length;
@@ -5908,7 +5929,7 @@ namespace {
     {
         MFData * const mfdata =
             static_cast<MFData *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -5927,8 +5948,8 @@ namespace {
 
     void MFBool::finalize(JSContext * const cx, JSObject * const obj)
     {
-        delete static_cast<MFData *>(JS_GetPrivate(cx, obj));
-        JS_SetPrivate(cx, obj, 0);
+        delete static_cast<MFData *>(js_get_private(cx, obj));
+        js_set_private(cx, obj, 0);
     }
 
     JSClass MFColor::jsclass = {
@@ -5966,7 +5987,7 @@ namespace {
         }
 
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfcolor>
             mfcolor(new openvrml::mfcolor(mfdata->array.size()));
@@ -5977,7 +5998,7 @@ namespace {
                                  &SFColor::jsclass, 0));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>
-                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                (js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
 
             const openvrml::sfcolor & sfcolor =
@@ -6004,7 +6025,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfcolorObj));
+            static_cast<MFData *>(js_get_private(cx, mfcolorObj));
         for (size_t i = 0; i < colors.size(); ++i) {
             if (!SFColor::toJsval(colors[i], cx, obj, &mfdata->array[i])) {
                 return JS_FALSE;
@@ -6055,7 +6076,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mffloatObj));
+            static_cast<MFData *>(js_get_private(cx, mffloatObj));
         for (size_t i = 0; i < floats.size(); ++i) {
             if (!JS_NewNumberValue(cx, floats[i], &mfdata->array[i])) {
                 return JS_FALSE;
@@ -6076,7 +6097,7 @@ namespace {
             throw bad_conversion("MFFloat object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mffloat>
             mffloat(new openvrml::mffloat(mfdata->array.size()));
@@ -6130,7 +6151,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfdoubleObj));
+            static_cast<MFData *>(js_get_private(cx, mfdoubleObj));
         for (size_t i = 0; i < doubles.size(); ++i) {
             if (!JS_NewNumberValue(cx, doubles[i], &mfdata->array[i])) {
                 return JS_FALSE;
@@ -6151,7 +6172,7 @@ namespace {
             throw bad_conversion("MFDouble object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfdouble>
             mfdouble(new openvrml::mfdouble(mfdata->array.size()));
@@ -6226,7 +6247,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfint32Obj));
+            static_cast<MFData *>(js_get_private(cx, mfint32Obj));
         for (size_t i = 0; i < int32s.size(); ++i) {
             mfdata->array[i] = INT_TO_JSVAL(int32s[i]);
         }
@@ -6245,7 +6266,7 @@ namespace {
             throw bad_conversion("MFInt32 object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfint32>
             mfint32(new openvrml::mfint32(mfdata->array.size()));
@@ -6302,7 +6323,7 @@ namespace {
                     return JS_FALSE;
                 }
             }
-            if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
             mfdata.release();
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -6320,7 +6341,7 @@ namespace {
         if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
             const size_t index = jspropertyop_id_to_int(id);
 
-            MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
             assert(mfdata);
 
             //
@@ -6354,7 +6375,7 @@ namespace {
         assert(obj);
         assert(vp);
 
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         uint32_t new_length;
@@ -6376,7 +6397,7 @@ namespace {
     {
         MFData * const mfdata =
             static_cast<MFData *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -6395,8 +6416,8 @@ namespace {
 
     void MFInt32::finalize(JSContext * const cx, JSObject * const obj)
     {
-        delete static_cast<MFData *>(JS_GetPrivate(cx, obj));
-        JS_SetPrivate(cx, obj, 0);
+        delete static_cast<MFData *>(js_get_private(cx, obj));
+        js_set_private(cx, obj, 0);
     }
 
     JSClass MFNode::jsclass = {
@@ -6466,7 +6487,7 @@ namespace {
                 }
                 mfdata->array[i] = argv[i];
             }
-            if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
             mfdata.release();
         } catch (std::bad_alloc & ex) {
             OPENVRML_PRINT_EXCEPTION_(ex);
@@ -6493,7 +6514,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfnodeObj));
+            static_cast<MFData *>(js_get_private(cx, mfnodeObj));
         for (size_t i = 0; i < nodes.size(); ++i) {
             if (!SFNode::toJsval(nodes[i], cx, obj, &mfdata->array[i])) {
                 return JS_FALSE;
@@ -6519,7 +6540,7 @@ namespace {
             throw bad_conversion("MFNode object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfnode>
             mfnode(new openvrml::mfnode(mfdata->array.size()));
@@ -6530,7 +6551,7 @@ namespace {
                                  &sfnode_jsclass, 0));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>(
-                    JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                    js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
 
             const openvrml::sfnode & sfnode =
@@ -6568,7 +6589,7 @@ namespace {
         assert(vp);
 
         if (!jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
-            MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
             assert(mfdata);
 
             //
@@ -6610,7 +6631,7 @@ namespace {
         assert(obj);
         assert(vp);
 
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         uint32_t new_length;
@@ -6675,7 +6696,7 @@ namespace {
     {
         MFData * const mfdata =
             static_cast<MFData *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -6683,7 +6704,7 @@ namespace {
         for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>
-                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                (js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
             out << sfdata->field_value();
             if ((i + 1) < mfdata->array.size()) { out << ", "; }
@@ -6701,11 +6722,11 @@ namespace {
     {
         assert(cx);
         assert(obj);
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
             delete mfdata;
-            JS_SetPrivate(cx, obj, 0);
+            js_set_private(cx, obj, 0);
         }
     }
 
@@ -6748,7 +6769,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfrotationObj));
+            static_cast<MFData *>(js_get_private(cx, mfrotationObj));
         for (size_t i = 0; i < rotations.size(); ++i) {
             if (!SFRotation::toJsval(rotations[i], cx, obj, &mfdata->array[i])) {
                 return JS_FALSE;
@@ -6769,7 +6790,7 @@ namespace {
             throw bad_conversion("MFRotation object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfrotation>
             mfrotation(new openvrml::mfrotation(mfdata->array.size()));
@@ -6780,7 +6801,7 @@ namespace {
                                  &SFRotation::jsclass, 0));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>
-                (JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                (js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
 
             const openvrml::sfrotation & sfrotation =
@@ -6851,7 +6872,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfstringObj));
+            static_cast<MFData *>(js_get_private(cx, mfstringObj));
         for (size_t i = 0; i < strings.size(); ++i) {
             JSString * jsstring = JS_NewStringCopyZ(cx, strings[i].c_str());
             if (!jsstring) { return JS_FALSE; }
@@ -6872,7 +6893,7 @@ namespace {
             throw bad_conversion("MFString object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfstring>
             mfstring(new openvrml::mfstring(mfdata->array.size()));
@@ -6929,7 +6950,7 @@ namespace {
             //
             AddRoots(cx, mfdata->array);
 
-            if (!JS_SetPrivate(cx, obj, mfdata.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, mfdata.get())) { return JS_FALSE; }
             mfdata.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -6941,7 +6962,7 @@ namespace {
     OPENVRML_DEFINE_MEMBER_JSSTRICTPROPERTYOP(MFString, setElement)
     {
         if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0) {
-            MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+            MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
             assert(mfdata);
 
             //
@@ -6972,7 +6993,7 @@ namespace {
 
     OPENVRML_DEFINE_MEMBER_JSSTRICTPROPERTYOP(MFString, setLength)
     {
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         assert(mfdata);
 
         uint32_t new_length;
@@ -7026,7 +7047,7 @@ namespace {
     {
         MFData * const mfdata =
             static_cast<MFData *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(mfdata);
 
         std::ostringstream out;
@@ -7049,11 +7070,11 @@ namespace {
     void MFString::finalize(JSContext * const cx, JSObject * const obj)
         OPENVRML_NOTHROW
     {
-        MFData * const mfdata = static_cast<MFData *>(JS_GetPrivate(cx, obj));
+        MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
             delete mfdata;
-            JS_SetPrivate(cx, obj, 0);
+            js_set_private(cx, obj, 0);
         }
     }
 
@@ -7094,7 +7115,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mftimeObj));
+            static_cast<MFData *>(js_get_private(cx, mftimeObj));
         for (size_t i = 0; i < times.size(); ++i) {
             if (!JS_NewNumberValue(cx, times[i], &mfdata->array[i])) {
                 return JS_FALSE;
@@ -7115,7 +7136,7 @@ namespace {
             throw bad_conversion("MFTime object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mftime>
             mftime(new openvrml::mftime(mfdata->array.size()));
@@ -7167,7 +7188,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfvec2fObj));
+            static_cast<MFData *>(js_get_private(cx, mfvec2fObj));
         for (size_t i = 0; i < vec2fs.size(); ++i) {
             if (!SFVec2f::toJsval(vec2fs[i], cx, obj, &mfdata->array[i])) {
                 return JS_FALSE;
@@ -7187,7 +7208,7 @@ namespace {
             throw bad_conversion("MFVec2f object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfvec2f>
             mfvec2f(new openvrml::mfvec2f(mfdata->array.size()));
@@ -7198,7 +7219,7 @@ namespace {
                                  &SFVec2f::jsclass, 0));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>(
-                    JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                    js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
 
             const openvrml::sfvec2f & sfvec2f =
@@ -7248,7 +7269,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfvec2dObj));
+            static_cast<MFData *>(js_get_private(cx, mfvec2dObj));
         for (size_t i = 0; i < vec2ds.size(); ++i) {
             if (!SFVec2d::toJsval(vec2ds[i], cx, obj, &mfdata->array[i])) {
                 return JS_FALSE;
@@ -7268,7 +7289,7 @@ namespace {
             throw bad_conversion("MFVec2d object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfvec2d>
             mfvec2d(new openvrml::mfvec2d(mfdata->array.size()));
@@ -7279,7 +7300,7 @@ namespace {
                                  &SFVec2d::jsclass, 0));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>(
-                    JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                    js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
 
             const openvrml::sfvec2d & sfvec2d =
@@ -7329,7 +7350,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfvec3fObj));
+            static_cast<MFData *>(js_get_private(cx, mfvec3fObj));
         for (size_t i = 0; i < vec3fs.size(); ++i) {
             if (!SFVec3f::toJsval(vec3fs[i], cx, obj, &mfdata->array[i])) {
                 return JS_FALSE;
@@ -7349,7 +7370,7 @@ namespace {
             throw bad_conversion("MFVec3f object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfvec3f>
             mfvec3f(new openvrml::mfvec3f(mfdata->array.size()));
@@ -7361,7 +7382,7 @@ namespace {
                                  &SFVec3f::jsclass, 0));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>(
-                    JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                    js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
 
             const openvrml::sfvec3f & sfvec3f =
@@ -7411,7 +7432,7 @@ namespace {
         }
 
         MFData * const mfdata =
-            static_cast<MFData *>(JS_GetPrivate(cx, mfvec3dObj));
+            static_cast<MFData *>(js_get_private(cx, mfvec3dObj));
         for (size_t i = 0; i < vec3ds.size(); ++i) {
             if (!SFVec3d::toJsval(vec3ds[i], cx, obj, &mfdata->array[i])) {
                 return JS_FALSE;
@@ -7431,7 +7452,7 @@ namespace {
             throw bad_conversion("MFVec3d object expected.");
         }
         MField::MFData * const mfdata =
-            static_cast<MField::MFData *>(JS_GetPrivate(cx, obj));
+            static_cast<MField::MFData *>(js_get_private(cx, obj));
         assert(mfdata);
         std::auto_ptr<openvrml::mfvec3d>
             mfvec3d(new openvrml::mfvec3d(mfdata->array.size()));
@@ -7443,7 +7464,7 @@ namespace {
                                  &SFVec3d::jsclass, 0));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>(
-                    JS_GetPrivate(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
+                    js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
             assert(sfdata);
 
             const openvrml::sfvec3d & sfvec3d =
@@ -7520,9 +7541,9 @@ namespace {
         assert(obj);
 
         if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 4) {
-            assert(JS_GetPrivate(cx, obj));
+            assert(js_get_private(cx, obj));
             const float (&row)[4] =
-                *static_cast<float (*)[4]>(JS_GetPrivate(cx, obj));
+                *static_cast<float (*)[4]>(js_get_private(cx, obj));
 
             if (!JS_NewNumberValue(cx, row[jspropertyop_id_to_int(id)], vp)) {
                 return JS_FALSE;
@@ -7540,8 +7561,8 @@ namespace {
             double d;
             if (!JS_ValueToNumber(cx, *vp, &d)) { return JS_FALSE; }
 
-            assert(JS_GetPrivate(cx, obj));
-            float (&row)[4] = *static_cast<float (*)[4]>(JS_GetPrivate(cx, obj));
+            assert(js_get_private(cx, obj));
+            float (&row)[4] = *static_cast<float (*)[4]>(js_get_private(cx, obj));
             row[jspropertyop_id_to_int(id)] = float(d);
         }
         return JS_TRUE;
@@ -7637,7 +7658,7 @@ namespace {
                     float(mat[4]), float(mat[5]), float(mat[6]), float(mat[7]),
                     float(mat[8]), float(mat[9]), float(mat[10]), float(mat[11]),
                     float(mat[12]), float(mat[13]), float(mat[14]), float(mat[15]))));
-            if (!JS_SetPrivate(cx, obj, mat_ptr.get())) { return JS_FALSE; }
+            if (!js_set_private(cx, obj, mat_ptr.get())) { return JS_FALSE; }
             mat_ptr.release();
         } catch (std::bad_alloc &) {
             JS_ReportOutOfMemory(cx);
@@ -7657,7 +7678,7 @@ namespace {
 
         if (jspropertyop_id_is_int(id) && jspropertyop_id_to_int(id) >= 0 && jspropertyop_id_to_int(id) < 4) {
             using openvrml::mat4f;
-            mat4f * const thisMat = static_cast<mat4f *>(JS_GetPrivate(cx, obj));
+            mat4f * const thisMat = static_cast<mat4f *>(js_get_private(cx, obj));
 
             //
             // Construct the result object.
@@ -7667,7 +7688,7 @@ namespace {
             if (!robj) { return JS_FALSE; }
 
             float (&row)[4] = (*thisMat)[jspropertyop_id_to_int(id)];
-            if (!JS_SetPrivate(cx, robj, &row)) { return JS_FALSE; }
+            if (!js_set_private(cx, robj, &row)) { return JS_FALSE; }
             *vp = OBJECT_TO_JSVAL(robj);
         }
         return JS_TRUE;
@@ -7708,9 +7729,9 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, translation_obj));
+            assert(js_get_private(cx, translation_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, translation_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, translation_obj));
             translation = polymorphic_downcast<sfvec3f *>(&sfdata.field_value())
                 ->value();
         }
@@ -7720,9 +7741,9 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, rotation_obj));
+            assert(js_get_private(cx, rotation_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, rotation_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, rotation_obj));
             rot = polymorphic_downcast<sfrotation *>(&sfdata.field_value())
                 ->value();
         }
@@ -7732,9 +7753,9 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, scale_obj));
+            assert(js_get_private(cx, scale_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, scale_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, scale_obj));
             scale = polymorphic_downcast<sfvec3f *>(&sfdata.field_value())
                 ->value();
         }
@@ -7744,10 +7765,10 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, scale_orientation_obj));
+            assert(js_get_private(cx, scale_orientation_obj));
             const sfield::sfdata & sfdata =
                 *static_cast<sfield::sfdata *>(
-                    JS_GetPrivate(cx, scale_orientation_obj));
+                    js_get_private(cx, scale_orientation_obj));
             scale_orientation = polymorphic_downcast<sfrotation *>(
                 &sfdata.field_value())->value();
         }
@@ -7757,16 +7778,16 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, center_obj));
+            assert(js_get_private(cx, center_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, center_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, center_obj));
             center = polymorphic_downcast<sfvec3f *>(&sfdata.field_value())
                 ->value();
         }
 
         mat4f * const thisMat =
             static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
         *thisMat = make_transformation_mat4f(translation,
@@ -7795,7 +7816,7 @@ namespace {
 
         const mat4f * const thisMat =
             static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
         vec3f translation;
@@ -7809,9 +7830,9 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, translation_obj));
+            assert(js_get_private(cx, translation_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, translation_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, translation_obj));
             polymorphic_downcast<sfvec3f *>(&sfdata.field_value())
                 ->value(translation);
         }
@@ -7821,9 +7842,9 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, rotation_obj));
+            assert(js_get_private(cx, rotation_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, rotation_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, rotation_obj));
             polymorphic_downcast<sfrotation *>(&sfdata.field_value())->value(rot);
         }
 
@@ -7832,9 +7853,9 @@ namespace {
                                OPENVRML_JS_ARGV(cx, vp))) {
                 return JS_FALSE;
             }
-            assert(JS_GetPrivate(cx, scale_obj));
+            assert(js_get_private(cx, scale_obj));
             const sfield::sfdata & sfdata =
-                *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, scale_obj));
+                *static_cast<sfield::sfdata *>(js_get_private(cx, scale_obj));
             polymorphic_downcast<sfvec3f *>(&sfdata.field_value())->value(scale);
         }
 
@@ -7854,10 +7875,10 @@ namespace {
 
         const mat4f * const thisMat =
             static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
-        mat4f * const newMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
+        mat4f * const newMat = static_cast<mat4f *>(js_get_private(cx, robj));
         assert(newMat);
         *newMat = thisMat->inverse();
         OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
@@ -7876,10 +7897,10 @@ namespace {
 
         const mat4f * const thisMat =
             static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         assert(thisMat);
 
-        mat4f * const newMat = static_cast<mat4f *>(JS_GetPrivate(cx, robj));
+        mat4f * const newMat = static_cast<mat4f *>(js_get_private(cx, robj));
         assert(newMat);
         *newMat = thisMat->transpose();
         OPENVRML_JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(robj));
@@ -7900,12 +7921,12 @@ namespace {
             return JS_FALSE;
         }
 
-        void * arg_obj_private_data = JS_GetPrivate(cx, arg_obj);
+        void * arg_obj_private_data = js_get_private(cx, arg_obj);
         assert(arg_obj_private_data);
         const mat4f & argMat = *static_cast<mat4f *>(arg_obj_private_data);
 
         void * obj_private_data =
-            JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         assert(obj_private_data);
         const mat4f & thisMat = *static_cast<mat4f *>(obj_private_data);
 
@@ -7917,7 +7938,7 @@ namespace {
                                JS_GetParent(cx,
                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
-        void * robj_private_data = JS_GetPrivate(cx, robj);
+        void * robj_private_data = js_get_private(cx, robj);
         assert(robj_private_data);
         mat4f & resultMat = *static_cast<mat4f *>(robj_private_data);
 
@@ -7941,13 +7962,13 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
-        const mat4f & argMat = *static_cast<mat4f *>(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
+        const mat4f & argMat = *static_cast<mat4f *>(js_get_private(cx, arg_obj));
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const mat4f & thisMat =
             *static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         //
         // Construct the result object.
@@ -7957,7 +7978,7 @@ namespace {
                                JS_GetParent(cx,
                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
-        void * private_data = JS_GetPrivate(cx, robj);
+        void * private_data = js_get_private(cx, robj);
         assert(private_data);
         mat4f & resultMat = *static_cast<mat4f *>(private_data);
 
@@ -7984,17 +8005,17 @@ namespace {
             return JS_FALSE;
         }
 
-        assert(JS_GetPrivate(cx, arg_obj));
+        assert(js_get_private(cx, arg_obj));
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const openvrml::sfvec3f & argVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &arg_sfdata.field_value());
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const mat4f & thisMat =
             *static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         //
         // Construct the result object.
@@ -8006,9 +8027,9 @@ namespace {
             js_construct_object(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         openvrml::sfvec3f & resultVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &robj_sfdata.field_value());
@@ -8037,15 +8058,15 @@ namespace {
         }
 
         const sfield::sfdata & arg_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, arg_obj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, arg_obj));
         const openvrml::sfvec3f & argVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &arg_sfdata.field_value());
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const mat4f & thisMat =
             *static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         //
         // Construct the result object.
@@ -8056,9 +8077,9 @@ namespace {
                                              OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
-        assert(JS_GetPrivate(cx, robj));
+        assert(js_get_private(cx, robj));
         sfield::sfdata & robj_sfdata =
-            *static_cast<sfield::sfdata *>(JS_GetPrivate(cx, robj));
+            *static_cast<sfield::sfdata *>(js_get_private(cx, robj));
         openvrml::sfvec3f & resultVec =
             *boost::polymorphic_downcast<openvrml::sfvec3f *>(
                 &robj_sfdata.field_value());
@@ -8073,10 +8094,10 @@ namespace {
     {
         using openvrml::mat4f;
 
-        assert(JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+        assert(js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
         const mat4f & thisMat =
             *static_cast<mat4f *>(
-                JS_GetPrivate(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                js_get_private(cx, OPENVRML_JS_THIS_OBJECT(cx, vp)));
 
         JSString * jsstr = 0;
         try {
@@ -8095,7 +8116,7 @@ namespace {
     void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj)
         OPENVRML_NOTHROW
     {
-        delete static_cast<openvrml::mat4f *>(JS_GetPrivate(cx, obj));
-        JS_SetPrivate(cx, obj, 0);
+        delete static_cast<openvrml::mat4f *>(js_get_private(cx, obj));
+        js_set_private(cx, obj, 0);
     }
 } // namespace
