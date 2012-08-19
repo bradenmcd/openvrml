@@ -1,4 +1,4 @@
-2012-07-26 Braden McDaniel  <braden@endoframe.com>
+2012-08-18 Braden McDaniel  <braden@endoframe.com>
 
 	XULRunner 14.0 removes the JSContext argument from
 	JS_{Get,Set}Private.
