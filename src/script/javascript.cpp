@@ -164,6 +164,16 @@ namespace {
 # endif
     }
 
+    OPENVRML_LOCAL
+    JSObject * js_get_parent(JSContext * const cx, JSObject * const obj)
+    {
+# ifdef OPENVRML_JS_GETPARENT_WITHOUT_CONTEXT
+        return JS_GetParent(obj);
+# else
+        return JS_GetParent(cx, obj);
+# endif
+    }
+
 
 # ifdef OPENVRML_FAST_JSNATIVE
 #   define OPENVRML_DECLARE_JSNATIVE(name)                      \
@@ -266,6 +276,22 @@ namespace {
     (name)((cx), (obj), (id), (vp))
 
     JSPropertyOp openvrml_JS_StrictPropertyStub = JS_PropertyStub;
+# endif
+
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+#   define OPENVRML_DECLARE_JSFINALIZEOP(name)  \
+    void (name)(JSFreeOp * fop, JSObject * obj)
+
+#   define OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(class_name, name)        \
+    void class_name::name(JSFreeOp * fop, JSObject * obj)
+
+# else
+#   define OPENVRML_DECLARE_JSFINALIZEOP(name)  \
+    void (name)(JSContext * cx, JSObject * obj)
+
+#   define OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(class_name, name)        \
+    void class_name::name(JSContext * cx, JSObject * obj)
+
 # endif
 
     class SFNode;
@@ -489,7 +515,7 @@ namespace {
         };
 
     protected:
-        static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
         static OPENVRML_DECLARE_JSNATIVE(toString);
     private:
         sfield();
@@ -755,7 +781,7 @@ namespace {
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setElement);
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setLength);
         static OPENVRML_DECLARE_JSNATIVE(toString);
-        static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
 
     private:
         static JSBool initObject(JSContext * cx, JSObject * obj,
@@ -778,7 +804,7 @@ namespace {
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setElement);
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setLength);
         static OPENVRML_DECLARE_JSNATIVE(toString);
-        static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
 
     private:
         static JSBool initObject(JSContext * cx, JSObject * obj,
@@ -803,7 +829,7 @@ namespace {
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setElement);
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setLength);
         static OPENVRML_DECLARE_JSNATIVE(toString);
-        static void finalize(JSContext * cx, JSObject * obj);
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
     };
 
     class OPENVRML_JAVASCRIPT_LOCAL MFColor : public MFJSObject<MFColor> {
@@ -862,7 +888,7 @@ namespace {
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setElement);
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setLength);
         static OPENVRML_DECLARE_JSNATIVE(toString);
-        static void finalize(JSContext * cx, JSObject * obj);
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
     };
 
     //
@@ -890,7 +916,7 @@ namespace {
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setElement);
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setLength);
         static OPENVRML_DECLARE_JSNATIVE(toString);
-        static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
     };
 
     class OPENVRML_JAVASCRIPT_LOCAL MFRotation : public MFJSObject<MFRotation> {
@@ -927,7 +953,7 @@ namespace {
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setElement);
         static OPENVRML_DECLARE_JSSTRICTPROPERTYOP(setLength);
         static OPENVRML_DECLARE_JSNATIVE(toString);
-        static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
     };
 
     class OPENVRML_JAVASCRIPT_LOCAL MFTime : public MFJSDouble<MFTime> {
@@ -1039,7 +1065,7 @@ namespace {
         static OPENVRML_DECLARE_JSNATIVE(multVecMatrix);
         static OPENVRML_DECLARE_JSNATIVE(multMatrixVec);
         static OPENVRML_DECLARE_JSNATIVE(toString);
-        static void finalize(JSContext * cx, JSObject * obj) OPENVRML_NOTHROW;
+        static OPENVRML_DECLARE_JSFINALIZEOP(finalize);
 
     private:
         VrmlMatrix();
@@ -2618,9 +2644,11 @@ namespace {
         return *this->field_value_;
     }
 
-    void sfield::finalize(JSContext * const cx, JSObject * const obj)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(sfield, finalize)
     {
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         delete static_cast<field_data *>(js_get_private(cx, obj));
         js_set_private(cx, obj, 0);
     }
@@ -3760,7 +3788,7 @@ namespace {
 
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -3809,7 +3837,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -3858,7 +3886,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -3950,7 +3978,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFRotation::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4227,7 +4255,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4270,7 +4298,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4371,7 +4399,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4405,7 +4433,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4439,7 +4467,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4493,7 +4521,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec2::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4838,7 +4866,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -4892,7 +4920,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) {return JS_FALSE; }
@@ -4935,7 +4963,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5036,7 +5064,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5070,7 +5098,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5104,7 +5132,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5158,7 +5186,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -5522,11 +5550,12 @@ namespace {
     }
 
     template <typename Subclass>
-    void MFJSObject<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(MFJSObject<Subclass>, finalize)
     {
-        assert(cx);
         assert(obj);
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
@@ -5735,9 +5764,11 @@ namespace {
     }
 
     template <typename Subclass>
-    void MFJSDouble<Subclass>::finalize(JSContext * const cx, JSObject * const obj)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(MFJSDouble<Subclass>, finalize)
     {
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
@@ -5946,8 +5977,11 @@ namespace {
         return JS_TRUE;
     }
 
-    void MFBool::finalize(JSContext * const cx, JSObject * const obj)
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(MFBool, finalize)
     {
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         delete static_cast<MFData *>(js_get_private(cx, obj));
         js_set_private(cx, obj, 0);
     }
@@ -6414,8 +6448,11 @@ namespace {
         return JS_TRUE;
     }
 
-    void MFInt32::finalize(JSContext * const cx, JSObject * const obj)
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(MFInt32, finalize)
     {
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         delete static_cast<MFData *>(js_get_private(cx, obj));
         js_set_private(cx, obj, 0);
     }
@@ -6717,11 +6754,12 @@ namespace {
         return JS_TRUE;
     }
 
-    void MFNode::finalize(JSContext * const cx, JSObject * const obj)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(MFNode, finalize)
     {
-        assert(cx);
         assert(obj);
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
@@ -7067,9 +7105,11 @@ namespace {
         return JS_TRUE;
     }
 
-    void MFString::finalize(JSContext * const cx, JSObject * const obj)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(MFString, finalize)
     {
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         MFData * const mfdata = static_cast<MFData *>(js_get_private(cx, obj));
         if (mfdata) {
             RemoveRoots(cx, mfdata->array);
@@ -7684,12 +7724,11 @@ namespace {
             // Construct the result object.
             //
             JSObject * const robj = js_construct_object(cx, &Row::jsclass, 0,
-                                                       JS_GetParent(cx, obj));
+                                                        js_get_parent(cx, obj));
             if (!robj) { return JS_FALSE; }
 
             float (&row)[4] = (*thisMat)[jspropertyop_id_to_int(id)];
-            js_set_private(cx, robj, &row));
-            *vp = OBJECT_TO_JSVAL(robj);
+            js_set_private(cx, robj, &row);
         }
         return JS_TRUE;
     }
@@ -7869,8 +7908,8 @@ namespace {
 
         JSObject * const robj =
             js_construct_object(cx, &VrmlMatrix::jsclass, 0,
-                               JS_GetParent(cx,
-                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                               js_get_parent(cx,
+                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
         const mat4f * const thisMat =
@@ -7891,8 +7930,8 @@ namespace {
 
         JSObject * const robj =
             js_construct_object(cx, &VrmlMatrix::jsclass, 0,
-                               JS_GetParent(cx,
-                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                               js_get_parent(cx,
+                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
         const mat4f * const thisMat =
@@ -7935,8 +7974,8 @@ namespace {
         //
         JSObject * const robj =
             js_construct_object(cx, &VrmlMatrix::jsclass, 0,
-                               JS_GetParent(cx,
-                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                               js_get_parent(cx,
+                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
         void * robj_private_data = js_get_private(cx, robj);
         assert(robj_private_data);
@@ -7975,8 +8014,8 @@ namespace {
         //
         JSObject * const robj =
             js_construct_object(cx, &VrmlMatrix::jsclass, 0,
-                               JS_GetParent(cx,
-                                            OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                               js_get_parent(cx,
+                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
         void * private_data = js_get_private(cx, robj);
         assert(private_data);
@@ -8022,7 +8061,7 @@ namespace {
         //
         static JSObject * const proto = 0;
         JSObject * const parent =
-            JS_GetParent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
+            js_get_parent(cx, OPENVRML_JS_THIS_OBJECT(cx, vp));
         JSObject * const robj =
             js_construct_object(cx, &SFVec3f::jsclass, proto, parent);
         if (!robj) { return JS_FALSE; }
@@ -8073,8 +8112,8 @@ namespace {
         //
         JSObject * const robj =
             js_construct_object(cx, &SFVec3f::jsclass, 0,
-                                JS_GetParent(cx,
-                                             OPENVRML_JS_THIS_OBJECT(cx, vp)));
+                                js_get_parent(cx,
+                                              OPENVRML_JS_THIS_OBJECT(cx, vp)));
         if (!robj) { return JS_FALSE; }
 
         assert(js_get_private(cx, robj));
@@ -8113,9 +8152,11 @@ namespace {
         return JS_TRUE;
     }
 
-    void VrmlMatrix::finalize(JSContext * const cx, JSObject * const obj)
-        OPENVRML_NOTHROW
+    OPENVRML_DEFINE_MEMBER_JSFINALIZEOP(VrmlMatrix, finalize)
     {
+# ifdef OPENVRML_JS_FINALIZEOP_USES_FREEOP
+        static JSContext * const cx = 0;
+# endif
         delete static_cast<openvrml::mat4f *>(js_get_private(cx, obj));
         js_set_private(cx, obj, 0);
     }
