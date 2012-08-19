@@ -1,3 +1,8 @@
+2012-08-19 Braden McDaniel  <braden@endoframe.com>
+
+	* src/script/javascript.cpp: JS_SetPrivate no longer returns a
+	boolean value.
+
 2012-08-18 Braden McDaniel  <braden@endoframe.com>
 
 	XULRunner 14.0 removes the JSContext argument from
