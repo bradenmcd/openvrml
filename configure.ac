@@ -293,12 +293,15 @@ AC_CACHE_CHECK([whether SpiderMonkey has JS_FinalizeStub],
 [ov_cv_js_has_finalizestub=no
 ov_save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+ov_save_LDFLAGS="$LDFLAGS"
+LDFLAGS="$JS_LIBS $LDFLAGS"
 AC_LANG_ASSERT([C])
 AC_LINK_IFELSE([AC_LANG_PROGRAM(
 [[#include <jsapi.h>]],
 [[JS_FinalizeStub(0, 0)]])],
 [ov_cv_js_has_finalizestub=yes])
 CPPFLAGS=$ov_save_CPPFLAGS
+LDFLAGS=$ov_save_LDFLAGS
 ])
 AS_IF([test X$ov_cv_js_has_finalizestub = Xyes],
       [AC_DEFINE([OPENVRML_JS_HAS_FINALIZESTUB], [1],
@@ -361,6 +364,28 @@ CPPFLAGS=$ov_save_CPPFLAGS
 AS_IF([test X$ov_cv_js_getparent_without_context = Xyes],
       [AC_DEFINE([OPENVRML_JS_GETPARENT_WITHOUT_CONTEXT], [1],
                  [Defined if JS_GetParent does not take a JSContext argument])])
+
+#
+# XULRunner 15.0 removes JSVAL_IS_OBJECT.
+#
+AC_CACHE_CHECK([whether SpiderMonkey has JSVAL_IS_OBJECT],
+[ov_cv_js_has_jsval_is_object],
+[ov_cv_js_has_jsval_is_object=no
+ov_save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$JS_CFLAGS $CPPFLAGS"
+ov_save_LDFLAGS="$LDFLAGS"
+LDFLAGS="$JS_LIBS $LDFLAGS"
+AC_LANG_ASSERT([C])
+AC_LINK_IFELSE([AC_LANG_PROGRAM(
+[[#include <jsapi.h>]],
+[[jsval val; JSVAL_IS_OBJECT(val)]])],
+[ov_cv_js_has_jsval_is_object=yes])
+CPPFLAGS=$ov_save_CPPFLAGS
+LDFLAGS=$ov_save_LDFLAGS
+])
+AS_IF([test X$ov_cv_js_has_jsval_is_object = Xyes],
+      [AC_DEFINE([OPENVRML_JS_HAS_JSVAL_IS_OBJECT], [1],
+                 [Defined if SpiderMonkey has JSVAL_IS_OBJECT])])
 
 #
 # openvrml-xembed and openvrml-player both use GOption, which was

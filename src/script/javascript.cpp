@@ -294,6 +294,15 @@ namespace {
 
 # endif
 
+    bool jsval_is_object_or_null(const jsval & val)
+    {
+# ifdef OPENVRML_JS_HAS_JSVAL_IS_OBJECT
+        return JSVAL_IS_OBJECT(val);
+# else
+        return val.isObjectOrNull();
+# endif
+    }
+
     class SFNode;
     class MFNode;
 
@@ -1302,7 +1311,7 @@ namespace {
                     throw std::bad_alloc();
                 }
                 assert(val != JSVAL_VOID);
-                if (JSVAL_IS_OBJECT(val)) {
+                if (jsval_is_object_or_null(val)) {
                     field_data * fieldData =
                         static_cast<field_data *>
                         (js_get_private(this->cx, JSVAL_TO_OBJECT(val)));
@@ -2019,7 +2028,9 @@ namespace {
         }
 
         case field_value::sfcolor_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
             return auto_ptr<field_value>
                 (SFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
@@ -2051,19 +2062,26 @@ namespace {
         }
 
         case field_value::sfimage_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
             return auto_ptr<field_value>
                 (SFImage::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::sfnode_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
             return auto_ptr<field_value>
                 (SFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::sfrotation_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (SFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                SFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                    .release());
 
         case field_value::sfstring_id:
         {
@@ -2091,89 +2109,124 @@ namespace {
         }
 
         case field_value::sfvec2f_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (SFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                SFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::sfvec2d_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (SFVec2d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                SFVec2d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::sfvec3f_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (SFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                SFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::sfvec3d_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (SFVec3d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                SFVec3d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfbool_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFBool::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFBool::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfcolor_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFColor::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mffloat_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFFloat::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFFloat::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfdouble_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFDouble::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFDouble::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfint32_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFInt32::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFInt32::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfnode_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFNode::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfrotation_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFRotation::createFromJSObject(cx, JSVAL_TO_OBJECT(v))
+                    .release());
 
         case field_value::mfstring_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFString::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mftime_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFTime::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFTime::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfvec2f_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFVec2f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfvec2d_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFVec2d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFVec2d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfvec3f_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFVec3f::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         case field_value::mfvec3d_id:
-            if (!JSVAL_IS_OBJECT(v)) { throw bad_conversion("Object expected."); }
-            return auto_ptr<field_value>
-                (MFVec3d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
+            if (!jsval_is_object_or_null(v)) {
+                throw bad_conversion("Object expected.");
+            }
+            return auto_ptr<field_value>(
+                MFVec3d::createFromJSObject(cx, JSVAL_TO_OBJECT(v)).release());
 
         default:
             assert(false);
@@ -3560,7 +3613,7 @@ namespace {
     OPENVRML_DEFINE_MEMBER_JSNATIVE(SFRotation, construct)
     {
         double rot[4] = { 0.0, 1.0, 0.0, 0.0 };
-        if (argc > 1 && JSVAL_IS_OBJECT(OPENVRML_JS_ARGV(cx, vp)[0])
+        if (argc > 1 && jsval_is_object_or_null(OPENVRML_JS_ARGV(cx, vp)[0])
             && JSVAL_IS_NUMBER(OPENVRML_JS_ARGV(cx, vp)[1])) {
             JSObject * axis_obj = 0;
             if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "od",
@@ -3581,8 +3634,9 @@ namespace {
             rot[0] = axis.value().x();
             rot[1] = axis.value().y();
             rot[2] = axis.value().z();
-        } else if (argc > 1 && JSVAL_IS_OBJECT(OPENVRML_JS_ARGV(cx, vp)[0])
-                   && JSVAL_IS_OBJECT(OPENVRML_JS_ARGV(cx, vp)[1])) {
+        } else if (argc > 1
+                   && jsval_is_object_or_null(OPENVRML_JS_ARGV(cx, vp)[0])
+                   && jsval_is_object_or_null(OPENVRML_JS_ARGV(cx, vp)[1])) {
             JSObject * from_obj = 0, * to_obj = 0;
             if (!JS_ConvertArguments(cx, argc, OPENVRML_JS_ARGV(cx, vp), "oo",
                                      &from_obj, &to_obj)) {
@@ -5394,7 +5448,7 @@ namespace {
             std::auto_ptr<MFData> mfdata(new MFData(argc));
 
             for (unsigned i = 0; i < argc; ++i) {
-                if (!JSVAL_IS_OBJECT(argv[i])
+                if (!jsval_is_object_or_null(argv[i])
                     || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
                                       &Subclass::sfjsclass, argv)) {
                     return JS_FALSE;
@@ -5533,7 +5587,7 @@ namespace {
         std::ostringstream out;
         out << '[';
         for (JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             const sfield::sfdata * const sfdata =
                 static_cast<sfield::sfdata *>
                 (js_get_private(cx, JSVAL_TO_OBJECT(mfdata->array[i])));
@@ -6027,7 +6081,7 @@ namespace {
             mfcolor(new openvrml::mfcolor(mfdata->array.size()));
         std::vector<openvrml::color> temp = mfcolor->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                  &SFColor::jsclass, 0));
             const sfield::sfdata * const sfdata =
@@ -6517,7 +6571,7 @@ namespace {
                 //
                 // Make sure all args are SFNodes.
                 //
-                if (!JSVAL_IS_OBJECT(argv[i])
+                if (!jsval_is_object_or_null(argv[i])
                     || !JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[i]),
                                       &sfnode_jsclass, argv)) {
                     return JS_FALSE;
@@ -6583,7 +6637,7 @@ namespace {
             mfnode(new openvrml::mfnode(mfdata->array.size()));
         std::vector<boost::intrusive_ptr<openvrml::node> > temp = mfnode->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                  &sfnode_jsclass, 0));
             const sfield::sfdata * const sfdata =
@@ -6834,7 +6888,7 @@ namespace {
             mfrotation(new openvrml::mfrotation(mfdata->array.size()));
         std::vector<openvrml::rotation> temp = mfrotation->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                  &SFRotation::jsclass, 0));
             const sfield::sfdata * const sfdata =
@@ -7254,7 +7308,7 @@ namespace {
             mfvec2f(new openvrml::mfvec2f(mfdata->array.size()));
         std::vector<openvrml::vec2f> temp = mfvec2f->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                  &SFVec2f::jsclass, 0));
             const sfield::sfdata * const sfdata =
@@ -7335,7 +7389,7 @@ namespace {
             mfvec2d(new openvrml::mfvec2d(mfdata->array.size()));
         std::vector<openvrml::vec2d> temp = mfvec2d->value();
         for (MField::JsvalArray::size_type i = 0; i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                  &SFVec2d::jsclass, 0));
             const sfield::sfdata * const sfdata =
@@ -7417,7 +7471,7 @@ namespace {
         std::vector<openvrml::vec3f> temp = mfvec3f->value();
         for (MField::JsvalArray::size_type i = 0;
              i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                  &SFVec3f::jsclass, 0));
             const sfield::sfdata * const sfdata =
@@ -7499,7 +7553,7 @@ namespace {
         std::vector<openvrml::vec3d> temp = mfvec3d->value();
         for (MField::JsvalArray::size_type i = 0;
              i < mfdata->array.size(); ++i) {
-            assert(JSVAL_IS_OBJECT(mfdata->array[i]));
+            assert(jsval_is_object_or_null(mfdata->array[i]));
             assert(JS_InstanceOf(cx, JSVAL_TO_OBJECT(mfdata->array[i]),
                                  &SFVec3d::jsclass, 0));
             const sfield::sfdata * const sfdata =
