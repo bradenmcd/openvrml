@@ -1,3 +1,10 @@
+2012-09-01 Braden McDaniel  <braden@endoframe.com>
+
+	XULRunner 15.0 removes JSVAL_IS_OBJECT.
+
+	* configure.ac
+	* src/script/javascript.cpp
+
 2012-08-19 Braden McDaniel  <braden@endoframe.com>
 
 	XULRunner 14.0 replaces the JSContext* argument to JSFinalizeOp
