@@ -1,6 +1,7 @@
 # http://www.gnu.org/software/automake
 
 Makefile.in
+/test-driver
 
 # http://www.gnu.org/software/autoconf
 
@@ -9,7 +10,9 @@ Makefile.in
 /autoscan-*.log
 /aclocal.m4
 /compile
+/config.guess
 /config.h.in
+/config.sub
 /configure
 /configure.scan
 /depcomp
@@ -19,6 +22,7 @@ Makefile.in
 
 # http://www.gnu.org/software/libtool
 
+ltmain.sh
 /m4/libtool.m4
 /m4/ltoptions.m4
 /m4/ltsugar.m4
