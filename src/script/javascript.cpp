@@ -7764,7 +7764,7 @@ namespace {
     JSBool VrmlMatrix::getElement(JSContext * const cx,
                                   JSObject * const obj,
                                   const jspropertyop_id id,
-                                  jsval * const vp)
+                                  jsval * /* vp */)
         OPENVRML_NOTHROW
     {
         assert(cx);
