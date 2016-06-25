@@ -324,7 +324,7 @@ CPPFLAGS=$ov_save_CPPFLAGS
 ])
 AS_IF([test X$ov_cv_js_private_without_context = Xyes],
       [AC_DEFINE([OPENVRML_JS_PRIVATE_WITHOUT_CONTEXT], [1],
-                 [Defined if JS_SetContext does not take a JSContext argument])])
+                 [Defined if JS_SetPrivate does not take a JSContext argument])])
 
 #
 # XULRunner 14.0 replaces the JSContext* argument to JSFinalizeOp with
